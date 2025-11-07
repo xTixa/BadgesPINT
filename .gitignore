@@ -1,0 +1,67 @@
+# ===================================================================
+# Ficheiro .gitignore MESTRE para projeto (Node.js + Flutter)
+# ===================================================================
+
+# === SEGURANÇA (MUITO IMPORTANTE) ===
+# Ignora TODOS os ficheiros .env em qualquer pasta.
+*.env
+.env
+.env.*
+*.local
+!*.env.example
+
+# === Node.js (Backend & Frontend) ===
+# Dependências
+node_modules/
+
+# Ficheiros de build e produção
+dist/
+dist-ssr/
+build/
+
+# === Dart & Flutter (Mobile) ===
+# Ignora ficheiros de build e cache do Flutter
+.dart_tool/
+.packages
+build/
+*.iml
+*.metadata
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+.fvm/
+
+# === LOGS (Geral) ===
+# Ignora ficheiros e pastas de log
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# === IDEs & Sistema Operativo ===
+
+# VS Code
+# Ignora tudo no .vscode, EXCETO as extensões recomendadas
+.vscode/*
+!.vscode/extensions.json
+
+# Android Studio / IntelliJ
+.idea/
+
+# Visual Studio (Windows)
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Vim
+*.sw?
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Windows
+Thumbs.db
