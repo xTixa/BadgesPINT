@@ -16,6 +16,7 @@ const LearningPath = database.define("learning_paths", {
   },
 }, {
   timestamps: false,
+  tableName: "learning_paths"
 });
 
 export default LearningPath;

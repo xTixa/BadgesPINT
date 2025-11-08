@@ -1,0 +1,61 @@
+WITH lp AS (
+    INSERT INTO learning_paths (name, description)
+    VALUES ('Jornada Técnica', 'Learning path principal.')
+    RETURNING id
+),
+sl AS (
+    INSERT INTO service_lines (learning_path_id, name, description)
+    VALUES
+    ((SELECT id FROM lp), 'Hybrid Cloud Infrastructure', 'Infraestrutura Cloud e Virtualização'),
+    ((SELECT id FROM lp), 'Application Operations', 'Automação e Operações de Aplicações'),
+    ((SELECT id FROM lp), 'Sourcing & Talent Management', 'Captação e evolução de Talentos')
+    RETURNING id, name
+),
+ar AS (
+    INSERT INTO areas (service_line_id, name)
+    VALUES
+    -- Hybrid Cloud
+    ((SELECT id FROM sl WHERE name='Hybrid Cloud Infrastructure'), 'Azure Administration'),
+    ((SELECT id FROM sl WHERE name='Hybrid Cloud Infrastructure'), 'VMware & Virtualization'),
+
+    -- Application Operations
+    ((SELECT id FROM sl WHERE name='Application Operations'), 'DevOps & CI/CD'),
+    ((SELECT id FROM sl WHERE name='Application Operations'), 'IT Automation & IaC'),
+
+    -- Sourcing & Talent Management
+    ((SELECT id FROM sl WHERE name='Sourcing & Talent Management'), 'Tech Recruitment'),
+    ((SELECT id FROM sl WHERE name='Sourcing & Talent Management'), 'Competency & Talent Growth')
+    RETURNING id, name
+),
+bd AS (
+    INSERT INTO badges (area_id, level, description, points)
+    SELECT id,
+           level,
+           CONCAT('Badge nível ', level, ' em ', name) AS description,
+           CASE level
+                WHEN 'Junior' THEN 50
+                WHEN 'Intermedio' THEN 100
+                WHEN 'Senior' THEN 200
+           END AS points
+    FROM ar CROSS JOIN (VALUES
+        ('Junior'::badge_level),
+        ('Intermedio'::badge_level),
+        ('Senior'::badge_level)
+    ) AS badge_levels(level)
+    RETURNING id, area_id, level
+)
+INSERT INTO requirements (badge_id, code, description)
+SELECT id,
+       CONCAT('REQ', rn),
+       CONCAT('Requisito ', rn, ' do badge nível ', level)
+FROM (
+    SELECT id, level, ROW_NUMBER() OVER (PARTITION BY id ORDER BY id) AS rn
+    FROM bd, generate_series(1,5)
+) x;
+
+
+SELECT * FROM learning_paths
+SELECT * FROM areas
+SELECT * FROM badges
+SELECT * FROM requirements
+SELECT * FROM service_lines

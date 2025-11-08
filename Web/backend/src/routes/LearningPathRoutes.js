@@ -1,8 +1,14 @@
-import { Router } from "express";
-import { getLearningPaths } from "../controllers/LearningPathController.js";
+import express from "express";
+import { 
+  getLearningPaths, 
+  getServiceLinesByLearningPath, 
+  getLearningPathTree 
+} from "../controllers/LearningPathController.js";
 
-const router = Router();
+const router = express.Router();
 
 router.get("/", getLearningPaths);
+router.get("/:id/service-lines", getServiceLinesByLearningPath);
+router.get("/:id/tree", getLearningPathTree);  // novo endpoint tree
 
 export default router;
