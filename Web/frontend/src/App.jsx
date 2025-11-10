@@ -8,6 +8,8 @@ import Areas from "./pages/Areas";
 import Badges from "./pages/Badges";
 import Requirements from "./pages/Requirements";
 import DashboardConsultor from "./pages/Consultor/DashboardConsultor";
+import DashboardTalentManager from "./pages/TalentManager/DashboardTalentManager";
+import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
             <Route path="/areas/:id/badges" element={<Badges />} />
             <Route path="/badges/:id/requirements" element={<Requirements />} />
             <Route path="/dashboard" element={<DashboardConsultor />} />
+            <Route path="/tm/dashboard" element={<DashboardTalentManager />} />
+            <Route path="/sl/dashboard" element={<DashboardServiceLine />} />
           </Routes>
         </main>
 

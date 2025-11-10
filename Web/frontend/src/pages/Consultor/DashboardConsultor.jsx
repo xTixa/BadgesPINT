@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function DashboardConsultor() {
-  const [user] = useState({ nome: "João Silva", pontos: 820 });
+  const [user] = useState({ nome: "Patricia", pontos: 820 });
   const [badges] = useState([
     { id: 1, nome: "Júnior em Outsystems", status: "Obtido", cor: "text-success", icone: "bi-patch-check-fill" },
     { id: 2, nome: "Intermédio em DevOps", status: "Em curso", cor: "text-warning", icone: "bi-patch-exclamation-fill" },

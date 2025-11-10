@@ -3,12 +3,12 @@ import { Link, NavLink } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-export default function DashboardServiceLine() {
-  const [sl] = useState({ nome: "Rui", consultores: 8 });
-  const [dados] = useState({
-    cursosAtivos: 4,
-    badgesPendentes: 5,
-    progressoMedio: 68,
+export default function DashboardTalentManager() {
+  const [manager] = useState({ nome: "Guilherme Felix", equipa: 12 });
+  const [metricas] = useState({
+    mediaProgresso: 72,
+    badgesConcluidos: 45,
+    evidenciasPendentes: 6,
   });
 
   return (
@@ -23,17 +23,17 @@ export default function DashboardServiceLine() {
         }}
       >
         <div className="d-flex align-items-center mb-3">
-          <i className="bi bi-diagram-3-fill fs-4 me-2 text-white"></i>
-          <span className="fs-5 fw-semibold">Service Line</span>
+          <i className="bi bi-people-fill fs-4 me-2 text-white"></i>
+          <span className="fs-5 fw-semibold">Talent Manager</span>
         </div>
         <hr className="border-light opacity-25" />
 
         <ul className="nav nav-pills flex-column mb-auto">
           {[
-            { to: "/sl/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
-            { to: "/sl/consultores", label: "Consultores", icon: "bi-person-badge-fill" },
-            { to: "/sl/badges", label: "Badges Ativos", icon: "bi-patch-exclamation-fill" },
-            { to: "/sl/estatisticas", label: "Estatísticas", icon: "bi-bar-chart-line" },
+            { to: "/tm/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
+            { to: "/tm/equipa", label: "Equipa", icon: "bi-person-lines-fill" },
+            { to: "/tm/evidencias", label: "Evidências", icon: "bi-folder-check" },
+            { to: "/tm/relatorios", label: "Relatórios", icon: "bi-bar-chart-line-fill" },
           ].map(({ to, label, icon }) => (
             <li className="nav-item" key={to}>
               <NavLink
@@ -61,9 +61,9 @@ export default function DashboardServiceLine() {
       >
         {/* Header */}
         <div className="rounded-4 p-4 mb-4 shadow-sm" style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">Olá, {sl.nome.split(" ")[0]}</h3>
+          <h3 className="fw-bold mb-1">Olá, {manager.nome.split(" ")[0]}</h3>
           <p className="mb-0 text-light opacity-75">
-            Acompanha o progresso e badges da tua Service Line.
+            Aqui está a visão geral da tua equipa e progresso técnico.
           </p>
         </div>
 
@@ -74,9 +74,9 @@ export default function DashboardServiceLine() {
               <div className="card-body">
                 <div className="d-flex align-items-center mb-2">
                   <i className="bi bi-people-fill fs-3 me-2 text-primary"></i>
-                  <h6 className="mb-0 text-secondary">Consultores Ativos</h6>
+                  <h6 className="mb-0 text-secondary">Membros na Equipa</h6>
                 </div>
-                <h3 className="fw-bold">{sl.consultores}</h3>
+                <h3 className="fw-bold">{manager.equipa}</h3>
               </div>
             </div>
           </div>
@@ -85,10 +85,11 @@ export default function DashboardServiceLine() {
             <div className="card border-0 shadow-sm rounded-4">
               <div className="card-body">
                 <div className="d-flex align-items-center mb-2">
-                  <i className="bi bi-book-fill fs-3 me-2 text-info"></i>
-                  <h6 className="mb-0 text-secondary">Cursos Ativos</h6>
+                  <i className="bi bi-award-fill fs-3 me-2 text-success"></i>
+                  <h6 className="mb-0 text-secondary">Badges Concluídos</h6>
                 </div>
-                <h3 className="fw-bold">{dados.cursosAtivos}</h3>
+                <h3 className="fw-bold">{metricas.badgesConcluidos}</h3>
+                <p className="text-muted small">Total de conquistas da tua equipa.</p>
               </div>
             </div>
           </div>
@@ -97,50 +98,43 @@ export default function DashboardServiceLine() {
             <div className="card border-0 shadow-sm rounded-4">
               <div className="card-body">
                 <div className="d-flex align-items-center mb-2">
-                  <i className="bi bi-patch-exclamation-fill fs-3 me-2 text-warning"></i>
-                  <h6 className="mb-0 text-secondary">Badges Pendentes</h6>
+                  <i className="bi bi-graph-up-arrow fs-3 me-2 text-warning"></i>
+                  <h6 className="mb-0 text-secondary">Média de Progresso</h6>
                 </div>
-                <h3 className="fw-bold">{dados.badgesPendentes}</h3>
+                <h3 className="fw-bold">{metricas.mediaProgresso}%</h3>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Progresso Global */}
+        {/* Evidências Pendentes */}
+        <h4 className="fw-bold text-dark mb-3">Evidências Pendentes</h4>
         <div className="card border-0 shadow-sm rounded-4 mb-5">
           <div className="card-body">
-            <h5 className="fw-bold text-dark mb-2">Progresso Global</h5>
-            <div className="progress" style={{ height: "8px" }}>
-              <div
-                className="progress-bar"
-                style={{ width: `${dados.progressoMedio}%`, backgroundColor: "#191970" }}
-              ></div>
-            </div>
-            <p className="text-muted small mt-2">
-              Média de progresso entre todos os consultores da linha.
+            <p className="text-dark mb-2">
+              Tens <strong>{metricas.evidenciasPendentes}</strong> evidências pendentes de validação.
             </p>
+            <Link to="/tm/evidencias" className="btn btn-outline-primary" style={{ borderColor: "#191970", color: "#191970" }}>
+              Ver evidências
+            </Link>
           </div>
         </div>
 
-        {/* Últimas Atividades */}
-        <h4 className="fw-bold text-dark mb-3">Últimas Atividades</h4>
+        {/* Relatórios Recentes */}
+        <h4 className="fw-bold text-dark mb-3">Relatórios Recentes</h4>
         <div className="card border-0 shadow-sm rounded-4">
           <div className="list-group list-group-flush">
             <div className="list-group-item d-flex align-items-start">
-              <i className="bi bi-award-fill text-success fs-5 me-3"></i>
+              <i className="bi bi-file-earmark-bar-graph-fill text-primary fs-5 me-3"></i>
               <div>
-                <p className="mb-1 text-dark">
-                  Novo badge <strong>“Cloud Developer”</strong> atribuído.
-                </p>
-                <small className="text-muted">Há 4 dias</small>
+                <p className="mb-1 text-dark">Relatório mensal de progresso da equipa enviado.</p>
+                <small className="text-muted">Há 3 dias</small>
               </div>
             </div>
             <div className="list-group-item d-flex align-items-start">
-              <i className="bi bi-hourglass-split text-warning fs-5 me-3"></i>
+              <i className="bi bi-envelope-paper text-success fs-5 me-3"></i>
               <div>
-                <p className="mb-1 text-dark">
-                  <strong>2 consultores</strong> com badges pendentes de revisão.
-                </p>
+                <p className="mb-1 text-dark">Novas submissões aguardam validação.</p>
                 <small className="text-muted">Há 1 dia</small>
               </div>
             </div>
