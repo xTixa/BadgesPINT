@@ -26,8 +26,14 @@ export default function App() {
             <Route path="/service-lines/:id/areas" element={<Areas />} />
             <Route path="/areas/:id/badges" element={<Badges />} />
             <Route path="/badges/:id/requirements" element={<Requirements />} />
+
+            {/*  Consultor  */}
             <Route path="/dashboard" element={<DashboardConsultor />} />
+
+            {/*  Talent Manager  */}
             <Route path="/tm/dashboard" element={<DashboardTalentManager />} />
+
+            {/*  Service Line  */}
             <Route path="/sl/dashboard" element={<DashboardServiceLine />} />
           </Routes>
         </main>
