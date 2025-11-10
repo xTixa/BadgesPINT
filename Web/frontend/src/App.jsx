@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
+import Login from "./pages/Auth/Login";
 import Home from "./pages/Home";
 import LearningPaths from "./pages/LearningPaths";
 import ServiceLines from "./pages/ServiceLines";
 import Areas from "./pages/Areas";
 import Badges from "./pages/Badges";
 import Requirements from "./pages/Requirements";
+import DashboardConsultor from "./pages/Consultor/DashboardConsultor";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/service-lines/:id/areas" element={<Areas />} />
             <Route path="/areas/:id/badges" element={<Badges />} />
             <Route path="/badges/:id/requirements" element={<Requirements />} />
+            <Route path="/dashboard" element={<DashboardConsultor />} />
           </Routes>
         </main>
 
