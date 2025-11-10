@@ -1,4 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
 import Home from "./pages/Home";
 import LearningPaths from "./pages/LearningPaths";
 import ServiceLines from "./pages/ServiceLines";
@@ -9,50 +11,13 @@ import Requirements from "./pages/Requirements";
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-          <div className="container mx-auto px-4">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
-                </svg>
-                <Link to="/" className="text-2xl font-bold tracking-tight hover:text-blue-100 transition-colors">
-                  Badges PINT
-                </Link>
-              </div>
-              <nav className="hidden md:flex space-x-6">
-                <Link 
-                  to="/learning-paths" 
-                  className="inline-flex items-center px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  Learning Paths
-                </Link>
-                <Link 
-                  to="/badges" 
-                  className="inline-flex items-center px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  Badges
-                </Link>
-                <Link 
-                  to="/areas" 
-                  className="inline-flex items-center px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  Areas
-                </Link>
-              </nav>
-              <div className="flex items-center space-x-4">
-                <button className="bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors">
-                  Sign In
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Navbar />
 
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 py-8 flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/learning-paths" element={<LearningPaths />} />
             <Route path="/learning-paths/:id/service-lines" element={<ServiceLines />} />
             <Route path="/service-lines/:id/areas" element={<Areas />} />
@@ -73,9 +38,9 @@ export default function App() {
               <div>
                 <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><Link to="/learning-paths" className="hover:text-white transition-colors">Learning Paths</Link></li>
-                  <li><Link to="/badges" className="hover:text-white transition-colors">All Badges</Link></li>
-                  <li><Link to="/areas" className="hover:text-white transition-colors">Areas</Link></li>
+                  <li><a href="/learning-paths" className="hover:text-white transition-colors">Learning Paths</a></li>
+                  <li><a href="/badges" className="hover:text-white transition-colors">All Badges</a></li>
+                  <li><a href="/areas" className="hover:text-white transition-colors">Areas</a></li>
                 </ul>
               </div>
               <div>
