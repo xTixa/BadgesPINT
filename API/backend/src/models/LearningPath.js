@@ -3,9 +3,9 @@ import database from "../config/database.js";
 
 const LearningPath = database.define("learning_paths", {
   id: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true
   },
   name: {
     type: DataTypes.STRING,

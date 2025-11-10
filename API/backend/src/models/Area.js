@@ -3,25 +3,23 @@ import database from "../config/database.js";
 import ServiceLine from "./ServiceLine.js";
 
 const Area = database.define("areas", {
-id: {
-    type: DataTypes.UUID,
+  id: {
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4
-},
-service_line_id: {
-    type: DataTypes.UUID,
+    autoIncrement: true
+  },
+  service_line_id: {
+    type: DataTypes.INTEGER,
     allowNull: false
-},
-name: {
+  },
+  name: {
     type: DataTypes.STRING(150),
     allowNull: false
-
-},
-parent_id: {
-    type: DataTypes.UUID,
+  },
+  parent_id: {
+    type: DataTypes.INTEGER,
     allowNull: true
-
-}
+  }
 }, { timestamps: false, tableName: "areas" });
 
 Area.belongsTo(ServiceLine, { foreignKey: "service_line_id", as: "serviceLine" });

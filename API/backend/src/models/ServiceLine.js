@@ -3,22 +3,22 @@ import database from "../config/database.js";
 import LearningPath from "./LearningPath.js";
 
 const ServiceLine = database.define("service_lines", {
-id: { 
-    type: DataTypes.UUID,
+  id: { 
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4
-},
-learning_path_id: {
-    type: DataTypes.UUID,
+    autoIncrement: true
+  },
+  learning_path_id: {
+    type: DataTypes.INTEGER,
     allowNull: false
-},
-name: {
+  },
+  name: {
     type: DataTypes.STRING(150),
     allowNull: false
-},
-description: {
+  },
+  description: {
     type: DataTypes.TEXT
-}
+  }
 }, { timestamps: false, tableName: "service_lines" });
 
 ServiceLine.belongsTo(LearningPath, { foreignKey: "learning_path_id", as: "learningPath" });
