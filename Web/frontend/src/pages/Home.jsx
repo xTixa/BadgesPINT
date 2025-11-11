@@ -1,18 +1,49 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import api from "../api";
 import BadgeCard from "../components/BadgeCard";
 import LearningPathCard from "../components/LearningPathCard";
 
 export default function Home() {
-  const sampleBadges = [
-    { id: 1, name: "Full Stack Developer", description: "Domina o desenvolvimento frontend e backend", level: 3, points: 500 },
-    { id: 2, name: "Cloud Architecture", description: "Projeta e implementa soluções cloud escaláveis", level: 4, points: 750 },
-    { id: 3, name: "DevOps Expert", description: "Domina pipelines CI/CD e automação", level: 3, points: 600 }
-  ];
+  const [badges, setBadges] = useState([]);
+  const [learningPaths, setLearningPaths] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalBadges: 0,
+    totalPaths: 0
+  });
 
-  const samplePaths = [
-    { id: 1, name: "Web Development Mastery", description: "Percurso completo para te tornares full-stack developer", badgeCount: 8, duration: 6, progress: 60 },
-    { id: 2, name: "Cloud Engineering", description: "Domina plataformas cloud e infraestrutura", badgeCount: 6, duration: 4, progress: 30 }
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Vai buscar todos os badges
+        const badgesResponse = await api.get("/badges");
+        const allBadges = badgesResponse.data;
+        
+        // Limitar a 3 badges mais populares (por pontos)
+        setBadges(allBadges.slice(0, 3));
+        
+        // Vai buscar learning paths (só há 1 c:)
+        const pathsResponse = await api.get("/learning-paths");
+        setLearningPaths(pathsResponse.data);
+        
+        // Atualizar estatísticas
+        setStats({
+          totalBadges: allBadges.length,
+          totalPaths: pathsResponse.data.length
+        });
+        
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="space-y-20">
@@ -62,9 +93,15 @@ export default function Home() {
             <span className="ml-1 group-hover:translate-x-1 transition-transform inline-block">→</span>
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {samplePaths.map(path => <LearningPathCard key={path.id} path={path} />)}
-        </div>
+        {loading ? (
+          <div className="text-center py-8 text-gray-500">A carregar percursos...</div>
+        ) : learningPaths.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {learningPaths.map(path => <LearningPathCard key={path.id} path={path} />)}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">Nenhum percurso disponível</div>
+        )}
       </section>
 
       {/* 🔹 Popular Badges */}
@@ -76,9 +113,15 @@ export default function Home() {
             <span className="ml-1 group-hover:translate-x-1 transition-transform inline-block">→</span>
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sampleBadges.map(badge => <BadgeCard key={badge.id} badge={badge} />)}
-        </div>
+        {loading ? (
+          <div className="text-center py-8 text-gray-500">A carregar badges...</div>
+        ) : badges.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {badges.map(badge => <BadgeCard key={badge.id} badge={badge} />)}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">Nenhum badge disponível</div>
+        )}
       </section>
 
       {/* 🔹 Stats Section */}
@@ -89,11 +132,11 @@ export default function Home() {
             <p className="text-blue-100 text-lg">Utilizadores Ativos</p>
           </div>
           <div className="hover:scale-105 transition-transform">
-            <div className="text-5xl font-extrabold text-blue-300 mb-2">50+</div>
+            <div className="text-5xl font-extrabold text-blue-300 mb-2">{stats.totalBadges}+</div>
             <p className="text-blue-100 text-lg">Badges Disponíveis</p>
           </div>
           <div className="hover:scale-105 transition-transform">
-            <div className="text-5xl font-extrabold text-blue-300 mb-2">12</div>
+            <div className="text-5xl font-extrabold text-blue-300 mb-2">{stats.totalPaths}</div>
             <p className="text-blue-100 text-lg">Percursos de Aprendizagem</p>
           </div>
         </div>

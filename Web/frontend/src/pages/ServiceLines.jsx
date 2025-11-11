@@ -2,28 +2,144 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
 
-export default function ServiceLines(){
+export default function ServiceLines() {
   const { id } = useParams(); // learning path id
   const [sls, setSls] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pathName, setPathName] = useState("");
 
   useEffect(() => {
     if (!id) return;
-    api.get(`learning-paths/${id}/service-lines`) // como tirei o /api dos routes aqui fica api.get("/learning-paths/:id/service-lines") em vez de api.get("/api/learning-paths/:id/service-lines")
-      .then(res => setSls(res.data))
+    
+    setLoading(true);
+    
+    // Buscar service lines
+    api.get(`learning-paths/${id}/service-lines`)
+      .then(res => {
+        setSls(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+
+    // Buscar nome do learning path
+    api.get(`learning-paths`)
+      .then(res => {
+        const path = res.data.find(p => p.id === parseInt(id));
+        if (path) setPathName(path.name);
+      })
       .catch(err => console.error(err));
   }, [id]);
 
+  const getServiceLineIcon = (index) => {
+    const icons = [
+      // Cloud icon
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />,
+      // Code icon
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />,
+      // Users icon
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+    ];
+    return icons[index % icons.length];
+  };
+
+  const getGradientColor = (index) => {
+    const gradients = [
+      'from-blue-500 to-cyan-500',
+      'from-purple-500 to-pink-500',
+      'from-green-500 to-teal-500',
+      'from-orange-500 to-red-500'
+    ];
+    return gradients[index % gradients.length];
+  };
+
   return (
-    <div className="container">
-      <h2>Service Lines</h2>
-      <div className="grid">
-        {sls.map(sl => (
-          <div key={sl.id} className="card">
-            <h3>{sl.name}</h3>
-            <p>{sl.description}</p>
-            <Link className="btn-sm" to={`/service-lines/${sl.id}/areas`}>Ver Áreas</Link>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-[#191970] to-[#0f1b5b] text-white py-16 px-6 shadow-xl">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center mb-4">
+            <Link 
+              to="/learning-paths" 
+              className="text-blue-200 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Voltar aos Percursos
+            </Link>
           </div>
-        ))}
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+            Service Lines
+          </h1>
+          <p className="text-lg md:text-xl text-blue-100 max-w-3xl">
+            {pathName && `Percurso: ${pathName} - `}
+            Escolhe a linha de serviço que melhor se adequa aos teus objetivos profissionais.
+          </p>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#191970] mb-4"></div>
+            <p className="text-gray-600 text-lg">A carregar service lines...</p>
+          </div>
+        ) : sls.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {sls.map((sl, index) => (
+              <div 
+                key={sl.id} 
+                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-300"
+              >
+                {/* Card Header com gradiente e ícone */}
+                <div className={`h-48 bg-gradient-to-br ${getGradientColor(index)} relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                  
+                  {/* Ícone grande */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg className="w-24 h-24 text-white opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {getServiceLineIcon(index)}
+                    </svg>
+                  </div>
+                  
+                  {/* Badge com número */}
+                  <div className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-lg font-bold text-[#191970]">{index + 1}</span>
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-[#191970] mb-3 group-hover:text-blue-700 transition-colors">
+                    {sl.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-6 min-h-[60px]">
+                    {sl.description || "Linha de serviço especializada com áreas de competência técnica."}
+                  </p>
+
+                  {/* Action Button */}
+                  <Link
+                    to={`/service-lines/${sl.id}/areas`}
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#191970] text-white font-semibold hover:bg-[#101050] transition-all transform hover:-translate-y-0.5 shadow-md hover:shadow-lg group-hover:shadow-xl"
+                  >
+                    Ver Áreas →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <svg className="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <p className="text-gray-500 text-lg">Nenhuma service line disponível</p>
+          </div>
+        )}
       </div>
     </div>
   );
