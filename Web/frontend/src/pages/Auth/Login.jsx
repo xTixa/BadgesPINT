@@ -8,9 +8,30 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // 🔹 Lógica de autenticação virá depois
+
     console.log("Login:", email, password);
-    navigate("/"); // Redireciona após login
+
+    // 🚨 SIMULAÇÃO TEMPORÁRIA – depois liga ao backend!
+    const fakeUser = {
+      role: "consultor",     // 👉 muda aqui para testar: "admin", "tm", "sl"
+      firstLogin: false,     // 👉 se true → vai para /first-login
+    };
+
+    // 🔒 Primeiro login → mudar password
+    if (fakeUser.firstLogin) {
+      return navigate("/first-login");
+    }
+
+    // 🔀 Redirecionamento por role
+    const redirectMap = {
+      consultor: "/dashboard",
+      admin: "/admin/dashboard",
+      tm: "/tm/dashboard",
+      sl: "/sl/dashboard",
+    };
+
+    const destino = redirectMap[fakeUser.role] || "/";
+    navigate(destino);
   };
 
   return (
@@ -29,7 +50,7 @@ export default function Login() {
             “O conhecimento é a tua melhor credencial.”
           </p>
         </div>
-        {/* Efeito decorativo */}
+
         <svg
           className="absolute bottom-0 left-0 w-full opacity-10"
           xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +63,7 @@ export default function Login() {
         </svg>
       </div>
 
-      {/* 🔹 Secção direita - formulário branco */}
+      {/* 🔹 Secção direita - formulário */}
       <div className="flex-1 flex items-center justify-center bg-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#191970] to-blue-500"></div>
 
@@ -68,7 +89,8 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#191970] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 
+              focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all"
               placeholder="exemplo@dominio.com"
             />
           </div>
@@ -87,7 +109,8 @@ export default function Login() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#191970] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 
+              focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all"
               placeholder="••••••••"
             />
           </div>
@@ -95,17 +118,12 @@ export default function Login() {
           {/* Botão */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg font-semibold text-white bg-[#191970] hover:bg-[#101050] transition-colors shadow-md hover:shadow-lg"
+            className="w-full py-3 rounded-lg font-semibold text-white 
+            bg-[#191970] hover:bg-[#101050] transition-colors shadow-md hover:shadow-lg"
           >
             Entrar
           </button>
 
-          <p className="mt-6 text-center text-sm text-gray-500">
-            Não tens conta?{" "}
-            <span className="text-[#191970] font-medium hover:underline cursor-pointer">
-              Regista-te
-            </span>
-          </p>
         </form>
       </div>
     </div>
