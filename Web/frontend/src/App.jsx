@@ -10,6 +10,16 @@ import Requirements from "./pages/Requirements";
 import DashboardConsultor from "./pages/Consultor/DashboardConsultor";
 import DashboardTalentManager from "./pages/TalentManager/DashboardTalentManager";
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
+import PerfilConsultor from "./pages/Consultor/PerfilConsultor";
+import Ranking from "./pages/Consultor/Ranking";
+import HistoricoBadges from "./pages/Consultor/HistoricoBadges";
+import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
+import DashboardAdmin from "./pages/Admin/DashboardAdmin";
+import GestaoUtilizadores from "./pages/Admin/GestaoUtilizadores";
+import GestaoBadges from "./pages/Admin/GestaoBadges";
+import GestaoLearningPaths from "./pages/Admin/GestaoLearningPaths";
+import Configuracoes from "./pages/Admin/Configuracoes";
+import Avisos from "./pages/Admin/Avisos";
 
 export default function App() {
   return (
@@ -30,12 +40,24 @@ export default function App() {
 
             {/*  Consultor  */}
             <Route path="/dashboard" element={<DashboardConsultor />} />
+            <Route path="/consultor/perfil" element={<PerfilConsultor />} />
+            <Route path="/consultor/ranking" element={<Ranking />} />
+            <Route path="/consultor/historico" element={<HistoricoBadges />} />
+            <Route path="/consultor/upload" element={<UploadEvidencias />} />
 
             {/*  Talent Manager  */}
             <Route path="/tm/dashboard" element={<DashboardTalentManager />} />
 
             {/*  Service Line  */}
             <Route path="/sl/dashboard" element={<DashboardServiceLine />} />
+
+            {/*  Admin  */}
+            <Route path="/admin/dashboard" element={<DashboardAdmin />} />
+            <Route path="/admin/gestao-utilizadores" element={<GestaoUtilizadores />} />
+            <Route path="/admin/gestao-badges" element={<GestaoBadges />} />
+            <Route path="/admin/gestao-learning-paths" element={<GestaoLearningPaths />} />
+            <Route path="/admin/configuracoes" element={<Configuracoes />} />
+            <Route path="/admin/avisos" element={<Avisos />} />
           </Routes>
         </main>
 

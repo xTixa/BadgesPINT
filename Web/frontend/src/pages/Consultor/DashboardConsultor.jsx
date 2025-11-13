@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
+import SidebarConsultor from "../../components/SidebarConsultor";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -13,52 +14,9 @@ export default function DashboardConsultor() {
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+      
       {/* Sidebar */}
-      <aside
-        className="d-flex flex-column p-3 text-white position-fixed top-0 start-0"
-        style={{
-          width: "250px",
-          height: "100vh",
-          backgroundColor: "#191970",
-        }}
-      >
-        <div className="d-flex align-items-center mb-3 text-decoration-none">
-          <i className="bi bi-shield-fill-check fs-4 me-2 text-white"></i>
-          <span className="fs-5 fw-semibold">Badges</span>
-        </div>
-        <hr className="border-light opacity-25" />
-
-        <ul className="nav nav-pills flex-column mb-auto">
-          {[
-            { to: "/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
-            { to: "/consultor/historico", label: "Histórico", icon: "bi-clock-history" },
-            { to: "/consultor/upload", label: "Upload Evidências", icon: "bi-cloud-upload-fill" },
-            { to: "/consultor/ranking", label: "Ranking", icon: "bi-trophy-fill" },
-            { to: "/consultor/perfil", label: "Perfil", icon: "bi-person-fill" },
-          ].map(({ to, label, icon }) => (
-            <li className="nav-item" key={to}>
-              <NavLink
-                to={to}
-                end
-                className={({ isActive }) =>
-                  `nav-link d-flex align-items-center mb-2 rounded-3 ${
-                    isActive
-                      ? "bg-white text-dark fw-semibold"
-                      : "text-white-50 hover-bg-light"
-                  }`
-                }
-                style={{
-                  padding: "10px 14px",
-                  transition: "0.3s",
-                }}
-              >
-                <i className={`${icon} me-2 fs-5`}></i>
-                {label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </aside>
+      <SidebarConsultor />
 
       {/* Conteúdo */}
       <main
@@ -173,6 +131,7 @@ export default function DashboardConsultor() {
                 <small className="text-muted">Há 2 dias</small>
               </div>
             </div>
+
             <div className="list-group-item d-flex align-items-start">
               <i className="bi bi-hourglass-split text-warning fs-5 me-3"></i>
               <div>
