@@ -19,30 +19,90 @@ export default function SidebarAdmin() {
       <hr className="border-light opacity-25" />
 
       <ul className="nav nav-pills flex-column mb-auto">
-        {[
-          { to: "/admin/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
-          { to: "/admin/gestao-badges", label: "Gestão de Badges", icon: "bi-award-fill" },
-          { to: "/admin/gestao-learning-paths", label: "Gestão de Learning Paths", icon: "bi-diagram-3-fill" },
-          { to: "/admin/gestao-utilizadores", label: "Gestão de Utilizadores", icon: "bi-people-fill" },
-          { to: "/admin/configuracoes", label: "Configurações", icon: "bi-gear-fill" },
-          { to: "/admin/avisos", label: "Avisos", icon: "bi-megaphone-fill" },
-        ].map(({ to, label, icon }) => (
-          <li key={to} className="nav-item mb-1">
-            <NavLink
-              to={to}
-              end
-              className={({ isActive }) =>
-                `nav-link d-flex align-items-center rounded-3 px-3 py-2 ${
-                  isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
-                }`
-              }
-              style={{ transition: "0.3s" }}
-            >
-              <i className={`${icon} fs-5 me-2`}></i>
-              {label}
-            </NavLink>
-          </li>
-        ))}
+        <li className="nav-item mb-1">
+          <NavLink
+            to="/admin/dashboard"
+            end
+            className={({ isActive }) =>
+              `nav-link d-flex align-items-center rounded-3 px-3 py-2 ${
+                isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
+              }`
+            }
+          >
+            <i className="bi bi-speedometer2 fs-5 me-2"></i>
+            Dashboard
+          </NavLink>
+        </li>
+
+        <li className="nav-item mb-1">
+          <NavLink
+            to="/admin/gestao-badges"
+            className={({ isActive }) =>
+              `nav-link d-flex align-items-center rounded-3 px-3 py-2 ${
+                isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
+              }`
+            }
+          >
+            <i className="bi bi-award-fill fs-5 me-2"></i>
+            Gestão de Badges
+          </NavLink>
+        </li>
+
+        <li className="nav-item mb-1">
+          <NavLink
+            to="/admin/gestao-learning-paths"
+            className={({ isActive }) =>
+              `nav-link d-flex align-items-center rounded-3 px-3 py-2 ${
+                isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
+              }`
+            }
+          >
+            <i className="bi bi-diagram-3-fill fs-5 me-2"></i>
+            Gestão de Learning Paths
+          </NavLink>
+        </li>
+
+        <li className="nav-item mb-1">
+          <NavLink
+            to="/admin/gestao-utilizadores"
+            className={({ isActive }) =>
+              `nav-link d-flex align-items-center rounded-3 px-3 py-2 ${
+                isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
+              }`
+            }
+          >
+            <i className="bi bi-people-fill fs-5 me-2"></i>
+            Gestão de Utilizadores
+          </NavLink>
+        </li>
+
+        <li className="nav-item mb-1">
+          <NavLink
+            to="/admin/configuracoes"
+            className={({ isActive }) =>
+              `nav-link d-flex align-items-center rounded-3 px-3 py-2 ${
+                isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
+              }`
+            }
+          >
+            <i className="bi bi-gear-fill fs-5 me-2"></i>
+            Configurações
+          </NavLink>
+        </li>
+
+        <li className="nav-item mb-1">
+          <NavLink
+            to="/admin/avisos"
+            className={({ isActive }) =>
+              `nav-link d-flex align-items-center rounded-3 px-3 py-2 ${
+                isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
+              }`
+            }
+          >
+            <i className="bi bi-megaphone-fill fs-5 me-2"></i>
+            Avisos
+          </NavLink>
+        </li>
       </ul>
     </aside>
   );
