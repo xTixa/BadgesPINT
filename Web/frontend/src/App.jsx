@@ -20,6 +20,9 @@ import GestaoBadges from "./pages/Admin/GestaoBadges";
 import GestaoLearningPaths from "./pages/Admin/GestaoLearningPaths";
 import Configuracoes from "./pages/Admin/Configuracoes";
 import Avisos from "./pages/Admin/Avisos";
+import BadgeFormAdmin from "./pages/Admin/BadgeFormAdmin";
+import LearningPathFormAdmin from "./pages/Admin/LearningPathFormAdmin";
+
 
 export default function App() {
   return (
@@ -58,6 +61,9 @@ export default function App() {
             <Route path="/admin/gestao-learning-paths" element={<GestaoLearningPaths />} />
             <Route path="/admin/configuracoes" element={<Configuracoes />} />
             <Route path="/admin/avisos" element={<Avisos />} />
+            <Route path="/admin/badges/:id" element={<BadgeFormAdmin />} />
+            <Route path="/admin/learning-paths/novo" element={<LearningPathFormAdmin />} />
+            <Route path="/admin/learning-paths/:id" element={<LearningPathFormAdmin />} />
           </Routes>
         </main>
 
