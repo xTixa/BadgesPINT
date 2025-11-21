@@ -128,18 +128,30 @@ export default function Navbar() {
                   {/* Dropdown */}
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white text-[#191970] shadow-lg rounded-lg z-50">
-                      <Link to="/consultor/perfil"
-                        className="block px-4 py-2 hover:bg-gray-100">
-                        Perfil
+
+                      {/* PERFIL */}
+                      <Link to={
+                        user.role === "consultant" ? "/consultor/perfil" :
+                        user.role === "talent_manager" ? "/tm/dashboard" :
+                        user.role === "service_line_leader" ? "/sl/dashboard" :
+                        user.role === "admin" ? "/admin/dashboard" : "/"
+                      }
+                        className="block px-4 py-2 hover:bg-gray-100"
+                      >
+                        Dashboard
                       </Link>
-                      <Link to="/consultor/notificacoes"
-                        className="block px-4 py-2 hover:bg-gray-100">
+
+                      {/* NOTIFICAÇÕES */}
+                      <Link to="/notificacoes" className="block px-4 py-2 hover:bg-gray-100">
                         Notificações
                       </Link>
-                      <Link to="/consultor/configuracoes"
-                        className="block px-4 py-2 hover:bg-gray-100">
+
+                      {/* CONFIGURAÇÕES */}
+                      <Link to="/configuracoes" className="block px-4 py-2 hover:bg-gray-100">
                         Configurações
                       </Link>
+
+                      {/* LOGOUT */}
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"

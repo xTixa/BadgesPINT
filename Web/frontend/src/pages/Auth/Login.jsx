@@ -16,10 +16,16 @@ export default function Login() {
         password
       });
 
-      const { user } = res.data;
+      const { user, token, firstLogin } = res.data;
 
       // Guardar sessão
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+
+      /// Se for o primeiro login → mudar a password
+      if (firstLogin) {
+        return navigate("/first-login");
+      }
 
       // Redirecionar por role
       switch (user.role) {
