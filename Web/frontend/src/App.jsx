@@ -24,6 +24,10 @@ import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
 
 // Talent Manager
 import DashboardTalentManager from "./pages/TalentManager/DashboardTalentManager";
+import Equipa from "./pages/TalentManager/Equipa";
+import ValidarEvidencias from "./pages/TalentManager/ValidarEvidencias";
+import HistoricoValidacoes from "./pages/TalentManager/HistoricoValidacoes";
+import RelatoriosTalent from "./pages/TalentManager/RelatoriosTalent";
 
 // Service Line
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
@@ -79,6 +83,10 @@ function AppContent() {
 
           {/* Talent Manager */}
           <Route path="/tm/dashboard" element={<DashboardTalentManager />} />
+          <Route path="/tm/equipa" element={<Equipa />} />
+          <Route path="/tm/evidencias" element={<ValidarEvidencias />} />
+          <Route path="/tm/historico" element={<HistoricoValidacoes />} />
+          <Route path="/tm/relatorios" element={<RelatoriosTalent />} />
 
           {/* Service Line */}
           <Route path="/sl/dashboard" element={<DashboardServiceLine />} />
