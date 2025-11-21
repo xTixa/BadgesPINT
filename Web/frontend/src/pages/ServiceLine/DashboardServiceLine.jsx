@@ -8,6 +8,13 @@ export default function DashboardServiceLine() {
   const [sl, setSL] = useState(null);
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    // Carregar saudação guardada no login
+    const msg = localStorage.getItem("greeting");
+    if (msg) setGreeting(msg);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -46,9 +53,14 @@ export default function DashboardServiceLine() {
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
 
-        <div className="rounded-4 p-4 mb-4 shadow-sm"
-             style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">Olá, {sl.name.split(" ")[0]}</h3>
+        {/* Cabeçalho com saudação */}
+        <div
+          className="rounded-4 p-4 mb-4 shadow-sm"
+          style={{ backgroundColor: "#191970", color: "#fff" }}
+        >
+          <h3 className="fw-bold mb-1">
+            {greeting} {sl.name?.split(" ")[0]}!
+          </h3>
           <p className="mb-0">Estatísticas da tua Service Line.</p>
         </div>
 
@@ -85,9 +97,10 @@ export default function DashboardServiceLine() {
           <h5 className="fw-bold text-dark mb-2">Progresso Global</h5>
 
           <div className="progress" style={{ height: "8px" }}>
-            <div className="progress-bar"
-                 style={{ width: `${dados.progressoMedio}%`, backgroundColor: "#191970" }}>
-            </div>
+            <div
+              className="progress-bar"
+              style={{ width: `${dados.progressoMedio}%`, backgroundColor: "#191970" }}
+            ></div>
           </div>
 
           <p className="text-muted small mt-2">
