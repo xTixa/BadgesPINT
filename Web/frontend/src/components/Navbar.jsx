@@ -153,10 +153,10 @@ export default function Navbar() {
 
                       {/* LOGOUT */}
                       <button
-                        onClick={handleLogout}
+                        onClick={() => navigate("/logout")}
                         className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
                       >
-                        Terminar Sessão
+                        Logout
                       </button>
                     </div>
                   )}

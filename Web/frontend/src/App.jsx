@@ -6,6 +6,7 @@ import Login from "./pages/Auth/Login";
 import FirstLogin from "./pages/Auth/FirstLogin";
 import RecoverPassword from "./pages/Auth/RecoverPassword";
 import Register from "./pages/Auth/Register";
+import Logout from "./pages/Auth/Logout";
 
 // Public Pages
 import Home from "./pages/Home";
@@ -64,6 +65,7 @@ function AppContent() {
           <Route path="/first-login" element={<FirstLogin />} />
           <Route path="/recover" element={<RecoverPassword />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/logout" element={<Logout />} />
 
           {/* Public */}
           <Route path="/" element={<Home />} />
