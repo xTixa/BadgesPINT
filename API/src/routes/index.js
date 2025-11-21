@@ -10,6 +10,8 @@ import authRoutes from "./authRoutes.js";
 import consultorRoutes from "./consultorRoutes.js";
 import tmRoutes from "./talentManagerRoutes.js";
 import slRoutes from "./sLRoutes.js";
+import adminBadgeRoutes from "./adminBadgeRoutes.js";
+import adminRequirementRoutes from "./adminRequirementRoutes.js";
 
 const router = express.Router();
 
@@ -26,5 +28,8 @@ router.use("/api/auth", authRoutes);
 router.use("/api", consultorRoutes);
 router.use("/api/tm", tmRoutes);
 router.use("/api/sl", slRoutes);
+
+router.use("/api/admin/badges", adminBadgeRoutes);
+router.use("/api/admin/requirements", adminRequirementRoutes);
 
 export default router;
