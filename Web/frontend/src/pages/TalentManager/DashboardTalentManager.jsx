@@ -8,7 +8,15 @@ export default function DashboardTalentManager() {
   const [manager, setManager] = useState(null);
   const [metricas, setMetricas] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [greeting, setGreeting] = useState("");
 
+  // 1️⃣ Carregar saudação guardada no login
+  useEffect(() => {
+    const msg = localStorage.getItem("greeting");
+    if (msg) setGreeting(msg);
+  }, []);
+
+  // 2️⃣ Carregar dados da API
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -46,12 +54,18 @@ export default function DashboardTalentManager() {
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
 
-        <div className="rounded-4 p-4 mb-4 shadow-sm"
-             style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">Olá, {manager.name.split(" ")[0]}</h3>
+        {/* Saudação + Nome */}
+        <div
+          className="rounded-4 p-4 mb-4 shadow-sm"
+          style={{ backgroundColor: "#191970", color: "#fff" }}
+        >
+          <h3 className="fw-bold mb-1">
+            {greeting} {manager.name?.split(" ")[0]}!
+          </h3>
           <p className="mb-0">Aqui está a visão geral da tua equipa.</p>
         </div>
 
+        {/* Estatísticas */}
         <div className="row g-4 mb-4">
           <div className="col-md-4">
             <div className="card p-4 shadow-sm rounded-4 text-center">
