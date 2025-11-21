@@ -19,7 +19,7 @@ const User = database.define(
     area_id: { type: DataTypes.INTEGER, allowNull: true },
     points_total: { type: DataTypes.INTEGER, defaultValue: 0 },
   },
-  { tableName: "users", 
+  { tableName: "users",
     timestamps: true,
     underscored: true}
 );
