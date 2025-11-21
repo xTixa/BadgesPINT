@@ -6,6 +6,7 @@ import badge from "./BadgeRoutes.js";
 import reqs from "./RequirementRoutes.js";
 import userRoutes from "./userRoutes.js";
 import adminRoutes from "./adminRoutes.js";
+import authRoutes from "./authRoutes.js";
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ router.use("/", reqs);                    // GET /badges/:id/requirements
 
 router.use("/api/users", userRoutes);
 router.use("/api/admin", adminRoutes);
+router.use("/api/auth", authRoutes);
 
 
 export default router;

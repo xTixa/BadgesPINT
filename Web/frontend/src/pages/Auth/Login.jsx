@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,32 +7,42 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    console.log("Login:", email, password);
+    try {
+      const res = await axios.post("http://localhost:4000/api/auth/login", {
+        email,
+        password
+      });
 
-    // 🚨 SIMULAÇÃO TEMPORÁRIA – depois liga ao backend!
-    const fakeUser = {
-      role: "consultor",     // 👉 muda aqui para testar: "admin", "tm", "sl"
-      firstLogin: false,     // 👉 se true → vai para /first-login
-    };
+      const { user } = res.data;
 
-    // 🔒 Primeiro login → mudar password
-    if (fakeUser.firstLogin) {
-      return navigate("/first-login");
+      // Guardar sessão
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirecionar por role
+      switch (user.role) {
+        case "admin":
+          navigate("/admin/dashboard");
+          break;
+        case "talent_manager":
+          navigate("/tm/dashboard");
+          break;
+        case "service_line_leader":
+          navigate("/sl/dashboard");
+          break;
+        case "consultant":
+          navigate("/dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Credenciais inválidas");
     }
-
-    // 🔀 Redirecionamento por role
-    const redirectMap = {
-      consultor: "/dashboard",
-      admin: "/admin/dashboard",
-      tm: "/tm/dashboard",
-      sl: "/sl/dashboard",
-    };
-
-    const destino = redirectMap[fakeUser.role] || "/";
-    navigate(destino);
   };
 
   return (

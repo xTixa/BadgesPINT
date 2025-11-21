@@ -1,9 +1,32 @@
 import { useState, useEffect } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Carregar user do localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
+
+  // Logout
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/login");
+  };
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const close = () => setDropdownOpen(false);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -28,21 +51,18 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* 🌟 Logotipo minimalista com ícone novo */}
+            {/* 🔵 LOGO */}
             <Link
               to="/"
               className="flex items-center space-x-3 hover:opacity-90 transition-opacity"
             >
               <div className="bg-white/10 p-2 rounded-lg flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-6 w-6 text-white"
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                  fill="currentColor" className="h-6 w-6 text-white"
                 >
                   <path
                     fillRule="evenodd"
-                    d="M12 2a.75.75 0 01.36.09l7.5 4a.75.75 0 01.39.66v5.5c0 5.1-3.27 8.9-7.61 10.43a.75.75 0 01-.48 0C7.27 21.15 4 17.35 4 12.25V6.75a.75.75 0 01.39-.66l7.5-4A.75.75 0 0112 2zm0 3.1L6 7.61v4.64c0 4.04 2.61 7.31 6 8.68 3.39-1.37 6-4.64 6-8.68V7.61L12 5.1zm0 3.4a.75.75 0 01.67.42l1.35 2.73 3.01.44a.75.75 0 01.42 1.28l-2.18 2.12.52 3.02a.75.75 0 01-1.09.79L12 17.77l-2.7 1.42a.75.75 0 01-1.09-.79l.52-3.02-2.18-2.12a.75.75 0 01.42-1.28l3.01-.44 1.35-2.73A.75.75 0 0112 8.5z"
+                    d="M12 2a.75.75 0 01.36.09l7.5 4a.75.75 0 01.39.66v5.5c0 5.1-3.27 8.9-7.61 10.43a.75.75 0 01-.48 0C7.27 21.15 4 17.35 4 12.25V6.75a.75.75 0 01.39-.66l7.5-4A.75.75 0 0112 2z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -52,7 +72,7 @@ export default function Navbar() {
               </span>
             </Link>
 
-            {/* 🌟 Links desktop */}
+            {/* 🔵 LINKS DESKTOP */}
             <div className="hidden md:flex items-center space-x-6">
               <NavLink
                 to="/learning-paths"
@@ -82,88 +102,105 @@ export default function Navbar() {
               </NavLink>
             </div>
 
-            {/* 🌟 Botão de ação */}
+            {/* 🔵 BOTÃO OU USER DROPDOWN */}
             <div className="hidden md:flex items-center space-x-4">
-              <Link
-                to="/login"
-                className="px-5 py-2 rounded-lg bg-white text-[#191970] font-semibold text-sm hover:bg-blue-50 transition-colors"
-              >
-                Sign In
-              </Link>
+              {!user ? (
+                <Link
+                  to="/login"
+                  className="px-5 py-2 rounded-lg bg-white text-[#191970] font-semibold text-sm hover:bg-blue-50 transition-colors"
+                >
+                  Sign In
+                </Link>
+              ) : (
+                <div
+                  className="relative"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDropdownOpen(!dropdownOpen);
+                  }}
+                >
+                  {/* Avatar + Nome */}
+                  <button className="flex items-center gap-2 bg-white text-[#191970] px-3 py-2 rounded-lg font-semibold">
+                    <i className="bi bi-person-circle text-xl"></i>
+                    {user.name.split(" ")[0]}
+                  </button>
+
+                  {/* Dropdown */}
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white text-[#191970] shadow-lg rounded-lg z-50">
+                      <Link to="/consultor/perfil"
+                        className="block px-4 py-2 hover:bg-gray-100">
+                        Perfil
+                      </Link>
+                      <Link to="/consultor/notificacoes"
+                        className="block px-4 py-2 hover:bg-gray-100">
+                        Notificações
+                      </Link>
+                      <Link to="/consultor/configuracoes"
+                        className="block px-4 py-2 hover:bg-gray-100">
+                        Configurações
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                      >
+                        Terminar Sessão
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* 🌟 Botão Mobile */}
+            {/* 🔵 MOBILE BUTTON */}
             <button
               className="md:hidden p-2 rounded-lg hover:bg-white/10"
-              aria-label="Abrir menu"
               onClick={() => setOpen(!open)}
             >
               {open ? (
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <i className="bi bi-x-lg text-xl"></i>
               ) : (
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <i className="bi bi-list text-xl"></i>
               )}
             </button>
           </div>
         </div>
 
-        {/* 🌟 Menu Mobile */}
+        {/* 🔵 MOBILE MENU */}
         {open && (
-          <div className="md:hidden border-t border-white/10">
-            <div className="px-4 py-3 space-y-1">
-              {[
-                { to: "/learning-paths", label: "Learning Paths" },
-                { to: "/badges", label: "Badges" },
-                { to: "/areas", label: "Áreas" },
-              ].map(({ to, label }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  end
-                  onClick={() => setOpen(false)}
-                  className={({ isActive }) =>
-                    `${linkBase} block w-full ${
-                      isActive
-                        ? "text-white bg-white/10 rounded-md"
-                        : "text-white/80 hover:text-white"
-                    }`
-                  }
-                >
-                  {label}
-                </NavLink>
-              ))}
-
-              <button
+          <div className="md:hidden border-t border-white/10 px-4 py-3 space-y-1">
+            {[
+              { to: "/learning-paths", label: "Learning Paths" },
+              { to: "/badges", label: "Badges" },
+              { to: "/areas", label: "Áreas" },
+            ].map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
                 onClick={() => setOpen(false)}
-                className="block w-full px-3 py-2 rounded-md bg-white text-[#191970] text-sm font-semibold mt-2"
+                className="block px-3 py-2 rounded-md text-white/90 hover:bg-white/10"
+              >
+                {label}
+              </NavLink>
+            ))}
+
+            {/* Mobile login/logout */}
+            {!user ? (
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="block px-3 py-2 rounded-md bg-white text-[#191970] text-sm font-semibold mt-2"
               >
                 Sign In
+              </Link>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="block w-full px-3 py-2 rounded-md bg-white text-[#191970] text-sm font-semibold mt-2"
+              >
+                Terminar Sessão
               </button>
-            </div>
+            )}
           </div>
         )}
       </nav>
