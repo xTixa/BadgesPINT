@@ -12,18 +12,44 @@ export const login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(401).json({ message: "Password incorreta" });
 
-    // Se usar password temporária → obrigar first login
+    let greeting = "";
+    const now = new Date();
+
+    // Se for password temporária → Primeiro login
     if (password === "123456") {
+      greeting = "Bem-vindo!";
       const token = generateToken(user);
+
       return res.json({
         firstLogin: true,
         token,
-        user,
+        greeting,
+        user
       });
     }
 
+    // Verificar último login
+    if (!user.last_login) {
+      greeting = "Bem-vindo!";
+    } else {
+      const diffDays =
+        (now - new Date(user.last_login)) / (1000 * 60 * 60 * 24);
+
+      if (diffDays >= 15) {
+        greeting = "Seja bem-vindo novamente!";
+      } else {
+        const hour = now.getHours();
+        if (hour < 12) greeting = "Bom dia!";
+        else if (hour < 18) greeting = "Boa tarde!";
+        else greeting = "Boa noite!";
+      }
+    }
+
+    // Atualizar last_login
+    await user.update({ last_login: now });
+
     const token = generateToken(user);
-    return res.json({ token, user });
+    return res.json({ token, user, greeting });
 
   } catch (error) {
     console.error("Erro login:", error);

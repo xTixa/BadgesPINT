@@ -9,6 +9,12 @@ export default function DashboardConsultor() {
   const [user, setUser] = useState(null);
   const [badges, setBadges] = useState([]);
   const [progresso, setProgresso] = useState(0);
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const msg = localStorage.getItem("greeting");
+    if (msg) setGreeting(msg);
+  }, []);
 
   // Carregar user + badges ao entrar
   useEffect(() => {
@@ -61,7 +67,7 @@ export default function DashboardConsultor() {
         
         {/* Header */}
         <div className="rounded-4 p-4 mb-4 shadow-sm" style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">Olá, {user.name.split(" ")[0]}</h3>
+          <h3 className="fw-bold mb-1">{greeting} {user.name.split(" ")[0]}!</h3>
           <p className="mb-0 text-light opacity-75">Continua a tua jornada e conquista novos badges.</p>
         </div>
 
@@ -126,7 +132,7 @@ export default function DashboardConsultor() {
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-2">
                     <i className={`bi bi-patch-check-fill fs-4 me-2`} style={{ color: "#191970" }}></i>
-                    <h5 className="fw-semibold mb-0 text-dark">{b.nome}</h5>
+                    <h5 className="fw-semibold mb-0 text-dark">{b.name}</h5>
                   </div>
                   <p className={`fw-semibold ${b.status === "obtido" ? "text-success" : "text-warning"}`}>
                     {b.status}

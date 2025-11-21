@@ -1,151 +1,100 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import SidebarSL from "../../components/SidebarSL";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function DashboardServiceLine() {
-  const [sl] = useState({ nome: "Rui", consultores: 8 });
-  const [dados] = useState({
-    cursosAtivos: 4,
-    badgesPendentes: 5,
-    progressoMedio: 68,
-  });
+  const [sl, setSL] = useState(null);
+  const [dados, setDados] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    async function load() {
+      try {
+        const me = await axios.get(
+          "http://localhost:4000/api/sl/me",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const stats = await axios.get(
+          "http://localhost:4000/api/sl/estatisticas",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setSL(me.data);
+        setDados(stats.data);
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, []);
+
+  if (loading) return <div className="p-4">A carregar...</div>;
+  if (!sl) return <div className="p-4">Erro ao carregar dados.</div>;
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
-      {/* Sidebar */}
-      <aside
-        className="d-flex flex-column p-3 text-white position-fixed top-0 start-0"
-        style={{
-          width: "250px",
-          height: "100vh",
-          backgroundColor: "#191970",
-        }}
-      >
-        <div className="d-flex align-items-center mb-3">
-          <i className="bi bi-diagram-3-fill fs-4 me-2 text-white"></i>
-          <span className="fs-5 fw-semibold">Service Line</span>
-        </div>
-        <hr className="border-light opacity-25" />
+      <SidebarSL />
 
-        <ul className="nav nav-pills flex-column mb-auto">
-          {[
-            { to: "/sl/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
-            { to: "/sl/consultores", label: "Consultores", icon: "bi-person-badge-fill" },
-            { to: "/sl/badges", label: "Badges Ativos", icon: "bi-patch-exclamation-fill" },
-            { to: "/sl/estatisticas", label: "Estatísticas", icon: "bi-bar-chart-line" },
-          ].map(({ to, label, icon }) => (
-            <li className="nav-item" key={to}>
-              <NavLink
-                to={to}
-                end
-                className={({ isActive }) =>
-                  `nav-link d-flex align-items-center mb-2 rounded-3 ${
-                    isActive ? "bg-white text-dark fw-semibold" : "text-white-50"
-                  }`
-                }
-                style={{ padding: "10px 14px", transition: "0.3s" }}
-              >
-                <i className={`${icon} me-2 fs-5`}></i>
-                {label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </aside>
+      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
 
-      {/* Conteúdo */}
-      <main
-        className="flex-grow-1 p-4"
-        style={{ marginLeft: "250px", width: "calc(100% - 250px)" }}
-      >
-        {/* Header */}
-        <div className="rounded-4 p-4 mb-4 shadow-sm" style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">Olá, {sl.nome.split(" ")[0]}</h3>
-          <p className="mb-0 text-light opacity-75">
-            Acompanha o progresso e badges da tua Service Line.
-          </p>
+        <div className="rounded-4 p-4 mb-4 shadow-sm"
+             style={{ backgroundColor: "#191970", color: "#fff" }}>
+          <h3 className="fw-bold mb-1">Olá, {sl.name.split(" ")[0]}</h3>
+          <p className="mb-0">Estatísticas da tua Service Line.</p>
         </div>
 
-        {/* Estatísticas */}
         <div className="row g-4 mb-4">
+
           <div className="col-md-4">
-            <div className="card border-0 shadow-sm rounded-4">
-              <div className="card-body">
-                <div className="d-flex align-items-center mb-2">
-                  <i className="bi bi-people-fill fs-3 me-2 text-primary"></i>
-                  <h6 className="mb-0 text-secondary">Consultores Ativos</h6>
-                </div>
-                <h3 className="fw-bold">{sl.consultores}</h3>
-              </div>
+            <div className="card p-4 shadow-sm rounded-4 text-center">
+              <i className="bi bi-person-badge-fill fs-3 text-primary mb-2"></i>
+              <h3>{dados.totalConsultores}</h3>
+              <p className="text-muted">Consultores</p>
             </div>
           </div>
 
           <div className="col-md-4">
-            <div className="card border-0 shadow-sm rounded-4">
-              <div className="card-body">
-                <div className="d-flex align-items-center mb-2">
-                  <i className="bi bi-book-fill fs-3 me-2 text-info"></i>
-                  <h6 className="mb-0 text-secondary">Cursos Ativos</h6>
-                </div>
-                <h3 className="fw-bold">{dados.cursosAtivos}</h3>
-              </div>
+            <div className="card p-4 shadow-sm rounded-4 text-center">
+              <i className="bi bi-book-fill fs-3 text-info mb-2"></i>
+              <h3>{dados.cursosAtivos}</h3>
+              <p className="text-muted">Cursos Ativos</p>
             </div>
           </div>
 
           <div className="col-md-4">
-            <div className="card border-0 shadow-sm rounded-4">
-              <div className="card-body">
-                <div className="d-flex align-items-center mb-2">
-                  <i className="bi bi-patch-exclamation-fill fs-3 me-2 text-warning"></i>
-                  <h6 className="mb-0 text-secondary">Badges Pendentes</h6>
-                </div>
-                <h3 className="fw-bold">{dados.badgesPendentes}</h3>
-              </div>
+            <div className="card p-4 shadow-sm rounded-4 text-center">
+              <i className="bi bi-patch-exclamation-fill fs-3 text-warning mb-2"></i>
+              <h3>{dados.badgesPendentes}</h3>
+              <p className="text-muted">Badges Pendentes</p>
             </div>
           </div>
+
         </div>
 
         {/* Progresso Global */}
-        <div className="card border-0 shadow-sm rounded-4 mb-5">
-          <div className="card-body">
-            <h5 className="fw-bold text-dark mb-2">Progresso Global</h5>
-            <div className="progress" style={{ height: "8px" }}>
-              <div
-                className="progress-bar"
-                style={{ width: `${dados.progressoMedio}%`, backgroundColor: "#191970" }}
-              ></div>
+        <div className="card p-4 mb-4 shadow-sm rounded-4">
+          <h5 className="fw-bold text-dark mb-2">Progresso Global</h5>
+
+          <div className="progress" style={{ height: "8px" }}>
+            <div className="progress-bar"
+                 style={{ width: `${dados.progressoMedio}%`, backgroundColor: "#191970" }}>
             </div>
-            <p className="text-muted small mt-2">
-              Média de progresso entre todos os consultores da linha.
-            </p>
           </div>
+
+          <p className="text-muted small mt-2">
+            Progresso médio de todos os consultores.
+          </p>
         </div>
 
-        {/* Últimas Atividades */}
-        <h4 className="fw-bold text-dark mb-3">Últimas Atividades</h4>
-        <div className="card border-0 shadow-sm rounded-4">
-          <div className="list-group list-group-flush">
-            <div className="list-group-item d-flex align-items-start">
-              <i className="bi bi-award-fill text-success fs-5 me-3"></i>
-              <div>
-                <p className="mb-1 text-dark">
-                  Novo badge <strong>“Cloud Developer”</strong> atribuído.
-                </p>
-                <small className="text-muted">Há 4 dias</small>
-              </div>
-            </div>
-            <div className="list-group-item d-flex align-items-start">
-              <i className="bi bi-hourglass-split text-warning fs-5 me-3"></i>
-              <div>
-                <p className="mb-1 text-dark">
-                  <strong>2 consultores</strong> com badges pendentes de revisão.
-                </p>
-                <small className="text-muted">Há 1 dia</small>
-              </div>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );

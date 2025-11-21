@@ -7,6 +7,9 @@ import reqs from "./RequirementRoutes.js";
 import userRoutes from "./userRoutes.js";
 import adminRoutes from "./adminRoutes.js";
 import authRoutes from "./authRoutes.js";
+import consultorRoutes from "./consultorRoutes.js";
+import tmRoutes from "./talentManagerRoutes.js";
+import slRoutes from "./sLRoutes.js";
 
 const router = express.Router();
 
@@ -20,5 +23,8 @@ router.use("/api/users", userRoutes);
 router.use("/api/admin", adminRoutes);
 router.use("/api/auth", authRoutes);
 
+router.use("/api", consultorRoutes);
+router.use("/api/tm", tmRoutes);
+router.use("/api/sl", slRoutes);
 
 export default router;

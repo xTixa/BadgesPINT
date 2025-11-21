@@ -16,13 +16,18 @@ export default function Login() {
         password
       });
 
-      const { user, token, firstLogin } = res.data;
+      const { user, token, greeting, firstLogin } = res.data;
 
       // Guardar sessão
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
 
-      /// Se for o primeiro login → mudar a password
+      // Guardar saudação
+      if (greeting) {
+        localStorage.setItem("greeting", greeting);
+      }
+
+      // Se for primeiro login → vai mudar password
       if (firstLogin) {
         return navigate("/first-login");
       }
@@ -53,7 +58,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* 🔹 Secção esquerda - fundo azul e mensagem */}
+      {/* ESQUERDA */}
       <div className="relative flex-1 flex flex-col justify-center px-8 py-12 bg-[#191970] text-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#191970] via-[#0f1b5b] to-[#000428] opacity-95"></div>
         <div className="relative z-10 max-w-md mx-auto text-center md:text-left">
@@ -80,7 +85,7 @@ export default function Login() {
         </svg>
       </div>
 
-      {/* 🔹 Secção direita - formulário */}
+      {/* FORMULÁRIO */}
       <div className="flex-1 flex items-center justify-center bg-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#191970] to-blue-500"></div>
 
@@ -92,16 +97,12 @@ export default function Login() {
             Iniciar Sessão
           </h2>
 
-          {/* Email */}
+          {/* EMAIL */}
           <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Email
             </label>
             <input
-              id="email"
               type="email"
               required
               value={email}
@@ -112,16 +113,12 @@ export default function Login() {
             />
           </div>
 
-          {/* Password */}
+          {/* PASSWORD */}
           <div className="mb-8">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
             <input
-              id="password"
               type="password"
               required
               value={password}
@@ -132,7 +129,7 @@ export default function Login() {
             />
           </div>
 
-          {/* Botão */}
+          {/* BOTÃO */}
           <button
             type="submit"
             className="w-full py-3 rounded-lg font-semibold text-white 
@@ -140,7 +137,6 @@ export default function Login() {
           >
             Entrar
           </button>
-
         </form>
       </div>
     </div>

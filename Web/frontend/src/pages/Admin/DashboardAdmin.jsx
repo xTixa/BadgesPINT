@@ -15,8 +15,15 @@ export default function DashboardAdmin() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await axios.get("http://localhost:4000/api/admin/stats");
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(
+          "http://localhost:4000/api/admin/stats",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
         setStats(res.data);
+
       } catch (err) {
         console.error("Erro a carregar estatísticas do admin:", err);
       } finally {
@@ -39,11 +46,12 @@ export default function DashboardAdmin() {
 
         {loading ? (
           <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status"></div>
+            <div className="spinner-border text-primary"></div>
             <p className="mt-3 text-muted">A carregar dados...</p>
           </div>
         ) : (
           <div className="row g-4">
+
             <div className="col-md-4">
               <div className="card shadow-sm border-0 rounded-4 p-4 text-center">
                 <i className="bi bi-award-fill fs-2 text-primary mb-2"></i>
@@ -67,6 +75,7 @@ export default function DashboardAdmin() {
                 <p className="text-muted mb-0">Learning Paths</p>
               </div>
             </div>
+
           </div>
         )}
       </main>
