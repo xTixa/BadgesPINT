@@ -129,6 +129,17 @@ export default function Login() {
             />
           </div>
 
+          {/* LINK PARA RECUPERAR PASSWORD */}
+          <div className="text-right mb-6">
+            <button
+              type="button"
+              onClick={() => navigate("/recover")}
+              className="text-sm text-[#191970] hover:underline font-medium"
+            >
+              Esqueceste-te da password?
+            </button>
+          </div>
+
           {/* BOTÃO */}
           <button
             type="submit"

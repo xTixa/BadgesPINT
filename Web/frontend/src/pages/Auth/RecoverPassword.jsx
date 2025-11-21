@@ -1,13 +1,35 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function RecoverPassword() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [tempPassword, setTempPassword] = useState("");
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    setSent(true);
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:4000/api/auth/recover-password",
+        { email }
+      );
+
+      setTempPassword(res.data.temporaryPassword);
+      setSent(true);
+
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Erro ao enviar instruções."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,6 +60,12 @@ export default function RecoverPassword() {
 
           {!sent ? (
             <>
+              {error && (
+                <p className="text-red-600 font-medium mb-4 text-center">
+                  {error}
+                </p>
+              )}
+
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email
@@ -55,10 +83,11 @@ export default function RecoverPassword() {
 
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full py-3 rounded-lg font-semibold text-white 
                 bg-[#191970] hover:bg-[#101050] transition-colors"
               >
-                Enviar Instruções
+                {loading ? "A enviar..." : "Enviar Instruções"}
               </button>
             </>
           ) : (
@@ -66,6 +95,12 @@ export default function RecoverPassword() {
               <p className="text-green-600 font-medium mb-6">
                 Instruções enviadas com sucesso!
               </p>
+
+              {/* MOSTRAR PASSWORD TEMPORÁRIA */}
+              <p className="text-sm text-gray-800 mb-3">
+                Nova password temporária:
+              </p>
+              <p className="font-bold text-lg mb-4">{tempPassword}</p>
 
               <Link
                 to="/login"
