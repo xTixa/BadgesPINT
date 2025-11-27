@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import SidebarConsultor from "../../components/SidebarConsultor";
+import Sidebar from "../../components/sidebar/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -61,7 +61,7 @@ export default function DashboardConsultor() {
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
       
-      <SidebarConsultor />
+      <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
         

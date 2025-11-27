@@ -1,6 +1,6 @@
-import SidebarAdmin from "../../components/SidebarAdmin";
+import { useState } from "react";
+import Sidebar from "../../components/sidebar/sidebar";
 import { Link } from "react-router-dom";
-
 
 export default function GestaoLearningPaths() {
   const lista = [
@@ -10,7 +10,7 @@ export default function GestaoLearningPaths() {
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
-      <SidebarAdmin />
+      <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
         <div className="d-flex justify-content-between align-items-center mb-4">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import SidebarAdmin from "../../components/SidebarAdmin";
+import Sidebar from "../../components/sidebar/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -55,7 +55,7 @@ export default function LearningPathFormAdmin() {
 
   return (
     <div className="d-flex" style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
-      <SidebarAdmin />
+      <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
         <h3 className="fw-bold text-dark mb-4">

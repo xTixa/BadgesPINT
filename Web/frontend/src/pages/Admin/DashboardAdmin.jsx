@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import SidebarAdmin from "../../components/SidebarAdmin";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import Sidebar from "../../components/sidebar/sidebar";
 
 export default function DashboardAdmin() {
   const [stats, setStats] = useState({
@@ -36,7 +36,7 @@ export default function DashboardAdmin() {
 
   return (
     <div className="d-flex" style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
-      <SidebarAdmin />
+      <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
         <h2 className="fw-bold text-dark mb-4">

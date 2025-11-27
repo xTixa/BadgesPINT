@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SidebarConsultor from "../../components/SidebarConsultor";
+import Sidebar from "../../components/sidebar/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -26,7 +26,7 @@ export default function PerfilConsultor() {
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
       
       {/* Sidebar */}
-      <SidebarConsultor />
+      <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
       {/* Conteúdo */}
       <main

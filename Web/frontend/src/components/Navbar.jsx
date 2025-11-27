@@ -147,7 +147,15 @@ export default function Navbar() {
                       </Link>
 
                       {/* CONFIGURAÇÕES */}
-                      <Link to="/configuracoes" className="block px-4 py-2 hover:bg-gray-100">
+                      <Link
+                        to={
+                          user.role === "consultant" ? "/consultor/settings" :
+                          user.role === "talent_manager" ? "/tm/settings" :
+                          user.role === "service_line_leader" ? "/sl/settings" :
+                          user.role === "admin" ? "/admin/configuracoes" : "/"
+                        }
+                        className="block px-4 py-2 hover:bg-gray-100"
+                      >
                         Configurações
                       </Link>
 

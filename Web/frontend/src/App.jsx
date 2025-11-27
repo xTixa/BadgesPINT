@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Sidebar from "./components/sidebar/sidebar";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";
 
@@ -24,6 +25,7 @@ import PerfilConsultor from "./pages/Consultor/PerfilConsultor";
 import Ranking from "./pages/Consultor/Ranking";
 import HistoricoBadges from "./pages/Consultor/HistoricoBadges";
 import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
+import ConsultorSettingsPage from "./pages/Consultor/Settings";
 
 // Talent Manager
 import DashboardTalentManager from "./pages/TalentManager/DashboardTalentManager";
@@ -31,9 +33,11 @@ import Equipa from "./pages/TalentManager/Equipa";
 import ValidarEvidencias from "./pages/TalentManager/ValidarEvidencias";
 import HistoricoValidacoes from "./pages/TalentManager/HistoricoValidacoes";
 import RelatoriosTalent from "./pages/TalentManager/RelatoriosTalent";
+import TalentManagerSettingsPage from "./pages/TalentManager/SettingsTM";
 
 // Service Line
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
+import ServiceLineSettingsPage from "./pages/ServiceLine/SettingsSL";
 
 // Admin
 import DashboardAdmin from "./pages/Admin/DashboardAdmin";
@@ -52,14 +56,19 @@ function AppContent() {
 
   const noLayoutRoutes = ["/login", "/first-login", "/recover", "/register"];
   const hideLayout = noLayoutRoutes.includes(location.pathname);
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
 
       {/* 🔹 Navbar só quando permitido */}
       {!hideLayout && <Navbar />}
+      {!hideLayout && user && <Sidebar user={user} />}
 
-      <main className={`flex-1 ${hideLayout ? "p-0" : "container mx-auto px-4 py-8"}`}>
+      <main
+        className={`flex-1 ${hideLayout ? "p-0" : "container mx-auto px-4 py-8"}`}
+        style={{ marginLeft: user && !hideLayout ? "250px" : "0" }}
+      >
         <Routes>
 
           {/* Auth */}
@@ -84,6 +93,7 @@ function AppContent() {
           <Route path="/consultor/ranking" element={<Ranking />} />
           <Route path="/consultor/historico" element={<HistoricoBadges />} />
           <Route path="/consultor/upload" element={<UploadEvidencias />} />
+          <Route path="/consultor/settings" element={<ConsultorSettingsPage />} />
 
           {/* Talent Manager */}
           <Route path="/tm/dashboard" element={<DashboardTalentManager />} />
@@ -91,9 +101,11 @@ function AppContent() {
           <Route path="/tm/evidencias" element={<ValidarEvidencias />} />
           <Route path="/tm/historico" element={<HistoricoValidacoes />} />
           <Route path="/tm/relatorios" element={<RelatoriosTalent />} />
+          <Route path="/tm/settings" element={<TalentManagerSettingsPage />} />
 
           {/* Service Line */}
           <Route path="/sl/dashboard" element={<DashboardServiceLine />} />
+          <Route path="/sl/settings" element={<ServiceLineSettingsPage />} />
 
           {/* Admin */}
           <Route path="/admin/dashboard" element={<DashboardAdmin />} />

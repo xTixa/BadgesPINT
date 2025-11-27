@@ -1,4 +1,4 @@
-import SidebarConsultor from "../../components/SidebarConsultor";
+import Sidebar from "../../components/sidebar/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useState } from "react";
@@ -8,7 +8,7 @@ export default function UploadEvidencias() {
 
   return (
     <div className="d-flex" style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
-      <SidebarConsultor />
+      <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
         <h3 className="fw-bold text-dark mb-4">

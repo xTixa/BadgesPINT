@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import SidebarTM from "../../components/SidebarTM";
+import Sidebar from "../../components/sidebar/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -50,7 +50,7 @@ export default function DashboardTalentManager() {
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
-      <SidebarTM />
+      <Sidebar user={{ role: "talentManager", name: "Talent Manager" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import SidebarSL from "../../components/SidebarSL";
+import Sidebar from "../../components/sidebar/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -49,7 +49,7 @@ export default function DashboardServiceLine() {
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
-      <SidebarSL />
+      <Sidebar user={{ role: "serviceLine", name: "Service Line" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
 

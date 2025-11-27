@@ -1,92 +1,113 @@
 import React, { useState } from "react";
-import SidebarAdmin from "../../components/SidebarAdmin";
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
 import textos from "../../utils/textos";
+import Sidebar from "../../components/sidebar/sidebar";
 
 export default function Configuracoes() {
-  const { darkMode, setDarkMode } = useTheme();
-  const { language, setLanguage } = useLanguage();
-  const [notificacoesAtivas, setNotificacoesAtivas] = React.useState(true);
-
-  // Estilos dinâmicos do modo escuro
-  const tema = {
-    backgroundColor: darkMode ? "#212529" : "#f4f6f8",
-    color: darkMode ? "#fff" : "#212529",
-    minHeight: "100vh",
-    transition: "all 0.3s"
-  };
-
   return (
-    <div className="d-flex" style={tema}>
-      <SidebarAdmin />
+    <div className="settings-page">
+        <Sidebar user={{ role: "admin", name: "Admin" }} />
+      <h1>Definições do Administrador</h1>
+      {/* Conta e segurança */}
+      <section>
+        <h2>Conta e segurança</h2>
+        <label>
+          Nova password
+          <input type="password" />
+        </label>
+        <button>Alterar password</button>
+        <button>Terminar sessões em todos os dispositivos</button>
+      </section>
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <h3 className="fw-bold mb-4" style={{ color: tema.color }}>
-          <i className="bi bi-gear-fill me-2 text-primary"></i>
-          {textos[language].titulo}
-        </h3>
+      {/* Utilizadores e perfis */}
+      <section>
+        <h2>Utilizadores e perfis</h2>
+        <button>Criar utilizador</button>
+        {/* Aqui podes listar utilizadores e permitir editar perfil, service line, área, etc. */}
+      </section>
 
-        <div
-          className="card border-0 shadow-sm rounded-4 p-4"
-          style={{
-            backgroundColor: darkMode ? "#343a40" : "#fff",
-            color: darkMode ? "#fff" : "#212529"
-          }}
-        >
-          <p className="text-muted">{textos[language].descricao}</p>
+      {/* Learning Paths e Badges */}
+      <section>
+        <h2>Learning Paths e Badges</h2>
+        <button>Novo Learning Path</button>
+        <button>Nova Service Line</button>
+        <button>Nova Área</button>
+        <button>Novo Nível</button>
+        <button>Novo Requisito (A1...An)</button>
+        {/* Lista de LPs/Badges com botões editar/remover */}
+      </section>
 
-          {/* Modo Escuro */}
-          <div className="form-check form-switch my-3">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="modoEscuro"
-              checked={darkMode}
-              onChange={(e) => setDarkMode(e.target.checked)}
-            />
-            <label className="form-check-label" htmlFor="modoEscuro">
-              {textos[language].modoEscuro}
-            </label>
-          </div>
+      {/* Pontos e expiração */}
+      <section>
+        <h2>Gamification e expiração</h2>
+        <label>
+          Pontos por badge (default)
+          <input type="number" />
+        </label>
+        <label>
+          Badge pode expirar?
+          <input type="checkbox" />
+        </label>
+        <label>
+          SLA padrão (dias para validação)
+          <input type="number" />
+        </label>
+      </section>
 
-          {/* Idioma */}
-          <div className="mb-3">
-            <label htmlFor="idiomaSelect" className="form-label">
-              {textos[language].idioma}
-            </label>
-            <select
-              className="form-select"
-              id="idiomaSelect"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-            >
-              <option value="PT">Português</option>
-              <option value="EN">English</option>
-              <option value="ES">Español</option>
-            </select>
-          </div>
+      {/* Notificações */}
+      <section>
+        <h2>Notificações</h2>
+        <label>
+          Notificações por email
+          <input type="checkbox" />
+        </label>
+        <label>
+          Notificações push
+          <input type="checkbox" />
+        </label>
+        <label>
+          Integração Teams/Slack
+          <input type="checkbox" />
+        </label>
+        {/* Botão para editar templates de email numa modal, por ex. */}
+        <button>Configurar templates de email</button>
+      </section>
 
-          {/* Notificações */}
-          <div className="form-check form-switch my-3">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="notificacoes"
-              checked={notificacoesAtivas}
-              onChange={(e) => setNotificacoesAtivas(e.target.checked)}
-            />
-            <label className="form-check-label" htmlFor="notificacoes">
-              {textos[language].notificacoes}
-            </label>
-          </div>
+      {/* RGPD */}
+      <section>
+        <h2>RGPD e privacidade</h2>
+        <label>
+          Texto dos termos RGPD
+          <textarea rows={4} />
+        </label>
+        <label>
+          Permitir galeria pública de badges
+          <input type="checkbox" />
+        </label>
+      </section>
 
-          <button className="btn btn-outline-primary mt-2">
-            <i className="bi bi-arrow-repeat me-2"></i>
-            {textos[language].recarregar}
-          </button>
-        </div>
-      </main>
+      {/* Internacionalização e UI */}
+      <section>
+        <h2>Interface e idioma</h2>
+        <label>
+          Idioma por defeito
+          <select>
+            <option value="pt">Português</option>
+            <option value="en">Inglês</option>
+            <option value="es">Espanhol</option>
+          </select>
+        </label>
+        <label>
+          Tema
+          <select>
+            <option value="light">Claro</option>
+            <option value="dark">Escuro</option>
+          </select>
+        </label>
+      </section>
+
+      <button>Guardar alterações</button>
     </div>
   );
 }

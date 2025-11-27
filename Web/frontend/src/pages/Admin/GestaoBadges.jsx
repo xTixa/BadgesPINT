@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import SidebarAdmin from "../../components/SidebarAdmin";
+import Sidebar from "../../components/sidebar/sidebar";
 
 export default function GestaoBadges() {
   const [badges, setBadges] = useState([]);
@@ -51,7 +51,7 @@ export default function GestaoBadges() {
       className="d-flex"
       style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}
     >
-      <SidebarAdmin />
+      <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
         <div className="d-flex justify-content-between align-items-center mb-4">
