@@ -53,8 +53,21 @@ export async function adminCreateBadge(req, res) {
 // 📌 ATUALIZAR BADGE
 export async function adminUpdateBadge(req, res) {
   try {
-    await Badge.update(req.body, { where: { id: req.params.id } });
-    res.json({ message: "Badge atualizado com sucesso" });
+    const badge = await Badge.findByPk(req.params.id);
+    if (!badge) {
+      return res.status(404).json({ message: "Badge não encontrado" });
+    }
+
+    await badge.update(req.body);
+    
+    const updated = await Badge.findByPk(req.params.id, {
+      include: [
+        { model: Area, as: "area", attributes: ["id", "name"] },
+        { model: Requirement, as: "requirements" }
+      ]
+    });
+
+    res.json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao atualizar badge" });

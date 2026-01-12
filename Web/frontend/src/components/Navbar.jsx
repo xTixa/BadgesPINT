@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
+import "./navbar-responsive.css";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -34,31 +35,45 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const linkBase =
-    "relative px-3 py-2 text-sm font-medium transition-all duration-200";
-  const linkActive =
-    "text-white after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-white";
-  const linkInactive =
-    "text-white/80 hover:text-white after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all hover:after:w-full";
-
   return (
     <header
-      className={`sticky top-0 z-40 backdrop-blur-sm ${
-        scrolled ? "shadow-md shadow-black/20" : ""
-      }`}
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 999,
+        backdropFilter: "blur(8px)",
+        boxShadow: scrolled ? "0 2px 8px rgba(44, 62, 90, 0.15)" : "none",
+        transition: "box-shadow 0.3s"
+      }}
     >
-      <nav className="bg-[#191970] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <nav style={{ backgroundColor: "#2c3e5a", color: "white" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "64px" }}>
             
             {/* 🔵 LOGO */}
             <Link
               to="/"
-              className="flex items-center space-x-3 hover:opacity-90 transition-opacity"
+              style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "0.75rem", 
+                textDecoration: "none", 
+                color: "white",
+                transition: "opacity 0.2s" 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
             >
-              <div className="bg-white/10 p-2 rounded-lg flex items-center justify-center">
+              <div style={{ 
+                backgroundColor: "rgba(255,255,255,0.1)", 
+                padding: "0.5rem", 
+                borderRadius: "0.5rem", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center" 
+              }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                  fill="currentColor" className="h-6 w-6 text-white"
+                  fill="currentColor" style={{ height: "1.5rem", width: "1.5rem", color: "white" }}
                 >
                   <path
                     fillRule="evenodd"
@@ -67,67 +82,138 @@ export default function Navbar() {
                   />
                 </svg>
               </div>
-              <span className="font-semibold text-lg tracking-tight">
+              <span style={{ fontWeight: "600", fontSize: "1.125rem", letterSpacing: "-0.025em" }}>
                 Badges
               </span>
             </Link>
 
             {/* 🔵 LINKS DESKTOP */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div style={{ display: "none", alignItems: "center", gap: "1.5rem" }} className="md-flex">
               <NavLink
                 to="/learning-paths"
-                className={({ isActive }) =>
-                  `${linkBase} ${isActive ? linkActive : linkInactive}`
-                }
+                style={({ isActive }) => ({
+                  position: "relative",
+                  padding: "0.5rem 0.75rem",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  textDecoration: "none",
+                  color: isActive ? "white" : "rgba(255,255,255,0.8)",
+                  transition: "color 0.2s",
+                  borderBottom: isActive ? "2px solid white" : "2px solid transparent"
+                })}
+                onMouseEnter={(e) => e.currentTarget.style.color = "white"}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                  }
+                }}
               >
                 Learning Paths
               </NavLink>
 
               <NavLink
                 to="/badges"
-                className={({ isActive }) =>
-                  `${linkBase} ${isActive ? linkActive : linkInactive}`
-                }
+                style={({ isActive }) => ({
+                  position: "relative",
+                  padding: "0.5rem 0.75rem",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  textDecoration: "none",
+                  color: isActive ? "white" : "rgba(255,255,255,0.8)",
+                  transition: "color 0.2s",
+                  borderBottom: isActive ? "2px solid white" : "2px solid transparent"
+                })}
+                onMouseEnter={(e) => e.currentTarget.style.color = "white"}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                  }
+                }}
               >
                 Badges
               </NavLink>
 
               <NavLink
                 to="/areas"
-                className={({ isActive }) =>
-                  `${linkBase} ${isActive ? linkActive : linkInactive}`
-                }
+                style={({ isActive }) => ({
+                  position: "relative",
+                  padding: "0.5rem 0.75rem",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  textDecoration: "none",
+                  color: isActive ? "white" : "rgba(255,255,255,0.8)",
+                  transition: "color 0.2s",
+                  borderBottom: isActive ? "2px solid white" : "2px solid transparent"
+                })}
+                onMouseEnter={(e) => e.currentTarget.style.color = "white"}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                  }
+                }}
               >
                 Áreas
               </NavLink>
             </div>
 
             {/* 🔵 BOTÃO OU USER DROPDOWN */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div style={{ display: "none", alignItems: "center", gap: "1rem" }} className="md-flex">
               {!user ? (
                 <Link
                   to="/login"
-                  className="px-5 py-2 rounded-lg bg-white text-[#191970] font-semibold text-sm hover:bg-blue-50 transition-colors"
+                  style={{
+                    padding: "0.5rem 1.25rem",
+                    borderRadius: "0.5rem",
+                    backgroundColor: "white",
+                    color: "#2c3e5a",
+                    fontWeight: "600",
+                    fontSize: "0.875rem",
+                    textDecoration: "none",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e8eef5"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
                 >
                   Sign In
                 </Link>
               ) : (
                 <div
-                  className="relative"
+                  style={{ position: "relative" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setDropdownOpen(!dropdownOpen);
                   }}
                 >
                   {/* Avatar + Nome */}
-                  <button className="flex items-center gap-2 bg-white text-[#191970] px-3 py-2 rounded-lg font-semibold">
-                    <i className="bi bi-person-circle text-xl"></i>
+                  <button style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    backgroundColor: "white",
+                    color: "#2c3e5a",
+                    padding: "0.5rem 0.75rem",
+                    borderRadius: "0.5rem",
+                    fontWeight: "600",
+                    border: "none",
+                    cursor: "pointer"
+                  }}>
+                    <i className="bi bi-person-circle" style={{ fontSize: "1.25rem" }}></i>
                     {user.name.split(" ")[0]}
                   </button>
 
                   {/* Dropdown */}
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white text-[#191970] shadow-lg rounded-lg z-50">
+                    <div style={{
+                      position: "absolute",
+                      right: 0,
+                      marginTop: "0.5rem",
+                      width: "12rem",
+                      backgroundColor: "white",
+                      color: "#2c3e5a",
+                      boxShadow: "0 4px 12px rgba(44, 62, 90, 0.15)",
+                      borderRadius: "0.5rem",
+                      zIndex: 1000
+                    }}>
 
                       {/* PERFIL */}
                       <Link to={
@@ -136,13 +222,31 @@ export default function Navbar() {
                         user.role === "service_line_leader" ? "/sl/dashboard" :
                         user.role === "admin" ? "/admin/dashboard" : "/"
                       }
-                        className="block px-4 py-2 hover:bg-gray-100"
+                        style={{
+                          display: "block",
+                          padding: "0.5rem 1rem",
+                          textDecoration: "none",
+                          color: "#2c3e5a",
+                          transition: "background-color 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                       >
                         Dashboard
                       </Link>
 
                       {/* NOTIFICAÇÕES */}
-                      <Link to="/notificacoes" className="block px-4 py-2 hover:bg-gray-100">
+                      <Link to="/notificacoes" 
+                        style={{
+                          display: "block",
+                          padding: "0.5rem 1rem",
+                          textDecoration: "none",
+                          color: "#2c3e5a",
+                          transition: "background-color 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
                         Notificações
                       </Link>
 
@@ -154,7 +258,15 @@ export default function Navbar() {
                           user.role === "service_line_leader" ? "/sl/settings" :
                           user.role === "admin" ? "/admin/configuracoes" : "/"
                         }
-                        className="block px-4 py-2 hover:bg-gray-100"
+                        style={{
+                          display: "block",
+                          padding: "0.5rem 1rem",
+                          textDecoration: "none",
+                          color: "#2c3e5a",
+                          transition: "background-color 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                       >
                         Configurações
                       </Link>
@@ -162,7 +274,18 @@ export default function Navbar() {
                       {/* LOGOUT */}
                       <button
                         onClick={() => navigate("/logout")}
-                        className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                        style={{
+                          width: "100%",
+                          textAlign: "left",
+                          padding: "0.5rem 1rem",
+                          color: "#ef4444",
+                          border: "none",
+                          background: "none",
+                          cursor: "pointer",
+                          transition: "background-color 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                       >
                         Logout
                       </button>
@@ -174,13 +297,25 @@ export default function Navbar() {
 
             {/* 🔵 MOBILE BUTTON */}
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-white/10"
+              style={{
+                display: "block",
+                padding: "0.5rem",
+                borderRadius: "0.5rem",
+                border: "none",
+                background: "none",
+                color: "white",
+                cursor: "pointer",
+                transition: "background-color 0.2s"
+              }}
+              className="md-hide"
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               onClick={() => setOpen(!open)}
             >
               {open ? (
-                <i className="bi bi-x-lg text-xl"></i>
+                <i className="bi bi-x-lg" style={{ fontSize: "1.25rem" }}></i>
               ) : (
-                <i className="bi bi-list text-xl"></i>
+                <i className="bi bi-list" style={{ fontSize: "1.25rem" }}></i>
               )}
             </button>
           </div>
@@ -188,7 +323,10 @@ export default function Navbar() {
 
         {/* 🔵 MOBILE MENU */}
         {open && (
-          <div className="md:hidden border-t border-white/10 px-4 py-3 space-y-1">
+          <div style={{ 
+            borderTop: "1px solid rgba(255,255,255,0.1)", 
+            padding: "0.75rem 1rem" 
+          }} className="md-hide">
             {[
               { to: "/learning-paths", label: "Learning Paths" },
               { to: "/badges", label: "Badges" },
@@ -198,7 +336,17 @@ export default function Navbar() {
                 key={to}
                 to={to}
                 onClick={() => setOpen(false)}
-                className="block px-3 py-2 rounded-md text-white/90 hover:bg-white/10"
+                style={{
+                  display: "block",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "0.375rem",
+                  color: "rgba(255,255,255,0.9)",
+                  textDecoration: "none",
+                  marginBottom: "0.25rem",
+                  transition: "background-color 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               >
                 {label}
               </NavLink>
@@ -209,14 +357,37 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="block px-3 py-2 rounded-md bg-white text-[#191970] text-sm font-semibold mt-2"
+                style={{
+                  display: "block",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "0.375rem",
+                  backgroundColor: "white",
+                  color: "#2c3e5a",
+                  fontSize: "0.875rem",
+                  fontWeight: "600",
+                  marginTop: "0.5rem",
+                  textDecoration: "none",
+                  textAlign: "center"
+                }}
               >
                 Sign In
               </Link>
             ) : (
               <button
                 onClick={handleLogout}
-                className="block w-full px-3 py-2 rounded-md bg-white text-[#191970] text-sm font-semibold mt-2"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "0.375rem",
+                  backgroundColor: "white",
+                  color: "#2c3e5a",
+                  fontSize: "0.875rem",
+                  fontWeight: "600",
+                  marginTop: "0.5rem",
+                  border: "none",
+                  cursor: "pointer"
+                }}
               >
                 Terminar Sessão
               </button>

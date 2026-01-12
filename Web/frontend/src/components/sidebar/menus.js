@@ -44,9 +44,12 @@ export const sidebarMenus = {
     icon: "bi-shield-lock-fill",
     items: [
       { to: "/admin/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
+      { to: "/admin/gestao-pedidos-badges", label: "Pedidos de Badges", icon: "bi-inbox" },
       { to: "/admin/gestao-badges", label: "Gestão de Badges", icon: "bi-award-fill" },
       { to: "/admin/gestao-learning-paths", label: "Learning Paths", icon: "bi-diagram-3-fill" },
+      { to: "/admin/gestao-sla", label: "SLA", icon: "bi-hourglass-split" },
       { to: "/admin/gestao-utilizadores", label: "Utilizadores", icon: "bi-people-fill" },
+      { to: "/admin/exportacao", label: "Exportar Dados", icon: "bi-file-earmark-arrow-down" },
     ],
     footer: [
       { to: "/admin/configuracoes", label: "Configurações", icon: "bi-gear-fill" },

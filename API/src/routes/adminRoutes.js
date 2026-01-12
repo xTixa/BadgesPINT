@@ -3,6 +3,7 @@ import {
   getAdminStats,
   getAllUsers,
   createUser,
+  updateUser,
   deleteUser
 } from "../controllers/adminController.js";
 
@@ -19,6 +20,7 @@ router.get("/stats", getAdminStats);
 // Gestão de utilizadores
 router.get("/users", getAllUsers);
 router.post("/users", createUser);
+router.put("/users/:id", updateUser);
 router.delete("/users/:id", deleteUser);
 
 export default router;

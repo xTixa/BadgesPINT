@@ -1,98 +1,147 @@
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
 import { sidebarMenus } from "./menus";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "./sidebar.css";
+import { useSidebar } from "../../context/SidebarContext";
 
 export default function Sidebar({ user }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, setCollapsed } = useSidebar();
 
   if (!user) return null;
 
   const menu = sidebarMenus[user?.role];
 
-    if (!menu) {
+  if (!menu) {
     console.error("Role inválido ou menu não encontrado:", user?.role);
     return null; 
-    }
+  }
 
   return (
     <aside
-      className={`fixed top-16 left-0 h-[calc(100vh-64px)] bg-[#191970] text-white shadow-xl transition-all duration-300
-      ${collapsed ? "w-[80px]" : "w-[250px]"}`}
+      className={`sidebar-container ${collapsed ? 'collapsed' : ''}`}
+      style={{
+        width: collapsed ? "80px" : "250px",
+      }}
     >
       {/* HEADER */}
-      <div className="flex items-center justify-between px-4 py-4">
-        <div className="flex items-center gap-2">
-          <i className={`${menu.icon} text-2xl`}></i>
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "space-between", 
+        padding: "1rem",
+        borderBottom: "1px solid rgba(255,255,255,0.1)"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <i className={`${menu.icon}`} style={{ fontSize: "1.5rem" }}></i>
           {!collapsed && (
-            <span className="text-lg font-semibold">{menu.title}</span>
+            <span style={{ fontSize: "1.1rem", fontWeight: "600" }}>{menu.title}</span>
           )}
         </div>
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="text-white opacity-80 hover:opacity-100 transition"
+          style={{
+            background: "none",
+            border: "none",
+            color: "white",
+            opacity: 0.8,
+            cursor: "pointer",
+            transition: "opacity 0.2s"
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = "1"}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = "0.8"}
         >
           {collapsed ? (
-            <i className="bi bi-arrow-bar-right text-xl"></i>
+            <i className="bi bi-arrow-bar-right" style={{ fontSize: "1.2rem" }}></i>
           ) : (
-            <i className="bi bi-arrow-bar-left text-xl"></i>
+            <i className="bi bi-arrow-bar-left" style={{ fontSize: "1.2rem" }}></i>
           )}
         </button>
       </div>
 
-      <hr className="border-white/20" />
-
       {/* USER INFO */}
       {!collapsed && (
-        <div className="px-4 py-3 text-white/70">
-          <div className="font-semibold">{user.name}</div>
-          <div className="capitalize text-sm">{user.role}</div>
+        <div style={{ padding: "1rem", color: "rgba(255,255,255,0.7)", fontSize: "0.9rem" }}>
+          <div style={{ fontWeight: "600" }}>{user.name}</div>
+          <div style={{ textTransform: "capitalize", fontSize: "0.85rem" }}>{user.role}</div>
         </div>
       )}
 
       {/* MAIN MENU */}
-      <ul className="mt-4 space-y-1">
-        {menu.items.map(({ to, label, icon }) => (
-          <li key={to}>
-            <NavLink
-              to={to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 transition rounded-md
-                ${isActive ? "bg-white text-[#191970]" : "text-white/80 hover:bg-white/10"}`
-              }
-            >
-              <i className={`${icon} text-xl`}></i>
-              {!collapsed && <span>{label}</span>}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
+      <nav style={{ flex: 1, overflowY: "auto", padding: "0.5rem" }}>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {menu.items.map(({ to, label, icon }) => (
+            <li key={to} style={{ marginBottom: "0.25rem" }}>
+              <NavLink
+                to={to}
+                style={({ isActive }) => ({
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                  padding: "0.75rem 1rem",
+                  textDecoration: "none",
+                  color: isActive ? "#2c3e5a" : "rgba(255,255,255,0.8)",
+                  backgroundColor: isActive ? "#ffffff" : "transparent",
+                  borderRadius: "0.5rem",
+                  transition: "all 0.2s",
+                })}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
+              >
+                <i className={icon} style={{ fontSize: "1.2rem" }}></i>
+                {!collapsed && <span>{label}</span>}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       {/* FOOTER MENU */}
-      <div className="absolute bottom-0 w-full px-2 pb-4">
-        {menu.footer.length > 0 && (
-          <>
-            <hr className="border-white/20 mb-3" />
-            <ul className="space-y-1">
-              {menu.footer.map(({ to, label, icon }) => (
-                <li key={to}>
-                  <NavLink
-                    to={to}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-3 transition rounded-md
-                      ${isActive ? "bg-white text-[#191970]" : "text-white/80 hover:bg-white/10"}`
+      {menu.footer.length > 0 && (
+        <div style={{ padding: "0.5rem", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {menu.footer.map(({ to, label, icon }) => (
+              <li key={to} style={{ marginBottom: "0.25rem" }}>
+                <NavLink
+                  to={to}
+                  style={({ isActive }) => ({
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.75rem 1rem",
+                    textDecoration: "none",
+                    color: isActive ? "#2c3e5a" : "rgba(255,255,255,0.8)",
+                    backgroundColor: isActive ? "#ffffff" : "transparent",
+                    borderRadius: "0.5rem",
+                    transition: "all 0.2s",
+                  })}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.classList.contains('active')) {
+                      e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
                     }
-                  >
-                    <i className={`${icon} text-xl`}></i>
-                    {!collapsed && <span>{label}</span>}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.classList.contains('active')) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }
+                  }}
+                >
+                  <i className={icon} style={{ fontSize: "1.2rem" }}></i>
+                  {!collapsed && <span>{label}</span>}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </aside>
   );
 }

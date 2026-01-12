@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/sidebar/sidebar";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";
+import { SidebarProvider, useSidebar } from "./context/SidebarContext";
 
 // Auth Pages
 import Login from "./pages/Auth/Login";
@@ -44,30 +45,49 @@ import DashboardAdmin from "./pages/Admin/DashboardAdmin";
 import GestaoUtilizadores from "./pages/Admin/GestaoUtilizadores";
 import GestaoBadges from "./pages/Admin/GestaoBadges";
 import GestaoLearningPaths from "./pages/Admin/GestaoLearningPaths";
+import GestaoPedidosBadges from "./pages/Admin/GestaoPedidosBadges";
+import GestaoSLA from "./pages/Admin/GestaoSLA";
 import Configuracoes from "./pages/Admin/Configuracoes";
 import Avisos from "./pages/Admin/Avisos";
 import BadgeFormAdmin from "./pages/Admin/BadgeFormAdmin";
 import LearningPathFormAdmin from "./pages/Admin/LearningPathFormAdmin";
+import ExportacaoAdmin from "./pages/Admin/ExportacaoAdmin";
 
 
 // ⭐ COMPONENTE INTERNO PARA PERMITIR useLocation()
 function AppContent() {
   const location = useLocation();
+  const { collapsed } = useSidebar();
 
   const noLayoutRoutes = ["/login", "/first-login", "/recover", "/register"];
   const hideLayout = noLayoutRoutes.includes(location.pathname);
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
+  const sidebarWidth = collapsed ? "80px" : "250px";
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div style={{ 
+      minHeight: "100vh", 
+      display: "flex", 
+      flexDirection: "column", 
+      backgroundColor: "#f8f9fa" 
+    }}>
 
       {/* 🔹 Navbar só quando permitido */}
       {!hideLayout && <Navbar />}
       {!hideLayout && user && <Sidebar user={user} />}
 
       <main
-        className={`flex-1 ${hideLayout ? "p-0" : "container mx-auto px-4 py-8"}`}
-        style={{ marginLeft: user && !hideLayout ? "250px" : "0" }}
+        style={{ 
+          flex: 1,
+          padding: hideLayout ? "0" : "2rem 1rem",
+          marginLeft: user && !hideLayout ? sidebarWidth : "0",
+          marginTop: !hideLayout ? "64px" : "0",
+          minHeight: "calc(100vh - 64px)",
+          display: "flex",
+          flexDirection: "column",
+          transition: "margin-left 0.3s ease"
+        }}
       >
         <Routes>
 
@@ -110,44 +130,105 @@ function AppContent() {
           {/* Admin */}
           <Route path="/admin/dashboard" element={<DashboardAdmin />} />
           <Route path="/admin/gestao-utilizadores" element={<GestaoUtilizadores />} />
+          <Route path="/admin/gestao-pedidos-badges" element={<GestaoPedidosBadges />} />
           <Route path="/admin/gestao-badges" element={<GestaoBadges />} />
+          <Route path="/admin/gestao-sla" element={<GestaoSLA />} />
           <Route path="/admin/gestao-learning-paths" element={<GestaoLearningPaths />} />
           <Route path="/admin/configuracoes" element={<Configuracoes />} />
           <Route path="/admin/avisos" element={<Avisos />} />
           <Route path="/admin/badges/:id" element={<BadgeFormAdmin />} />
           <Route path="/admin/learning-paths/novo" element={<LearningPathFormAdmin />} />
           <Route path="/admin/learning-paths/:id" element={<LearningPathFormAdmin />} />
+          <Route path="/admin/exportacao" element={<ExportacaoAdmin />} />
 
         </Routes>
       </main>
 
       {/* 🔹 Footer só quando permitido */}
       {!hideLayout && (
-        <footer className="bg-gray-800 text-gray-300 mt-auto">
-          <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <footer style={{ 
+          backgroundColor: "#2c3e5a", 
+          color: "#b8c5d6", 
+          marginTop: "auto",
+          marginLeft: user ? sidebarWidth : "0",
+          position: "relative",
+          zIndex: 1000,
+          transition: "margin-left 0.3s ease"
+        }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem 1rem" }}>
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", 
+              gap: "2rem" 
+            }}>
               <div>
-                <h3 className="text-lg font-semibold mb-4">About Badges PINT</h3>
-                <p className="text-sm text-gray-400">
+                <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "1rem", color: "white" }}>
+                  About Badges PINT
+                </h3>
+                <p style={{ fontSize: "0.875rem", color: "#8b9aae" }}>
                   Empowering professionals through recognized achievements and skill certifications.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><a href="/learning-paths" className="hover:text-white transition-colors">Learning Paths</a></li>
-                  <li><a href="/badges" className="hover:text-white transition-colors">All Badges</a></li>
-                  <li><a href="/areas" className="hover:text-white transition-colors">Areas</a></li>
+                <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "1rem", color: "white" }}>
+                  Quick Links
+                </h3>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: "0.5rem" }}>
+                    <a href="/learning-paths" style={{ 
+                      color: "#8b9aae", 
+                      textDecoration: "none", 
+                      fontSize: "0.875rem",
+                      transition: "color 0.2s" 
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "white"}
+                    onMouseLeave={(e) => e.currentTarget.style.color = "#8b9aae"}>
+                      Learning Paths
+                    </a>
+                  </li>
+                  <li style={{ marginBottom: "0.5rem" }}>
+                    <a href="/badges" style={{ 
+                      color: "#8b9aae", 
+                      textDecoration: "none", 
+                      fontSize: "0.875rem",
+                      transition: "color 0.2s" 
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "white"}
+                    onMouseLeave={(e) => e.currentTarget.style.color = "#8b9aae"}>
+                      All Badges
+                    </a>
+                  </li>
+                  <li style={{ marginBottom: "0.5rem" }}>
+                    <a href="/areas" style={{ 
+                      color: "#8b9aae", 
+                      textDecoration: "none", 
+                      fontSize: "0.875rem",
+                      transition: "color 0.2s" 
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "white"}
+                    onMouseLeave={(e) => e.currentTarget.style.color = "#8b9aae"}>
+                      Areas
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-4">Contact</h3>
-                <p className="text-sm text-gray-400">
+                <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "1rem", color: "white" }}>
+                  Contact
+                </h3>
+                <p style={{ fontSize: "0.875rem", color: "#8b9aae" }}>
                   Have questions? Reach out to us at support@badgespint.com
                 </p>
               </div>
             </div>
-            <div className="border-t border-gray-700 mt-8 pt-8 text-sm text-center text-gray-400">
+            <div style={{ 
+              borderTop: "1px solid rgba(255,255,255,0.1)", 
+              marginTop: "2rem", 
+              paddingTop: "2rem", 
+              fontSize: "0.875rem", 
+              textAlign: "center", 
+              color: "#8b9aae" 
+            }}>
               © {new Date().getFullYear()} Badges PINT. All rights reserved.
             </div>
           </div>
@@ -164,9 +245,11 @@ export default function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <SidebarProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </SidebarProvider>
       </LanguageProvider>
     </ThemeProvider>
   );
