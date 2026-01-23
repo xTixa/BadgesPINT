@@ -1,4 +1,5 @@
-import express from "express";
+import { Router } from "express";
+
 import lp from "./LearningPathRoutes.js";
 import sl from "./ServiceLineRoutes.js";
 import area from "./AreaRoutes.js";
@@ -12,8 +13,11 @@ import tmRoutes from "./talentManagerRoutes.js";
 import slRoutes from "./sLRoutes.js";
 import adminBadgeRoutes from "./adminBadgeRoutes.js";
 import adminRequirementRoutes from "./adminRequirementRoutes.js";
+import auditLogRoutes from "./auditLogRoutes.js";
+import ticketRoutes from "./ticketRoutes.js";
+import notificationRoutes from "./notificationRoutes.js";
 
-const router = express.Router();
+const router = Router();
 
 router.use("/learning-paths", lp);        // GET /learning-paths
 router.use("/learning-paths", sl);        // GET /learning-paths/:id/service-lines
@@ -31,5 +35,8 @@ router.use("/api/sl", slRoutes);
 
 router.use("/api/admin/badges", adminBadgeRoutes);
 router.use("/api/admin/requirements", adminRequirementRoutes);
+router.use("/api/audit-logs", auditLogRoutes);
+router.use("/api/tickets", ticketRoutes);
+router.use("/api/notifications", notificationRoutes);
 
 export default router;

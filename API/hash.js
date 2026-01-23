@@ -2,7 +2,7 @@
 
 import bcrypt from "bcryptjs";
 
-const password = "Password123"; //  a password que usar para os utilizadores
+const password = "123456"; //  a password que usar para os utilizadores
 
 const salt = bcrypt.genSaltSync(10);
 const hash = bcrypt.hashSync(password, salt);

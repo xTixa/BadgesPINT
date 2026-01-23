@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
+import NotificationCenter from "./NotificationCenter";
 import "./navbar-responsive.css";
 
 export default function Navbar() {
@@ -46,7 +47,7 @@ export default function Navbar() {
         transition: "box-shadow 0.3s"
       }}
     >
-      <nav style={{ backgroundColor: "#2c3e5a", color: "white" }}>
+      <nav style={{ backgroundColor: "#244080", color: "white" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "64px" }}>
             
@@ -165,7 +166,7 @@ export default function Navbar() {
                     padding: "0.5rem 1.25rem",
                     borderRadius: "0.5rem",
                     backgroundColor: "white",
-                    color: "#2c3e5a",
+                    color: "#244080",
                     fontWeight: "600",
                     fontSize: "0.875rem",
                     textDecoration: "none",
@@ -177,20 +178,24 @@ export default function Navbar() {
                   Sign In
                 </Link>
               ) : (
-                <div
-                  style={{ position: "relative" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDropdownOpen(!dropdownOpen);
-                  }}
-                >
+                <>
+                  {/* Notificações */}
+                  <NotificationCenter />
+                  
+                  <div
+                    style={{ position: "relative" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDropdownOpen(!dropdownOpen);
+                    }}
+                  >
                   {/* Avatar + Nome */}
                   <button style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "0.5rem",
                     backgroundColor: "white",
-                    color: "#2c3e5a",
+                    color: "#244080",
                     padding: "0.5rem 0.75rem",
                     borderRadius: "0.5rem",
                     fontWeight: "600",
@@ -209,7 +214,7 @@ export default function Navbar() {
                       marginTop: "0.5rem",
                       width: "12rem",
                       backgroundColor: "white",
-                      color: "#2c3e5a",
+                      color: "#244080",
                       boxShadow: "0 4px 12px rgba(44, 62, 90, 0.15)",
                       borderRadius: "0.5rem",
                       zIndex: 1000
@@ -226,7 +231,7 @@ export default function Navbar() {
                           display: "block",
                           padding: "0.5rem 1rem",
                           textDecoration: "none",
-                          color: "#2c3e5a",
+                          color: "#244080",
                           transition: "background-color 0.2s"
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
@@ -241,7 +246,7 @@ export default function Navbar() {
                           display: "block",
                           padding: "0.5rem 1rem",
                           textDecoration: "none",
-                          color: "#2c3e5a",
+                          color: "#244080",
                           transition: "background-color 0.2s"
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
@@ -262,7 +267,7 @@ export default function Navbar() {
                           display: "block",
                           padding: "0.5rem 1rem",
                           textDecoration: "none",
-                          color: "#2c3e5a",
+                          color: "#244080",
                           transition: "background-color 0.2s"
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f3f4f6"}
@@ -291,7 +296,8 @@ export default function Navbar() {
                       </button>
                     </div>
                   )}
-                </div>
+                  </div>
+                </>
               )}
             </div>
 
@@ -362,7 +368,7 @@ export default function Navbar() {
                   padding: "0.5rem 0.75rem",
                   borderRadius: "0.375rem",
                   backgroundColor: "white",
-                  color: "#2c3e5a",
+                  color: "#244080",
                   fontSize: "0.875rem",
                   fontWeight: "600",
                   marginTop: "0.5rem",
@@ -381,7 +387,7 @@ export default function Navbar() {
                   padding: "0.5rem 0.75rem",
                   borderRadius: "0.375rem",
                   backgroundColor: "white",
-                  color: "#2c3e5a",
+                  color: "#244080",
                   fontSize: "0.875rem",
                   fontWeight: "600",
                   marginTop: "0.5rem",

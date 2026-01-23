@@ -23,6 +23,7 @@ import Requirements from "./pages/Requirements";
 // Consultant
 import DashboardConsultor from "./pages/Consultor/DashboardConsultor";
 import PerfilConsultor from "./pages/Consultor/PerfilConsultor";
+import EditarPerfil from "./pages/Consultor/EditarPerfil";
 import Ranking from "./pages/Consultor/Ranking";
 import HistoricoBadges from "./pages/Consultor/HistoricoBadges";
 import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
@@ -52,6 +53,11 @@ import Avisos from "./pages/Admin/Avisos";
 import BadgeFormAdmin from "./pages/Admin/BadgeFormAdmin";
 import LearningPathFormAdmin from "./pages/Admin/LearningPathFormAdmin";
 import ExportacaoAdmin from "./pages/Admin/ExportacaoAdmin";
+import VerLogsAuditoria from "./pages/Admin/VerLogsAuditoria";
+import CriarTicket from "./pages/CriarTicket";
+import MeusTickets from "./pages/MeusTickets";
+import GestaoTickets from "./pages/Admin/GestaoTickets";
+import NotificacoesPage from "./pages/NotificacoesPage";
 
 
 // ⭐ COMPONENTE INTERNO PARA PERMITIR useLocation()
@@ -109,6 +115,8 @@ function AppContent() {
 
           {/* Consultor */}
           <Route path="/dashboard" element={<DashboardConsultor />} />
+          <Route path="/perfil" element={<PerfilConsultor />} />
+          <Route path="/editar-perfil" element={<EditarPerfil />} />
           <Route path="/consultor/perfil" element={<PerfilConsultor />} />
           <Route path="/consultor/ranking" element={<Ranking />} />
           <Route path="/consultor/historico" element={<HistoricoBadges />} />
@@ -140,6 +148,13 @@ function AppContent() {
           <Route path="/admin/learning-paths/novo" element={<LearningPathFormAdmin />} />
           <Route path="/admin/learning-paths/:id" element={<LearningPathFormAdmin />} />
           <Route path="/admin/exportacao" element={<ExportacaoAdmin />} />
+          <Route path="/admin/logs" element={<VerLogsAuditoria />} />
+          <Route path="/admin/gestao-tickets" element={<GestaoTickets />} />
+
+          {/* Tickets */}
+          <Route path="/criar-ticket" element={<CriarTicket />} />
+          <Route path="/meus-tickets" element={<MeusTickets />} />
+          <Route path="/notificacoes" element={<NotificacoesPage />} />
 
         </Routes>
       </main>
@@ -147,7 +162,7 @@ function AppContent() {
       {/* 🔹 Footer só quando permitido */}
       {!hideLayout && (
         <footer style={{ 
-          backgroundColor: "#2c3e5a", 
+          backgroundColor: "#244080", 
           color: "#b8c5d6", 
           marginTop: "auto",
           marginLeft: user ? sidebarWidth : "0",

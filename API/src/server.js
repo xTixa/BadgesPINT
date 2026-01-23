@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import database from "./config/database.js";
 import routes from "./routes/index.js";
+import * as models from "./models/index.js";
 
 //import { LearningPath } from "./models/index.js";
 
@@ -27,12 +28,3 @@ database.sync()
     });
   })
   .catch((err) => console.error("Erro ao sincronizar DB:", err));
-
-/*
-GET http://localhost:4000/
-GET http://localhost:4000/learning-paths                    -> lista learning paths
-GET http://localhost:4000/learning-paths/:id/service-lines
-GET http://localhost:4000/service-lines/:id/areas
-GET http://localhost:4000/areas/:id/badges
-GET http://localhost:4000/badges/:id/requirements
-*/

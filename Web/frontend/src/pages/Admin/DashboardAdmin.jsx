@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { useWindowSize } from "../../hooks/useWindowSize";
 import Sidebar from "../../components/sidebar/sidebar";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
@@ -11,6 +12,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 
 export default function DashboardAdmin() {
   const navigate = useNavigate();
+  const { isMobile, isTablet } = useWindowSize();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalBadges: 0,
@@ -114,11 +116,19 @@ export default function DashboardAdmin() {
     <div style={{ display: "flex", backgroundColor: "#e8eef5", minHeight: "100vh" }}>
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main style={{ flex: 1, padding: "2rem" }}>
+      <main style={{ flex: 1, padding: isMobile ? "1rem" : isTablet ? "1.5rem" : "2rem" }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-          <h2 style={{ fontWeight: "700", color: "#2c3e5a", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <h2 style={{ 
+            fontWeight: "700", 
+            color: "#244080", 
+            marginBottom: "2rem", 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "0.5rem",
+            fontSize: isMobile ? "1.5rem" : isTablet ? "2rem" : "2.25rem"
+          }}>
             <i className="bi bi-speedometer2" style={{ color: "#5a7a9a" }}></i>
-            Dashboard do Administrador
+            {isMobile ? "Dashboard" : "Dashboard do Administrador"}
           </h2>
 
           {loading ? (
@@ -129,72 +139,72 @@ export default function DashboardAdmin() {
           ) : (
             <>
               {/* Cards de Estatísticas */}
-              <div className="row g-4 mb-4">
-                <div className="col-md-4">
+              <div className="row g-3 mb-4">
+                <div className="col-12 col-sm-6 col-md-4">
                   <div style={{ 
                     backgroundColor: "white",
                     borderRadius: "16px",
-                    padding: "1.5rem",
+                    padding: isMobile ? "1rem" : "1.5rem",
                     textAlign: "center",
                     boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
                     border: "1px solid #d4dfe9"
                   }}>
-                    <i className="bi bi-award-fill" style={{ fontSize: "2.5rem", color: "#6b8cae", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#2c3e5a", marginBottom: "0.25rem" }}>{stats.totalBadges}</h4>
-                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: "0.9rem" }}>Badges Ativos</p>
+                    <i className="bi bi-award-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#6b8cae", marginBottom: "0.5rem" }}></i>
+                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{stats.totalBadges}</h4>
+                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Badges Ativos</p>
                   </div>
                 </div>
 
-                <div className="col-md-4">
+                <div className="col-12 col-sm-6 col-md-4">
                   <div style={{ 
                     backgroundColor: "white",
                     borderRadius: "16px",
-                    padding: "1.5rem",
+                    padding: isMobile ? "1rem" : "1.5rem",
                     textAlign: "center",
                     boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
                     border: "1px solid #d4dfe9"
                   }}>
-                    <i className="bi bi-people-fill" style={{ fontSize: "2.5rem", color: "#5a7a9a", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#2c3e5a", marginBottom: "0.25rem" }}>{stats.totalUsers}</h4>
-                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: "0.9rem" }}>Utilizadores Registados</p>
+                    <i className="bi bi-people-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#5a7a9a", marginBottom: "0.5rem" }}></i>
+                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{stats.totalUsers}</h4>
+                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Utilizadores Registados</p>
                   </div>
                 </div>
 
-                <div className="col-md-4">
+                <div className="col-12 col-sm-6 col-md-4">
                   <div style={{ 
                     backgroundColor: "white",
                     borderRadius: "16px",
-                    padding: "1.5rem",
+                    padding: isMobile ? "1rem" : "1.5rem",
                     textAlign: "center",
                     boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
                     border: "1px solid #d4dfe9"
                   }}>
-                    <i className="bi bi-diagram-3-fill" style={{ fontSize: "2.5rem", color: "#8ba4be", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#2c3e5a", marginBottom: "0.25rem" }}>{stats.totalLearningPaths}</h4>
-                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: "0.9rem" }}>Learning Paths</p>
+                    <i className="bi bi-diagram-3-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#8ba4be", marginBottom: "0.5rem" }}></i>
+                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{stats.totalLearningPaths}</h4>
+                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Learning Paths</p>
                   </div>
                 </div>
               </div>
 
               {/* Atalhos Rápidos */}
               <div style={{ marginBottom: "2rem" }}>
-                <h5 style={{ fontWeight: "600", color: "#2c3e5a", marginBottom: "1rem" }}>Atalhos Rápidos</h5>
-                <div className="row g-3">
+                <h5 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "1rem" : "1.1rem" }}>Atalhos Rápidos</h5>
+                <div className="row g-2">
                   {shortcuts.map((shortcut, index) => (
-                    <div key={index} className="col-md-3">
+                    <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3">
                       <div
                         onClick={() => navigate(shortcut.route)}
                         style={{
                           backgroundColor: "white",
                           borderRadius: "12px",
-                          padding: "1.25rem",
+                          padding: isMobile ? "1rem" : "1.25rem",
                           cursor: "pointer",
                           transition: "all 0.2s",
                           boxShadow: "0 2px 6px rgba(44, 62, 90, 0.06)",
                           border: "1px solid #d4dfe9",
                           display: "flex",
                           alignItems: "center",
-                          gap: "1rem"
+                          gap: isMobile ? "0.75rem" : "1rem"
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = "translateY(-2px)";
@@ -206,21 +216,22 @@ export default function DashboardAdmin() {
                         }}
                       >
                         <div style={{
-                          width: "48px",
-                          height: "48px",
+                          width: isMobile ? "40px" : "48px",
+                          height: isMobile ? "40px" : "48px",
                           borderRadius: "10px",
                           backgroundColor: shortcut.color,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           color: "white",
-                          fontSize: "1.3rem"
+                          fontSize: isMobile ? "1.1rem" : "1.3rem",
+                          flexShrink: 0
                         }}>
                           <i className={shortcut.icon}></i>
                         </div>
                         <div>
-                          <div style={{ fontWeight: "600", color: "#2c3e5a", fontSize: "0.9rem" }}>{shortcut.title}</div>
-                          <div style={{ fontSize: "0.75rem", color: "#6b8cae" }}>{shortcut.subtitle}</div>
+                          <div style={{ fontWeight: "600", color: "#244080", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>{shortcut.title}</div>
+                          <div style={{ fontSize: isMobile ? "0.65rem" : "0.75rem", color: "#6b8cae" }}>{shortcut.subtitle}</div>
                         </div>
                       </div>
                     </div>
@@ -229,74 +240,74 @@ export default function DashboardAdmin() {
               </div>
 
               {/* Gráficos */}
-              <div className="row g-4">
+              <div className="row g-3">
                 {/* Gráfico de Barras */}
-                <div className="col-md-6">
+                <div className="col-12 col-lg-6">
                   <div style={{
                     backgroundColor: "white",
                     borderRadius: "16px",
-                    padding: "1.5rem",
+                    padding: isMobile ? "1rem" : "1.5rem",
                     boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
                     border: "1px solid #d4dfe9"
                   }}>
-                    <h6 style={{ fontWeight: "600", color: "#2c3e5a", marginBottom: "1rem" }}>
+                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
                       <i className="bi bi-bar-chart-fill me-2" style={{ color: "#6b8cae" }}></i>
                       Badges Atribuídos por Mês
                     </h6>
-                    <div style={{ height: "300px" }}>
+                    <div style={{ height: isMobile ? "250px" : "300px" }}>
                       <Bar data={barChartData} options={chartOptions} />
                     </div>
                   </div>
                 </div>
 
                 {/* Gráfico de Linha */}
-                <div className="col-md-6">
+                <div className="col-12 col-lg-6">
                   <div style={{
                     backgroundColor: "white",
                     borderRadius: "16px",
-                    padding: "1.5rem",
+                    padding: isMobile ? "1rem" : "1.5rem",
                     boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
                     border: "1px solid #d4dfe9"
                   }}>
-                    <h6 style={{ fontWeight: "600", color: "#2c3e5a", marginBottom: "1rem" }}>
+                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
                       <i className="bi bi-graph-up me-2" style={{ color: "#5a7a9a" }}></i>
                       Crescimento de Utilizadores
                     </h6>
-                    <div style={{ height: "300px" }}>
+                    <div style={{ height: isMobile ? "250px" : "300px" }}>
                       <Line data={lineChartData} options={chartOptions} />
                     </div>
                   </div>
                 </div>
 
                 {/* Gráfico Doughnut */}
-                <div className="col-md-6">
+                <div className="col-12 col-lg-6">
                   <div style={{
                     backgroundColor: "white",
                     borderRadius: "16px",
-                    padding: "1.5rem",
+                    padding: isMobile ? "1rem" : "1.5rem",
                     boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
                     border: "1px solid #d4dfe9"
                   }}>
-                    <h6 style={{ fontWeight: "600", color: "#2c3e5a", marginBottom: "1rem" }}>
+                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
                       <i className="bi bi-pie-chart-fill me-2" style={{ color: "#8ba4be" }}></i>
                       Distribuição por Tipo de Utilizador
                     </h6>
-                    <div style={{ height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ height: isMobile ? "250px" : "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <Doughnut data={doughnutData} options={{ ...chartOptions, scales: undefined }} />
                     </div>
                   </div>
                 </div>
 
                 {/* Atividade Recente */}
-                <div className="col-md-6">
+                <div className="col-12 col-lg-6">
                   <div style={{
                     backgroundColor: "white",
                     borderRadius: "16px",
-                    padding: "1.5rem",
+                    padding: isMobile ? "1rem" : "1.5rem",
                     boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
                     border: "1px solid #d4dfe9"
                   }}>
-                    <h6 style={{ fontWeight: "600", color: "#2c3e5a", marginBottom: "1rem" }}>
+                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
                       <i className="bi bi-clock-history me-2" style={{ color: "#4a6a8a" }}></i>
                       Atividade Recente
                     </h6>
@@ -310,25 +321,27 @@ export default function DashboardAdmin() {
                         <div key={index} style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "1rem",
-                          padding: "0.75rem",
+                          gap: isMobile ? "0.75rem" : "1rem",
+                          padding: isMobile ? "0.5rem" : "0.75rem",
                           borderBottom: index < 3 ? "1px solid #e8eef5" : "none",
                         }}>
                           <div style={{
-                            width: "36px",
-                            height: "36px",
+                            width: isMobile ? "32px" : "36px",
+                            height: isMobile ? "32px" : "36px",
                             borderRadius: "8px",
                             backgroundColor: `${activity.color}20`,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             color: activity.color,
+                            fontSize: isMobile ? "0.9rem" : "1rem",
+                            flexShrink: 0
                           }}>
                             <i className={activity.icon}></i>
                           </div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: "0.9rem", color: "#2c3e5a" }}>{activity.text}</div>
-                            <div style={{ fontSize: "0.75rem", color: "#6b8cae" }}>{activity.time}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: isMobile ? "0.8rem" : "0.9rem", color: "#244080" }}>{activity.text}</div>
+                            <div style={{ fontSize: isMobile ? "0.7rem" : "0.75rem", color: "#6b8cae" }}>{activity.time}</div>
                           </div>
                         </div>
                       ))}

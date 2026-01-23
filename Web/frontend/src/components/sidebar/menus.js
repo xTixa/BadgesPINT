@@ -7,6 +7,8 @@ export const sidebarMenus = {
       { to: "/consultor/historico", label: "Meus Badges", icon: "bi-award-fill" },
       { to: "/consultor/upload", label: "Upload Evidências", icon: "bi-cloud-upload-fill" },
       { to: "/consultor/ranking", label: "Ranking", icon: "bi-trophy-fill" },
+      { to: "/criar-ticket", label: "Reportar Problema", icon: "bi-exclamation-circle-fill" },
+      { to: "/meus-tickets", label: "Meus Tickets", icon: "bi-ticket-fill" },
     ],
     footer: [
       { to: "/consultor/perfil", label: "Perfil", icon: "bi-person-fill" },
@@ -23,6 +25,8 @@ export const sidebarMenus = {
       { to: "/tm/evidencias", label: "Evidências", icon: "bi-folder-check" },
       { to: "/tm/relatorios", label: "Relatórios", icon: "bi-bar-chart-line-fill" },
       { to: "/tm/historico", label: "Histórico", icon: "bi-clock-history" },
+      { to: "/criar-ticket", label: "Reportar Problema", icon: "bi-exclamation-circle-fill" },
+      { to: "/meus-tickets", label: "Meus Tickets", icon: "bi-ticket-fill" },
     ],
     footer: []
   },
@@ -35,6 +39,8 @@ export const sidebarMenus = {
       { to: "/sl/consultores", label: "Consultores", icon: "bi-person-badge-fill" },
       { to: "/sl/badges", label: "Badges Ativos", icon: "bi-patch-exclamation-fill" },
       { to: "/sl/estatisticas", label: "Estatísticas", icon: "bi-bar-chart-line" },
+      { to: "/criar-ticket", label: "Reportar Problema", icon: "bi-exclamation-circle-fill" },
+      { to: "/meus-tickets", label: "Meus Tickets", icon: "bi-ticket-fill" },
     ],
     footer: []
   },
@@ -49,7 +55,9 @@ export const sidebarMenus = {
       { to: "/admin/gestao-learning-paths", label: "Learning Paths", icon: "bi-diagram-3-fill" },
       { to: "/admin/gestao-sla", label: "SLA", icon: "bi-hourglass-split" },
       { to: "/admin/gestao-utilizadores", label: "Utilizadores", icon: "bi-people-fill" },
+      { to: "/admin/gestao-tickets", label: "Gestão de Tickets", icon: "bi-ticket-perforated-fill" },
       { to: "/admin/exportacao", label: "Exportar Dados", icon: "bi-file-earmark-arrow-down" },
+      { to: "/admin/logs", label: "Logs de Auditoria", icon: "bi-clock-history" },
     ],
     footer: [
       { to: "/admin/configuracoes", label: "Configurações", icon: "bi-gear-fill" },

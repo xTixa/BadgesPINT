@@ -1,6 +1,8 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
+import ConsultorBadge from "../models/ConsultorBadge.js";
+import Badge from "../models/Badge.js";
 
 export const login = async (req, res) => {
   try {
@@ -84,7 +86,28 @@ export const getUserProfile = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
 
-    res.json(user);
+    // Buscar badges obtidos
+    const badgesObtidos = await ConsultorBadge.count({
+      where: { consultor_id: user.id, status: "obtido" }
+    });
+
+    // Buscar total de badges disponíveis
+    const totalBadges = await Badge.count();
+
+    // Calcular progresso (exemplo: baseado em badges obtidos vs total)
+    const progresso = totalBadges > 0 ? Math.round((badgesObtidos / totalBadges) * 100) : 0;
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      area_id: user.area_id,
+      points_total: user.points_total || 0,
+      localizacao: "",
+      badges: badgesObtidos,
+      progresso,
+    });
   } catch (err) {
     console.error("Erro no perfil:", err);
     res.status(500).json({ message: "Erro interno do servidor" });

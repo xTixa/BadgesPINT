@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import axios from "axios";
 import Sidebar from "../../components/sidebar/sidebar";
 
 const tipos = {
@@ -17,17 +18,52 @@ export default function Avisos() {
 
   const [form, setForm] = useState({ texto: "", tipo: "info", publico: "Todos", agenda: "" });
   const [filtro, setFiltro] = useState("todos");
+  const [loading, setLoading] = useState(false);
 
   const filtrados = useMemo(() => {
     return avisos.filter((a) => (filtro === "todos" ? true : a.tipo === filtro));
   }, [avisos, filtro]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.texto.trim()) return alert("Escreva o aviso.");
-    const novo = { ...form, id: Date.now() };
-    setAvisos((prev) => [novo, ...prev]);
-    setForm({ texto: "", tipo: "info", publico: "Todos", agenda: "" });
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      
+      // Mapear público para roles
+      let roles = [];
+      if (form.publico === "Consultores") roles = ["consultant"];
+      else if (form.publico === "Talent Managers") roles = ["talent_manager"];
+      else if (form.publico === "Service Line") roles = ["service_line_leader"];
+      // Se "Todos", roles fica vazio (envia para todos)
+
+      // Enviar via API
+      await axios.post(
+        "http://localhost:4000/api/notifications/broadcast",
+        {
+          titulo: `${tipos[form.tipo].label}: ${form.texto.substring(0, 30)}...`,
+          mensagem: form.texto,
+          roles: roles.length > 0 ? roles : undefined,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert("✅ Aviso enviado com sucesso!");
+      
+      // Adicionar à lista local
+      const novo = { ...form, id: Date.now() };
+      setAvisos((prev) => [novo, ...prev]);
+      setForm({ texto: "", tipo: "info", publico: "Todos", agenda: "" });
+    } catch (error) {
+      console.error("Erro ao enviar aviso:", error);
+      alert("Erro ao enviar aviso: " + (error.response?.data?.message || error.message));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const remover = (id) => {
@@ -113,8 +149,17 @@ export default function Avisos() {
                       value={form.agenda}
                       onChange={(e) => setForm({ ...form, agenda: e.target.value })}
                     />
-                    <button type="submit" className="btn btn-danger ms-auto">
-                      <i className="bi bi-send-fill me-1" /> Guardar aviso
+                    <button type="submit" className="btn btn-danger ms-auto" disabled={loading}>
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2"></span>
+                          A enviar...
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-send-fill me-1" /> Guardar e enviar aviso
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>

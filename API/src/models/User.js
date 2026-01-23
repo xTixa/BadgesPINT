@@ -4,6 +4,11 @@ import database from "../config/database.js";
 const User = database.define(
   "User",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     password_hash: { type: DataTypes.STRING, allowNull: false },
@@ -20,9 +25,11 @@ const User = database.define(
     points_total: { type: DataTypes.INTEGER, defaultValue: 0 },
     last_login: { type: DataTypes.DATE, allowNull: true },
   },
-  { tableName: "users",
+  {
+    tableName: "Users",
     timestamps: true,
-    underscored: true}
+    underscored: true,
+  }
 );
 
 export default User;

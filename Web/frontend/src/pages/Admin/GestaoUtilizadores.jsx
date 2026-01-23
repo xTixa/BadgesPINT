@@ -53,14 +53,40 @@ export default function GestaoUtilizadores() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        
+        console.log("Token:", token ? "presente" : "ausente");
+        console.log("User role:", user.role);
+
+        if (!token) {
+          alert("Token não encontrado. Por favor, faça login novamente.");
+          window.location.href = "/login";
+          return;
+        }
+
         const [usersRes, areasRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/users"),
-          axios.get("http://localhost:4000/api/areas")
+          axios.get("http://localhost:4000/api/admin/users", {
+            headers: { Authorization: `Bearer ${token}` }
+          }),
+          axios.get("http://localhost:4000/api/areas", {
+            headers: { Authorization: `Bearer ${token}` }
+          })
         ]);
         setUtilizadores(usersRes.data);
         setAreas(areasRes.data);
       } catch (err) {
-        console.error("Erro a carregar dados:", err);
+        console.error("Erro completo:", err);
+        console.error("Response:", err.response?.data);
+        console.error("Status:", err.response?.status);
+        
+        if (err.response?.status === 401) {
+          alert("Sessão expirada. Por favor, faça login novamente.");
+          localStorage.clear();
+          window.location.href = "/login";
+        } else {
+          alert("Erro ao carregar dados: " + (err.response?.data?.message || err.message));
+        }
       } finally {
         setLoading(false);
       }

@@ -1,11 +1,27 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const savedLogin = localStorage.getItem("savedLogin");
+    if (!savedLogin) return;
+    try {
+      const parsed = JSON.parse(savedLogin);
+      setEmail(parsed.email || "");
+      setPassword(parsed.password || "");
+      setRememberMe(true);
+    } catch (error) {
+      console.error("Erro ao ler dados guardados", error);
+      localStorage.removeItem("savedLogin");
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,6 +37,12 @@ export default function Login() {
       // Guardar sessão
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
+
+      if (rememberMe) {
+        localStorage.setItem("savedLogin", JSON.stringify({ email, password }));
+      } else {
+        localStorage.removeItem("savedLogin");
+      }
 
       // Guardar saudação
       if (greeting) {
@@ -118,23 +140,41 @@ export default function Login() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 
+                focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all pr-16"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-[#191970] hover:text-[#101050]"
+                aria-label={showPassword ? "Ocultar password" : "Mostrar password"}
+              >
+                {showPassword ? "Ocultar" : "Mostrar"}
+              </button>
+            </div>
           </div>
 
-          {/* LINK PARA RECUPERAR PASSWORD */}
-          <div className="text-right mb-6">
+          <div className="flex items-center justify-between mb-6 text-sm">
+            <label className="flex items-center gap-2 text-gray-700">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-[#191970] focus:ring-[#191970]"
+              />
+              Guardar dados da sessão
+            </label>
             <button
               type="button"
               onClick={() => navigate("/recover")}
-              className="text-sm text-[#191970] hover:underline font-medium"
+              className="text-[#191970] hover:underline font-medium"
             >
               Esqueceste-te da password?
             </button>
@@ -148,6 +188,17 @@ export default function Login() {
           >
             Entrar
           </button>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 mb-2">Ainda não tens conta?</p>
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+              className="w-full py-3 rounded-lg font-semibold text-[#191970] border border-[#191970] hover:bg-[#191970] hover:text-white transition-colors"
+            >
+              Criar Conta
+            </button>
+          </div>
         </form>
       </div>
     </div>
