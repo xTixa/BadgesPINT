@@ -14,3 +14,26 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Criar Badges com IA (Admin)
+
+O frontend chama um endpoint no backend para criar as imagens através do Hugging Face.
+
+1. No backend, define a variável de ambiente `HF_API_TOKEN` com o teu token.
+2. Define `HF_MODEL_ID` para escolher outro modelo (por defeito: `stabilityai/stable-diffusion-xl-base-1.0`).
+3. No Dashboard Admin, usa o painel “Gerar Badge com IA”.
+
+Endpoint usado:
+- `POST http://localhost:4000/api/admin/badges/generate-image`
+- Body: `{ "prompt": "...", "size": "1024x1024" }`
+
+### Cloudinary (guardar imagens)
+
+Definir variáveis no backend:
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+Endpoint usado:
+- `POST http://localhost:4000/api/admin/badges/upload-image`
+- Body: `{ "image": "data:image/png;base64,...", "folder": "badges" }`

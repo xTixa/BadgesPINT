@@ -18,6 +18,14 @@ export default function DashboardAdmin() {
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
   const [startDate, setStartDate] = useState(toDateInput(defaultStart));
   const [endDate, setEndDate] = useState(toDateInput(defaultEnd));
+  const [badgePrompt, setBadgePrompt] = useState("Badge circular dourado, ícone de estrela, estilo flat, fundo azul escuro");
+  const [badgeSize, setBadgeSize] = useState("1024x1024");
+  const [badgeImage, setBadgeImage] = useState("");
+  const [badgeImageUrl, setBadgeImageUrl] = useState("");
+  const [badgeError, setBadgeError] = useState("");
+  const [badgeUploadError, setBadgeUploadError] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [kpis, setKpis] = useState({
     summary: {
       totalUsers: 0,
@@ -152,6 +160,86 @@ export default function DashboardAdmin() {
     { icon: "bi-megaphone-fill", title: "Avisos", subtitle: "Broadcast interno", color: "#4a6a8a", route: "/admin/avisos" },
     { icon: "bi-gear-fill", title: "Configurações", subtitle: "Notificações e RGPD", color: "#6f42c1", route: "/admin/configuracoes" }
   ];
+
+  async function handleGenerateBadge() {
+    setBadgeError("");
+    setBadgeImage("");
+    setBadgeImageUrl("");
+    setBadgeUploadError("");
+
+    if (!badgePrompt.trim()) {
+      setBadgeError("Escreve uma descrição do badge.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setBadgeError("Sem token. Faz login novamente.");
+      return;
+    }
+
+    try {
+      setIsGenerating(true);
+      const res = await axios.post(
+        "http://localhost:4000/api/admin/badges/generate-image",
+        { prompt: badgePrompt.trim(), size: badgeSize },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setBadgeImage(res.data?.image || "");
+      if (!res.data?.image) {
+        setBadgeError("A resposta não trouxe imagem.");
+      }
+    } catch (err) {
+      console.error("Erro ao gerar badge:", err);
+      const status = err?.response?.status;
+      const details = err?.response?.data?.details;
+      if (status === 410) {
+        setBadgeError("Modelo indisponível. Tenta mudar o HF_MODEL_ID ou aceita os termos do modelo no Hugging Face.");
+      } else if (details) {
+        const detailText = typeof details === "string" ? details : JSON.stringify(details);
+        setBadgeError(`Não foi possível gerar a imagem. ${detailText}`);
+      } else {
+        setBadgeError("Não foi possível gerar a imagem.");
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  async function handleUploadBadge() {
+    setBadgeUploadError("");
+
+    if (!badgeImage) {
+      setBadgeUploadError("Gera uma imagem primeiro.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setBadgeUploadError("Sem token. Faz login novamente.");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const res = await axios.post(
+        "http://localhost:4000/api/admin/badges/upload-image",
+        { image: badgeImage, folder: "badges" },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setBadgeImageUrl(res.data?.url || "");
+      if (!res.data?.url) {
+        setBadgeUploadError("A resposta não trouxe URL.");
+      }
+    } catch (err) {
+      console.error("Erro ao fazer upload:", err);
+      setBadgeUploadError("Não foi possível guardar a imagem.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
 
   return (
     <div style={{ display: "flex", backgroundColor: "#e8eef5", minHeight: "100vh" }}>
@@ -332,6 +420,99 @@ export default function DashboardAdmin() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Gerador de Badges (AI) */}
+              <div style={{ marginBottom: "2rem" }}>
+                <h5 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "1rem" : "1.1rem" }}>
+                  Gerar Badge com IA
+                </h5>
+                <div style={{
+                  backgroundColor: "white",
+                  borderRadius: "16px",
+                  padding: isMobile ? "1rem" : "1.5rem",
+                  boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
+                  border: "1px solid #d4dfe9"
+                }}>
+                  <div className="row g-3 align-items-end">
+                    <div className="col-12 col-lg-7">
+                      <label className="form-label" style={{ color: "#4a6a8a", fontWeight: 600 }}>
+                        Descrição do badge
+                      </label>
+                      <textarea
+                        className="form-control"
+                        rows={3}
+                        placeholder="Ex.: Badge circular dourado, ícone de estrela, estilo flat, fundo azul escuro"
+                        value={badgePrompt}
+                        onChange={(e) => setBadgePrompt(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-12 col-lg-3">
+                      <label className="form-label" style={{ color: "#4a6a8a", fontWeight: 600 }}>
+                        Tamanho
+                      </label>
+                      <select
+                        className="form-select"
+                        value={badgeSize}
+                        onChange={(e) => setBadgeSize(e.target.value)}
+                      >
+                        <option value="1024x1024">1024x1024</option>
+                        <option value="768x768">768x768</option>
+                        <option value="512x512">512x512</option>
+                      </select>
+                    </div>
+                    <div className="col-12 col-lg-2 d-grid">
+                      <button
+                        className="btn btn-primary"
+                        onClick={handleGenerateBadge}
+                        disabled={isGenerating}
+                        style={{ backgroundColor: "#244080", borderColor: "#244080" }}
+                      >
+                        {isGenerating ? "A gerar..." : "Gerar"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {badgeError && (
+                    <div className="alert alert-warning mt-3 mb-0" role="alert">
+                      {badgeError}
+                    </div>
+                  )}
+
+                  {badgeImage && (
+                    <div className="mt-3 d-flex flex-column align-items-start">
+                      <div style={{
+                        width: "200px",
+                        height: "200px",
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                        border: "1px solid #d4dfe9"
+                      }}>
+                        <img src={badgeImage} alt="Badge gerado" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                      <div className="d-flex gap-2 mt-2 flex-wrap">
+                        <a href={badgeImage} download="badge.png" className="btn btn-outline-secondary btn-sm">
+                          Download
+                        </a>
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={handleUploadBadge}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? "A guardar..." : "Guardar no Cloudinary"}
+                        </button>
+                      </div>
+                      {badgeUploadError && (
+                        <div className="text-danger small mt-2">{badgeUploadError}</div>
+                      )}
+                      {badgeImageUrl && (
+                        <div className="mt-2 small">
+                          URL: <a href={badgeImageUrl} target="_blank" rel="noreferrer">{badgeImageUrl}</a>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -4,7 +4,9 @@ import {
   adminGetBadge,
   adminCreateBadge,
   adminUpdateBadge,
-  adminDeleteBadge
+  adminDeleteBadge,
+  adminGenerateBadgeImage,
+  adminUploadBadgeImage
 } from "../controllers/adminBadgeController.js";
 
 const router = Router();
@@ -12,6 +14,8 @@ const router = Router();
 router.get("/", adminGetAllBadges);
 router.get("/:id", adminGetBadge);
 router.post("/", adminCreateBadge);
+router.post("/generate-image", adminGenerateBadgeImage);
+router.post("/upload-image", adminUploadBadgeImage);
 router.put("/:id", adminUpdateBadge);
 router.delete("/:id", adminDeleteBadge);
 
