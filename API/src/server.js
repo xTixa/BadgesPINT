@@ -28,3 +28,12 @@ database.sync()
     });
   })
   .catch((err) => console.error("Erro ao sincronizar DB:", err));
+
+  database.authenticate()
+  .then(() => {
+    console.log("Ligação à BD OK");
+    app.listen(PORT, () => {
+      console.log(`Server a correr em http://localhost:${PORT}`);
+    });
+  })
+  .catch(console.error);

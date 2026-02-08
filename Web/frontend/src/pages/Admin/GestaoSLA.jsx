@@ -7,36 +7,52 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 export default function GestaoSLA() {
   const [slas, setSlas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editingSLA, setEditingSLA] = useState(null);
   const [teams, setTeams] = useState([]);
   const [filtro, setFiltro] = useState("all");
   const [formData, setFormData] = useState({
     team_id: "",
-    team_type: "talent_manager", // talent_manager ou service_line_leader
+    team_type: "talent_manager",
     hours_limit: 24,
     notification_enabled: true,
     email_notification: true,
     push_notification: true,
-    teams_notification: false
+    status: "active"
   });
 
   const token = localStorage.getItem("token");
 
-  // Simular dados de SLA (depois conectar a API)
-  const mockSLAs = [
-    { id: 1, teamName: "Talent Manager 1", teamType: "talent_manager", hoursLimit: 24, status: "active", overdue: 0, pending: 2 },
-    { id: 2, teamName: "Service Line Backend", teamType: "service_line_leader", hoursLimit: 48, status: "active", overdue: 1, pending: 5 },
-    { id: 3, teamName: "Service Line Frontend", teamType: "service_line_leader", hoursLimit: 36, status: "active", overdue: 0, pending: 3 },
-  ];
-
+  // Carregar SLAs do backend
   useEffect(() => {
-    // Simular carregamento de dados
-    setTimeout(() => {
-      setSlas(mockSLAs);
-      setLoading(false);
-    }, 500);
-  }, []);
+    const fetchSLAs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await axios.get("http://localhost:4000/api/admin/slas", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        setSlas(response.data);
+
+        // Carregar equipas também
+        const teamsRes = await axios.get("http://localhost:4000/api/users?role=talent_manager|service_line_leader", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setTeams(teamsRes.data || []);
+
+      } catch (err) {
+        console.error("Erro ao carregar SLAs:", err);
+        setError("Erro ao carregar SLAs");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSLAs();
+  }, [token]);
 
   // Abrir modal para novo SLA
   const handleNovoSLA = () => {
@@ -48,7 +64,7 @@ export default function GestaoSLA() {
       notification_enabled: true,
       email_notification: true,
       push_notification: true,
-      teams_notification: false
+      status: "active"
     });
     setShowModal(true);
   };
@@ -57,13 +73,13 @@ export default function GestaoSLA() {
   const handleEditSLA = (sla) => {
     setEditingSLA(sla);
     setFormData({
-      team_id: sla.id,
-      team_type: sla.teamType,
-      hours_limit: sla.hoursLimit,
-      notification_enabled: true,
-      email_notification: true,
-      push_notification: true,
-      teams_notification: false
+      team_id: sla.team_id,
+      team_type: sla.team_type,
+      hours_limit: sla.hours_limit,
+      notification_enabled: sla.notification_enabled,
+      email_notification: sla.email_notification,
+      push_notification: sla.push_notification,
+      status: sla.status
     });
     setShowModal(true);
   };
@@ -78,27 +94,29 @@ export default function GestaoSLA() {
     try {
       if (editingSLA) {
         // Atualizar SLA
-        const updated = { ...editingSLA, hoursLimit: formData.hours_limit };
-        setSlas(prev => prev.map(s => s.id === editingSLA.id ? updated : s));
+        await axios.put(
+          `http://localhost:4000/api/admin/slas/${editingSLA.id}`,
+          formData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setSlas(prev => prev.map(s => s.id === editingSLA.id ? { ...s, ...formData } : s));
       } else {
         // Criar novo SLA
-        const newSLA = {
-          id: Math.max(...slas.map(s => s.id), 0) + 1,
-          teamName: "Nova Equipa",
-          teamType: formData.team_type,
-          hoursLimit: formData.hours_limit,
-          status: "active",
-          overdue: 0,
-          pending: 0
-        };
-        setSlas([...slas, newSLA]);
+        const response = await axios.post(
+          "http://localhost:4000/api/admin/slas",
+          formData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setSlas([...slas, response.data]);
       }
 
       setShowModal(false);
       alert("SLA guardado com sucesso!");
     } catch (err) {
       console.error("Erro ao guardar SLA:", err);
-      alert("Erro ao guardar SLA.");
+      alert(err.response?.data?.message || "Erro ao guardar SLA.");
     }
   };
 
@@ -107,6 +125,10 @@ export default function GestaoSLA() {
     if (!window.confirm("Tem a certeza que deseja apagar este SLA?")) return;
 
     try {
+      await axios.delete(`http://localhost:4000/api/admin/slas/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       setSlas(prev => prev.filter(s => s.id !== id));
       alert("SLA removido com sucesso!");
     } catch (err) {

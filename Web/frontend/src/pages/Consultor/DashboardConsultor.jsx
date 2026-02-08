@@ -63,7 +63,7 @@ export default function DashboardConsultor() {
       try {
         const parsedUser = JSON.parse(storedUser);
 
-        // 1️⃣ Buscar dados atualizados do utilizador
+        //Buscar dados atualizados do utilizador
         const userRes = await axios.get(
           "http://localhost:4000/api/auth/me",
           { headers: { Authorization: `Bearer ${token}` } }
@@ -107,7 +107,7 @@ export default function DashboardConsultor() {
         
         {/* Header */}
         <div className="rounded-4 p-4 mb-4 shadow-sm" style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">{greeting} {user.name.split(" ")[0]}!</h3>
+          <h3 className="fw-bold mb-1">{greeting}, {user.name.split(" ")[0]}!</h3>
           <p className="mb-0 text-light opacity-75">Continua a tua jornada e conquista novos badges.</p>
         </div>
 

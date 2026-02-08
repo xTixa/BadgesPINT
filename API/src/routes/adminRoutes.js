@@ -1,11 +1,16 @@
 import { Router } from "express";
 import {
   getAdminStats,
+  getAdminKpis,
   getAllUsers,
   createUser,
   updateUser,
   deleteUser
 } from "../controllers/adminController.js";
+import {
+  exportToExcel,
+  exportToPDF
+} from "../controllers/exportController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -16,11 +21,16 @@ router.use(authMiddleware);
 
 // Dashboard
 router.get("/stats", getAdminStats);
+router.get("/stats/kpis", getAdminKpis);
 
 // Gestão de utilizadores
 router.get("/users", getAllUsers);
 router.post("/users", createUser);
 router.put("/users/:id", updateUser);
 router.delete("/users/:id", deleteUser);
+
+// Exportação
+router.post("/export/excel", exportToExcel);
+router.post("/export/pdf", exportToPDF);
 
 export default router;

@@ -46,8 +46,11 @@ export default function LogsAuditoria() {
 
   useEffect(() => {
     fetchLogs();
+  }, [page, JSON.stringify(filters)]);
+
+  useEffect(() => {
     fetchStats();
-  }, [page, filters]);
+  }, [JSON.stringify(filters)]);
 
   const fetchLogs = async () => {
     try {
@@ -78,7 +81,9 @@ export default function LogsAuditoria() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:4000/api/audit-logs/stats", {
+      const query = new URLSearchParams(filters);
+      
+      const res = await axios.get(`http://localhost:4000/api/audit-logs/stats?${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStats(res.data);

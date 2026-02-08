@@ -1,7 +1,29 @@
 import User from "../models/User.js";
 import Badge from "../models/Badge.js";
 import LearningPath from "../models/LearningPath.js";
+import ConsultorBadge from "../models/ConsultorBadge.js";
 import bcryptjs from "bcryptjs";
+import database from "../config/database.js";
+import { QueryTypes, Op, fn, col } from "sequelize";
+
+const buildMonthlySeries = (rows, start, end) => {
+  const result = [];
+  const cursor = new Date(start.getTime());
+  cursor.setDate(1);
+  const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+
+  const map = new Map(rows.map((r) => [r.month, Number(r.count) || 0]));
+
+  while (cursor <= endMonth) {
+    const label = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`;
+    result.push({
+      month: label,
+      count: map.get(label) || 0,
+    });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return result;
+};
 
 /**
  * Dashboard stats do Administrador
@@ -21,6 +43,99 @@ export async function getAdminStats(req, res) {
   } catch (err) {
     console.error("Erro no Admin Stats:", err);
     res.status(500).json({ message: "Erro ao carregar estatísticas" });
+  }
+}
+
+/**
+ * KPI detalhados para dashboards (badges por mês, por LP, por nível, etc.)
+ */
+export async function getAdminKpis(req, res) {
+  try {
+    const totalUsers = await User.count();
+    const totalBadges = await Badge.count();
+    const totalLearningPaths = await LearningPath.count();
+    const badgesObtidosTotal = await ConsultorBadge.count({ where: { status: "obtido" } });
+
+    // Utilizadores por role
+    const usersByRole = await User.findAll({
+      attributes: [
+        "role",
+        [fn("COUNT", col("id")), "count"],
+      ],
+      group: ["role"],
+      raw: true,
+    });
+
+    // Badges obtidos por mês (YYYY-MM)
+    const { startDate, endDate } = req.query;
+    const end = endDate ? new Date(endDate) : new Date();
+    const start = startDate ? new Date(startDate) : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const badgesByMonthRaw = await database.query(
+      "SELECT to_char(date_trunc('month', cb.data_atribuicao), 'YYYY-MM') AS month, COUNT(*)::int AS count FROM consultor_badges cb WHERE cb.status = 'obtido' AND cb.data_atribuicao IS NOT NULL AND cb.data_atribuicao BETWEEN :start AND :end GROUP BY 1 ORDER BY 1",
+      { type: QueryTypes.SELECT, replacements: { start, end } }
+    );
+
+    const monthly = buildMonthlySeries(badgesByMonthRaw, start, end).map((row) => ({
+      ...row,
+      completionRate: totalBadges > 0 ? Math.round((row.count / totalBadges) * 100) : 0,
+    }));
+
+    const badgesByRange = await ConsultorBadge.count({
+      where: {
+        status: "obtido",
+        data_atribuicao: {
+          [Op.between]: [start, end],
+        },
+      },
+    });
+
+    // Badges por Learning Path
+    const badgesByLearningPath = await database.query(
+      `SELECT lp.id, lp.name, COUNT(cb.id)::int AS count
+       FROM consultor_badges cb
+       JOIN badges b ON b.id = cb.badge_id
+       JOIN areas a ON a.id = b.area_id
+       JOIN service_lines sl ON sl.id = a.service_line_id
+       JOIN learning_paths lp ON lp.id = sl.learning_path_id
+       WHERE cb.status = 'obtido'
+       GROUP BY lp.id, lp.name
+       ORDER BY lp.name`,
+      { type: QueryTypes.SELECT }
+    );
+
+    // Badges por nível
+    const badgesByLevel = await database.query(
+      `SELECT b.level, COUNT(cb.id)::int AS count
+       FROM consultor_badges cb
+       JOIN badges b ON b.id = cb.badge_id
+       WHERE cb.status = 'obtido'
+       GROUP BY b.level
+       ORDER BY b.level`,
+      { type: QueryTypes.SELECT }
+    );
+
+    res.json({
+      summary: {
+        totalUsers,
+        totalBadges,
+        totalLearningPaths,
+        badgesObtidosTotal,
+      },
+      usersByRole,
+      badgesByMonth: monthly,
+      badgesByRange: {
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+        count: badgesByRange,
+      },
+      badgesByLearningPath,
+      badgesByLevel,
+    });
+
+  } catch (err) {
+    console.error("Erro no Admin KPIs:", err);
+    res.status(500).json({ message: "Erro ao carregar KPIs" });
   }
 }
 

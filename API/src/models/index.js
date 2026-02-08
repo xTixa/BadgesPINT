@@ -9,6 +9,8 @@ import ConsultorBadge from "./ConsultorBadge.js";
 import Ticket from "./Ticket.js";
 import Notification from "./Notification.js";
 import AuditLog from "./AuditLog.js";
+import PasswordReset from "./PasswordReset.js";
+import SLA from "./SLA.js";
 
 export {
   User,
@@ -20,5 +22,7 @@ export {
   ConsultorBadge,
   Ticket,
   Notification,
-  AuditLog
+  AuditLog,
+  PasswordReset,
+  SLA
 };

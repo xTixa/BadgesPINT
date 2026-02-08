@@ -8,6 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const savedLogin = localStorage.getItem("savedLogin");
@@ -25,6 +26,7 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       const res = await axios.post("http://localhost:4000/api/auth/login", {
@@ -74,7 +76,7 @@ export default function Login() {
 
     } catch (err) {
       console.error(err);
-      alert("Credenciais inválidas");
+      setError("Credenciais inválidas. Verifica email e password.");
     }
   };
 
@@ -129,8 +131,9 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all"
+              className={`w-full px-4 py-3 rounded-lg border ${
+                error ? "border-red-400" : "border-gray-300"
+              } focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all`}
               placeholder="exemplo@dominio.com"
             />
           </div>
@@ -146,8 +149,9 @@ export default function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 
-                focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all pr-16"
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  error ? "border-red-400" : "border-gray-300"
+                } focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all pr-16`}
                 placeholder="••••••••"
               />
               <button
@@ -188,6 +192,12 @@ export default function Login() {
           >
             Entrar
           </button>
+
+          {error && (
+            <p className="mt-4 text-sm text-red-600 text-center font-medium">
+              {error}
+            </p>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600 mb-2">Ainda não tens conta?</p>

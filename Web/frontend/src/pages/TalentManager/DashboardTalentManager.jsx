@@ -23,6 +23,22 @@ export default function DashboardTalentManager() {
   const [greeting, setGreeting] = useState("");
   const [progressAreas, setProgressAreas] = useState([]);
   const [progressConsultores, setProgressConsultores] = useState([]);
+  const toDateInput = (date) => date.toISOString().slice(0, 10);
+  const defaultEnd = new Date();
+  const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const [startDate, setStartDate] = useState(toDateInput(defaultStart));
+  const [endDate, setEndDate] = useState(toDateInput(defaultEnd));
+  const [kpis, setKpis] = useState({
+    summary: { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 },
+    badgesByMonth: [],
+    badgesByLevel: [],
+    badgesByRange: { count: 0 },
+  });
+
+  const badgesByMonth = kpis?.badgesByMonth || [];
+  const badgesByLevel = kpis?.badgesByLevel || [];
+  const badgesByRange = kpis?.badgesByRange || { count: 0 };
+  const summary = kpis?.summary || { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 };
 
   useEffect(() => {
     const msg = localStorage.getItem("greeting");
@@ -34,20 +50,22 @@ export default function DashboardTalentManager() {
 
     async function loadData() {
       try {
-        const [meRes, statsRes, badgesRes, pedidosRes, areasRes, consultoresRes] = await Promise.all([
+        const [meRes, statsRes, badgesRes, pedidosRes, areasRes, consultoresRes, kpisRes] = await Promise.all([
           axios.get("http://localhost:4000/api/tm/me", { headers: { Authorization: `Bearer ${token}` } }),
           axios.get("http://localhost:4000/api/tm/estatisticas", { headers: { Authorization: `Bearer ${token}` } }),
           axios.get("http://localhost:4000/api/tm/badges", { headers: { Authorization: `Bearer ${token}` } }),
           axios.get("http://localhost:4000/api/tm/pedidos", { headers: { Authorization: `Bearer ${token}` } }),
           axios.get("http://localhost:4000/api/tm/progress/areas", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:4000/api/tm/progress/consultores", { headers: { Authorization: `Bearer ${token}` } })
+          axios.get("http://localhost:4000/api/tm/progress/consultores", { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get("http://localhost:4000/api/tm/kpis", { headers: { Authorization: `Bearer ${token}` }, params: { startDate, endDate } })
         ]).catch(() => [
           { data: { name: "Talent Manager" } },
           { data: { totalEquipa: 12, evidenciasPendentes: 4, progressoMedio: 68, pedidosPendentes: 3, badgesExpirar: 2 } },
           { data: mockBadges },
           { data: mockPedidos },
           { data: mockProgressAreas },
-          { data: mockProgressConsultores }
+          { data: mockProgressConsultores },
+          { data: { summary: { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 }, badgesByMonth: [], badgesByLevel: [], badgesByRange: { count: 0 } } }
         ]);
 
         setManager(meRes.data || { name: "Talent Manager" });
@@ -56,6 +74,7 @@ export default function DashboardTalentManager() {
         setPedidos(pedidosRes.data || mockPedidos);
         setProgressAreas(areasRes.data || mockProgressAreas);
         setProgressConsultores(consultoresRes.data || mockProgressConsultores);
+        setKpis(kpisRes.data || kpis);
 
       } catch (err) {
         console.error("Erro ao carregar TM:", err);
@@ -65,7 +84,7 @@ export default function DashboardTalentManager() {
     }
 
     loadData();
-  }, []);
+  }, [startDate, endDate]);
 
   const pedidosCriticos = useMemo(() => pedidos.filter((p) => p.estado === "pendente"), [pedidos]);
   const pedidosAprovados = useMemo(() => pedidos.filter((p) => p.estado === "aprovado"), [pedidos]);
@@ -91,6 +110,28 @@ export default function DashboardTalentManager() {
       barThickness: 16
     }]
   }), [progressConsultores]);
+
+  const badgesMesChart = useMemo(() => ({
+    labels: badgesByMonth.map((m) => m.month),
+    datasets: [{
+      label: "Badges obtidos",
+      data: badgesByMonth.map((m) => m.count),
+      backgroundColor: "#20c997",
+      borderRadius: 6,
+      barThickness: 14,
+    }]
+  }), [badgesByMonth]);
+
+  const badgesNivelChart = useMemo(() => ({
+    labels: badgesByLevel.map((l) => l.level),
+    datasets: [{
+      label: "Badges por nível",
+      data: badgesByLevel.map((l) => Number(l.count)),
+      backgroundColor: "#191970",
+      borderRadius: 6,
+      barThickness: 14,
+    }]
+  }), [badgesByLevel]);
 
   const chartOptionsHorizontal = {
     indexAxis: "y",
@@ -213,6 +254,80 @@ export default function DashboardTalentManager() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* KPIs de badges com filtro de datas */}
+        <div className="card p-4 mb-4 shadow-sm rounded-4">
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <h5 className="fw-bold mb-0">
+              <i className="bi bi-bar-chart-fill me-2 text-success"></i>
+              KPIs de Badges
+            </h5>
+            <div className="d-flex align-items-center gap-2">
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="form-control form-control-sm" style={{ width: 140 }} />
+              <span className="text-muted small">até</span>
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="form-control form-control-sm" style={{ width: 140 }} />
+            </div>
+          </div>
+
+          <div className="row g-3 mb-3">
+            <div className="col-md-3">
+              <div className="p-3 rounded-3 border bg-light h-100">
+                <div className="text-muted small">Badges obtidos (total)</div>
+                <div className="fw-bold fs-4 text-success">{summary.badgesObtidosTotal}</div>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="p-3 rounded-3 border bg-light h-100">
+                <div className="text-muted small">Utilizadores na área</div>
+                <div className="fw-bold fs-4 text-primary">{summary.totalUsers}</div>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="p-3 rounded-3 border bg-light h-100">
+                <div className="text-muted small">Badges no período</div>
+                <div className="fw-bold fs-4 text-warning">{badgesByRange?.count || 0}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="row g-4">
+            <div className="col-lg-6">
+              <div className="card shadow-sm border-0 rounded-4 h-100">
+                <div className="card-body">
+                  <h6 className="fw-bold mb-3">
+                    <i className="bi bi-calendar3 me-2 text-success"></i>
+                    Badges obtidos por mês
+                  </h6>
+                  <div style={{ height: 260 }}>
+                    {badgesByMonth.length ? (
+                      <Bar data={badgesMesChart} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+                    ) : (
+                      <div className="text-muted small d-flex align-items-center h-100">Sem registos para o período.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-6">
+              <div className="card shadow-sm border-0 rounded-4 h-100">
+                <div className="card-body">
+                  <h6 className="fw-bold mb-3">
+                    <i className="bi bi-layers me-2 text-primary"></i>
+                    Badges por nível
+                  </h6>
+                  <div style={{ height: 260 }}>
+                    {badgesByLevel.length ? (
+                      <Bar data={badgesNivelChart} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+                    ) : (
+                      <div className="text-muted small d-flex align-items-center h-100">Sem registos de níveis para o período.</div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

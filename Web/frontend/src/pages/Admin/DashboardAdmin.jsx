@@ -13,10 +13,23 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 export default function DashboardAdmin() {
   const navigate = useNavigate();
   const { isMobile, isTablet } = useWindowSize();
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalBadges: 0,
-    totalLearningPaths: 0,
+  const toDateInput = (date) => date.toISOString().slice(0, 10);
+  const defaultEnd = new Date();
+  const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const [startDate, setStartDate] = useState(toDateInput(defaultStart));
+  const [endDate, setEndDate] = useState(toDateInput(defaultEnd));
+  const [kpis, setKpis] = useState({
+    summary: {
+      totalUsers: 0,
+      totalBadges: 0,
+      totalLearningPaths: 0,
+      badgesObtidosTotal: 0,
+    },
+    badgesByMonth: [],
+    badgesByLearningPath: [],
+    badgesByLevel: [],
+    badgesByRange: { count: 0 },
+    usersByRole: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -26,11 +39,14 @@ export default function DashboardAdmin() {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "http://localhost:4000/api/admin/stats",
-          { headers: { Authorization: `Bearer ${token}` } }
+          "http://localhost:4000/api/admin/stats/kpis",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { startDate, endDate },
+          }
         );
 
-        setStats(res.data);
+        setKpis(res.data);
 
       } catch (err) {
         console.error("Erro a carregar estatísticas do admin:", err);
@@ -40,40 +56,65 @@ export default function DashboardAdmin() {
     }
 
     fetchStats();
-  }, []);
+  }, [startDate, endDate]);
 
-  // Dados de exemplo para os gráficos
-  const barChartData = {
-    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+  const monthLabels = kpis.badgesByMonth.map((item) => item.month);
+  const barChartData = monthLabels.length ? {
+    labels: monthLabels,
     datasets: [{
-      label: 'Badges Atribuídos',
-      data: [12, 19, 15, 25, 22, 30],
-      backgroundColor: '#6b8cae',
-      borderColor: '#4a6a8a',
+      label: "Badges obtidos",
+      data: kpis.badgesByMonth.map((item) => item.count),
+      backgroundColor: "#6b8cae",
+      borderColor: "#4a6a8a",
       borderWidth: 1,
-    }]
-  };
+    }],
+  } : null;
 
-  const lineChartData = {
-    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+  const lineChartData = monthLabels.length ? {
+    labels: monthLabels,
     datasets: [{
-      label: 'Novos Utilizadores',
-      data: [5, 8, 12, 15, 18, 22],
-      borderColor: '#5a7a9a',
-      backgroundColor: 'rgba(90, 122, 154, 0.1)',
+      label: "% de badges obtidos",
+      data: kpis.badgesByMonth.map((item) => item.completionRate || 0),
+      borderColor: "#5a7a9a",
+      backgroundColor: "rgba(90, 122, 154, 0.12)",
       tension: 0.4,
       fill: true,
-    }]
-  };
+    }],
+  } : null;
 
-  const doughnutData = {
-    labels: ['Consultores', 'Talent Managers', 'Service Line', 'Admins'],
+  const doughnutDataUsers = kpis.usersByRole.length ? {
+    labels: kpis.usersByRole.map((r) => r.role),
     datasets: [{
-      data: [45, 15, 8, 3],
-      backgroundColor: ['#6b8cae', '#5a7a9a', '#8ba4be', '#4a6a8a'],
+      data: kpis.usersByRole.map((r) => Number(r.count)),
+      backgroundColor: ['#6b8cae', '#5a7a9a', '#8ba4be', '#4a6a8a', '#20c997'],
       borderWidth: 0,
-    }]
-  };
+    }],
+  } : null;
+
+  const levelChartData = kpis.badgesByLevel.length ? {
+    labels: kpis.badgesByLevel.map((l) => l.level),
+    datasets: [{
+      label: "Badges por nível",
+      data: kpis.badgesByLevel.map((l) => Number(l.count)),
+      backgroundColor: '#8ba4be',
+      borderColor: '#4a6a8a',
+      borderWidth: 1,
+    }],
+  } : null;
+
+  const learningPathChartData = kpis.badgesByLearningPath.length ? {
+    labels: kpis.badgesByLearningPath.map((lp) => lp.name),
+    datasets: [{
+      label: "Badges por Learning Path",
+      data: kpis.badgesByLearningPath.map((lp) => Number(lp.count)),
+      backgroundColor: '#4a6a8a',
+      borderColor: '#244080',
+      borderWidth: 1,
+    }],
+  } : null;
+
+  const rangeStart = kpis.badgesByRange?.startDate ? kpis.badgesByRange.startDate.slice(0, 10) : "N/D";
+  const rangeEnd = kpis.badgesByRange?.endDate ? kpis.badgesByRange.endDate.slice(0, 10) : "N/D";
 
   const chartOptions = {
     responsive: true,
@@ -150,7 +191,7 @@ export default function DashboardAdmin() {
                     border: "1px solid #d4dfe9"
                   }}>
                     <i className="bi bi-award-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#6b8cae", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{stats.totalBadges}</h4>
+                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.totalBadges}</h4>
                     <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Badges Ativos</p>
                   </div>
                 </div>
@@ -165,7 +206,7 @@ export default function DashboardAdmin() {
                     border: "1px solid #d4dfe9"
                   }}>
                     <i className="bi bi-people-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#5a7a9a", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{stats.totalUsers}</h4>
+                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.totalUsers}</h4>
                     <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Utilizadores Registados</p>
                   </div>
                 </div>
@@ -180,8 +221,63 @@ export default function DashboardAdmin() {
                     border: "1px solid #d4dfe9"
                   }}>
                     <i className="bi bi-diagram-3-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#8ba4be", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{stats.totalLearningPaths}</h4>
+                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.totalLearningPaths}</h4>
                     <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Learning Paths</p>
+                  </div>
+                </div>
+
+                <div className="col-12 col-sm-6 col-md-4">
+                  <div style={{ 
+                    backgroundColor: "white",
+                    borderRadius: "16px",
+                    padding: isMobile ? "1rem" : "1.5rem",
+                    textAlign: "center",
+                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
+                    border: "1px solid #d4dfe9"
+                  }}>
+                    <i className="bi bi-graph-up" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#20c997", marginBottom: "0.5rem" }}></i>
+                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.badgesObtidosTotal}</h4>
+                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Badges obtidos (total)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="row g-3 mb-4">
+                <div className="col-12">
+                  <div style={{
+                    backgroundColor: "white",
+                    borderRadius: "12px",
+                    padding: isMobile ? "0.75rem 1rem" : "1rem 1.25rem",
+                    border: "1px solid #d4dfe9",
+                    boxShadow: "0 2px 6px rgba(44, 62, 90, 0.06)",
+                    color: "#244080",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: "0.75rem"
+                  }}>
+                    <span style={{ fontWeight: 600 }}>
+                      Badges obtidos no período ({rangeStart} a {rangeEnd})
+                    </span>
+                    <span style={{ fontWeight: 700, color: "#20c997", fontSize: isMobile ? "1.1rem" : "1.25rem" }}>
+                      {kpis.badgesByRange?.count || 0}
+                    </span>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        style={{ border: "1px solid #d4dfe9", borderRadius: "8px", padding: "0.35rem 0.5rem" }}
+                      />
+                      <span style={{ color: "#6b8cae", fontSize: "0.9rem" }}>até</span>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        style={{ border: "1px solid #d4dfe9", borderRadius: "8px", padding: "0.35rem 0.5rem" }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -252,11 +348,15 @@ export default function DashboardAdmin() {
                   }}>
                     <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
                       <i className="bi bi-bar-chart-fill me-2" style={{ color: "#6b8cae" }}></i>
-                      Badges Atribuídos por Mês
+                      Badges obtidos por mês
                     </h6>
-                    <div style={{ height: isMobile ? "250px" : "300px" }}>
-                      <Bar data={barChartData} options={chartOptions} />
-                    </div>
+                    {barChartData ? (
+                      <div style={{ height: isMobile ? "250px" : "300px" }}>
+                        <Bar data={barChartData} options={chartOptions} />
+                      </div>
+                    ) : (
+                      <p style={{ color: "#6b8cae" }}>Sem registos para o período selecionado.</p>
+                    )}
                   </div>
                 </div>
 
@@ -271,11 +371,15 @@ export default function DashboardAdmin() {
                   }}>
                     <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
                       <i className="bi bi-graph-up me-2" style={{ color: "#5a7a9a" }}></i>
-                      Crescimento de Utilizadores
+                      % de badges obtidos (mensal)
                     </h6>
-                    <div style={{ height: isMobile ? "250px" : "300px" }}>
-                      <Line data={lineChartData} options={chartOptions} />
-                    </div>
+                    {lineChartData ? (
+                      <div style={{ height: isMobile ? "250px" : "300px" }}>
+                        <Line data={lineChartData} options={chartOptions} />
+                      </div>
+                    ) : (
+                      <p style={{ color: "#6b8cae" }}>Sem registos para o período selecionado.</p>
+                    )}
                   </div>
                 </div>
 
@@ -292,13 +396,17 @@ export default function DashboardAdmin() {
                       <i className="bi bi-pie-chart-fill me-2" style={{ color: "#8ba4be" }}></i>
                       Distribuição por Tipo de Utilizador
                     </h6>
-                    <div style={{ height: isMobile ? "250px" : "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Doughnut data={doughnutData} options={{ ...chartOptions, scales: undefined }} />
-                    </div>
+                    {doughnutDataUsers ? (
+                      <div style={{ height: isMobile ? "250px" : "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Doughnut data={doughnutDataUsers} options={{ ...chartOptions, scales: undefined }} />
+                      </div>
+                    ) : (
+                      <p style={{ color: "#6b8cae" }}>Sem utilizadores neste contexto.</p>
+                    )}
                   </div>
                 </div>
 
-                {/* Atividade Recente */}
+                {/* Badges por Learning Path */}
                 <div className="col-12 col-lg-6">
                   <div style={{
                     backgroundColor: "white",
@@ -308,44 +416,39 @@ export default function DashboardAdmin() {
                     border: "1px solid #d4dfe9"
                   }}>
                     <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
-                      <i className="bi bi-clock-history me-2" style={{ color: "#4a6a8a" }}></i>
-                      Atividade Recente
+                      <i className="bi bi-diagram-3 me-2" style={{ color: "#4a6a8a" }}></i>
+                      Badges por Learning Path
                     </h6>
-                    <div style={{ maxHeight: "300px", overflowY: "auto" }}>
-                      {[
-                        { icon: "bi-award", text: "Novo badge 'Expert React' criado", time: "há 2 horas", color: "#6b8cae" },
-                        { icon: "bi-person-plus", text: "3 novos utilizadores registados", time: "há 5 horas", color: "#5a7a9a" },
-                        { icon: "bi-diagram-3", text: "Learning Path atualizado", time: "há 1 dia", color: "#8ba4be" },
-                        { icon: "bi-gear", text: "Configurações do sistema alteradas", time: "há 2 dias", color: "#4a6a8a" },
-                      ].map((activity, index) => (
-                        <div key={index} style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: isMobile ? "0.75rem" : "1rem",
-                          padding: isMobile ? "0.5rem" : "0.75rem",
-                          borderBottom: index < 3 ? "1px solid #e8eef5" : "none",
-                        }}>
-                          <div style={{
-                            width: isMobile ? "32px" : "36px",
-                            height: isMobile ? "32px" : "36px",
-                            borderRadius: "8px",
-                            backgroundColor: `${activity.color}20`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: activity.color,
-                            fontSize: isMobile ? "0.9rem" : "1rem",
-                            flexShrink: 0
-                          }}>
-                            <i className={activity.icon}></i>
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: isMobile ? "0.8rem" : "0.9rem", color: "#244080" }}>{activity.text}</div>
-                            <div style={{ fontSize: isMobile ? "0.7rem" : "0.75rem", color: "#6b8cae" }}>{activity.time}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    {learningPathChartData ? (
+                      <div style={{ height: isMobile ? "250px" : "300px" }}>
+                        <Bar data={learningPathChartData} options={chartOptions} />
+                      </div>
+                    ) : (
+                      <p style={{ color: "#6b8cae" }}>Sem registos de badges por learning path.</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Badges por Nível */}
+                <div className="col-12 col-lg-6">
+                  <div style={{
+                    backgroundColor: "white",
+                    borderRadius: "16px",
+                    padding: isMobile ? "1rem" : "1.5rem",
+                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
+                    border: "1px solid #d4dfe9"
+                  }}>
+                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
+                      <i className="bi bi-layers me-2" style={{ color: "#20c997" }}></i>
+                      Badges por Nível
+                    </h6>
+                    {levelChartData ? (
+                      <div style={{ height: isMobile ? "250px" : "300px" }}>
+                        <Bar data={levelChartData} options={chartOptions} />
+                      </div>
+                    ) : (
+                      <p style={{ color: "#6b8cae" }}>Sem registos de badges por nível.</p>
+                    )}
                   </div>
                 </div>
               </div>

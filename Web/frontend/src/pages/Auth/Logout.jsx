@@ -1,9 +1,21 @@
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Logout() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    const token = localStorage.getItem("token");
+
+    // Tentar registar no backend, mas não bloquear UX
+    axios
+      .post(
+        "http://localhost:4000/api/auth/logout",
+        {},
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      )
+      .catch(() => {});
+
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("greeting");

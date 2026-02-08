@@ -9,75 +9,49 @@ export default function GestaoPedidosBadges() {
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState("all");
   const [showDetails, setShowDetails] = useState(null);
+  const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
 
-  // Simular dados de pedidos de badges
-  const mockPedidos = [
-    {
-      id: 1,
-      userName: "João Silva",
-      badgeName: "Certificação Azure",
-      area: "Cloud",
-      status: "pending",
-      dataPedido: "2024-01-10",
-      prazo: "2024-01-17",
-      descricao: "Certificação AZ-900 Microsoft Azure",
-      evidencia: "https://example.com/cert1.pdf"
-    },
-    {
-      id: 2,
-      userName: "Maria Santos",
-      badgeName: "React Advanced",
-      area: "Frontend",
-      status: "approved",
-      dataPedido: "2024-01-08",
-      prazo: "2024-01-15",
-      descricao: "Certificação React Advanced",
-      evidencia: "https://example.com/cert2.pdf"
-    },
-    {
-      id: 3,
-      userName: "Pedro Costa",
-      badgeName: "DevOps Master",
-      area: "DevOps",
-      status: "rejected",
-      dataPedido: "2024-01-12",
-      prazo: "2024-01-19",
-      descricao: "Certificação DevOps",
-      evidencia: "https://example.com/cert3.pdf"
-    },
-    {
-      id: 4,
-      userName: "Ana Oliveira",
-      badgeName: "Java Specialist",
-      area: "Backend",
-      status: "pending",
-      dataPedido: "2024-01-11",
-      prazo: "2024-01-18",
-      descricao: "Certificação Java Specialist",
-      evidencia: "https://example.com/cert4.pdf"
-    },
-    {
-      id: 5,
-      userName: "Carlos Mendes",
-      badgeName: "SQL Expert",
-      area: "Database",
-      status: "approved",
-      dataPedido: "2024-01-07",
-      prazo: "2024-01-14",
-      descricao: "Certificação SQL Expert",
-      evidencia: "https://example.com/cert5.pdf"
-    },
-  ];
-
+  // Carregar pedidos do backend
   useEffect(() => {
-    // Simular carregamento de dados
-    setTimeout(() => {
-      setPedidos(mockPedidos);
-      setLoading(false);
-    }, 500);
-  }, []);
+    const fetchPedidos = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const url = filtro === "all" 
+          ? "http://localhost:4000/api/admin/pedidos"
+          : `http://localhost:4000/api/admin/pedidos?status=${filtro === "pending" ? "pendente" : filtro === "approved" ? "obtido" : "rejeitado"}`;
+
+        const response = await axios.get(url, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        // Mapear dados do backend para o formato do frontend
+        const pedidosFormatados = response.data.map(p => ({
+          id: p.id,
+          userName: p.user?.name || "Desconhecido",
+          userEmail: p.user?.email || "",
+          badgeName: p.badge?.name || "Desconhecido",
+          badgeLevel: p.badge?.level || "",
+          badgePoints: p.badge?.points || 0,
+          status: p.status === "obtido" ? "approved" : p.status === "pendente" ? "pending" : "rejected",
+          dataPedido: new Date(p.created_at).toLocaleDateString("pt-PT"),
+          dataAtribuicao: p.data_atribuicao ? new Date(p.data_atribuicao).toLocaleDateString("pt-PT") : "-"
+        }));
+
+        setPedidos(pedidosFormatados);
+      } catch (err) {
+        console.error("Erro ao carregar pedidos:", err);
+        setError("Erro ao carregar pedidos. Tente novamente.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPedidos();
+  }, [filtro, token]);
 
   // Filtrar pedidos
   const pedidosFiltrados = pedidos.filter(p => {
@@ -90,6 +64,10 @@ export default function GestaoPedidosBadges() {
     if (!window.confirm("Tem a certeza que deseja aprovar este pedido?")) return;
 
     try {
+      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/aprovar`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, status: "approved" } : p));
       setShowDetails(null);
       alert("Pedido aprovado com sucesso!");
@@ -104,6 +82,10 @@ export default function GestaoPedidosBadges() {
     if (!window.confirm("Tem a certeza que deseja rejeitar este pedido?")) return;
 
     try {
+      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/rejeitar`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, status: "rejected" } : p));
       setShowDetails(null);
       alert("Pedido rejeitado com sucesso!");
@@ -152,6 +134,14 @@ export default function GestaoPedidosBadges() {
           </h3>
           <p className="text-muted small mt-1">Consultar e gerir pedidos de badges (cursos, certificações, atribuições)</p>
         </div>
+
+        {/* Mensagem de erro */}
+        {error && (
+          <div className="alert alert-danger mb-4">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            {error}
+          </div>
+        )}
 
         {/* Filtros e Estatísticas */}
         <div className="row mb-4 g-3">
@@ -222,6 +212,11 @@ export default function GestaoPedidosBadges() {
               <div className="spinner-border text-primary" role="status"></div>
               <p className="mt-3 text-muted">A carregar pedidos...</p>
             </div>
+          ) : pedidos.length === 0 ? (
+            <div className="text-center py-5">
+              <i className="bi bi-inbox" style={{ fontSize: "3rem", color: "#ccc" }}></i>
+              <p className="mt-3 text-muted">Nenhum pedido encontrado</p>
+            </div>
           ) : (
             <div className="table-responsive">
               <table className="table mb-0">
@@ -229,190 +224,67 @@ export default function GestaoPedidosBadges() {
                   <tr>
                     <th style={{ width: "20%" }}>Utilizador</th>
                     <th style={{ width: "20%" }}>Badge</th>
-                    <th style={{ width: "15%" }}>Área</th>
-                    <th style={{ width: "15%" }}>Status</th>
-                    <th style={{ width: "15%" }}>Data Pedido</th>
-                    <th style={{ width: "15%" }}>Ações</th>
+                    <th style={{ width: "12%" }}>Nível</th>
+                    <th style={{ width: "12%" }}>Status</th>
+                    <th style={{ width: "14%" }}>Data Pedido</th>
+                    <th style={{ width: "22%" }}>Ações</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {pedidosFiltrados.map((pedido) => {
-                    const status = statusBadge(pedido.status);
-                    return (
-                      <tr key={pedido.id} style={{ borderColor: "#e9ecef" }}>
-                        <td className="py-3">
-                          <strong>{pedido.userName}</strong>
-                        </td>
-                        <td className="py-3">
-                          {pedido.badgeName}
-                        </td>
-                        <td className="py-3">
-                          <span style={{ color: "#6b8cae" }}>
-                            {pedido.area}
-                          </span>
-                        </td>
-                        <td className="py-3">
-                          <span className={`badge bg-${getStatusColor(pedido.status)}`}>
-                            <i className={`bi ${status.icon} me-1`}></i>
-                            {status.label}
-                          </span>
-                        </td>
-                        <td className="py-3">
-                          <small>{new Date(pedido.dataPedido).toLocaleDateString('pt-PT')}</small>
-                        </td>
-                        <td className="py-3">
-                          <button
-                            className="btn btn-sm btn-outline-primary"
-                            onClick={() => setShowDetails(pedido)}
-                          >
-                            <i className="bi bi-eye me-1"></i>
-                            Ver Detalhes
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-
-                  {pedidosFiltrados.length === 0 && (
-                    <tr>
-                      <td colSpan="6" className="text-center py-4 text-muted">
-                        Nenhum pedido encontrado com esses critérios.
+                  {pedidos.filter(p => filtro === "all" ? true : p.status === filtro).map((pedido) => (
+                    <tr key={pedido.id} style={{ borderColor: "#e9ecef" }}>
+                      <td className="py-3">
+                        <strong>{pedido.userName}</strong>
+                        <br />
+                        <small className="text-muted">{pedido.userEmail}</small>
+                      </td>
+                      <td className="py-3">
+                        {pedido.badgeName}
+                      </td>
+                      <td className="py-3">
+                        <span className="badge bg-info">{pedido.badgeLevel}</span>
+                      </td>
+                      <td className="py-3">
+                        <span className={`badge bg-${pedido.status === "pending" ? "warning" : pedido.status === "approved" ? "success" : "danger"}`}>
+                          {pedido.status === "pending" ? "Pendente" : pedido.status === "approved" ? "Aprovado" : "Rejeitado"}
+                        </span>
+                      </td>
+                      <td className="py-3">
+                        <small>{pedido.dataPedido}</small>
+                      </td>
+                      <td className="py-3">
+                        {pedido.status === "pending" && (
+                          <>
+                            <button
+                              className="btn btn-sm btn-success me-2"
+                              onClick={() => handleAprovPedido(pedido.id)}
+                            >
+                              <i className="bi bi-check-circle me-1"></i>Aprovar
+                            </button>
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => handleRejectPedido(pedido.id)}
+                            >
+                              <i className="bi bi-x-circle me-1"></i>Rejeitar
+                            </button>
+                          </>
+                        )}
+                        {pedido.status === "approved" && (
+                          <span className="text-success"><i className="bi bi-check2-all"></i> Processado</span>
+                        )}
+                        {pedido.status === "rejected" && (
+                          <span className="text-danger"><i className="bi bi-x-lg"></i> Rejeitado</span>
+                        )}
                       </td>
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
           )}
         </div>
       </main>
-
-      {/* Modal de Detalhes do Pedido */}
-      {showDetails && (
-        <div
-          className="modal show d-block"
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1050
-          }}
-        >
-          <div className="modal-dialog" style={{ maxWidth: "600px" }}>
-            <div className="modal-content border-0 rounded-4">
-              <div className="modal-header border-0 bg-light">
-                <div>
-                  <h5 className="modal-title fw-bold mb-0">Detalhes do Pedido</h5>
-                  <small className="text-muted">ID: {showDetails.id}</small>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowDetails(null)}
-                ></button>
-              </div>
-
-              <div className="modal-body p-4">
-                {/* Informações do Pedido */}
-                <div className="mb-4 p-3 bg-light rounded-3">
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <small className="text-muted fw-semibold">Utilizador</small>
-                      <p className="mb-0"><strong>{showDetails.userName}</strong></p>
-                    </div>
-                    <div className="col-md-6">
-                      <small className="text-muted fw-semibold">Badge Solicitado</small>
-                      <p className="mb-0"><strong>{showDetails.badgeName}</strong></p>
-                    </div>
-                  </div>
-
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <small className="text-muted fw-semibold">Área</small>
-                      <p className="mb-0">{showDetails.area}</p>
-                    </div>
-                    <div className="col-md-6">
-                      <small className="text-muted fw-semibold">Status</small>
-                      <p className="mb-0">
-                        <span className={`badge bg-${getStatusColor(showDetails.status)}`}>
-                          {statusBadge(showDetails.status).label}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="row">
-                    <div className="col-md-6">
-                      <small className="text-muted fw-semibold">Data do Pedido</small>
-                      <p className="mb-0">{new Date(showDetails.dataPedido).toLocaleDateString('pt-PT')}</p>
-                    </div>
-                    <div className="col-md-6">
-                      <small className="text-muted fw-semibold">Prazo (SLA)</small>
-                      <p className="mb-0" style={{ color: new Date(showDetails.prazo) < new Date() ? "#dc3545" : "#198754" }}>
-                        {new Date(showDetails.prazo).toLocaleDateString('pt-PT')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Descrição e Evidência */}
-                <div className="mb-4">
-                  <label className="fw-semibold mb-2">Descrição</label>
-                  <p style={{ color: "#6b8cae" }}>{showDetails.descricao}</p>
-                </div>
-
-                <div className="mb-4">
-                  <label className="fw-semibold mb-2">Evidência/Documento</label>
-                  <div className="p-3 bg-light rounded-3 text-center">
-                    <a href={showDetails.evidencia} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                      <i className="bi bi-file-pdf me-1"></i>
-                      Ver Documento
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer com Ações */}
-              {showDetails.status === "pending" && (
-                <div className="modal-footer border-0 bg-light">
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => handleRejectPedido(showDetails.id)}
-                  >
-                    <i className="bi bi-x-circle me-1"></i>
-                    Rejeitar
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() => handleAprovPedido(showDetails.id)}
-                  >
-                    <i className="bi bi-check-circle me-1"></i>
-                    Aprovar
-                  </button>
-                </div>
-              )}
-
-              {showDetails.status !== "pending" && (
-                <div className="modal-footer border-0 bg-light">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setShowDetails(null)}
-                  >
-                    Fechar
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

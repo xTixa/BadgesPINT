@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import Sidebar from "../../components/sidebar/sidebar";
 
 export default function ExportacaoAdmin() {
@@ -6,26 +7,93 @@ export default function ExportacaoAdmin() {
   const [scope, setScope] = useState("todos");
   const [loading, setLoading] = useState(false);
   const [lastExport, setLastExport] = useState(null);
+  const [dateRange, setDateRange] = useState("ultimo-mes");
+  const [error, setError] = useState(null);
 
-  const handleExport = () => {
+  const getDateRange = () => {
+    const end = new Date();
+    let start = new Date();
+
+    switch (dateRange) {
+      case "ultima-semana":
+        start.setDate(start.getDate() - 7);
+        break;
+      case "ultimo-mes":
+        start.setMonth(start.getMonth() - 1);
+        break;
+      case "ultimo-trimestre":
+        start.setMonth(start.getMonth() - 3);
+        break;
+      case "ano-atual":
+        start = new Date(new Date().getFullYear(), 0, 1);
+        break;
+      default:
+        start.setMonth(start.getMonth() - 1);
+    }
+
+    return { start, end };
+  };
+
+  const handleExport = async () => {
+    if (!scope) {
+      setError("Por favor, selecione um âmbito de exportação.");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      const { start, end } = getDateRange();
+
+      const endpoint = format === "excel" 
+        ? "http://localhost:4000/api/admin/export/excel"
+        : "http://localhost:4000/api/admin/export/pdf";
+
+      const response = await axios.post(
+        endpoint,
+        {
+          scope,
+          startDate: start.toISOString(),
+          endDate: end.toISOString()
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob"
+        }
+      );
+
+      // Criar download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
       setLastExport({
         formato: format,
         abrangencia: scope,
-        data: new Date().toLocaleString(),
-        ficheiro: `${scope}-${format}.zip`
+        data: new Date().toLocaleString("pt-PT"),
+        ficheiro: `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`
       });
+
+    } catch (err) {
+      console.error("Erro na exportação:", err);
+      setError(err.response?.data?.message || "Erro ao exportar dados. Tente novamente.");
+    } finally {
       setLoading(false);
-      alert(`Exportação (${format.toUpperCase()}) gerada com sucesso!`);
-    }, 800);
+    }
   };
 
   const cards = [
-    { title: "Utilizadores", desc: "Dados completos e perfis", icon: "bi-people-fill", value: "todos" },
-    { title: "Badges", desc: "Catalogo, requisitos, estados", icon: "bi-award-fill", value: "badges" },
-    { title: "Learning Paths", desc: "Percursos e passos", icon: "bi-diagram-3-fill", value: "learning-paths" },
-    { title: "Pedidos & SLA", desc: "Fluxos de aprovação", icon: "bi-hourglass-split", value: "pedidos" },
+    { title: "Tudo", desc: "Todos os dados disponíveis", icon: "bi-database-fill", value: "todos" },
+    { title: "Utilizadores", desc: "Dados completos e perfis", icon: "bi-people-fill", value: "users" },
+    { title: "Badges", desc: "Catálogo e requisitos", icon: "bi-award-fill", value: "badges" },
+    { title: "Pedidos", desc: "Fluxos de aprovação", icon: "bi-hourglass-split", value: "pedidos" },
   ];
 
   return (
@@ -95,24 +163,34 @@ export default function ExportacaoAdmin() {
             <div className="row g-3">
               <div className="col-md-6">
                 <label className="form-label fw-semibold">Intervalo temporal</label>
-                <select className="form-select" defaultValue="ultimo-mes">
+                <select 
+                  className="form-select" 
+                  value={dateRange}
+                  onChange={(e) => setDateRange(e.target.value)}
+                >
                   <option value="ultima-semana">Última semana</option>
                   <option value="ultimo-mes">Último mês</option>
                   <option value="ultimo-trimestre">Último trimestre</option>
                   <option value="ano-atual">Ano atual</option>
                 </select>
               </div>
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Inclui dados sensíveis?</label>
-                <select className="form-select" defaultValue="mascarado">
-                  <option value="mascarado">Mascarado</option>
-                  <option value="completo">Completo (RGPD)</option>
-                </select>
-              </div>
             </div>
 
+            {error && (
+              <div className="alert alert-danger mt-3 mb-0">
+                <i className="bi bi-exclamation-triangle me-2"></i>
+                {error}
+              </div>
+            )}
+
             <div className="d-flex justify-content-end mt-4 gap-2">
-              <button className="btn btn-outline-secondary" onClick={() => setLastExport(null)}>
+              <button 
+                className="btn btn-outline-secondary" 
+                onClick={() => {
+                  setLastExport(null);
+                  setError(null);
+                }}
+              >
                 Limpar histórico
               </button>
               <button

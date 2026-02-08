@@ -16,6 +16,8 @@ import adminRequirementRoutes from "./adminRequirementRoutes.js";
 import auditLogRoutes from "./auditLogRoutes.js";
 import ticketRoutes from "./ticketRoutes.js";
 import notificationRoutes from "./notificationRoutes.js";
+import pedidosRoutes from "./pedidosRoutes.js";
+import slaRoutes from "./slaRoutes.js";
 
 const router = Router();
 
@@ -38,5 +40,8 @@ router.use("/api/admin/requirements", adminRequirementRoutes);
 router.use("/api/audit-logs", auditLogRoutes);
 router.use("/api/tickets", ticketRoutes);
 router.use("/api/notifications", notificationRoutes);
+router.use("/api/admin/pedidos", pedidosRoutes);
+router.use("/api/admin/slas", slaRoutes);
+
 
 export default router;
