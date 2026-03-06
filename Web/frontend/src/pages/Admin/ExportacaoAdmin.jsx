@@ -9,6 +9,9 @@ export default function ExportacaoAdmin() {
   const [lastExport, setLastExport] = useState(null);
   const [dateRange, setDateRange] = useState("ultimo-mes");
   const [error, setError] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState(null);
 
   const getDateRange = () => {
     const end = new Date();
@@ -32,6 +35,36 @@ export default function ExportacaoAdmin() {
     }
 
     return { start, end };
+  };
+
+  const getScopeLabel = (value) => {
+    switch (value) {
+      case "todos":
+        return "Todos os dados";
+      case "users":
+        return "Utilizadores";
+      case "badges":
+        return "Badges";
+      case "pedidos":
+        return "Pedidos";
+      default:
+        return "—";
+    }
+  };
+
+  const getRangeLabel = (value) => {
+    switch (value) {
+      case "ultima-semana":
+        return "Última semana";
+      case "ultimo-mes":
+        return "Último mês";
+      case "ultimo-trimestre":
+        return "Último trimestre";
+      case "ano-atual":
+        return "Ano atual";
+      default:
+        return "—";
+    }
   };
 
   const handleExport = async () => {
@@ -96,6 +129,65 @@ export default function ExportacaoAdmin() {
     { title: "Pedidos", desc: "Fluxos de aprovação", icon: "bi-hourglass-split", value: "pedidos" },
   ];
 
+  const { start: previewStart, end: previewEnd } = getDateRange();
+  const previewFile = `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`;
+
+  const fetchPreview = async () => {
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const token = localStorage.getItem("token");
+      const { start, end } = getDateRange();
+
+      const response = await axios.post(
+        "http://localhost:4000/api/admin/export/preview",
+        {
+          scope,
+          startDate: start.toISOString(),
+          endDate: end.toISOString()
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setPreview(response.data);
+    } catch (err) {
+      console.error("Erro na pré-visualização:", err);
+      setPreviewError("Não foi possível obter a pré-visualização.");
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  const renderTable = (columns, rows) => (
+    <div className="table-responsive">
+      <table className="table table-sm mb-0">
+        <thead className="table-light">
+          <tr>
+            {columns.map((c, idx) => (
+              <th key={idx}>{c}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, idx) => (
+            <tr key={idx}>
+              {r.map((cell, i) => (
+                <td key={i}>{cell}</td>
+              ))}
+            </tr>
+          ))}
+          {!rows.length && (
+            <tr>
+              <td colSpan={columns.length} className="text-muted">
+                Sem dados para este período.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
       <Sidebar user={{ role: "admin", name: "Admin" }} />
@@ -109,31 +201,44 @@ export default function ExportacaoAdmin() {
             </h3>
             <p className="text-muted small mt-1">Gerar relatórios para Excel ou PDF com um clique.</p>
           </div>
-          <div className="btn-group" role="group">
-            <input
-              type="radio"
-              className="btn-check"
-              name="format"
-              id="fmtExcel"
-              value="excel"
-              checked={format === "excel"}
-              onChange={(e) => setFormat(e.target.value)}
-            />
-            <label className="btn btn-outline-success" htmlFor="fmtExcel">Excel</label>
+        </div>
 
-            <input
-              type="radio"
-              className="btn-check"
-              name="format"
-              id="fmtPdf"
-              value="pdf"
-              checked={format === "pdf"}
-              onChange={(e) => setFormat(e.target.value)}
-            />
-            <label className="btn btn-outline-danger" htmlFor="fmtPdf">PDF</label>
+        {/* Passo 1: Formato */}
+        <div className="card border-0 shadow-sm rounded-4 mb-4">
+          <div className="card-body">
+            <h6 className="fw-semibold mb-2">Passo 1 · Escolhe o formato</h6>
+            <p className="text-muted small mb-3">Excel para análise, PDF para relatório pronto a partilhar.</p>
+            <div className="btn-group" role="group">
+              <input
+                type="radio"
+                className="btn-check"
+                name="format"
+                id="fmtExcel"
+                value="excel"
+                checked={format === "excel"}
+                onChange={(e) => setFormat(e.target.value)}
+              />
+              <label className="btn btn-outline-success" htmlFor="fmtExcel">Excel</label>
+
+              <input
+                type="radio"
+                className="btn-check"
+                name="format"
+                id="fmtPdf"
+                value="pdf"
+                checked={format === "pdf"}
+                onChange={(e) => setFormat(e.target.value)}
+              />
+              <label className="btn btn-outline-danger" htmlFor="fmtPdf">PDF</label>
+            </div>
           </div>
         </div>
 
+        {/* Passo 2: Âmbito */}
+        <div className="d-flex align-items-center justify-content-between mb-2">
+          <h6 className="fw-semibold mb-0">Passo 2 · O que queres exportar?</h6>
+          <span className="small text-muted">Âmbito atual: {getScopeLabel(scope)}</span>
+        </div>
         <div className="row g-3 mb-4">
           {cards.map((card) => (
             <div key={card.value} className="col-md-3">
@@ -157,9 +262,23 @@ export default function ExportacaoAdmin() {
           ))}
         </div>
 
+        {/* Passo 3: Período */}
         <div className="card border-0 shadow-sm rounded-4 mb-4">
           <div className="card-body">
-            <h6 className="fw-semibold mb-3">Detalhes da exportação</h6>
+            <h6 className="fw-semibold mb-3">Passo 3 · Intervalo temporal</h6>
+            <div className="alert alert-info d-flex align-items-start mb-3" role="alert">
+              <i className="bi bi-info-circle me-2"></i>
+              <div>
+                <div className="fw-semibold">Resumo</div>
+                <div className="small">
+                  Formato: <strong>{format.toUpperCase()}</strong> · Âmbito: <strong>{getScopeLabel(scope)}</strong> · Período: <strong>{getRangeLabel(dateRange)}</strong>
+                </div>
+                <div className="small text-muted">
+                  Datas: {previewStart.toLocaleDateString("pt-PT")} → {previewEnd.toLocaleDateString("pt-PT")}
+                </div>
+                <div className="small text-muted">Ficheiro: {previewFile}</div>
+              </div>
+            </div>
             <div className="row g-3">
               <div className="col-md-6">
                 <label className="form-label fw-semibold">Intervalo temporal</label>
@@ -194,6 +313,13 @@ export default function ExportacaoAdmin() {
                 Limpar histórico
               </button>
               <button
+                className="btn btn-outline-primary"
+                onClick={fetchPreview}
+                disabled={previewLoading}
+              >
+                {previewLoading ? "A carregar..." : "Ver pré-visualização"}
+              </button>
+              <button
                 className="btn btn-success"
                 disabled={loading}
                 onClick={handleExport}
@@ -219,6 +345,38 @@ export default function ExportacaoAdmin() {
             <i className="bi bi-check-circle-fill me-2"></i>
             <div>
               Exportação pronta ({lastExport.formato.toUpperCase()}) | Âmbito: {lastExport.abrangencia} | Ficheiro: {lastExport.ficheiro} | {lastExport.data}
+            </div>
+          </div>
+        )}
+
+        {/* Pré-visualização */}
+        {previewError && (
+          <div className="alert alert-danger">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            {previewError}
+          </div>
+        )}
+
+        {preview && (
+          <div className="card border-0 shadow-sm rounded-4 mb-4">
+            <div className="card-body">
+              <h6 className="fw-semibold mb-3">Pré-visualização (amostra)</h6>
+
+              {preview.sections ? (
+                <div className="d-flex flex-column gap-3">
+                  {preview.sections.map((section, idx) => (
+                    <div key={idx}>
+                      <div className="fw-semibold mb-2">{section.title}</div>
+                      {renderTable(section.columns, section.rows)}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <div className="fw-semibold mb-2">{preview.title || getScopeLabel(scope)}</div>
+                  {renderTable(preview.columns || [], preview.rows || [])}
+                </>
+              )}
             </div>
           </div>
         )}

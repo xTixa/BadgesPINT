@@ -104,6 +104,30 @@ export default function GestaoBadges() {
     }
   };
 
+  // Gerar certificado em PDF
+  const handleGenerateCertificate = async (badge) => {
+    const consultorId = window.prompt("ID do consultor:");
+    if (!consultorId) return;
+
+    try {
+      const response = await axios.post(
+        `http://localhost:4000/api/admin/badges/${badge.id}/certificado`,
+        { consultorId: Number(consultorId) },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob"
+        }
+      );
+
+      const file = new Blob([response.data], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL, "_blank");
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao gerar certificado.");
+    }
+  };
+
   // Filtrar badges
   const badgesFiltrados = badges.filter(b => {
     const matchFiltro = b.description.toLowerCase().includes(filtro.toLowerCase());
@@ -262,6 +286,13 @@ export default function GestaoBadges() {
                         >
                           <i className="bi bi-pencil me-1"></i>
                           Editar
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-success me-2"
+                          onClick={() => handleGenerateCertificate(b)}
+                        >
+                          <i className="bi bi-file-earmark-pdf me-1"></i>
+                          Retificar Certificado
                         </button>
                         <button
                           className="btn btn-sm btn-outline-danger"

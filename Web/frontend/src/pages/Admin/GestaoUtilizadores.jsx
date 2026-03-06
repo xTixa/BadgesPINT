@@ -122,6 +122,11 @@ export default function GestaoUtilizadores() {
       return;
     }
 
+    if (formData.role === "service_line_leader" && !formData.area_id) {
+      alert("Service Line Leader deve ter uma área associada.");
+      return;
+    }
+
     try {
       if (editingUser) {
         // Atualizar utilizador
@@ -393,7 +398,7 @@ export default function GestaoUtilizadores() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">Área</label>
+                  <label className="form-label fw-semibold">Área {formData.role === "service_line_leader" && "(obrigatório)"}</label>
                   <select
                     className="form-select"
                     value={formData.area_id}

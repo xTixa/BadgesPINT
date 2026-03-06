@@ -21,6 +21,7 @@ export const sidebarMenus = {
     icon: "bi-people-fill",
     items: [
       { to: "/tm/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
+      { to: "/admin/gestao-pedidos-badges", label: "Pedidos de Badges", icon: "bi-inbox" },
       { to: "/tm/equipa", label: "Equipa", icon: "bi-person-lines-fill" },
       { to: "/tm/evidencias", label: "Evidências", icon: "bi-folder-check" },
       { to: "/tm/relatorios", label: "Relatórios", icon: "bi-bar-chart-line-fill" },
@@ -36,6 +37,7 @@ export const sidebarMenus = {
     icon: "bi-diagram-3-fill",
     items: [
       { to: "/sl/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
+      { to: "/admin/gestao-pedidos-badges", label: "Pedidos de Badges", icon: "bi-inbox" },
       { to: "/sl/consultores", label: "Consultores", icon: "bi-person-badge-fill" },
       { to: "/sl/badges", label: "Badges Ativos", icon: "bi-patch-exclamation-fill" },
       { to: "/sl/estatisticas", label: "Estatísticas", icon: "bi-bar-chart-line" },

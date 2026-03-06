@@ -21,6 +21,42 @@ const ConsultorBadge = database.define(
       defaultValue: "pendente",
     },
 
+    workflow_status: {
+      type: DataTypes.STRING(20),
+      defaultValue: "open",
+    },
+
+    submitted_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+
+    tm_validator_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    tm_validated_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    tm_comment: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+
+    sl_validator_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    sl_validated_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    sl_comment: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+
     data_atribuicao: {
       type: DataTypes.DATE,
       allowNull: true,

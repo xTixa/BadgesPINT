@@ -46,11 +46,35 @@ export default function DashboardConsultor() {
   const [recomendados, setRecomendados] = useState(mockRecomendados);
   const [specials, setSpecials] = useState(mockSpecialBadges);
   const [alertsExpiracao, setAlertsExpiracao] = useState([]);
+  const [progressByBadge, setProgressByBadge] = useState({});
 
   useEffect(() => {
     const msg = localStorage.getItem("greeting");
     if (msg) setGreeting(msg);
   }, []);
+
+  const handleDownloadCertificate = async (badgeId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Sem token. Faz login novamente.");
+
+      const response = await axios.post(
+        `http://localhost:4000/api/consultor/badges/${badgeId}/certificado`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob"
+        }
+      );
+
+      const file = new Blob([response.data], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL, "_blank");
+    } catch (err) {
+      console.error("Erro ao gerar certificado:", err);
+      alert("Não foi possível gerar o certificado.");
+    }
+  };
 
   // Carregar user + badges ao entrar
   useEffect(() => {
@@ -71,17 +95,24 @@ export default function DashboardConsultor() {
 
         setUser(userRes.data);
 
-        const [badgeRes, lpRes, recRes, expRes] = await Promise.all([
+        const [badgeRes, lpRes, recRes, expRes, progressRes] = await Promise.all([
           axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/badges`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockBadges })),
           axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/learning-paths`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockLPs })),
           axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/recomendados`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockRecomendados })),
           axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/badges-expirar`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockExpiracao })),
+          axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/badges-progress`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
         ]);
 
         setBadges(badgeRes.data || mockBadges);
         setLearningPaths(lpRes.data || mockLPs);
         setRecomendados(recRes.data || mockRecomendados);
         setAlertsExpiracao(expRes.data || mockExpiracao);
+
+        const progressMap = {};
+        (progressRes.data || []).forEach((p) => {
+          progressMap[p.badge_id] = { total: p.total, approved: p.approved };
+        });
+        setProgressByBadge(progressMap);
 
         const total = (badgeRes.data || mockBadges).length;
         const obtidos = (badgeRes.data || mockBadges).filter(b => b.status === "obtido").length;
@@ -159,9 +190,31 @@ export default function DashboardConsultor() {
                         <span className="badge text-bg-primary">{b.pontos || 0} pts</span>
                         {b.expiraEmDias && <span className="badge text-bg-danger">Expira em {b.expiraEmDias}d</span>}
                       </div>
+                      {progressByBadge[b.id] && (
+                        <div className="mt-2">
+                          <div className="small text-muted">Progresso requisitos: {progressByBadge[b.id].approved}/{progressByBadge[b.id].total}</div>
+                          <div className="progress" style={{ height: 6 }}>
+                            <div
+                              className="progress-bar"
+                              role="progressbar"
+                              style={{
+                                width: progressByBadge[b.id].total
+                                  ? `${Math.round((progressByBadge[b.id].approved / progressByBadge[b.id].total) * 100)}%`
+                                  : "0%",
+                                backgroundColor: "#191970"
+                              }}
+                              aria-valuenow={progressByBadge[b.id].approved}
+                              aria-valuemin="0"
+                              aria-valuemax={progressByBadge[b.id].total}
+                            ></div>
+                          </div>
+                        </div>
+                      )}
                       <div className="d-flex gap-2 mt-3">
                         <button className="btn btn-outline-primary btn-sm" onClick={() => alert("Notificação enviada (mock)")}>Ativar notificações</button>
-                        <button className="btn btn-outline-success btn-sm" onClick={() => alert("Certificado PDF (mock)")}>Download Certificado</button>
+                        {b.status === "obtido" && (
+                          <button className="btn btn-outline-success btn-sm" onClick={() => handleDownloadCertificate(b.id)}>Download Certificado</button>
+                        )}
                         <button className="btn btn-outline-info btn-sm" onClick={() => alert("Partilhado no LinkedIn (mock)")}>Partilhar</button>
                       </div>
                     </div>

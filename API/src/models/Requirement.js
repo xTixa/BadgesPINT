@@ -12,6 +12,10 @@ const Requirement = database.define("requirements", {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  title: {
+    type: DataTypes.STRING(150),
+    allowNull: false
+  },
   code: {
     type: DataTypes.STRING(10),
     allowNull: false
@@ -19,6 +23,10 @@ const Requirement = database.define("requirements", {
   description: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  image_url: {
+    type: DataTypes.TEXT,
+    allowNull: true
   }
 }, { 
   timestamps: false,

@@ -133,7 +133,7 @@ export async function exportToExcel(req, res) {
       const pedidos = await database.query(
         `SELECT cb.id, u.name as consultor, b.name as badge, cb.status, cb.created_at, cb.data_atribuicao
          FROM consultor_badges cb
-         JOIN users u ON u.id = cb.user_id
+         JOIN "Users" u ON u.id = cb.consultor_id
          JOIN badges b ON b.id = cb.badge_id
          WHERE cb.created_at BETWEEN :start AND :end
          ORDER BY cb.created_at DESC`,
@@ -252,7 +252,7 @@ export async function exportToPDF(req, res) {
       const pedidos = await database.query(
         `SELECT cb.id, u.name as consultor, b.name as badge, cb.status, cb.created_at
          FROM consultor_badges cb
-         JOIN users u ON u.id = cb.user_id
+         JOIN "Users" u ON u.id = cb.consultor_id
          JOIN badges b ON b.id = cb.badge_id
          WHERE cb.created_at BETWEEN :start AND :end
          ORDER BY cb.created_at DESC
@@ -289,6 +289,117 @@ export async function exportToPDF(req, res) {
   } catch (err) {
     console.error('Erro na exportação PDF:', err);
     res.status(500).json({ message: 'Erro ao exportar dados para PDF' });
+  }
+}
+
+/**
+ * Pré-visualizar dados para exportação (JSON)
+ */
+export async function exportPreview(req, res) {
+  try {
+    const { scope, startDate, endDate } = req.body;
+    const start = startDate ? new Date(startDate) : new Date(new Date().getTime() - 90 * 24 * 60 * 60 * 1000);
+    const end = endDate ? new Date(endDate) : new Date();
+
+    const buildUsers = async () => {
+      const users = await User.findAll({
+        attributes: ['id', 'name', 'email', 'role', 'points_total', 'createdAt'],
+        include: [{ association: 'area', attributes: ['name'] }],
+        order: [['id', 'ASC']],
+        limit: 5
+      });
+      return {
+        title: 'Utilizadores',
+        columns: ['Nome', 'Email', 'Perfil', 'Pontos', 'Área'],
+        rows: users.map(u => [
+          u.name,
+          u.email,
+          u.role,
+          String(u.points_total ?? 0),
+          u.area ? u.area.name : 'N/A'
+        ])
+      };
+    };
+
+    const buildBadges = async () => {
+      const badges = await Badge.findAll({
+        attributes: ['id', 'name', 'description', 'level', 'points', 'expiry_days'],
+        include: [{ association: 'area', attributes: ['name'] }],
+        order: [['id', 'ASC']],
+        limit: 5
+      });
+      return {
+        title: 'Badges',
+        columns: ['Nome', 'Nível', 'Pontos', 'Expira', 'Área'],
+        rows: badges.map(b => [
+          b.name || b.description || `Badge #${b.id}`,
+          b.level,
+          String(b.points ?? 0),
+          b.expiry_days ? `${b.expiry_days}d` : 'Sem expiração',
+          b.area ? b.area.name : 'N/A'
+        ])
+      };
+    };
+
+    const buildLearningPaths = async () => {
+      const lps = await LearningPath.findAll({
+        attributes: ['id', 'name', 'description', 'createdAt'],
+        order: [['id', 'ASC']],
+        limit: 5
+      });
+      return {
+        title: 'Learning Paths',
+        columns: ['Nome', 'Descrição', 'Data criação'],
+        rows: lps.map(lp => [
+          lp.name,
+          lp.description,
+          new Date(lp.createdAt).toLocaleDateString('pt-PT')
+        ])
+      };
+    };
+
+    const buildPedidos = async () => {
+      const pedidos = await database.query(
+        `SELECT cb.id, u.name as consultor, b.name as badge, cb.status, cb.created_at
+         FROM consultor_badges cb
+         JOIN "Users" u ON u.id = cb.consultor_id
+         JOIN badges b ON b.id = cb.badge_id
+         WHERE cb.created_at BETWEEN :start AND :end
+         ORDER BY cb.created_at DESC
+         LIMIT 5`,
+        { type: QueryTypes.SELECT, replacements: { start, end } }
+      );
+      return {
+        title: 'Pedidos',
+        columns: ['Consultor', 'Badge', 'Status', 'Data'],
+        rows: pedidos.map(p => [
+          p.consultor,
+          p.badge,
+          p.status,
+          new Date(p.created_at).toLocaleDateString('pt-PT')
+        ])
+      };
+    };
+
+    if (scope === 'todos') {
+      const sections = await Promise.all([
+        buildUsers(),
+        buildBadges(),
+        buildLearningPaths(),
+        buildPedidos()
+      ]);
+      return res.json({ scope, sections });
+    }
+
+    if (scope === 'users') return res.json(await buildUsers());
+    if (scope === 'badges') return res.json(await buildBadges());
+    if (scope === 'learning-paths') return res.json(await buildLearningPaths());
+    if (scope === 'pedidos') return res.json(await buildPedidos());
+
+    return res.status(400).json({ message: 'Âmbito inválido' });
+  } catch (err) {
+    console.error('Erro na pré-visualização:', err);
+    res.status(500).json({ message: 'Erro ao pré-visualizar dados' });
   }
 }
 

@@ -9,7 +9,8 @@ import {
 } from "../controllers/adminController.js";
 import {
   exportToExcel,
-  exportToPDF
+  exportToPDF,
+  exportPreview
 } from "../controllers/exportController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
@@ -32,5 +33,6 @@ router.delete("/users/:id", deleteUser);
 // Exportação
 router.post("/export/excel", exportToExcel);
 router.post("/export/pdf", exportToPDF);
+router.post("/export/preview", exportPreview);
 
 export default router;

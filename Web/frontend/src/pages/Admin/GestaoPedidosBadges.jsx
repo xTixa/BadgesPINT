@@ -12,6 +12,8 @@ export default function GestaoPedidosBadges() {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user");
+  const currentRole = storedUser ? JSON.parse(storedUser).role : "admin";
 
   // Carregar pedidos do backend
   useEffect(() => {
@@ -37,6 +39,9 @@ export default function GestaoPedidosBadges() {
           badgeLevel: p.badge?.level || "",
           badgePoints: p.badge?.points || 0,
           status: p.status === "obtido" ? "approved" : p.status === "pendente" ? "pending" : "rejected",
+          workflowStatus: p.workflow_status || "open",
+          tmComment: p.tm_comment || "",
+          slComment: p.sl_comment || "",
           dataPedido: new Date(p.created_at).toLocaleDateString("pt-PT"),
           dataAtribuicao: p.data_atribuicao ? new Date(p.data_atribuicao).toLocaleDateString("pt-PT") : "-"
         }));
@@ -105,6 +110,88 @@ export default function GestaoPedidosBadges() {
         return { color: "danger", label: "Rejeitado", icon: "bi-x-circle" };
       default:
         return { color: "secondary", label: "Desconhecido", icon: "bi-question-circle" };
+    }
+  };
+
+  const workflowBadge = (status) => {
+    switch (status) {
+      case "open":
+        return { color: "secondary", label: "Open" };
+      case "submitted":
+        return { color: "warning", label: "Submitted" };
+      case "em_validacao":
+        return { color: "info", label: "Em Validação" };
+      case "fechado":
+        return { color: "success", label: "Fechado" };
+      default:
+        return { color: "secondary", label: "Open" };
+    }
+  };
+
+  const handleTmValidar = async (id) => {
+    const comment = window.prompt("Comentário (opcional):") || "";
+    try {
+      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/tm/validar`, { comment }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "em_validacao", tmComment: comment } : p));
+    } catch (err) {
+      console.error("Erro TM validar pedido:", err);
+      alert("Erro ao validar pedido.");
+    }
+  };
+
+  const handleTmDevolver = async (id) => {
+    const comment = window.prompt("Comentário para devolução:") || "";
+    if (!comment) return;
+    try {
+      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/tm/devolver`, { comment }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "open", tmComment: comment } : p));
+    } catch (err) {
+      console.error("Erro TM devolver pedido:", err);
+      alert("Erro ao devolver pedido.");
+    }
+  };
+
+  const handleSlAprovar = async (id) => {
+    const comment = window.prompt("Comentário (opcional):") || "";
+    try {
+      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/sl/aprovar`, { comment }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "fechado", status: "approved", slComment: comment } : p));
+    } catch (err) {
+      console.error("Erro SL aprovar pedido:", err);
+      alert("Erro ao aprovar pedido.");
+    }
+  };
+
+  const handleSlRejeitar = async (id) => {
+    const comment = window.prompt("Comentário (opcional):") || "";
+    try {
+      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/sl/rejeitar`, { comment }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "fechado", status: "rejected", slComment: comment } : p));
+    } catch (err) {
+      console.error("Erro SL rejeitar pedido:", err);
+      alert("Erro ao rejeitar pedido.");
+    }
+  };
+
+  const handleSlDevolver = async (id) => {
+    const comment = window.prompt("Comentário para devolução:") || "";
+    if (!comment) return;
+    try {
+      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/sl/devolver`, { comment }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "open", status: "pending", slComment: comment } : p));
+    } catch (err) {
+      console.error("Erro SL devolver pedido:", err);
+      alert("Erro ao devolver pedido.");
     }
   };
 
@@ -226,6 +313,7 @@ export default function GestaoPedidosBadges() {
                     <th style={{ width: "20%" }}>Badge</th>
                     <th style={{ width: "12%" }}>Nível</th>
                     <th style={{ width: "12%" }}>Status</th>
+                    <th style={{ width: "12%" }}>Workflow</th>
                     <th style={{ width: "14%" }}>Data Pedido</th>
                     <th style={{ width: "22%" }}>Ações</th>
                   </tr>
@@ -251,10 +339,15 @@ export default function GestaoPedidosBadges() {
                         </span>
                       </td>
                       <td className="py-3">
+                        <span className={`badge bg-${workflowBadge(pedido.workflowStatus).color}`}>
+                          {workflowBadge(pedido.workflowStatus).label}
+                        </span>
+                      </td>
+                      <td className="py-3">
                         <small>{pedido.dataPedido}</small>
                       </td>
                       <td className="py-3">
-                        {pedido.status === "pending" && (
+                        {currentRole === "admin" && pedido.status === "pending" && (
                           <>
                             <button
                               className="btn btn-sm btn-success me-2"
@@ -267,6 +360,29 @@ export default function GestaoPedidosBadges() {
                               onClick={() => handleRejectPedido(pedido.id)}
                             >
                               <i className="bi bi-x-circle me-1"></i>Rejeitar
+                            </button>
+                          </>
+                        )}
+                        {currentRole === "talent_manager" && pedido.workflowStatus === "submitted" && (
+                          <>
+                            <button className="btn btn-sm btn-success me-2" onClick={() => handleTmValidar(pedido.id)}>
+                              <i className="bi bi-check-circle me-1"></i>Validar
+                            </button>
+                            <button className="btn btn-sm btn-warning" onClick={() => handleTmDevolver(pedido.id)}>
+                              <i className="bi bi-arrow-counterclockwise me-1"></i>Devolver
+                            </button>
+                          </>
+                        )}
+                        {currentRole === "service_line_leader" && pedido.workflowStatus === "em_validacao" && (
+                          <>
+                            <button className="btn btn-sm btn-success me-2" onClick={() => handleSlAprovar(pedido.id)}>
+                              <i className="bi bi-check-circle me-1"></i>Aprovar
+                            </button>
+                            <button className="btn btn-sm btn-danger me-2" onClick={() => handleSlRejeitar(pedido.id)}>
+                              <i className="bi bi-x-circle me-1"></i>Rejeitar
+                            </button>
+                            <button className="btn btn-sm btn-warning" onClick={() => handleSlDevolver(pedido.id)}>
+                              <i className="bi bi-arrow-counterclockwise me-1"></i>Devolver
                             </button>
                           </>
                         )}

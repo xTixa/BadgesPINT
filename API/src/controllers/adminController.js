@@ -168,6 +168,10 @@ export async function createUser(req, res) {
       return res.status(400).json({ message: "Dados incompletos." });
     }
 
+    if (role === "service_line_leader" && !area_id) {
+      return res.status(400).json({ message: "Service Line Leader deve ter uma área associada." });
+    }
+
     const exists = await User.findOne({ where: { email } });
     if (exists)
       return res.status(400).json({ message: "Email já existe." });
@@ -221,7 +225,10 @@ export async function updateUser(req, res) {
     if (name) user.name = name;
     if (email) user.email = email;
     if (role) user.role = role;
-    if (area_id) user.area_id = area_id;
+    if (role === "service_line_leader" && !area_id && !user.area_id) {
+      return res.status(400).json({ message: "Service Line Leader deve ter uma área associada." });
+    }
+    if (area_id !== undefined) user.area_id = area_id || null;
     if (password) user.password_hash = await bcryptjs.hash(password, 10);
 
     await user.save();

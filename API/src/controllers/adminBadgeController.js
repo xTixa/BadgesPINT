@@ -1,7 +1,10 @@
 import Badge from "../models/Badge.js";
 import Requirement from "../models/Requirement.js";
 import Area from "../models/Area.js";
+import User from "../models/User.js";
+import ConsultorBadge from "../models/ConsultorBadge.js";
 import { v2 as cloudinary } from "cloudinary";
+import PDFDocument from "pdfkit";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -50,8 +53,28 @@ export async function adminGetBadge(req, res) {
 // CRIAR BADGE
 export async function adminCreateBadge(req, res) {
   try {
-    const newBadge = await Badge.create(req.body);
-    res.status(201).json(newBadge);
+    const { requirements, ...badgeData } = req.body;
+    const newBadge = await Badge.create(badgeData);
+
+    if (Array.isArray(requirements) && requirements.length > 0) {
+      const formatted = requirements.map((r, idx) => ({
+        badge_id: newBadge.id,
+        title: r.title || `Requisito ${idx + 1}`,
+        code: r.code || `A${idx + 1}`,
+        description: r.description || "",
+        image_url: r.image_url || null
+      }));
+      await Requirement.bulkCreate(formatted);
+    }
+
+    const created = await Badge.findByPk(newBadge.id, {
+      include: [
+        { model: Area, as: "area", attributes: ["id", "name"] },
+        { model: Requirement, as: "requirements" }
+      ]
+    });
+
+    res.status(201).json(created);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao criar badge" });
@@ -61,12 +84,27 @@ export async function adminCreateBadge(req, res) {
 // ATUALIZAR BADGE
 export async function adminUpdateBadge(req, res) {
   try {
+    const { requirements, ...badgeData } = req.body;
     const badge = await Badge.findByPk(req.params.id);
     if (!badge) {
       return res.status(404).json({ message: "Badge não encontrado" });
     }
 
-    await badge.update(req.body);
+    await badge.update(badgeData);
+
+    if (Array.isArray(requirements)) {
+      await Requirement.destroy({ where: { badge_id: badge.id } });
+      if (requirements.length > 0) {
+        const formatted = requirements.map((r, idx) => ({
+          badge_id: badge.id,
+          title: r.title || `Requisito ${idx + 1}`,
+          code: r.code || `A${idx + 1}`,
+          description: r.description || "",
+          image_url: r.image_url || null
+        }));
+        await Requirement.bulkCreate(formatted);
+      }
+    }
     
     const updated = await Badge.findByPk(req.params.id, {
       include: [
@@ -188,5 +226,79 @@ export async function adminUploadBadgeImage(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao enviar imagem" });
+  }
+}
+
+// 📌 GERAR CERTIFICADO PDF DO BADGE
+export async function adminGenerateBadgeCertificate(req, res) {
+  try {
+    const { badgeId } = req.params;
+    const { consultorId } = req.body;
+
+    if (!consultorId) {
+      return res.status(400).json({ error: "consultorId é obrigatório" });
+    }
+
+    const [badge, consultor] = await Promise.all([
+      Badge.findByPk(badgeId),
+      User.findByPk(consultorId)
+    ]);
+
+    if (!badge) return res.status(404).json({ error: "Badge não encontrado" });
+    if (!consultor) return res.status(404).json({ error: "Consultor não encontrado" });
+
+    const consultorBadge = await ConsultorBadge.findOne({
+      where: {
+        consultor_id: consultorId,
+        badge_id: badgeId,
+        status: "obtido"
+      }
+    });
+
+    if (!consultorBadge) {
+      return res.status(400).json({ error: "O consultor ainda não concluiu este badge" });
+    }
+
+    const badgeName = badge.name || badge.title || badge.description || `Badge #${badge.id}`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `inline; filename="certificado-badge-${badge.id}.pdf"`);
+
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    doc.pipe(res);
+
+    doc.fontSize(26).fillColor("#244080").text("Certificado de Conclusão", { align: "center" });
+    doc.moveDown(1.5);
+
+    if (badge.image_url) {
+      try {
+        const imageRes = await fetch(badge.image_url);
+        if (imageRes.ok) {
+          const imageBuffer = Buffer.from(await imageRes.arrayBuffer());
+          const imgWidth = 180;
+          const x = (doc.page.width - imgWidth) / 2;
+          doc.image(imageBuffer, x, doc.y, { width: imgWidth });
+          doc.moveDown(2.5);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar imagem do badge:", err);
+      }
+    }
+
+    doc.fontSize(14).fillColor("#2b2b2b");
+    doc.text(`Certifica-se que o Consultor ${consultor.name} concluiu`, { align: "center" });
+    doc.moveDown(0.5);
+    doc.fontSize(18).fillColor("#244080").text(`${badgeName}`, { align: "center" });
+    doc.moveDown(1.5);
+    doc.fontSize(12).fillColor("#2b2b2b").text(`Data: ${new Date().toLocaleDateString("pt-PT")}`, { align: "center" });
+
+    doc.moveDown(3);
+    doc.fontSize(12).fillColor("#6b8cae").text("______________________________", { align: "center" });
+    doc.text("Assinatura", { align: "center" });
+
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao gerar certificado" });
   }
 }
