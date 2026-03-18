@@ -78,7 +78,7 @@ export default function CriarTicket() {
 
       <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
       <div className="mb-8">
-        <h2 className="flex items-center gap-2 text-2xl font-bold text-[#013440] sm:text-3xl">
+        <h2 className="flex items-center gap-2 text-2xl font-bold text-slate-800 sm:text-3xl">
           <i className="bi bi-ticket"></i>
           Criar Novo Ticket
         </h2>
@@ -101,7 +101,7 @@ export default function CriarTicket() {
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="titulo" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
+            <label htmlFor="titulo" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
               Título do Ticket <span style={{ color: "red" }}>*</span>
             </label>
             <input
@@ -120,7 +120,7 @@ export default function CriarTicket() {
           </div>
 
           <div className="mb-3">
-            <label htmlFor="descricao" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
+            <label htmlFor="descricao" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
               Descrição <span style={{ color: "red" }}>*</span>
             </label>
             <textarea
@@ -141,7 +141,7 @@ export default function CriarTicket() {
 
           <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label htmlFor="categoria" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
+              <label htmlFor="categoria" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
                 Categoria
               </label>
               <select
@@ -160,7 +160,7 @@ export default function CriarTicket() {
             </div>
 
             <div>
-              <label htmlFor="prioridade" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
+              <label htmlFor="prioridade" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
                 Prioridade
               </label>
               <select
@@ -207,7 +207,7 @@ export default function CriarTicket() {
         </form>
 
         <div className="mt-8 rounded-xl border border-sky-200 bg-sky-50 p-4">
-          <h5 className="mb-2 text-sm font-semibold text-[#013440] sm:text-base">
+          <h5 className="mb-2 text-sm font-semibold text-slate-800 sm:text-base">
             <i className="bi bi-lightbulb"></i> Dicas para um ticket melhor:
           </h5>
           <ul className="mb-0 list-disc pl-5 text-xs text-slate-500 sm:text-sm">

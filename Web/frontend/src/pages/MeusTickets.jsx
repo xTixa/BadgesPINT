@@ -106,7 +106,7 @@ export default function MeusTickets() {
 
       <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
       <div className="mb-8">
-        <h2 className="flex items-center gap-2 text-2xl font-bold text-[#013440] sm:text-3xl">
+        <h2 className="flex items-center gap-2 text-2xl font-bold text-slate-800 sm:text-3xl">
           <i className="bi bi-ticket-detailed"></i>
           Meus Tickets
         </h2>
@@ -179,7 +179,7 @@ export default function MeusTickets() {
                 onClick={() => setTicketSelecionado(ticket)}
               >
                 <div className="mb-4">
-                  <h5 className="mb-2 text-base font-semibold text-[#013440]">
+                  <h5 className="mb-2 text-base font-semibold text-slate-800">
                     {ticket.titulo}
                   </h5>
                   <div className="flex flex-wrap gap-2">
@@ -265,7 +265,7 @@ export default function MeusTickets() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
-              <h3 className="text-xl font-bold text-[#013440] sm:text-2xl">
+              <h3 className="text-xl font-bold text-slate-800 sm:text-2xl">
                 {ticketSelecionado.titulo}
               </h3>
               <button
@@ -278,14 +278,14 @@ export default function MeusTickets() {
 
             <div className="mb-6 space-y-4">
               <div>
-                <strong className="text-[#013440]">Status:</strong>
+                <strong className="text-slate-800">Status:</strong>
                 <div className="mt-2">
                   {getStatusBadge(ticketSelecionado.status)}
                 </div>
               </div>
 
               <div>
-                <strong className="text-[#013440]">Prioridade:</strong>
+                <strong className="text-slate-800">Prioridade:</strong>
                 <span
                   className="ml-2 rounded px-3 py-1 text-sm"
                   style={{ backgroundColor: getPriorityColor(ticketSelecionado.prioridade) + "20", color: getPriorityColor(ticketSelecionado.prioridade) }}
@@ -295,7 +295,7 @@ export default function MeusTickets() {
               </div>
 
               <div>
-                <strong className="text-[#013440]">Criado em:</strong>
+                <strong className="text-slate-800">Criado em:</strong>
                 <p className="mt-1 text-slate-500">
                   {new Date(ticketSelecionado.createdAt).toLocaleString("pt-PT")}
                 </p>
@@ -303,7 +303,7 @@ export default function MeusTickets() {
             </div>
 
             <div className="mb-6 border-b border-slate-200 pb-6">
-              <strong className="text-[#013440]">Descrição:</strong>
+              <strong className="text-slate-800">Descrição:</strong>
               <p className="mt-3 whitespace-pre-wrap text-slate-500">
                 {ticketSelecionado.descricao}
               </p>
@@ -311,7 +311,7 @@ export default function MeusTickets() {
 
             {ticketSelecionado.resposta_admin && (
               <div className="mb-4 rounded-lg bg-slate-100 p-4">
-                <strong className="text-[#013440]">Resposta do Administrador:</strong>
+                <strong className="text-slate-800">Resposta do Administrador:</strong>
                 <p className="mt-3 whitespace-pre-wrap text-slate-500">
                   {ticketSelecionado.resposta_admin}
                 </p>

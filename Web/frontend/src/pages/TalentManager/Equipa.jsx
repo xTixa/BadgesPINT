@@ -18,13 +18,13 @@ export default function Equipa() {
       <Sidebar user={{ role: "talentManager", name: "Talent Manager" }} />
 
       <main className="admin-main">
-        <div className="mb-4 rounded-2xl bg-[#013440] p-4 text-white shadow-sm">
+        <div className="mb-4 rounded-2xl bg-[#2AA4BF] p-4 text-white shadow-sm">
           <h3 className="mb-1 text-xl font-bold sm:text-2xl">Equipa</h3>
-          <p className="m-0 text-sm text-white/80 sm:text-base">Progresso, requisitos e timeline de evoluÃ§Ã£o por consultor.</p>
+          <p className="m-0 text-sm text-white/80 sm:text-base">Progresso, requisitos e timeline de evolução por consultor.</p>
         </div>
 
         <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[{ label: "Total de Consultores", icon: "bi-people-fill", valor: consultores.length, cor: "text-sky-600" }, { label: "MÃ©dia de Pontos", icon: "bi-star-fill", valor: mediaPontos, cor: "text-amber-500" }, { label: "MÃ©dia de Progresso", icon: "bi-graph-up-arrow", valor: `${mediaProgresso}%`, cor: "text-emerald-600" }].map((card) => (
+          {[{ label: "Total de Consultores", icon: "bi-people-fill", valor: consultores.length, cor: "text-sky-600" }, { label: "Média de Pontos", icon: "bi-star-fill", valor: mediaPontos, cor: "text-amber-500" }, { label: "Média de Progresso", icon: "bi-graph-up-arrow", valor: `${mediaProgresso}%`, cor: "text-emerald-600" }].map((card) => (
             <div key={card.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="mb-2 flex items-center gap-2">
                 <i className={`bi ${card.icon} text-2xl ${card.cor}`}></i>
@@ -57,11 +57,11 @@ export default function Equipa() {
                   <thead className="bg-slate-100 text-slate-700">
                       <tr>
                       <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                      <th className="px-3 py-2 text-left font-semibold">FunÃ§Ã£o</th>
+                      <th className="px-3 py-2 text-left font-semibold">Função</th>
                       <th className="px-3 py-2 text-left font-semibold">Service Line</th>
                       <th className="px-3 py-2 text-left font-semibold">Pontos</th>
                       <th className="px-3 py-2 text-left font-semibold">Badges</th>
-                      <th className="px-3 py-2 text-left font-semibold">ExpiraÃ§Ã£o</th>
+                      <th className="px-3 py-2 text-left font-semibold">Expiração</th>
                       <th className="px-3 py-2 text-left font-semibold">Progresso</th>
                       <th className="px-3 py-2 text-right font-semibold">Timeline</th>
                       </tr>
@@ -84,7 +84,7 @@ export default function Equipa() {
                         <td className="min-w-[160px] px-3 py-2">
                           <div className="flex items-center gap-2">
                             <div className="h-1.5 flex-1 rounded-full bg-slate-200">
-                              <div className="h-1.5 rounded-full bg-[#013440]" style={{ width: `${c.progresso}%` }}></div>
+                              <div className="h-1.5 rounded-full bg-[#2AA4BF]" style={{ width: `${c.progresso}%` }}></div>
                               </div>
                             <span className="text-xs text-slate-500">{c.progresso}%</span>
                             </div>
@@ -107,7 +107,7 @@ export default function Equipa() {
 
           <div className="lg:col-span-4">
             <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h6 className="mb-2 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-fire mr-2 text-rose-600"></i>Badges prÃ³ximos da expiraÃ§Ã£o</h6>
+              <h6 className="mb-2 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-fire mr-2 text-rose-600"></i>Badges próximos da expiração</h6>
               <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
                   {consultores
                     .flatMap((c) => c.badgesExpirando)
@@ -122,7 +122,7 @@ export default function Equipa() {
                       </li>
                     ))}
                   {!consultores.some((c) => c.badgesExpirando.length) && (
-                  <li className="px-3 py-3 text-sm text-slate-500">Sem expiraÃ§Ãµes prÃ³ximas.</li>
+                  <li className="px-3 py-3 text-sm text-slate-500">Sem expirações próximas.</li>
                   )}
                 </ul>
             </div>
@@ -168,18 +168,18 @@ export default function Equipa() {
 const sampleConsultores = [
   {
     id: 1,
-    nome: "PatrÃ­cia Almeida",
-    cargo: "Consultora JÃºnior",
+    nome: "Patrícia Almeida",
+    cargo: "Consultora Júnior",
     serviceLine: "Outsystems",
     pontos: 820,
     progresso: 75,
     badges: 4,
     expirando: 15,
-    badgesExpirando: [{ consultor: "PatrÃ­cia", nome: "Outsystems AvanÃ§ado", expiraEmDias: 15 }],
+    badgesExpirando: [{ consultor: "Patrícia", nome: "Outsystems Avançado", expiraEmDias: 15 }],
   },
   {
     id: 2,
-    nome: "JoÃ£o Silva",
+    nome: "João Silva",
     cargo: "Consultor",
     serviceLine: "DevOps",
     pontos: 960,
@@ -202,13 +202,13 @@ const sampleConsultores = [
 ];
 
 const requisitos = [
-  { id: 1, badge: "DevOps IntermÃ©dio", requisito: "Pipeline CI/CD + MonitorizaÃ§Ã£o" },
+  { id: 1, badge: "DevOps Intermédio", requisito: "Pipeline CI/CD + Monitorização" },
   { id: 2, badge: "React Advanced", requisito: "Projetos com hooks e testes" },
-  { id: 3, badge: "Azure Fundamentals", requisito: "CertificaÃ§Ã£o AZ-900" },
+  { id: 3, badge: "Azure Fundamentals", requisito: "Certificação AZ-900" },
 ];
 
 const conquistas = [
-  { id: 1, nome: "Badge Elite", desc: "Badges concluÃ­dos sem rejeiÃ§Ãµes", icon: "bi-trophy-fill" },
+  { id: 1, nome: "Badge Elite", desc: "Badges concluídos sem rejeições", icon: "bi-trophy-fill" },
   { id: 2, nome: "Ponto Extra", desc: "Cumpriu prazos antes do SLA", icon: "bi-lightning-fill" },
 ];
 

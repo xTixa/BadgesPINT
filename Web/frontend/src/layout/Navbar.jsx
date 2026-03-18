@@ -29,8 +29,8 @@ export default function Navbar() {
     `text-sm font-semibold pb-1 transition
     ${
     isActive
-    ? "text-[#0D0D0D] border-b-2 border-[#04C4D9]"
-    : "text-[#0D0D0D]/70 hover:text-[#0D0D0D]"
+    ? "text-slate-800 border-b-2 border-[#04C4D9]"
+    : "text-slate-600 hover:text-[#04C4D9]"
     }`;
 
   return (
@@ -41,9 +41,9 @@ export default function Navbar() {
             {/* LOGO */}
             <Link
               to="/"
-              className="flex items-center gap-3 no-underline text-[#013440]"
+              className="flex items-center gap-3 no-underline text-slate-800"
             >
-              <div className="flex items-center justify-center rounded-lg bg-[#013440] p-2 text-[#F2F2F2]">
+              <div className="flex items-center justify-center rounded-lg bg-[#2AA4BF] p-2 text-[#F2F2F2]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ export default function Navbar() {
                   />
                 </svg>
               </div>
-              <span className="text-lg font-semibold tracking-tight text-[#0D0D0D]">Badges</span>
+              <span className="text-lg font-semibold tracking-tight text-slate-800">Badges</span>
             </Link>
 
             {/* LINKS DESKTOP */}
@@ -82,7 +82,7 @@ export default function Navbar() {
               {!user ? (
                 <Link
                   to="/login"
-                  className="rounded-lg bg-[#013440] px-5 py-2 text-sm font-semibold text-white no-underline"
+                  className="rounded-lg bg-[#2AA4BF] px-5 py-2 text-sm font-semibold text-white no-underline"
                 >
                   Sign In
                 </Link>
@@ -98,7 +98,7 @@ export default function Navbar() {
                     }}
                   >
                     <button
-                      className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#2AA4BF] bg-white px-3 py-2 font-semibold text-[#0D0D0D]"
+                      className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#2AA4BF] bg-white px-3 py-2 font-semibold text-slate-800"
                     >
                       <i className="bi bi-person-circle text-xl"></i>
                       {user.name.split(" ")[0]}
@@ -106,7 +106,7 @@ export default function Navbar() {
 
                     {dropdownOpen && (
                       <div
-                        className="absolute right-0 z-[1000] mt-2 w-48 rounded-lg border border-[#2AA4BF] bg-white text-[#0D0D0D]"
+                        className="absolute right-0 z-[1000] mt-2 w-48 rounded-lg border border-[#2AA4BF] bg-white text-slate-800"
                       >
                         {[
                           {
@@ -130,7 +130,7 @@ export default function Navbar() {
                           <Link
                             key={to}
                             to={to}
-                            className={`block px-4 py-2 text-sm no-underline text-[#0D0D0D] ${label === "Configurações" ? "" : "border-b border-[#2AA4BF]"}`}
+                            className={`block px-4 py-2 text-sm no-underline text-slate-800 ${label === "Configurações" ? "" : "border-b border-[#2AA4BF]"}`}
                           >
                             {label}
                           </Link>
@@ -138,7 +138,7 @@ export default function Navbar() {
 
                         <button
                           onClick={handleLogout}
-                          className="w-full cursor-pointer border-0 border-t border-[#2AA4BF] bg-transparent px-4 py-2 text-left text-sm text-[#0D0D0D]"
+                          className="w-full cursor-pointer border-0 border-t border-[#2AA4BF] bg-transparent px-4 py-2 text-left text-sm text-slate-800"
                         >
                           Logout
                         </button>
@@ -151,7 +151,7 @@ export default function Navbar() {
 
             {/* MOBILE BUTTON */}
             <button
-              className="cursor-pointer rounded-lg border border-[#2AA4BF] bg-white p-2 text-[#013440] md:hidden"
+              className="cursor-pointer rounded-lg border border-[#2AA4BF] bg-white p-2 text-slate-800 md:hidden"
               onClick={() => setOpen(!open)}
             >
               <i className={`bi ${open ? "bi-x-lg" : "bi-list"} text-xl`}></i>
@@ -170,7 +170,7 @@ export default function Navbar() {
                 key={to}
                 to={to}
                 onClick={() => setOpen(false)}
-                className="mb-1 block rounded-md px-3 py-2 no-underline text-[#013440]"
+                className="mb-1 block rounded-md px-3 py-2 no-underline text-slate-800"
               >
                 {label}
               </NavLink>
@@ -180,14 +180,14 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="mt-2 block rounded-md bg-[#013440] px-3 py-2 text-center text-sm font-semibold text-white no-underline"
+                className="mt-2 block rounded-md bg-[#2AA4BF] px-3 py-2 text-center text-sm font-semibold text-white no-underline"
               >
                 Sign In
               </Link>
             ) : (
               <button
                 onClick={handleLogout}
-                className="mt-2 block w-full cursor-pointer rounded-md border-0 bg-[#013440] px-3 py-2 text-sm font-semibold text-white"
+                className="mt-2 block w-full cursor-pointer rounded-md border-0 bg-[#2AA4BF] px-3 py-2 text-sm font-semibold text-white"
               >
                 Terminar Sessão
               </button>

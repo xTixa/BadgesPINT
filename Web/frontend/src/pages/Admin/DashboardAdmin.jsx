@@ -16,7 +16,7 @@ export default function DashboardAdmin() {
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
   const [startDate, setStartDate] = useState(toDateInput(defaultStart));
   const [endDate, setEndDate] = useState(toDateInput(defaultEnd));
-  const [badgePrompt, setBadgePrompt] = useState("Badge circular dourado, Ã­cone de estrela, estilo flat, fundo azul escuro");
+  const [badgePrompt, setBadgePrompt] = useState("Badge circular dourado, ícone de estrela, estilo flat, fundo azul escuro");
   const [badgeSize, setBadgeSize] = useState("1024x1024");
   const [badgeImage, setBadgeImage] = useState("");
   const [badgeImageUrl, setBadgeImageUrl] = useState("");
@@ -55,7 +55,7 @@ export default function DashboardAdmin() {
         setKpis(res.data);
 
       } catch (err) {
-        console.error("Erro a carregar estatÃ­sticas do admin:", err);
+        console.error("Erro a carregar estatísticas do admin:", err);
       } finally {
         setLoading(false);
       }
@@ -100,7 +100,7 @@ export default function DashboardAdmin() {
   const levelChartData = kpis.badgesByLevel.length ? {
     labels: kpis.badgesByLevel.map((l) => l.level),
     datasets: [{
-      label: "Badges por nÃ­vel",
+      label: "Badges por nível",
       data: kpis.badgesByLevel.map((l) => Number(l.count)),
       backgroundColor: '#04C4D9',
       borderColor: '#2AA4BF',
@@ -114,7 +114,7 @@ export default function DashboardAdmin() {
       label: "Badges por Learning Path",
       data: kpis.badgesByLearningPath.map((lp) => Number(lp.count)),
       backgroundColor: '#2AA4BF',
-      borderColor: '#013440',
+      borderColor: '#2AA4BF',
       borderWidth: 1,
     }],
   } : null;
@@ -151,12 +151,12 @@ export default function DashboardAdmin() {
   const shortcuts = [
     { icon: "bi-inbox", title: "Pedidos de Badges", subtitle: "Aprovar/Rejeitar", color: "#0dcaf0", route: "/admin/gestao-pedidos-badges" },
     { icon: "bi-hourglass-split", title: "SLA Equipa", subtitle: "Definir prazos", color: "#f0ad4e", route: "/admin/gestao-sla" },
-    { icon: "bi-award-fill", title: "GestÃ£o de Badges", subtitle: "Criar/Editar", color: "#04C4D9", route: "/admin/gestao-badges" },
+    { icon: "bi-award-fill", title: "Gestão de Badges", subtitle: "Criar/Editar", color: "#04C4D9", route: "/admin/gestao-badges" },
     { icon: "bi-diagram-3-fill", title: "Learning Paths", subtitle: "Configurar", color: "#04C4D9", route: "/admin/gestao-learning-paths" },
-    { icon: "bi-people-fill", title: "Utilizadores", subtitle: "Perfis e permissÃµes", color: "#2AA4BF", route: "/admin/gestao-utilizadores" },
+    { icon: "bi-people-fill", title: "Utilizadores", subtitle: "Perfis e permissões", color: "#2AA4BF", route: "/admin/gestao-utilizadores" },
     { icon: "bi-file-earmark-arrow-down", title: "Exportar Dados", subtitle: "Excel/PDF", color: "#04C4D9", route: "/admin/exportacao" },
     { icon: "bi-megaphone-fill", title: "Avisos", subtitle: "Broadcast interno", color: "#2AA4BF", route: "/admin/avisos" },
-    { icon: "bi-gear-fill", title: "ConfiguraÃ§Ãµes", subtitle: "NotificaÃ§Ãµes e RGPD", color: "#6f42c1", route: "/admin/configuracoes" }
+    { icon: "bi-gear-fill", title: "Configurações", subtitle: "Notificações e RGPD", color: "#6f42c1", route: "/admin/configuracoes" }
   ];
 
   async function handleGenerateBadge() {
@@ -166,7 +166,7 @@ export default function DashboardAdmin() {
     setBadgeUploadError("");
 
     if (!badgePrompt.trim()) {
-      setBadgeError("Escreve uma descriÃ§Ã£o do badge.");
+      setBadgeError("Escreve uma descrição do badge.");
       return;
     }
 
@@ -186,19 +186,19 @@ export default function DashboardAdmin() {
 
       setBadgeImage(res.data?.image || "");
       if (!res.data?.image) {
-        setBadgeError("A resposta nÃ£o trouxe imagem.");
+        setBadgeError("A resposta não trouxe imagem.");
       }
     } catch (err) {
       console.error("Erro ao gerar badge:", err);
       const status = err?.response?.status;
       const details = err?.response?.data?.details;
       if (status === 410) {
-        setBadgeError("Modelo indisponÃ­vel. Tenta mudar o HF_MODEL_ID ou aceita os termos do modelo no Hugging Face.");
+        setBadgeError("Modelo indisponível. Tenta mudar o HF_MODEL_ID ou aceita os termos do modelo no Hugging Face.");
       } else if (details) {
         const detailText = typeof details === "string" ? details : JSON.stringify(details);
-        setBadgeError(`NÃ£o foi possÃ­vel gerar a imagem. ${detailText}`);
+        setBadgeError(`Não foi possível gerar a imagem. ${detailText}`);
       } else {
-        setBadgeError("NÃ£o foi possÃ­vel gerar a imagem.");
+        setBadgeError("Não foi possível gerar a imagem.");
       }
     } finally {
       setIsGenerating(false);
@@ -229,11 +229,11 @@ export default function DashboardAdmin() {
 
       setBadgeImageUrl(res.data?.url || "");
       if (!res.data?.url) {
-        setBadgeUploadError("A resposta nÃ£o trouxe URL.");
+        setBadgeUploadError("A resposta não trouxe URL.");
       }
     } catch (err) {
       console.error("Erro ao fazer upload:", err);
-      setBadgeUploadError("NÃ£o foi possÃ­vel guardar a imagem.");
+      setBadgeUploadError("Não foi possível guardar a imagem.");
     } finally {
       setIsUploading(false);
     }
@@ -302,7 +302,7 @@ export default function DashboardAdmin() {
               <div className="mb-6">
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm sm:px-5 sm:py-4">
                   <span className="font-semibold">
-                      Badges obtidos no perÃ­odo ({rangeStart} a {rangeEnd})
+                      Badges obtidos no período ({rangeStart} a {rangeEnd})
                   </span>
                   <span className="text-xl font-bold text-emerald-600">{kpis.badgesByRange?.count || 0}</span>
                   <div className="flex items-center gap-2">
@@ -356,12 +356,12 @@ export default function DashboardAdmin() {
                   <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:items-end">
                     <div className="lg:col-span-7">
                       <label className="mb-1 block text-sm font-semibold text-slate-700">
-                        DescriÃ§Ã£o do badge
+                        Descrição do badge
                       </label>
                       <textarea
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                         rows={3}
-                        placeholder="Ex.: Badge circular dourado, Ã­cone de estrela, estilo flat, fundo azul escuro"
+                        placeholder="Ex.: Badge circular dourado, ícone de estrela, estilo flat, fundo azul escuro"
                         value={badgePrompt}
                         onChange={(e) => setBadgePrompt(e.target.value)}
                       />
@@ -435,14 +435,14 @@ export default function DashboardAdmin() {
                 <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-bar-chart-fill text-slate-500"></i>
-                      Badges obtidos por mÃªs
+                      Badges obtidos por mês
                     </h6>
                     {barChartData ? (
                       <div style={{ height: isMobile ? "250px" : "300px" }}>
                         <Bar data={barChartData} options={chartOptions} />
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">Sem registos para o perÃ­odo selecionado.</p>
+                      <p className="text-sm text-slate-500">Sem registos para o período selecionado.</p>
                     )}
                 </div>
 
@@ -456,14 +456,14 @@ export default function DashboardAdmin() {
                         <Line data={lineChartData} options={chartOptions} />
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">Sem registos para o perÃ­odo selecionado.</p>
+                      <p className="text-sm text-slate-500">Sem registos para o período selecionado.</p>
                     )}
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-pie-chart-fill text-slate-500"></i>
-                      DistribuiÃ§Ã£o por Tipo de Utilizador
+                      Distribuição por Tipo de Utilizador
                     </h6>
                     {doughnutDataUsers ? (
                       <div style={{ height: isMobile ? "250px" : "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -491,14 +491,14 @@ export default function DashboardAdmin() {
                 <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-layers text-emerald-500"></i>
-                      Badges por NÃ­vel
+                      Badges por Nível
                     </h6>
                     {levelChartData ? (
                       <div style={{ height: isMobile ? "250px" : "300px" }}>
                         <Bar data={levelChartData} options={chartOptions} />
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">Sem registos de badges por nÃ­vel.</p>
+                      <p className="text-sm text-slate-500">Sem registos de badges por nível.</p>
                     )}
                 </div>
               </div>

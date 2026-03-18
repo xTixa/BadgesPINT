@@ -46,14 +46,14 @@ export default function ServiceLines() {
   };
 
   const getCardColor = (index) => {
-    const colors = ["bg-[#2AA4BF]", "bg-[#04C4D9]", "bg-[#013440]", "bg-[#2AA4BF]"];
+    const colors = ["bg-[#2AA4BF]", "bg-[#04C4D9]", "bg-[#2AA4BF]", "bg-[#2AA4BF]"];
     return colors[index % colors.length];
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className="bg-[#013440] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
+      <div className="bg-[#2AA4BF] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
@@ -80,7 +80,7 @@ export default function ServiceLines() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#013440] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#2AA4BF] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar service lines...</p>
           </div>
         ) : sls.length > 0 ? (
@@ -101,13 +101,13 @@ export default function ServiceLines() {
                   
                   {/* Badge com número */}
                   <div className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#2AA4BF]">
-                    <span className="text-lg font-bold text-[#013440]">{index + 1}</span>
+                    <span className="text-lg font-bold text-slate-800">{index + 1}</span>
                   </div>
                 </div>
 
                 {/* Card Body */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-[#013440] mb-3">
+                  <h3 className="text-xl font-bold text-slate-800 mb-3">
                     {sl.name}
                   </h3>
                   <p className="text-gray-600 text-sm mb-6 min-h-[60px]">
@@ -117,7 +117,7 @@ export default function ServiceLines() {
                   {/* Action Button */}
                   <Link
                     to={`/service-lines/${sl.id}/areas`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#013440] text-white font-semibold hover:bg-[#013440]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#2AA4BF] text-white font-semibold hover:bg-[#2AA4BF]"
                   >
                     Ver Áreas →
                   </Link>

@@ -41,7 +41,7 @@ export default function DashboardServiceLine() {
   const badgesNivelChart = {
     labels: badgesByLevel.map((l) => l.level),
     datasets: [{
-      label: "Badges por nÃ­vel",
+      label: "Badges por nível",
       data: badgesByLevel.map((l) => Number(l.count)),
       backgroundColor: "#04C4D9",
       borderRadius: 6,
@@ -50,7 +50,7 @@ export default function DashboardServiceLine() {
   };
 
   useEffect(() => {
-    // Carregar saudaÃ§Ã£o guardada no login
+    // Carregar saudação guardada no login
     const msg = localStorage.getItem("greeting");
     if (msg) setGreeting(msg);
   }, []);
@@ -93,7 +93,7 @@ export default function DashboardServiceLine() {
           <h3 className="mb-1 text-2xl font-bold">
             {greeting} {sl.name?.split(" ")[0]}!
           </h3>
-          <p className="m-0 text-sm text-indigo-100">EstatÃ­sticas da tua Service Line.</p>
+          <p className="m-0 text-sm text-indigo-100">Estatísticas da tua Service Line.</p>
         </div>
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -129,7 +129,7 @@ export default function DashboardServiceLine() {
           </div>
 
           <p className="mt-2 text-sm text-slate-500">
-            Progresso mÃ©dio de todos os consultores.
+            Progresso médio de todos os consultores.
           </p>
         </div>
 
@@ -158,7 +158,7 @@ export default function DashboardServiceLine() {
 
           <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
-                <div className="text-xs text-slate-500">Utilizadores na Ã¡rea</div>
+                <div className="text-xs text-slate-500">Utilizadores na área</div>
                 <div className="text-3xl font-bold text-blue-600">{summary.totalUsers}</div>
               </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
@@ -166,30 +166,30 @@ export default function DashboardServiceLine() {
                 <div className="text-3xl font-bold text-emerald-600">{summary.badgesObtidosTotal}</div>
               </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
-                <div className="text-xs text-slate-500">No perÃ­odo</div>
+                <div className="text-xs text-slate-500">No período</div>
                 <div className="text-3xl font-bold text-amber-500">{badgesByRange?.count || 0}</div>
               </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <h6 className="mb-3 text-base font-bold text-slate-800"><i className="bi bi-calendar3 mr-2 text-blue-600"></i>Badges obtidos por mÃªs</h6>
+                  <h6 className="mb-3 text-base font-bold text-slate-800"><i className="bi bi-calendar3 mr-2 text-blue-600"></i>Badges obtidos por mês</h6>
                   <div style={{ height: 240 }}>
                     {badgesByMonth.length ? (
                       <Bar data={badgesMesChart} options={{ responsive: true, plugins: { legend: { display: false } } }} />
                     ) : (
-                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos para o perÃ­odo.</div>
+                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos para o período.</div>
                     )}
                   </div>
             </div>
 
             <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <h6 className="mb-3 text-base font-bold text-slate-800"><i className="bi bi-layers mr-2 text-emerald-600"></i>Badges por nÃ­vel</h6>
+                  <h6 className="mb-3 text-base font-bold text-slate-800"><i className="bi bi-layers mr-2 text-emerald-600"></i>Badges por nível</h6>
                   <div style={{ height: 240 }}>
                     {badgesByLevel.length ? (
                       <Bar data={badgesNivelChart} options={{ responsive: true, plugins: { legend: { display: false } } }} />
                     ) : (
-                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos de nÃ­veis para o perÃ­odo.</div>
+                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos de níveis para o período.</div>
                     )}
                   </div>
             </div>

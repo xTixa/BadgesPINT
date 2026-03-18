@@ -44,10 +44,10 @@ export default function Areas() {
     const colors = [
       "bg-[#2AA4BF]",
       "bg-[#04C4D9]",
-      "bg-[#013440]",
+      "bg-[#2AA4BF]",
       "bg-[#2AA4BF]",
       "bg-[#04C4D9]",
-      "bg-[#013440]",
+      "bg-[#2AA4BF]",
     ];
     return colors[index % colors.length];
   };
@@ -73,7 +73,7 @@ export default function Areas() {
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className="bg-[#013440] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
+      <div className="bg-[#2AA4BF] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
@@ -100,7 +100,7 @@ export default function Areas() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#013440] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#2AA4BF] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar áreas...</p>
           </div>
         ) : areas.length > 0 ? (
@@ -122,13 +122,13 @@ export default function Areas() {
 
                 {/* Card Body */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-[#013440] mb-4 min-h-[56px] flex items-center">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 min-h-[56px] flex items-center">
                     {a.name}
                   </h3>
 
                   {/* Info Badge */}
                   <div className="flex items-center gap-2 mb-6">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
                       5 Níveis disponíveis
                     </span>
                   </div>
@@ -136,7 +136,7 @@ export default function Areas() {
                   {/* Action Button */}
                   <Link
                     to={`/areas/${a.id}/badges`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#013440] text-white font-semibold hover:bg-[#013440]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#2AA4BF] text-white font-semibold hover:bg-[#2AA4BF]"
                   >
                     Ver Badges →
                   </Link>

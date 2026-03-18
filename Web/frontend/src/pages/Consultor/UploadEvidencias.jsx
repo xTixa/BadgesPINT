@@ -34,7 +34,7 @@ export default function UploadEvidencias() {
         setBadges(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar badges:", err);
-        setError("NÃ£o foi possÃ­vel carregar badges.");
+        setError("Não foi possível carregar badges.");
       }
     };
 
@@ -58,7 +58,7 @@ export default function UploadEvidencias() {
         setEvidences(evRes.data || []);
       } catch (err) {
         console.error("Erro ao carregar requisitos:", err);
-        setError("NÃ£o foi possÃ­vel carregar requisitos.");
+        setError("Não foi possível carregar requisitos.");
       } finally {
         setLoading(false);
       }
@@ -80,8 +80,8 @@ export default function UploadEvidencias() {
 
       setEvidences((prev) => [res.data, ...prev]);
     } catch (err) {
-      console.error("Erro ao submeter evidÃªncia:", err);
-      alert("Erro ao submeter evidÃªncia.");
+      console.error("Erro ao submeter evidência:", err);
+      alert("Erro ao submeter evidência.");
     }
   };
 
@@ -118,12 +118,12 @@ export default function UploadEvidencias() {
       <main className="admin-main">
         <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
           <i className="bi bi-cloud-upload-fill text-sky-600"></i>
-          Upload de EvidÃªncias
+          Upload de Evidências
         </h3>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <p className="mb-3 text-sm text-slate-500 sm:text-base">
-            Seleciona um badge e submete evidÃªncias para cada requisito.
+            Seleciona um badge e submete evidências para cada requisito.
           </p>
 
           <div className="mb-3">
@@ -177,7 +177,7 @@ export default function UploadEvidencias() {
               })}
 
               {!requirements.length && selectedBadgeId && (
-                <div className="text-sm text-slate-500">Este badge nÃ£o tem requisitos definidos.</div>
+                <div className="text-sm text-slate-500">Este badge não tem requisitos definidos.</div>
               )}
             </div>
           )}
@@ -193,7 +193,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSend = async () => {
-    if (!url) return alert("Insere o URL da evidÃªncia.");
+    if (!url) return alert("Insere o URL da evidência.");
     setSubmitting(true);
     await onSubmit(requirement.id, url, notes);
     setSubmitting(false);
@@ -230,7 +230,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
             >
               {latestEvidence.status}
             </span>
-            <span className="ml-2 text-slate-600">Ãšltima evidÃªncia: <a className="text-sky-700 underline" href={latestEvidence.evidence_url} target="_blank" rel="noreferrer">ver</a></span>
+            <span className="ml-2 text-slate-600">Última evidência: <a className="text-sky-700 underline" href={latestEvidence.evidence_url} target="_blank" rel="noreferrer">ver</a></span>
           </div>
         )}
 
@@ -239,7 +239,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
             <input
               type="text"
               className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
-              placeholder="URL da evidÃªncia (Drive, OneDrive, etc.)"
+              placeholder="URL da evidência (Drive, OneDrive, etc.)"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
             />
@@ -261,7 +261,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
             onClick={handleSend}
             disabled={submitting}
           >
-            {submitting ? "A enviar..." : "Submeter evidÃªncia"}
+            {submitting ? "A enviar..." : "Submeter evidência"}
           </button>
         </div>
       </div>

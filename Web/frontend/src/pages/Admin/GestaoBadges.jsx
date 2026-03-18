@@ -31,7 +31,7 @@ export default function GestaoBadges() {
     "Lider": "bg-slate-200 text-slate-800"
   };
 
-  // Carregar badges e Ã¡reas
+  // Carregar badges e áreas
   useEffect(() => {
     async function loadData() {
       try {
@@ -54,7 +54,7 @@ export default function GestaoBadges() {
     loadData();
   }, []);
 
-  // Abrir modal de ediÃ§Ã£o
+  // Abrir modal de edição
   const handleEditBadge = (badge) => {
     setBadgeEditando(badge);
     setFormData({
@@ -67,7 +67,7 @@ export default function GestaoBadges() {
     setShowEditModal(true);
   };
 
-  // Salvar ediÃ§Ã£o do badge
+  // Salvar edição do badge
   const handleSaveEdit = async () => {
     try {
       const response = await axios.put(
@@ -143,9 +143,9 @@ export default function GestaoBadges() {
           <div>
             <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
               <i className="bi bi-award-fill text-indigo-500" />
-              GestÃ£o de Badges
+              Gestão de Badges
             </h3>
-            <p className="text-sm text-slate-500">Criar, editar e gerir badges (expiraÃ§Ã£o, pontos, nÃ­veis)</p>
+            <p className="text-sm text-slate-500">Criar, editar e gerir badges (expiração, pontos, níveis)</p>
           </div>
 
           <Link
@@ -173,13 +173,13 @@ export default function GestaoBadges() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Ãrea</label>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Área</label>
             <select
               className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               value={filtroArea}
               onChange={(e) => setFiltroArea(e.target.value)}
             >
-              <option value="">Todas as Ã¡reas</option>
+              <option value="">Todas as áreas</option>
               {areas.map(a => (
                 <option key={a.id} value={a.id}>{a.name}</option>
               ))}
@@ -187,13 +187,13 @@ export default function GestaoBadges() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">NÃ­vel</label>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Nível</label>
             <select
               className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               value={filtroNivel}
               onChange={(e) => setFiltroNivel(e.target.value)}
             >
-              <option value="">Todos os nÃ­veis</option>
+              <option value="">Todos os níveis</option>
               {niveisBadges.map(n => (
                 <option key={n} value={n}>{n}</option>
               ))}
@@ -215,11 +215,11 @@ export default function GestaoBadges() {
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
                     <th className="px-4 py-3">Nome</th>
-                    <th className="px-4 py-3">NÃ­vel</th>
-                    <th className="px-4 py-3">Ãrea</th>
+                    <th className="px-4 py-3">Nível</th>
+                    <th className="px-4 py-3">Área</th>
                     <th className="px-4 py-3">Pontos</th>
-                    <th className="px-4 py-3">ExpiraÃ§Ã£o (dias)</th>
-                    <th className="px-4 py-3">AÃ§Ãµes</th>
+                    <th className="px-4 py-3">Expiração (dias)</th>
+                    <th className="px-4 py-3">Ações</th>
                   </tr>
                 </thead>
 
@@ -247,7 +247,7 @@ export default function GestaoBadges() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        {b.area?.name || "â€”"}
+                        {b.area?.name || "—"}
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-semibold text-slate-800">{b.points}</span> pts
@@ -258,7 +258,7 @@ export default function GestaoBadges() {
                             {b.expiry_days} dias
                           </span>
                         ) : (
-                          <span className="text-slate-500">Sem expiraÃ§Ã£o</span>
+                          <span className="text-slate-500">Sem expiração</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -292,7 +292,7 @@ export default function GestaoBadges() {
                   {badgesFiltrados.length === 0 && (
                     <tr>
                       <td colSpan="6" className="px-4 py-6 text-center text-sm text-slate-500">
-                        {filtro || filtroArea || filtroNivel ? "Nenhum badge encontrado com esses critÃ©rios." : "Nenhum badge encontrado."}
+                        {filtro || filtroArea || filtroNivel ? "Nenhum badge encontrado com esses critérios." : "Nenhum badge encontrado."}
                       </td>
                     </tr>
                   )}
@@ -331,7 +331,7 @@ export default function GestaoBadges() {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">NÃ­vel *</label>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">Nível *</label>
                   <select
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     value={formData.level}
@@ -355,13 +355,13 @@ export default function GestaoBadges() {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">Dias atÃ© ExpiraÃ§Ã£o</label>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">Dias até Expiração</label>
                   <input
                     type="number"
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     value={formData.expiry_days || ""}
                     onChange={(e) => setFormData({ ...formData, expiry_days: e.target.value ? parseInt(e.target.value) : null })}
-                    placeholder="Deixe em branco se sem expiraÃ§Ã£o"
+                    placeholder="Deixe em branco se sem expiração"
                     min="0"
                   />
                 </div>
@@ -392,7 +392,7 @@ export default function GestaoBadges() {
                   onClick={handleSaveEdit}
                 >
                   <i className="bi bi-check-circle"></i>
-                  Guardar AlteraÃ§Ãµes
+                  Guardar Alterações
                 </button>
               </div>
           </div>

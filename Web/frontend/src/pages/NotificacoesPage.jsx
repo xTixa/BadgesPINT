@@ -120,7 +120,7 @@ export default function NotificacoesPage() {
             style={{
               fontSize: isMobile ? "1.5rem" : "2rem",
               fontWeight: "700",
-              color: "#013440",
+              color: "#2AA4BF",
               marginBottom: "0.5rem",
             }}
           >
@@ -295,7 +295,7 @@ export default function NotificacoesPage() {
                           margin: 0,
                           fontSize: "1rem",
                           fontWeight: "600",
-                          color: "#013440",
+                          color: "#2AA4BF",
                         }}
                       >
                         {notif.titulo}

@@ -6,7 +6,7 @@ export default function LearningPathCard({ path }) {
     <div className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]">
       <div className="h-2 w-full bg-[#2AA4BF]"></div>
       <div className="p-6">
-        <h3 className="text-xl font-bold text-[#013440] mb-2">
+        <h3 className="text-xl font-bold text-slate-800 mb-2">
           {path?.name || "Learning Path Name"}
         </h3>
         <p className="text-gray-600 text-sm mb-4">
@@ -15,10 +15,10 @@ export default function LearningPathCard({ path }) {
         </p>
 
         <div className="flex flex-wrap gap-2 mb-4">
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
             {path?.badgeCount || 5} Badges
           </span>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
             {path?.duration || 3} Meses
           </span>
         </div>
@@ -31,7 +31,7 @@ export default function LearningPathCard({ path }) {
           </div>
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-2 bg-[#013440] rounded-full"
+              className="h-2 bg-[#2AA4BF] rounded-full"
               style={{ width: `${path?.progress || 0}%` }}
             ></div>
           </div>
@@ -40,7 +40,7 @@ export default function LearningPathCard({ path }) {
         <div className="flex justify-end items-center">
           <Link
             to={`/learning-paths/${path?.id || "1"}/service-lines`}
-            className="px-4 py-2 rounded-lg bg-[#013440] text-white text-sm font-semibold"
+            className="px-4 py-2 rounded-lg bg-[#2AA4BF] text-white text-sm font-semibold"
           >
             Começar
           </Link>

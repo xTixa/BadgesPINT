@@ -180,7 +180,7 @@ export default function NotificationCenter() {
               alignItems: "center",
             }}
           >
-            <h6 style={{ margin: 0, color: "#013440", fontWeight: "600" }}>
+            <h6 style={{ margin: 0, color: "#2AA4BF", fontWeight: "600" }}>
               Notificações
               {naoLidas > 0 && (
                 <span style={{ fontSize: "0.8rem", color: "#ef4444", marginLeft: "0.5rem" }}>
@@ -254,7 +254,7 @@ export default function NotificationCenter() {
                         margin: 0,
                         fontSize: "0.85rem",
                         fontWeight: "500",
-                        color: "#013440",
+                        color: "#2AA4BF",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",

@@ -49,7 +49,7 @@ export default function FirstLogin() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#013440] text-white">
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#2AA4BF] text-white">
 
         <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
@@ -58,7 +58,7 @@ export default function FirstLogin() {
           <p className="text-[#04C4D9] text-lg mb-10">
             Cria uma nova password para entrar na plataforma.
           </p>
-          <p className="italic text-sm text-[#2AA4BF]">
+          <p className="italic text-sm text-slate-800">
             “A tua jornada começa com um passo.”
           </p>
         </div>
@@ -71,7 +71,7 @@ export default function FirstLogin() {
           onSubmit={handleSubmit}
           className="w-full max-w-sm bg-white rounded-2xl px-10 py-12 mx-6 border border-[#2AA4BF]"
         >
-          <h2 className="text-2xl font-bold text-[#013440] mb-8 text-center">
+          <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
             Criar nova password
           </h2>
 
@@ -112,7 +112,7 @@ export default function FirstLogin() {
           <button
             type="submit"
             className="w-full py-3 rounded-lg font-semibold text-white 
-            bg-[#013440] hover:bg-[#013440]"
+            bg-[#2AA4BF] hover:bg-[#2AA4BF]"
           >
             Guardar Password
           </button>

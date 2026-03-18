@@ -314,7 +314,7 @@ export default function BadgeFormAdmin() {
               </button>
               <button
                 type="submit"
-                className="rounded-lg bg-[#013440] px-4 py-2 text-sm font-semibold text-white hover:bg-[#013440]"
+                className="rounded-lg bg-[#2AA4BF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2AA4BF]"
                 disabled={loading}
               >
                 {loading ? "A guardar..." : "Guardar"}

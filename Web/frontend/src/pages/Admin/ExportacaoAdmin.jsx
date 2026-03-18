@@ -50,28 +50,28 @@ export default function ExportacaoAdmin() {
       case "pedidos":
         return "Pedidos";
       default:
-        return "â€”";
+        return "—";
     }
   };
 
   const getRangeLabel = (value) => {
     switch (value) {
       case "ultima-semana":
-        return "Ãšltima semana";
+        return "Última semana";
       case "ultimo-mes":
-        return "Ãšltimo mÃªs";
+        return "Último mês";
       case "ultimo-trimestre":
-        return "Ãšltimo trimestre";
+        return "Último trimestre";
       case "ano-atual":
         return "Ano atual";
       default:
-        return "â€”";
+        return "—";
     }
   };
 
   const handleExport = async () => {
     if (!scope) {
-      setError("Por favor, selecione um Ambito de exportaÃ§Ã£o.");
+      setError("Por favor, selecione um Âmbito de exportação.");
       return;
     }
 
@@ -117,7 +117,7 @@ export default function ExportacaoAdmin() {
       });
 
     } catch (err) {
-      console.error("Erro na exportaÃ§Ã£o:", err);
+      console.error("Erro na exportação:", err);
       setError(err.response?.data?.message || "Erro ao exportar dados. Tente novamente.");
     } finally {
       setLoading(false);
@@ -125,10 +125,10 @@ export default function ExportacaoAdmin() {
   };
 
   const cards = [
-    { title: "Tudo", desc: "Todos os dados disponÃ­veis", icon: "bi-database-fill", value: "todos" },
+    { title: "Tudo", desc: "Todos os dados disponíveis", icon: "bi-database-fill", value: "todos" },
     { title: "Utilizadores", desc: "Dados completos e perfis", icon: "bi-people-fill", value: "users" },
-    { title: "Badges", desc: "CatÃ¡logo e requisitos", icon: "bi-award-fill", value: "badges" },
-    { title: "Pedidos", desc: "Fluxos de aprovaÃ§Ã£o", icon: "bi-hourglass-split", value: "pedidos" },
+    { title: "Badges", desc: "Catálogo e requisitos", icon: "bi-award-fill", value: "badges" },
+    { title: "Pedidos", desc: "Fluxos de aprovação", icon: "bi-hourglass-split", value: "pedidos" },
   ];
 
   const { start: previewStart, end: previewEnd } = getDateRange();
@@ -153,8 +153,8 @@ export default function ExportacaoAdmin() {
 
       setPreview(response.data);
     } catch (err) {
-      console.error("Erro na pre-visualizaÃ§Ã£o:", err);
-      setPreviewError("NÃ£o foi possi­vel obter a prÃ©-visualizaÃ§Ã£o.");
+      console.error("Erro na pré-visualização:", err);
+      setPreviewError("Não foi possível obter a pré-visualização.");
     } finally {
       setPreviewLoading(false);
     }
@@ -181,7 +181,7 @@ export default function ExportacaoAdmin() {
           {!rows.length && (
             <tr>
               <td colSpan={columns.length} className="px-3 py-4 text-slate-500">
-                Sem dados para este perÃ­odo.
+                Sem dados para este período.
               </td>
             </tr>
           )}
@@ -200,14 +200,14 @@ export default function ExportacaoAdmin() {
         <div className="mb-5">
           <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
             <i className="bi bi-file-earmark-arrow-down text-emerald-600" />
-            ExportaÃ§Ã£o de Dados
+            Exportação de Dados
           </h3>
-          <p className="mt-1 text-sm text-slate-500">Gerar relatÃ³rios para Excel ou PDF com um clique.</p>
+          <p className="mt-1 text-sm text-slate-500">Gerar relatórios para Excel ou PDF com um clique.</p>
         </div>
 
         <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-          <h6 className="mb-1 text-sm font-semibold text-slate-900 sm:text-base">Passo 1 Â· Escolhe o formato</h6>
-          <p className="mb-3 text-xs text-slate-500 sm:text-sm">Excel para anÃ¡lise, PDF para relatÃ³rio pronto a partilhar.</p>
+          <h6 className="mb-1 text-sm font-semibold text-slate-900 sm:text-base">Passo 1 · Escolhe o formato</h6>
+          <p className="mb-3 text-xs text-slate-500 sm:text-sm">Excel para análise, PDF para relatório pronto a partilhar.</p>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:max-w-md">
             <button
@@ -237,8 +237,8 @@ export default function ExportacaoAdmin() {
 
         <section className="mb-4">
           <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <h6 className="text-sm font-semibold text-slate-900 sm:text-base">Passo 2 Â· O que queres exportar?</h6>
-            <span className="text-xs text-slate-500 sm:text-sm">Ã‚mbito atual: {getScopeLabel(scope)}</span>
+            <h6 className="text-sm font-semibold text-slate-900 sm:text-base">Passo 2 · O que queres exportar?</h6>
+            <span className="text-xs text-slate-500 sm:text-sm">Âmbito atual: {getScopeLabel(scope)}</span>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -264,7 +264,7 @@ export default function ExportacaoAdmin() {
         </section>
 
         <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-          <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Passo 3 Â· Intervalo temporal</h6>
+          <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Passo 3 · Intervalo temporal</h6>
 
           <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm text-slate-700">
             <div className="mb-1 flex items-center gap-2 font-semibold text-sky-900">
@@ -272,10 +272,10 @@ export default function ExportacaoAdmin() {
               Resumo
             </div>
             <div className="text-xs sm:text-sm">
-              Formato: <strong>{format.toUpperCase()}</strong> Â· Ã‚mbito: <strong>{getScopeLabel(scope)}</strong> Â· PerÃ­odo: <strong>{getRangeLabel(dateRange)}</strong>
+              Formato: <strong>{format.toUpperCase()}</strong> · Âmbito: <strong>{getScopeLabel(scope)}</strong> · Período: <strong>{getRangeLabel(dateRange)}</strong>
             </div>
             <div className="mt-1 text-xs text-slate-500 sm:text-sm">
-              Datas: {previewStart.toLocaleDateString("pt-PT")} â†’ {previewEnd.toLocaleDateString("pt-PT")}
+              Datas: {previewStart.toLocaleDateString("pt-PT")} → {previewEnd.toLocaleDateString("pt-PT")}
             </div>
             <div className="text-xs text-slate-500 sm:text-sm">Ficheiro: {previewFile}</div>
           </div>
@@ -288,9 +288,9 @@ export default function ExportacaoAdmin() {
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
               >
-                <option value="ultima-semana">Ãšltima semana</option>
-                <option value="ultimo-mes">Ãšltimo mÃªs</option>
-                <option value="ultimo-trimestre">Ãšltimo trimestre</option>
+                <option value="ultima-semana">Última semana</option>
+                <option value="ultimo-mes">Último mês</option>
+                <option value="ultimo-trimestre">Último trimestre</option>
                 <option value="ano-atual">Ano atual</option>
               </select>
             </div>
@@ -311,7 +311,7 @@ export default function ExportacaoAdmin() {
                 setError(null);
               }}
             >
-              Limpar histÃ³rico
+              Limpar histórico
             </button>
 
             <button
@@ -319,7 +319,7 @@ export default function ExportacaoAdmin() {
               onClick={fetchPreview}
               disabled={previewLoading}
             >
-              {previewLoading ? "A carregar..." : "Ver prÃ©-visualizaÃ§Ã£o"}
+              {previewLoading ? "A carregar..." : "Ver pré-visualização"}
             </button>
 
             <button
@@ -335,7 +335,7 @@ export default function ExportacaoAdmin() {
         {lastExport && (
           <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
             <i className="bi bi-check-circle-fill mr-2"></i>
-            ExportaÃ§Ã£o pronta ({lastExport.formato.toUpperCase()}) | Ã‚mbito: {lastExport.abrangencia} | Ficheiro: {lastExport.ficheiro} | {lastExport.data}
+            Exportação pronta ({lastExport.formato.toUpperCase()}) | Âmbito: {lastExport.abrangencia} | Ficheiro: {lastExport.ficheiro} | {lastExport.data}
           </div>
         )}
 
@@ -348,7 +348,7 @@ export default function ExportacaoAdmin() {
 
         {preview && (
           <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-            <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">PrÃ©-visualizaÃ§Ã£o (amostra)</h6>
+            <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Pré-visualização (amostra)</h6>
 
             {preview.sections ? (
               <div className="space-y-4">

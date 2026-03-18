@@ -35,7 +35,7 @@ export default function GestaoSLA() {
 
         setSlas(response.data);
 
-        // Carregar equipas tambÃ©m
+        // Carregar equipas também
         const teamsRes = await axios.get("http://localhost:4000/api/users?role=talent_manager|service_line_leader", {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -157,7 +157,7 @@ export default function GestaoSLA() {
           <div>
             <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
               <i className="bi bi-hourglass-split text-amber-500"></i>
-              GestÃ£o de SLA
+              Gestão de SLA
             </h3>
             <p className="text-sm text-slate-500">Definir e gerir SLA da equipa de Talent e Service Line</p>
           </div>
@@ -207,7 +207,7 @@ export default function GestaoSLA() {
                     <th className="px-4 py-3">Limite de Horas</th>
                     <th className="px-4 py-3">Atrasados</th>
                     <th className="px-4 py-3">Pendentes</th>
-                    <th className="px-4 py-3">AÃ§Ãµes</th>
+                    <th className="px-4 py-3">Ações</th>
                   </tr>
                 </thead>
 
@@ -258,7 +258,7 @@ export default function GestaoSLA() {
                   {slasFiltrados.length === 0 && (
                     <tr>
                       <td colSpan="6" className="px-4 py-6 text-center text-sm text-slate-500">
-                        Nenhum SLA encontrado com esses critÃ©rios.
+                        Nenhum SLA encontrado com esses critérios.
                       </td>
                     </tr>
                   )}
@@ -287,7 +287,7 @@ export default function GestaoSLA() {
             </h6>
             <p className="text-sm text-slate-600">
               <strong className="text-2xl font-bold text-cyan-700">{slas.reduce((sum, s) => sum + s.pending, 0)}</strong>
-              <span className="ml-2">pedidos em espera de aprovaÃ§Ã£o</span>
+              <span className="ml-2">pedidos em espera de aprovação</span>
             </p>
           </div>
         </div>
@@ -354,11 +354,11 @@ export default function GestaoSLA() {
                     placeholder="24"
                     min="1"
                   />
-                  <p className="mt-1 text-xs text-slate-500">Tempo mÃ¡ximo em horas para responder a pedidos</p>
+                  <p className="mt-1 text-xs text-slate-500">Tempo máximo em horas para responder a pedidos</p>
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">NotificaÃ§Ãµes</label>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">Notificações</label>
                   <div className="space-y-2 text-sm text-slate-700">
                     <label className="flex items-center gap-2">
                     <input
@@ -369,7 +369,7 @@ export default function GestaoSLA() {
                     />
                     <span>
                       <i className="bi bi-envelope mr-2"></i>
-                      NotificaÃ§Ã£o por Email
+                      Notificação por Email
                     </span>
                     </label>
 
@@ -382,7 +382,7 @@ export default function GestaoSLA() {
                     />
                     <span>
                       <i className="bi bi-bell mr-2"></i>
-                      NotificaÃ§Ã£o PUSH
+                      Notificação PUSH
                     </span>
                     </label>
 
@@ -395,7 +395,7 @@ export default function GestaoSLA() {
                     />
                     <span>
                       <i className="bi bi-microsoft-teams mr-2"></i>
-                      NotificaÃ§Ã£o geral ativa
+                      Notificação geral ativa
                     </span>
                     </label>
                   </div>

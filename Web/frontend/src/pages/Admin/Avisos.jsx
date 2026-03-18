@@ -59,7 +59,7 @@ export default function Avisos() {
         }
       );
 
-      alert("âœ… Aviso enviado com sucesso!");
+      alert("✅ Aviso enviado com sucesso!");
       
       // Adicionar à lista local
       const novo = { ...form, id: Date.now() };
@@ -197,7 +197,7 @@ export default function Avisos() {
                 <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${tipoBadgeClass[a.tipo]}`}>{tipos[a.tipo].label}</span>
                 <div className="flex-1">
                   <div className="text-sm font-semibold text-slate-900">{a.texto}</div>
-                  <div className="text-xs text-slate-500">{a.publico} Â· {a.agenda || "Imediato"}</div>
+                  <div className="text-xs text-slate-500">{a.publico} · {a.agenda || "Imediato"}</div>
                 </div>
                 <div className="flex gap-2" role="group">
                   <button className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => setForm({ texto: a.texto, tipo: a.tipo, publico: a.publico, agenda: a.agenda })}>

@@ -33,7 +33,7 @@ export default function Configuracoes() {
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h2 style={{ fontWeight: "700", color: "#013440", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <h2 style={{ fontWeight: "700", color: "#2AA4BF", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <i className="bi bi-gear-fill" style={{ color: "#2AA4BF" }}></i>
               Configurações do Sistema
             </h2>
@@ -99,14 +99,14 @@ export default function Configuracoes() {
             {/* Conta e Segurança */}
             {activeTab === "security" && (
               <div>
-                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
                   <i className="bi bi-shield-lock mr-2" style={{ color: "#2AA4BF" }}></i>
                   Conta e Segurança
                 </h4>
                 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div>
-                    <label style={{ display: "block", color: "#013440", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
+                    <label style={{ display: "block", color: "#2AA4BF", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
                       Nova Password
                     </label>
                     <input
@@ -127,7 +127,7 @@ export default function Configuracoes() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", color: "#013440", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
+                    <label style={{ display: "block", color: "#2AA4BF", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
                       Confirmar Password
                     </label>
                     <input
@@ -196,7 +196,7 @@ export default function Configuracoes() {
             {/* Utilizadores */}
             {activeTab === "users" && (
               <div>
-                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
                   <i className="bi bi-people mr-2" style={{ color: "#2AA4BF" }}></i>
                   Gestão de Utilizadores
                 </h4>
@@ -230,10 +230,10 @@ export default function Configuracoes() {
                       e.currentTarget.style.backgroundColor = "white";
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.querySelector('i').style.color = action.color;
-                      e.currentTarget.querySelector('span').style.color = "#013440";
+                      e.currentTarget.querySelector('span').style.color = "#2AA4BF";
                     }}>
                       <i className={action.icon} style={{ fontSize: "2rem", color: action.color, transition: "color 0.2s" }}></i>
-                      <span style={{ fontWeight: "600", color: "#013440", fontSize: "0.9rem", transition: "color 0.2s" }}>{action.label}</span>
+                      <span style={{ fontWeight: "600", color: "#2AA4BF", fontSize: "0.9rem", transition: "color 0.2s" }}>{action.label}</span>
                     </button>
                   ))}
                 </div>
@@ -256,7 +256,7 @@ export default function Configuracoes() {
             {/* Conteúdo (Learning Paths e Badges) */}
             {activeTab === "content" && (
               <div>
-                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
                   <i className="bi bi-archive mr-2" style={{ color: "#2AA4BF" }}></i>
                   Gestão de Conteúdo
                 </h4>
@@ -290,11 +290,11 @@ export default function Configuracoes() {
                       e.currentTarget.style.borderColor = `${item.color}20`;
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.querySelector('i').style.color = item.color;
-                      e.currentTarget.querySelector('span').style.color = "#013440";
+                      e.currentTarget.querySelector('span').style.color = "#2AA4BF";
                     }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                         <i className={item.icon} style={{ fontSize: "1.75rem", color: item.color, transition: "color 0.2s" }}></i>
-                        <span style={{ fontWeight: "600", color: "#013440", fontSize: "0.85rem", transition: "color 0.2s", textAlign: "center" }}>
+                        <span style={{ fontWeight: "600", color: "#2AA4BF", fontSize: "0.85rem", transition: "color 0.2s", textAlign: "center" }}>
                           Novo {item.label}
                         </span>
                       </div>
@@ -307,7 +307,7 @@ export default function Configuracoes() {
             {/* Gamificação */}
             {activeTab === "gamification" && (
               <div>
-                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
                   <i className="bi bi-trophy mr-2" style={{ color: "#2AA4BF" }}></i>
                   Gamificação e Validação
                 </h4>
@@ -315,7 +315,7 @@ export default function Configuracoes() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-star-fill mr-2" style={{ color: "#fbbf24" }}></i>
                         Pontos por Badge (padrão)
                       </label>
@@ -337,7 +337,7 @@ export default function Configuracoes() {
 
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-clock-history mr-2" style={{ color: "#04C4D9" }}></i>
                         SLA Padrão (dias)
                       </label>
@@ -364,7 +364,7 @@ export default function Configuracoes() {
                         alignItems: "center", 
                         gap: "0.75rem",
                         cursor: "pointer",
-                        color: "#013440",
+                        color: "#2AA4BF",
                         fontWeight: "600",
                         fontSize: "0.95rem"
                       }}>
@@ -389,7 +389,7 @@ export default function Configuracoes() {
             {/* Notificações */}
             {activeTab === "notifications" && (
               <div>
-                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
                   <i className="bi bi-bell mr-2" style={{ color: "#2AA4BF" }}></i>
                   Notificações e Integrações
                 </h4>
@@ -416,7 +416,7 @@ export default function Configuracoes() {
                         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                           <i className={notif.icon} style={{ fontSize: "1.5rem", color: "#2AA4BF" }}></i>
                           <div>
-                            <div style={{ color: "#013440", fontWeight: "600", marginBottom: "0.25rem" }}>
+                            <div style={{ color: "#2AA4BF", fontWeight: "600", marginBottom: "0.25rem" }}>
                               {notif.label}
                             </div>
                             <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
@@ -470,13 +470,13 @@ export default function Configuracoes() {
             {/* RGPD */}
             {activeTab === "privacy" && (
               <div>
-                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
                   <i className="bi bi-file-lock mr-2" style={{ color: "#2AA4BF" }}></i>
                   RGPD e Privacidade
                 </h4>
                 
                 <div style={{ marginBottom: "1.5rem" }}>
-                  <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                  <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                     <i className="bi bi-file-text mr-2" style={{ color: "#04C4D9" }}></i>
                     Termos RGPD
                   </label>
@@ -512,7 +512,7 @@ export default function Configuracoes() {
                     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                       <i className="bi bi-images" style={{ fontSize: "1.5rem", color: "#2AA4BF" }}></i>
                       <div>
-                        <div style={{ color: "#013440", fontWeight: "600", marginBottom: "0.25rem" }}>
+                        <div style={{ color: "#2AA4BF", fontWeight: "600", marginBottom: "0.25rem" }}>
                           Galeria Pública de Badges
                         </div>
                         <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
@@ -539,7 +539,7 @@ export default function Configuracoes() {
             {/* Interface */}
             {activeTab === "interface" && (
               <div>
-                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
                   <i className="bi bi-palette mr-2" style={{ color: "#2AA4BF" }}></i>
                   Interface e Preferências
                 </h4>
@@ -547,7 +547,7 @@ export default function Configuracoes() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-translate mr-2" style={{ color: "#04C4D9" }}></i>
                         Idioma Padrão
                       </label>
@@ -573,7 +573,7 @@ export default function Configuracoes() {
 
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-palette-fill mr-2" style={{ color: "#04C4D9" }}></i>
                         Tema
                       </label>
@@ -608,7 +608,7 @@ export default function Configuracoes() {
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
                     <i className="bi bi-lightbulb-fill" style={{ fontSize: "1.5rem", color: "#fbbf24" }}></i>
                     <div>
-                      <div style={{ color: "#013440", fontWeight: "600", marginBottom: "0.5rem" }}>
+                      <div style={{ color: "#2AA4BF", fontWeight: "600", marginBottom: "0.5rem" }}>
                         Dica de Interface
                       </div>
                       <p style={{ color: "#04C4D9", margin: 0, fontSize: "0.9rem" }}>

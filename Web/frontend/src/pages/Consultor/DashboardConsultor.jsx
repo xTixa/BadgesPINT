@@ -135,7 +135,7 @@ export default function DashboardConsultor() {
 
       <main className="admin-main">
         {/* Header de boas-vindas */}
-        <div className="mb-4 rounded-2xl bg-[#013440] p-5 text-white shadow-sm">
+        <div className="mb-4 rounded-2xl bg-[#2AA4BF] p-5 text-white shadow-sm">
         <h3 className="mb-1 text-xl font-bold sm:text-2xl">
           {greeting}, {user.name.split(" ")[0]}!
         </h3>
@@ -168,7 +168,7 @@ export default function DashboardConsultor() {
         <div className="lg:col-span-7">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h4 className="text-lg font-bold text-slate-900">Próximos Badges</h4>
-            <Link to="/badges" className="text-sm font-semibold text-[#013440] no-underline">
+            <Link to="/badges" className="text-sm font-semibold text-slate-800 no-underline">
               Ver catálogo <i className="bi bi-arrow-right"></i>
             </Link>
           </div>
@@ -176,7 +176,7 @@ export default function DashboardConsultor() {
             {badges.map((b) => (
               <div key={b.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="mb-2 flex items-center gap-2">
-                  <i className="bi bi-patch-check-fill text-xl" style={{ color: "#013440" }}></i>
+                  <i className="bi bi-patch-check-fill text-xl" style={{ color: "#2AA4BF" }}></i>
                   <h6 className="m-0 text-sm font-semibold text-slate-900">{b.name}</h6>
                 </div>
                 <p className={`mb-2 text-sm font-semibold ${b.status === "obtido" ? "text-emerald-600" : b.status === "pendente" ? "text-amber-600" : "text-slate-500"}`}>
@@ -194,7 +194,7 @@ export default function DashboardConsultor() {
                     </div>
                     <div className="h-1.5 rounded-full bg-slate-200">
                       <div
-                        className="h-1.5 rounded-full bg-[#013440]"
+                        className="h-1.5 rounded-full bg-[#2AA4BF]"
                         style={{
                           width: progressByBadge[b.id].total
                             ? `${Math.round((progressByBadge[b.id].approved / progressByBadge[b.id].total) * 100)}%`
@@ -250,7 +250,7 @@ export default function DashboardConsultor() {
               <h5 className="m-0 text-base font-bold text-slate-900">
                 <i className="bi bi-diagram-3 mr-2 text-emerald-600"></i>Progresso em Learning Paths
               </h5>
-              <Link to="/learning-paths" className="text-xs text-[#013440] sm:text-sm">Ver todos</Link>
+              <Link to="/learning-paths" className="text-xs text-slate-800 sm:text-sm">Ver todos</Link>
             </div>
             <ul className="m-0 list-none divide-y divide-slate-100 p-0">
               {learningPaths.map((lp) => (
@@ -263,7 +263,7 @@ export default function DashboardConsultor() {
                     <span className="rounded-full bg-cyan-100 px-2 py-1 text-xs font-semibold text-cyan-700">{lp.percentagem}%</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-slate-200">
-                    <div className="h-1.5 rounded-full bg-[#013440]" style={{ width: `${lp.percentagem}%` }}></div>
+                    <div className="h-1.5 rounded-full bg-[#2AA4BF]" style={{ width: `${lp.percentagem}%` }}></div>
                   </div>
                 </li>
               ))}

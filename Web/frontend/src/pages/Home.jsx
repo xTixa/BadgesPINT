@@ -50,22 +50,22 @@ export default function Home() {
       {/* 🔹 Hero Section */}
       <section className="overflow-hidden rounded-2xl border border-[#2AA4BF] bg-white">
         <div className="py-14 px-6 md:px-10">
-          <h1 className="text-center text-4xl font-extrabold tracking-tight text-[#0D0D0D] md:text-5xl">
-            Conquista o teu Futuro com <span className="text-[#013440]">Badges</span>
+          <h1 className="text-center text-4xl font-extrabold tracking-tight text-slate-800 md:text-5xl">
+            Conquista o teu Futuro com <span className="text-slate-800">Badges</span>
           </h1>
-          <p className="mx-auto mb-8 mt-4 max-w-2xl text-center text-lg text-[#0D0D0D] md:text-xl">
+          <p className="mx-auto mb-8 mt-4 max-w-2xl text-center text-lg text-slate-800 md:text-xl">
             Explora percursos de aprendizagem, ganha reconhecimento e evolui na tua carreira.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/learning-paths"
-              className="rounded-lg bg-[#2AA4BF] px-6 py-3 text-base font-semibold text-[#013440]"
+              className="rounded-lg bg-[#2AA4BF] px-6 py-3 text-base font-semibold text-white"
             >
               Explorar Percursos
             </Link>
             <Link
               to="/badges"
-              className="rounded-lg border border-[#013440] bg-[#F2F2F2] px-6 py-3 text-base font-semibold text-[#013440]"
+              className="rounded-lg border border-[#2AA4BF] bg-[#F2F2F2] px-6 py-3 text-base font-semibold text-slate-800"
             >
               Ver Badges
             </Link>
@@ -76,8 +76,8 @@ export default function Home() {
       {/* 🔹 Featured Learning Paths */}
       <section>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-[#013440]">Percursos em Destaque</h2>
-          <Link to="/learning-paths" className="text-[#013440] hover:text-[#2AA4BF] font-semibold flex items-center">
+          <h2 className="text-3xl font-bold text-slate-800">Percursos em Destaque</h2>
+          <Link to="/learning-paths" className="text-slate-800 hover:text-[#04C4D9] font-semibold flex items-center">
             Ver Todos 
             <span className="ml-1 inline-block">→</span>
           </Link>
@@ -96,8 +96,8 @@ export default function Home() {
       {/* 🔹 Popular Badges */}
       <section>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-[#013440]">Badges Populares</h2>
-          <Link to="/badges" className="text-[#013440] hover:text-[#2AA4BF] font-semibold flex items-center">
+          <h2 className="text-3xl font-bold text-slate-800">Badges Populares</h2>
+          <Link to="/badges" className="text-slate-800 hover:text-[#04C4D9] font-semibold flex items-center">
             Ver Todos
             <span className="ml-1 inline-block">→</span>
           </Link>
@@ -116,16 +116,16 @@ export default function Home() {
       {/* 🔹 Stats Section */}
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
-          <div className="text-4xl font-extrabold text-[#013440] mb-1">1,000+</div>
-          <p className="text-[#013440] text-sm uppercase tracking-wide">Utilizadores Ativos</p>
+          <div className="text-4xl font-extrabold text-slate-800 mb-1">1,000+</div>
+          <p className="text-slate-800 text-sm uppercase tracking-wide">Utilizadores Ativos</p>
         </div>
         <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
-          <div className="text-4xl font-extrabold text-[#013440] mb-1">{stats.totalBadges}+</div>
-          <p className="text-[#013440] text-sm uppercase tracking-wide">Badges Disponíveis</p>
+          <div className="text-4xl font-extrabold text-slate-800 mb-1">{stats.totalBadges}+</div>
+          <p className="text-slate-800 text-sm uppercase tracking-wide">Badges Disponíveis</p>
         </div>
         <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
-          <div className="text-4xl font-extrabold text-[#013440] mb-1">{stats.totalPaths}</div>
-          <p className="text-[#013440] text-sm uppercase tracking-wide">Percursos de Aprendizagem</p>
+          <div className="text-4xl font-extrabold text-slate-800 mb-1">{stats.totalPaths}</div>
+          <p className="text-slate-800 text-sm uppercase tracking-wide">Percursos de Aprendizagem</p>
         </div>
       </section>
     </div>

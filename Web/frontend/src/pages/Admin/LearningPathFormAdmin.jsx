@@ -16,17 +16,17 @@ export default function GestaoTickets() {
   const [novoStatus, setNovoStatus] = useState("");
 
   const statusOptions = [
-    { value: "aberto", label: "ðŸ”µ Aberto" },
-    { value: "em_analise", label: "ðŸŸ¡ Em AnÃ¡lise" },
-    { value: "resolvido", label: "ðŸŸ¢ Resolvido" },
-    { value: "fechado", label: "âšª Fechado" },
+    { value: "aberto", label: "🔵 Aberto" },
+    { value: "em_analise", label: "🟡 Em Análise" },
+    { value: "resolvido", label: "🟢 Resolvido" },
+    { value: "fechado", label: "⚪ Fechado" },
   ];
 
   const prioridadeOptions = [
-    { value: "baixa", label: "ðŸŸ¢ Baixa" },
-    { value: "media", label: "ðŸŸ¡ MÃ©dia" },
-    { value: "alta", label: "ðŸ”´ Alta" },
-    { value: "critica", label: "ðŸ”´ðŸ”´ CrÃ­tica" },
+    { value: "baixa", label: "🟢 Baixa" },
+    { value: "media", label: "🟡 Média" },
+    { value: "alta", label: "🔴 Alta" },
+    { value: "critica", label: "🔴🔴 Crítica" },
   ];
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function GestaoTickets() {
         ],
       });
     } catch (error) {
-      console.error("Erro ao carregar estatÃ­sticas:", error);
+      console.error("Erro ao carregar estatísticas:", error);
     }
   };
 
@@ -115,10 +115,10 @@ export default function GestaoTickets() {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      aberto: { className: "bg-blue-100 text-blue-700", label: "ðŸ”µ Aberto" },
-      em_analise: { className: "bg-amber-100 text-amber-700", label: "ðŸŸ¡ Em AnÃ¡lise" },
-      resolvido: { className: "bg-emerald-100 text-emerald-700", label: "ðŸŸ¢ Resolvido" },
-      fechado: { className: "bg-slate-100 text-slate-700", label: "âšª Fechado" },
+      aberto: { className: "bg-blue-100 text-blue-700", label: "🔵 Aberto" },
+      em_analise: { className: "bg-amber-100 text-amber-700", label: "🟡 Em Análise" },
+      resolvido: { className: "bg-emerald-100 text-emerald-700", label: "🟢 Resolvido" },
+      fechado: { className: "bg-slate-100 text-slate-700", label: "⚪ Fechado" },
     };
     const s = statusMap[status] || { className: "bg-slate-100 text-slate-700", label: status };
     return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${s.className}`}>{s.label}</span>;
@@ -139,7 +139,7 @@ export default function GestaoTickets() {
       <div className="mb-8">
         <h2 className={`flex items-center gap-2 font-bold text-slate-800 ${isMobile ? "text-2xl" : "text-3xl"}`}>
           <i className="bi bi-ticket text-indigo-500"></i>
-          GestÃ£o de Tickets
+          Gestão de Tickets
         </h2>
       </div>
 
@@ -161,7 +161,7 @@ export default function GestaoTickets() {
           </div>
 
           <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">CrÃ­ticos</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Críticos</div>
             <div className="mt-1 text-3xl font-bold text-rose-600">
               {stats.porPrioridade?.find((p) => p.prioridade === "critica")?.count ?? stats.criticos ?? 0}
             </div>
@@ -228,12 +228,12 @@ export default function GestaoTickets() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">TÃ­tulo</th>
+                  <th className="px-4 py-3">Título</th>
                   <th className="px-4 py-3">Utilizador</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Prioridade</th>
                   <th className="px-4 py-3">Data</th>
-                  <th className="px-4 py-3">AÃ§Ã£o</th>
+                  <th className="px-4 py-3">Ação</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">

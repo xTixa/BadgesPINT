@@ -51,7 +51,7 @@ export default function Register() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#013440] text-white">
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#2AA4BF] text-white">
 
         <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
@@ -69,7 +69,7 @@ export default function Register() {
           onSubmit={handleSubmit}
           className="w-full max-w-sm bg-white rounded-2xl px-10 py-12 mx-6 border border-[#2AA4BF]"
         >
-          <h2 className="text-2xl font-bold text-[#013440] mb-8 text-center">
+          <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
             Novo Utilizador
           </h2>
 
@@ -94,7 +94,7 @@ export default function Register() {
               name="nome"
               required
               className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-[#013440] focus:ring-2"
+              focus:outline-none focus:ring-[#2AA4BF] focus:ring-2"
               value={form.nome}
               onChange={handleChange}
             />
@@ -110,7 +110,7 @@ export default function Register() {
               name="email"
               required
               className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-[#013440] focus:ring-2"
+              focus:outline-none focus:ring-[#2AA4BF] focus:ring-2"
               value={form.email}
               onChange={handleChange}
             />
@@ -124,7 +124,7 @@ export default function Register() {
             <select
               name="area"
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-[#013440] focus:ring-2"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-[#2AA4BF] focus:ring-2"
               value={form.area}
               onChange={handleChange}
             >
@@ -157,8 +157,8 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-lg font-semibold text-white bg-[#013440] 
-            hover:bg-[#013440]"
+            className="w-full py-3 rounded-lg font-semibold text-white bg-[#2AA4BF] 
+            hover:bg-[#2AA4BF]"
           >
             {loading ? "A criar..." : "Criar Utilizador"}
           </button>

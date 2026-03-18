@@ -83,7 +83,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#013440] text-[#F2F2F2]">
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#2AA4BF] text-[#F2F2F2]">
         <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
             Bem-vindo de volta!
@@ -91,7 +91,7 @@ export default function Login() {
           <p className="text-[#04C4D9] text-lg mb-10">
             Entra na tua jornada de aprendizagem e continua a conquistar badges.
           </p>
-          <p className="italic text-sm text-[#2AA4BF]">
+          <p className="italic text-sm text-slate-800">
             “O conhecimento é a tua melhor credencial.”
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function Login() {
           onSubmit={handleLogin}
           className="w-full max-w-sm rounded-2xl bg-white px-10 py-12 mx-6 border border-[#2AA4BF]"
         >
-          <h2 className="text-2xl font-bold text-[#013440] mb-8 text-center">
+          <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
             Iniciar Sessão
           </h2>
 
@@ -144,7 +144,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-[#013440] hover:text-[#013440]"
+                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-slate-800 hover:text-[#04C4D9]"
                 aria-label={showPassword ? "Ocultar password" : "Mostrar password"}
               >
                 {showPassword ? "Ocultar" : "Mostrar"}
@@ -158,14 +158,14 @@ export default function Login() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-[#013440] focus:ring-[#013440]"
+                className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#2AA4BF]"
               />
               Guardar dados da sessão
             </label>
             <button
               type="button"
               onClick={() => navigate("/recover")}
-              className="text-[#013440] hover:underline font-medium"
+              className="text-slate-800 hover:underline font-medium"
             >
               Esqueceste-te da password?
             </button>
@@ -174,7 +174,7 @@ export default function Login() {
           {/* BOTÃO */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg font-semibold text-white bg-[#013440] hover:bg-[#013440]"
+            className="w-full py-3 rounded-lg font-semibold text-white bg-[#2AA4BF] hover:bg-[#2AA4BF]"
           >
             Entrar
           </button>
@@ -190,7 +190,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => navigate("/register")}
-              className="w-full py-3 rounded-lg font-semibold text-[#013440] border border-[#013440] hover:bg-[#013440] hover:text-white"
+              className="w-full py-3 rounded-lg font-semibold text-slate-800 border border-[#2AA4BF] hover:bg-[#2AA4BF] hover:text-white"
             >
               Criar Conta
             </button>

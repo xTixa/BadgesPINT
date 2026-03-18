@@ -33,7 +33,7 @@ export default function EditarPerfil() {
     e.preventDefault();
     
     if (!formData.name || !formData.email) {
-      alert("Nome e email sÃ£o obrigatÃ³rios.");
+      alert("Nome e email são obrigatórios.");
       return;
     }
 
@@ -72,7 +72,7 @@ export default function EditarPerfil() {
     }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("As passwords novas nÃ£o coincidem.");
+      alert("As passwords novas não coincidem.");
       return;
     }
 
@@ -113,7 +113,7 @@ export default function EditarPerfil() {
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#013440]"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#2AA4BF]"></div>
       </div>
     );
   }
@@ -145,7 +145,7 @@ export default function EditarPerfil() {
             <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <h5 className="mb-4 text-base font-bold text-slate-900">
                 <i className="bi bi-person-fill mr-2 text-sky-600"></i>
-                  InformaÃ§Ãµes Pessoais
+                  Informações Pessoais
                 </h5>
                 <form onSubmit={handleUpdateProfile}>
                   <div className="mb-3">
@@ -172,7 +172,7 @@ export default function EditarPerfil() {
 
                   <button
                     type="submit"
-                    className="inline-flex items-center rounded-lg bg-[#013440] px-4 py-2 text-sm font-semibold text-white hover:bg-[#013440] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center rounded-lg bg-[#2AA4BF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2AA4BF] disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={loading}
                   >
                     {loading ? (
@@ -183,7 +183,7 @@ export default function EditarPerfil() {
                     ) : (
                       <>
                         <i className="bi bi-check-circle mr-2"></i>
-                        Guardar AlteraÃ§Ãµes
+                        Guardar Alterações
                       </>
                     )}
                   </button>
@@ -194,7 +194,7 @@ export default function EditarPerfil() {
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h5 className="mb-0 text-base font-bold text-slate-900">
                     <i className="bi bi-shield-lock-fill mr-2 text-amber-500"></i>
-                    SeguranÃ§a
+                    Segurança
                   </h5>
                   {!showPasswordChange && (
                     <button
@@ -304,7 +304,7 @@ export default function EditarPerfil() {
                   <li>Use um email valido para recuperacao de conta</li>
                   <li>Mantenha as suas informacoes atualizadas</li>
                   <li>A password deve ter pelo menos 6 caracteres</li>
-                  <li>NÃ£o partilhe a sua password com terceiros</li>
+                  <li>Não partilhe a sua password com terceiros</li>
                 </ul>
             </div>
 
@@ -312,7 +312,7 @@ export default function EditarPerfil() {
               <i className="bi bi-shield-check mb-3 block text-4xl text-sky-600"></i>
               <h6 className="mb-2 text-sm font-bold text-slate-900">Dados Protegidos</h6>
               <p className="mb-0 text-xs text-slate-500 sm:text-sm">
-                  As suas informaÃ§Ãµes estÃ£o seguras e protegidas.
+                  As suas informações estão seguras e protegidas.
                 </p>
             </div>
           </div>

@@ -6,9 +6,9 @@ export default function PerfilConsultor() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [atividade] = useState([
-    { id: 1, acao: "Conquistou o badge 'DevOps IntermÃ©dio'", data: "HÃ¡ 2 dias" },
-    { id: 2, acao: "Submeteu evidÃªncias para 'Outsystems AvanÃ§ado'", data: "HÃ¡ 5 dias" },
-    { id: 3, acao: "Atualizou perfil profissional", data: "HÃ¡ 1 semana" },
+    { id: 1, acao: "Conquistou o badge 'DevOps Intermédio'", data: "Há 2 dias" },
+    { id: 2, acao: "Submeteu evidências para 'Outsystems Avançado'", data: "Há 5 dias" },
+    { id: 3, acao: "Atualizou perfil profissional", data: "Há 1 semana" },
   ]);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function PerfilConsultor() {
           nome: response.data.name,
           cargo: getRoleLabel(response.data.role),
           email: response.data.email,
-          localizacao: response.data.localizacao || "NÃ£o definida",
+          localizacao: response.data.localizacao || "Não definida",
           imagem: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
           pontos: response.data.points_total || 0,
           badges: response.data.badges || 0,
@@ -32,7 +32,7 @@ export default function PerfilConsultor() {
         });
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
-        alert("Erro ao carregar perfil. Verifique a autenticaÃ§Ã£o.");
+        alert("Erro ao carregar perfil. Verifique a autenticação.");
       } finally {
         setLoading(false);
       }
@@ -54,7 +54,7 @@ export default function PerfilConsultor() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#013440]"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#2AA4BF]"></div>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function PerfilConsultor() {
       <Sidebar user={{ role: "consultant", name: user.nome }} />
 
       <main className="admin-main">
-        <div className="mb-5 flex flex-col gap-4 rounded-2xl bg-[#013440] p-5 text-white shadow-sm md:flex-row md:items-center md:justify-between">
+        <div className="mb-5 flex flex-col gap-4 rounded-2xl bg-[#2AA4BF] p-5 text-white shadow-sm md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <img
               src={user.imagem}
@@ -86,7 +86,7 @@ export default function PerfilConsultor() {
           </div>
           <div className="md:text-right">
             <button 
-              className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-[#013440] hover:bg-slate-100"
+              className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100"
               onClick={() => window.location.href = "/editar-perfil"}
             >
               <i className="bi bi-pencil-square mr-2"></i>Editar Perfil

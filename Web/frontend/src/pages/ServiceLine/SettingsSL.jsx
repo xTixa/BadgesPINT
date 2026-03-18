@@ -5,9 +5,9 @@ export default function ServiceLineSettingsPage() {
   return (
     <div className="settings-page">
         <Sidebar user={{ role: "service_line", name: "Service Line" }} />
-      <h1>DefiniÃ§Ãµes do Service Line</h1>
+      <h1>Definições do Service Line</h1>
 
-      {/* Service Line e Ã¡reas */}
+      {/* Service Line e áreas */}
       <section>
         <h2>Service Line</h2>
         <label>
@@ -15,16 +15,16 @@ export default function ServiceLineSettingsPage() {
           <select>{/* options */}</select>
         </label>
         <label>
-          Ãreas visÃ­veis por defeito
+          Áreas visíveis por defeito
           <select multiple>{/* options */}</select>
         </label>
       </section>
 
-      {/* NotificaÃ§Ãµes */}
+      {/* Notificações */}
       <section>
-        <h2>NotificaÃ§Ãµes</h2>
+        <h2>Notificações</h2>
         <label>
-          Candidaturas em validaÃ§Ã£o da Service Line
+          Candidaturas em validação da Service Line
           <input type="checkbox" />
         </label>
         <label>
@@ -33,11 +33,11 @@ export default function ServiceLineSettingsPage() {
         </label>
       </section>
 
-      {/* RelatÃ³rios e ranking */}
+      {/* Relatórios e ranking */}
       <section>
-        <h2>RelatÃ³rios e ranking</h2>
+        <h2>Relatórios e ranking</h2>
         <label>
-          Formato padrÃ£o de exportaÃ§Ã£o
+          Formato padrão de exportação
           <select>
             <option value="excel">Excel</option>
             <option value="pdf">PDF</option>
@@ -49,11 +49,11 @@ export default function ServiceLineSettingsPage() {
         </label>
       </section>
 
-      {/* MÃ©tricas comparativas */}
+      {/* Métricas comparativas */}
       <section>
-        <h2>MÃ©tricas comparativas</h2>
+        <h2>Métricas comparativas</h2>
         <label>
-          Ativar comparaÃ§Ã£o entre consultores da mesma experiÃªncia/Ã¡rea
+          Ativar comparação entre consultores da mesma experiência/área
           <input type="checkbox" />
         </label>
       </section>
@@ -64,8 +64,8 @@ export default function ServiceLineSettingsPage() {
         <label>
           Idioma
           <select>
-            <option value="pt">PortuguÃªs</option>
-            <option value="en">InglÃªs</option>
+            <option value="pt">Português</option>
+            <option value="en">Inglês</option>
             <option value="es">Espanhol</option>
           </select>
         </label>
@@ -78,7 +78,7 @@ export default function ServiceLineSettingsPage() {
         </label>
       </section>
 
-      <button>Guardar alteraÃ§Ãµes</button>
+      <button>Guardar alterações</button>
     </div>
   );
 }

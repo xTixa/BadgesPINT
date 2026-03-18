@@ -17,11 +17,11 @@ export default {
     extend: {
       colors: {
         brand: {
-          900: "#013440",
+          900: "#2AA4BF",
           500: "#2AA4BF",
           400: "#04C4D9",
           50: "#F2F2F2",
-          950: "#0D0D0D",
+          950: "#2AA4BF",
         },
       },
       spacing: {

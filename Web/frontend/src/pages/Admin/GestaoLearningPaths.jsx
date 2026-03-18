@@ -41,7 +41,7 @@ export default function GestaoLearningPaths() {
           <div>
             <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
               <i className="bi bi-diagram-3-fill text-amber-500" />
-              GestÃ£o de Learning Paths
+              Gestão de Learning Paths
             </h3>
             <p className="text-sm text-slate-500">Criar, ativar/desativar e exportar percursos.</p>
           </div>
@@ -110,10 +110,10 @@ export default function GestaoLearningPaths() {
               <tr>
                 <th className="px-4 py-3">Nome</th>
                 <th className="px-4 py-3">Badges</th>
-                <th className="px-4 py-3">DuraÃ§Ã£o</th>
-                <th className="px-4 py-3">PÃºblico</th>
+                <th className="px-4 py-3">Duração</th>
+                <th className="px-4 py-3">Público</th>
                 <th className="px-4 py-3">Estado</th>
-                <th className="px-4 py-3 text-right">AÃ§Ãµes</th>
+                <th className="px-4 py-3 text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">

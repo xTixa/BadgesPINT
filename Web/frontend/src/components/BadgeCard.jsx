@@ -7,22 +7,22 @@ export default function BadgeCard({ badge }) {
     const colors = {
       Junior: "bg-[#2AA4BF]",
       Intermedio: "bg-[#2AA4BF]",
-      Senior: "bg-[#013440]",
+      Senior: "bg-[#2AA4BF]",
       Especialista: "bg-[#2AA4BF]",
-      Lider: "bg-[#013440]",
+      Lider: "bg-[#2AA4BF]",
     };
-    return colors[level] || "bg-[#013440]";
+    return colors[level] || "bg-[#2AA4BF]";
   };
 
   const getLevelBadgeColor = (level) => {
     const colors = {
-      Junior: "bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]",
-      Intermedio: "bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]",
-      Senior: "bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]",
-      Especialista: "bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]",
-      Lider: "bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]",
+      Junior: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
+      Intermedio: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
+      Senior: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
+      Especialista: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
+      Lider: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
     };
-    return colors[level] || "bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]";
+    return colors[level] || "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]";
   };
 
   return (
@@ -58,7 +58,7 @@ export default function BadgeCard({ badge }) {
 
       {/* Conteúdo */}
       <div className="p-6">
-        <h3 className="text-lg font-bold text-[#013440] mb-2">
+        <h3 className="text-lg font-bold text-slate-800 mb-2">
           {badge?.area?.name || "Badge"} - {badge?.level || "Junior"}
         </h3>
         <p className="text-gray-600 text-sm mb-4">
@@ -70,14 +70,14 @@ export default function BadgeCard({ badge }) {
             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelBadgeColor(badge?.level)}`}>
               {badge?.level || "Junior"}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
               {badge?.points || 0} pts
             </span>
           </div>
 
           <Link
             to={`/badges/${badge?.id}/requirements`}
-            className="px-4 py-2 rounded-lg bg-[#013440] text-white text-sm font-semibold"
+            className="px-4 py-2 rounded-lg bg-[#2AA4BF] text-white text-sm font-semibold"
           >
             Ver Detalhes
           </Link>
