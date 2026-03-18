@@ -1,5 +1,9 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
+import PageHeader from "/src/components/ui/PageHeader";
+import StatCard from "/src/components/ui/StatCard";
+import SectionCard from "/src/components/ui/SectionCard";
+import EmptyState from "/src/components/ui/EmptyState";
 
 export default function Equipa() {
   const [filtroNome, setFiltroNome] = useState("");
@@ -15,47 +19,41 @@ export default function Equipa() {
 
   return (
     <div className="admin-shell">
-      <Sidebar user={{ role: "talentManager", name: "Talent Manager" }} />
+      <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
 
       <main className="admin-main">
-        <div className="mb-4 rounded-2xl bg-[#2AA4BF] p-4 text-white shadow-sm">
-          <h3 className="mb-1 text-xl font-bold sm:text-2xl">Equipa</h3>
-          <p className="m-0 text-sm text-white/80 sm:text-base">Progresso, requisitos e timeline de evolução por consultor.</p>
-        </div>
+        <PageHeader
+          title="Equipa"
+          subtitle="Progresso, requisitos e timeline de evolução por consultor."
+          icon="bi-people-fill"
+        />
 
         <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[{ label: "Total de Consultores", icon: "bi-people-fill", valor: consultores.length, cor: "text-sky-600" }, { label: "Média de Pontos", icon: "bi-star-fill", valor: mediaPontos, cor: "text-amber-500" }, { label: "Média de Progresso", icon: "bi-graph-up-arrow", valor: `${mediaProgresso}%`, cor: "text-emerald-600" }].map((card) => (
-            <div key={card.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="mb-2 flex items-center gap-2">
-                <i className={`bi ${card.icon} text-2xl ${card.cor}`}></i>
-                <h6 className="m-0 text-sm text-slate-600">{card.label}</h6>
-              </div>
-              <h3 className="m-0 text-2xl font-bold text-slate-900">{card.valor}</h3>
-            </div>
+          {[{ label: "Total de Consultores", icon: "bi-people-fill", value: consultores.length, tone: "sky" }, { label: "Média de Pontos", icon: "bi-star-fill", value: mediaPontos, tone: "amber" }, { label: "Média de Progresso", icon: "bi-graph-up-arrow", value: `${mediaProgresso}%`, tone: "emerald" }].map((card) => (
+            <StatCard key={card.label} label={card.label} icon={card.icon} value={card.value} tone={card.tone} />
           ))}
         </div>
 
         <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
           <div className="lg:col-span-8">
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <SectionCard title="Consultores" icon="bi-person-lines-fill">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <h5 className="m-0 text-base font-bold text-slate-900"><i className="bi bi-person-lines-fill mr-2 text-sky-600"></i>Consultores</h5>
                 <div className="flex w-full items-center overflow-hidden rounded-xl border border-slate-300 bg-white sm:w-[260px]">
                   <span className="px-3 text-slate-500"><i className="bi bi-search"></i></span>
-                    <input
-                      type="text"
+                  <input
+                    type="text"
                     className="w-full border-0 px-2 py-2 text-sm text-slate-800 outline-none"
-                      placeholder="Procurar por nome..."
-                      value={filtroNome}
-                      onChange={(e) => setFiltroNome(e.target.value)}
-                    />
-                  </div>
+                    placeholder="Procurar por nome..."
+                    value={filtroNome}
+                    onChange={(e) => setFiltroNome(e.target.value)}
+                  />
                 </div>
+              </div>
 
               <div className="overflow-x-auto rounded-xl border border-slate-200">
                 <table className="min-w-full divide-y divide-slate-200 text-sm">
                   <thead className="bg-slate-100 text-slate-700">
-                      <tr>
+                    <tr>
                       <th className="px-3 py-2 text-left font-semibold">Consultor</th>
                       <th className="px-3 py-2 text-left font-semibold">Função</th>
                       <th className="px-3 py-2 text-left font-semibold">Service Line</th>
@@ -64,102 +62,101 @@ export default function Equipa() {
                       <th className="px-3 py-2 text-left font-semibold">Expiração</th>
                       <th className="px-3 py-2 text-left font-semibold">Progresso</th>
                       <th className="px-3 py-2 text-right font-semibold">Timeline</th>
-                      </tr>
-                    </thead>
+                    </tr>
+                  </thead>
                   <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                      {filtrados.map((c) => (
-                        <tr key={c.id}>
+                    {filtrados.map((c) => (
+                      <tr key={c.id}>
                         <td className="px-3 py-2 font-semibold text-slate-900">{c.nome}</td>
                         <td className="px-3 py-2 text-slate-500">{c.cargo}</td>
                         <td className="px-3 py-2">{c.serviceLine}</td>
                         <td className="px-3 py-2">{c.pontos}</td>
                         <td className="px-3 py-2">{c.badges}</td>
                         <td className="px-3 py-2">
-                            {c.expirando ? (
+                          {c.expirando ? (
                             <span className="inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">{c.expirando} dias</span>
-                            ) : (
+                          ) : (
                             <span className="inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">OK</span>
-                            )}
-                          </td>
+                          )}
+                        </td>
                         <td className="min-w-[160px] px-3 py-2">
                           <div className="flex items-center gap-2">
                             <div className="h-1.5 flex-1 rounded-full bg-slate-200">
-                              <div className="h-1.5 rounded-full bg-[#2AA4BF]" style={{ width: `${c.progresso}%` }}></div>
-                              </div>
-                            <span className="text-xs text-slate-500">{c.progresso}%</span>
+                              <div className="h-1.5 rounded-full bg-[#16558C]" style={{ width: `${c.progresso}%` }}></div>
                             </div>
-                          </td>
+                            <span className="text-xs text-slate-500">{c.progresso}%</span>
+                          </div>
+                        </td>
                         <td className="px-3 py-2 text-right">
                           <button className="rounded-lg border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => alert("Timeline profissional (mock)")}>Ver timeline</button>
-                          </td>
-                        </tr>
-                      ))}
-                      {!filtrados.length && (
-                        <tr>
-                        <td colSpan="8" className="px-3 py-4 text-center text-sm text-slate-500">Nenhum consultor encontrado com esse filtro.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        </td>
+                      </tr>
+                    ))}
+                    {!filtrados.length && (
+                      <tr>
+                        <td colSpan="8" className="px-3 py-4">
+                          <EmptyState message="Nenhum consultor encontrado com esse filtro." icon="bi-search" />
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
-            </div>
+            </SectionCard>
           </div>
 
           <div className="lg:col-span-4">
-            <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h6 className="mb-2 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-fire mr-2 text-rose-600"></i>Badges próximos da expiração</h6>
+            <SectionCard title="Badges próximos da expiração" icon="bi-fire" className="mb-3">
               <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
-                  {consultores
-                    .flatMap((c) => c.badgesExpirando)
-                    .slice(0, 4)
-                    .map((b, idx) => (
+                {consultores
+                  .flatMap((c) => c.badgesExpirando)
+                  .slice(0, 4)
+                  .map((b, idx) => (
                     <li key={idx} className="flex items-center justify-between gap-3 px-3 py-3">
-                        <div>
+                      <div>
                         <div className="text-sm font-semibold text-slate-900">{b.nome}</div>
                         <div className="text-xs text-slate-500">{b.consultor}</div>
-                        </div>
+                      </div>
                       <span className="inline-flex rounded-full bg-rose-100 px-2 py-1 text-xs font-semibold text-rose-700">{b.expiraEmDias} dias</span>
-                      </li>
-                    ))}
-                  {!consultores.some((c) => c.badgesExpirando.length) && (
+                    </li>
+                  ))}
+                {!consultores.some((c) => c.badgesExpirando.length) && (
                   <li className="px-3 py-3 text-sm text-slate-500">Sem expirações próximas.</li>
-                  )}
-                </ul>
-            </div>
+                )}
+              </ul>
+            </SectionCard>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h6 className="mb-2 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-patch-check-fill mr-2 text-emerald-600"></i>Requisitos por badge</h6>
+            <SectionCard title="Requisitos por badge" icon="bi-patch-check-fill">
               <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
-                  {requisitos.map((r) => (
+                {requisitos.map((r) => (
                   <li key={r.id} className="px-3 py-3">
                     <div className="text-sm font-semibold text-slate-900">{r.badge}</div>
                     <div className="text-xs text-slate-500">{r.requisito}</div>
-                    </li>
-                  ))}
-                </ul>
-            </div>
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h6 className="mb-3 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-stars mr-2 text-amber-500"></i>Sistema de pontos e conquistas especiais</h6>
+        <SectionCard title="Sistema de pontos e conquistas especiais" icon="bi-stars">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
               <div className="rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm text-sky-700">Cada badge atribui pontos; badges de conquistas especiais valem pontos extra e aparecem no perfil.</div>
             </div>
             <div className="flex flex-col gap-2">
-                {conquistas.map((c) => (
+              {conquistas.map((c) => (
                 <div key={c.id} className="flex items-center gap-2">
-                    <i className={`${c.icon} text-warning`}></i>
-                    <div>
+                  <i className={`${c.icon} text-warning`}></i>
+                  <div>
                     <div className="text-sm font-semibold text-slate-900">{c.nome}</div>
                     <div className="text-xs text-slate-500">{c.desc}</div>
-                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-        </div>
+          </div>
+        </SectionCard>
       </main>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "/src/api";
 
 export default function Logout() {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ export default function Logout() {
     // Tentar registar no backend, mas não bloquear UX
     axios
       .post(
-        "http://localhost:4000/api/auth/logout",
+        "/api/auth/logout",
         {},
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       )

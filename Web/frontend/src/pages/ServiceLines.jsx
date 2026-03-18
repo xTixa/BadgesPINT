@@ -46,14 +46,14 @@ export default function ServiceLines() {
   };
 
   const getCardColor = (index) => {
-    const colors = ["bg-[#2AA4BF]", "bg-[#04C4D9]", "bg-[#2AA4BF]", "bg-[#2AA4BF]"];
+    const colors = ["bg-[#16558C]", "bg-[#04C4D9]", "bg-[#16558C]", "bg-[#16558C]"];
     return colors[index % colors.length];
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className="bg-[#2AA4BF] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
+      <div className="bg-[#16558C] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
@@ -80,7 +80,7 @@ export default function ServiceLines() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#2AA4BF] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar service lines...</p>
           </div>
         ) : sls.length > 0 ? (
@@ -88,7 +88,7 @@ export default function ServiceLines() {
             {sls.map((sl, index) => (
               <div 
                 key={sl.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]"
+                className="bg-white rounded-2xl overflow-hidden border border-[#16558C]"
               >
                 <div className={`h-48 ${getCardColor(index)} relative overflow-hidden`}>
                   
@@ -100,7 +100,7 @@ export default function ServiceLines() {
                   </div>
                   
                   {/* Badge com número */}
-                  <div className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#2AA4BF]">
+                  <div className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#16558C]">
                     <span className="text-lg font-bold text-slate-800">{index + 1}</span>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ export default function ServiceLines() {
                   {/* Action Button */}
                   <Link
                     to={`/service-lines/${sl.id}/areas`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#2AA4BF] text-white font-semibold hover:bg-[#2AA4BF]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#16558C] text-white font-semibold hover:bg-[#16558C]"
                   >
                     Ver Áreas →
                   </Link>

@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 
 export default function GestaoTickets() {
@@ -45,8 +45,8 @@ export default function GestaoTickets() {
         ...(filtroPrioridade && { prioridade: filtroPrioridade }),
       });
 
-      const response = await axios.get(
-        `http://localhost:4000/api/tickets?${query}`,
+      const response = await api.get(
+        `/api/tickets?${query}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -67,8 +67,8 @@ export default function GestaoTickets() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "http://localhost:4000/api/tickets/stats/estatisticas",
+      const response = await api.get(
+        "/api/tickets/stats/estatisticas",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -92,8 +92,8 @@ export default function GestaoTickets() {
   const handleAtualizarTicket = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:4000/api/tickets/${ticketSelecionado.id}`,
+      await api.put(
+        `/api/tickets/${ticketSelecionado.id}`,
         {
           status: novoStatus || ticketSelecionado.status,
           resposta_admin: respostaAdmin,

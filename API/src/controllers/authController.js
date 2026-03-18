@@ -22,7 +22,20 @@ export const login = async (req, res) => {
       return res.status(404).json({ message: "Utilizador não encontrado" });
     }
 
-    const match = await bcrypt.compare(password, user.password_hash);
+    const looksLikeBcryptHash = /^\$2[aby]\$\d{2}\$/.test(user.password_hash || "");
+    let match = false;
+
+    if (looksLikeBcryptHash) {
+      match = await bcrypt.compare(password, user.password_hash);
+    } else {
+      // Compatibilidade temporária para registos antigos com password em texto simples.
+      match = password === user.password_hash;
+      if (match) {
+        const migratedHash = await bcrypt.hash(password, 10);
+        await user.update({ password_hash: migratedHash });
+      }
+    }
+
     if (!match) {
       await createAuditLog(req, res, {
         action: "LOGIN",
@@ -38,8 +51,8 @@ export const login = async (req, res) => {
     let greeting = "";
     const now = new Date();
 
-    // Se for password temporária → Primeiro login
-    if (password === "123456") {
+    // Primeiro login: utilizador autenticado sem histórico de login
+    if (!user.last_login) {
       greeting = "Bem-vindo";
       const token = generateToken(user);
 
@@ -52,9 +65,7 @@ export const login = async (req, res) => {
     }
 
     // Verificar último login
-    if (!user.last_login) {
-      greeting = "Bem-vindo";
-    } else {
+    {
       const diffDays =
         (now - new Date(user.last_login)) / (1000 * 60 * 60 * 24);
 
@@ -90,13 +101,21 @@ export const login = async (req, res) => {
 
 export const updatePassword = async (req, res) => {
   try {
-    const { userId, newPassword } = req.body;
+    const { newPassword } = req.body;
+
+    if (!req.userId) {
+      return res.status(401).json({ message: "Token inválido" });
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: "Nova password deve ter pelo menos 6 caracteres." });
+    }
 
     const hash = await bcrypt.hash(newPassword, 10);
 
     await User.update(
       { password_hash: hash },
-      { where: { id: userId } }
+      { where: { id: req.userId } }
     );
 
     res.json({ message: "Password atualizada com sucesso!" });
@@ -163,6 +182,7 @@ export async function firstLogin(req, res) {
 
     await user.update({
       password_hash: hash,
+      last_login: new Date(),
     });
 
     const token = generateToken(user);

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import authMiddleware from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
 import {
   getTM,
   getTMEstatisticas,
@@ -10,12 +10,14 @@ import { listEvidencesForTM, approveEvidence, rejectEvidence } from "../controll
 
 const router = Router();
 
-router.get("/me", authMiddleware, getTM);
-router.get("/estatisticas", authMiddleware, getTMEstatisticas);
-router.get("/equipa", authMiddleware, getEquipa);
-router.get("/kpis", authMiddleware, getTMKpis);
-router.get("/evidencias", authMiddleware, listEvidencesForTM);
-router.put("/evidencias/:id/aprovar", authMiddleware, approveEvidence);
-router.put("/evidencias/:id/rejeitar", authMiddleware, rejectEvidence);
+router.use(protect(["talent_manager"]));
+
+router.get("/me", getTM);
+router.get("/estatisticas", getTMEstatisticas);
+router.get("/equipa", getEquipa);
+router.get("/kpis", getTMKpis);
+router.get("/evidencias", listEvidencesForTM);
+router.put("/evidencias/:id/aprovar", approveEvidence);
+router.put("/evidencias/:id/rejeitar", rejectEvidence);
 
 export default router;

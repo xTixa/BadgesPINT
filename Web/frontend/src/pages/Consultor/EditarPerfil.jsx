@@ -1,7 +1,7 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "/src/api";
 
 export default function EditarPerfil() {
   const navigate = useNavigate();
@@ -40,8 +40,8 @@ export default function EditarPerfil() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:4000/api/users/${user.id}`,
+      await api.put(
+        `/api/users/${user.id}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -84,8 +84,8 @@ export default function EditarPerfil() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:4000/api/users/${user.id}/password`,
+      await api.put(
+        `/api/users/${user.id}/password`,
         {
           currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,
@@ -113,7 +113,7 @@ export default function EditarPerfil() {
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#2AA4BF]"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#16558C]"></div>
       </div>
     );
   }
@@ -172,7 +172,7 @@ export default function EditarPerfil() {
 
                   <button
                     type="submit"
-                    className="inline-flex items-center rounded-lg bg-[#2AA4BF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2AA4BF] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center rounded-lg bg-[#16558C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#16558C] disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={loading}
                   >
                     {loading ? (

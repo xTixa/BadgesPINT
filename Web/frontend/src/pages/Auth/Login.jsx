@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "/src/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +16,6 @@ export default function Login() {
     try {
       const parsed = JSON.parse(savedLogin);
       setEmail(parsed.email || "");
-      setPassword(parsed.password || "");
       setRememberMe(true);
     } catch (error) {
       console.error("Erro ao ler dados guardados", error);
@@ -29,7 +28,7 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:4000/api/auth/login", {
+      const res = await api.post("/api/auth/login", {
         email,
         password
       });
@@ -41,7 +40,7 @@ export default function Login() {
       localStorage.setItem("token", token);
 
       if (rememberMe) {
-        localStorage.setItem("savedLogin", JSON.stringify({ email, password }));
+        localStorage.setItem("savedLogin", JSON.stringify({ email }));
       } else {
         localStorage.removeItem("savedLogin");
       }
@@ -83,7 +82,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#2AA4BF] text-[#F2F2F2]">
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#16558C] text-[#F2F2F2]">
         <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
             Bem-vindo de volta!
@@ -102,7 +101,7 @@ export default function Login() {
 
         <form
           onSubmit={handleLogin}
-          className="w-full max-w-sm rounded-2xl bg-white px-10 py-12 mx-6 border border-[#2AA4BF]"
+          className="w-full max-w-sm rounded-2xl bg-white px-10 py-12 mx-6 border border-[#16558C]"
         >
           <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
             Iniciar Sessão
@@ -120,7 +119,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className={`w-full px-4 py-3 rounded-lg border ${
                 error ? "border-red-400" : "border-gray-300"
-              } focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]`}
+              } focus:outline-none focus:ring-2 focus:ring-[#16558C]`}
               placeholder="exemplo@dominio.com"
             />
           </div>
@@ -138,7 +137,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full px-4 py-3 rounded-lg border ${
                   error ? "border-red-400" : "border-gray-300"
-                } focus:outline-none focus:ring-2 focus:ring-[#2AA4BF] pr-16`}
+                } focus:outline-none focus:ring-2 focus:ring-[#16558C] pr-16`}
                 placeholder="••••••••"
               />
               <button
@@ -158,9 +157,9 @@ export default function Login() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#2AA4BF]"
+                className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#16558C]"
               />
-              Guardar dados da sessão
+              Guardar email neste dispositivo
             </label>
             <button
               type="button"
@@ -174,7 +173,7 @@ export default function Login() {
           {/* BOTÃO */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg font-semibold text-white bg-[#2AA4BF] hover:bg-[#2AA4BF]"
+            className="w-full py-3 rounded-lg font-semibold text-white bg-[#16558C] hover:bg-[#16558C]"
           >
             Entrar
           </button>
@@ -190,7 +189,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => navigate("/register")}
-              className="w-full py-3 rounded-lg font-semibold text-slate-800 border border-[#2AA4BF] hover:bg-[#2AA4BF] hover:text-white"
+              className="w-full py-3 rounded-lg font-semibold text-slate-800 border border-[#16558C] hover:bg-[#16558C] hover:text-white"
             >
               Criar Conta
             </button>

@@ -3,11 +3,17 @@
 @tailwind utilities;
 
 :root {
-	--color-primary: #2AA4BF;
-	--color-secondary: #2AA4BF;
+	--color-primary: #16558C;
+	--color-secondary: #3F76A6;
+	--color-soft: #7A98BF;
 	--color-accent: #04C4D9;
 	--color-surface: #F2F2F2;
 	--color-text: #1f2937;
+	--radius-xl: 1rem;
+	--radius-2xl: 1.1rem;
+	--shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.06);
+	--space-section: 1rem;
+	--space-card: 1rem;
 }
 
 body {
@@ -32,6 +38,41 @@ body {
 	.admin-main {
 		@apply w-full px-4 py-4 sm:px-5 md:px-6;
 		margin-left: 0;
+	}
+
+	.ui-page-header {
+		@apply mb-4 rounded-2xl p-4 text-white;
+		background: linear-gradient(135deg, #16558C 0%, #3F76A6 60%, #7A98BF 100%);
+		box-shadow: var(--shadow-soft);
+	}
+
+	.ui-page-title {
+		@apply mb-1 text-xl font-bold tracking-tight sm:text-2xl;
+	}
+
+	.ui-page-subtitle {
+		@apply m-0 text-sm text-white/85 sm:text-base;
+	}
+
+	.ui-card {
+		@apply rounded-2xl border border-slate-200 bg-white p-4;
+		box-shadow: var(--shadow-soft);
+	}
+
+	.ui-card-title {
+		@apply mb-3 text-base font-bold text-slate-900;
+	}
+
+	.ui-stat-label {
+		@apply m-0 text-sm text-slate-600;
+	}
+
+	.ui-stat-value {
+		@apply m-0 text-2xl font-bold text-slate-900;
+	}
+
+	.ui-muted-chip {
+		@apply rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700;
 	}
 
 	@media (min-width: 1024px) {
@@ -153,7 +194,9 @@ body {
 
 	.form-control:focus,
 	.form-select:focus {
-		@apply border-sky-400 ring-2 ring-sky-200;
+		@apply ring-2;
+		border-color: var(--color-secondary);
+		ring-color: color-mix(in srgb, var(--color-soft) 45%, white);
 	}
 
 	.input-group {
@@ -179,7 +222,13 @@ body {
 	}
 
 	.btn-primary {
-		@apply border-sky-700 bg-sky-700 text-white hover:bg-sky-800;
+		@apply text-white;
+		border-color: var(--color-primary);
+		background-color: var(--color-primary);
+	}
+
+	.btn-primary:hover {
+		background-color: var(--color-secondary);
 	}
 
 	.btn-secondary {
@@ -199,7 +248,13 @@ body {
 	}
 
 	.btn-outline-primary {
-		@apply border-sky-600 bg-white text-sky-700 hover:bg-sky-50;
+		@apply bg-white;
+		border-color: var(--color-secondary);
+		color: var(--color-primary);
+	}
+
+	.btn-outline-primary:hover {
+		background-color: #ebf0f5;
 	}
 
 	.btn-outline-secondary {
@@ -258,7 +313,9 @@ body {
 	}
 
 	.alert-info {
-		@apply border-sky-200 bg-sky-50 text-sky-700;
+		border-color: #c3d1e2;
+		background-color: #e4eaf2;
+		color: var(--color-primary);
 	}
 
 	.badge {
@@ -267,7 +324,8 @@ body {
 
 	.bg-primary,
 	.text-bg-primary {
-		@apply bg-sky-700 text-white;
+		background-color: var(--color-primary);
+		color: white;
 	}
 
 	.bg-success {

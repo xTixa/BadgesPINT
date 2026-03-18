@@ -19,21 +19,17 @@ app.use("/", routes);
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
-// Sincronizar models e iniciar servidor
-database.sync()
+// Validar ligação, sincronizar models e iniciar servidor uma única vez
+database
+  .authenticate()
+  .then(() => {
+    console.log("Ligação à BD OK");
+    return database.sync();
+  })
   .then(() => {
     console.log("Models sincronizados com PostgreSQL");
     app.listen(PORT, () => {
       console.log(`Server a correr em http://localhost:${PORT}`);
     });
   })
-  .catch((err) => console.error("Erro ao sincronizar DB:", err));
-
-  database.authenticate()
-  .then(() => {
-    console.log("Ligação à BD OK");
-    app.listen(PORT, () => {
-      console.log(`Server a correr em http://localhost:${PORT}`);
-    });
-  })
-  .catch(console.error);
+  .catch((err) => console.error("Erro ao iniciar servidor:", err));

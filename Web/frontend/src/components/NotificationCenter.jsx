@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "/src/api";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 export default function NotificationCenter() {
@@ -20,8 +20,8 @@ export default function NotificationCenter() {
 
   const fetchNotificacoes = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:4000/api/notifications?limit=5&lido=false",
+      const response = await api.get(
+        "/api/notifications?limit=5&lido=false",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -37,8 +37,8 @@ export default function NotificationCenter() {
     e.stopPropagation();
     try {
       setLoading(true);
-      await axios.put(
-        `http://localhost:4000/api/notifications/${id}/read`,
+      await api.put(
+        `/api/notifications/${id}/read`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -56,8 +56,8 @@ export default function NotificationCenter() {
     e.stopPropagation();
     try {
       setLoading(true);
-      await axios.put(
-        "http://localhost:4000/api/notifications/mark/all-read",
+      await api.put(
+        "/api/notifications/mark/all-read",
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -74,8 +74,8 @@ export default function NotificationCenter() {
   const handleApagarNotificacao = async (id, e) => {
     e.stopPropagation();
     try {
-      await axios.delete(
-        `http://localhost:4000/api/notifications/${id}`,
+      await api.delete(
+        `/api/notifications/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -180,7 +180,7 @@ export default function NotificationCenter() {
               alignItems: "center",
             }}
           >
-            <h6 style={{ margin: 0, color: "#2AA4BF", fontWeight: "600" }}>
+            <h6 style={{ margin: 0, color: "#16558C", fontWeight: "600" }}>
               Notificações
               {naoLidas > 0 && (
                 <span style={{ fontSize: "0.8rem", color: "#ef4444", marginLeft: "0.5rem" }}>
@@ -254,7 +254,7 @@ export default function NotificationCenter() {
                         margin: 0,
                         fontSize: "0.85rem",
                         fontWeight: "500",
-                        color: "#2AA4BF",
+                        color: "#16558C",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",

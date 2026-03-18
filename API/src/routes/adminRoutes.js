@@ -13,12 +13,12 @@ import {
   exportPreview
 } from "../controllers/exportController.js";
 
-import authMiddleware from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
 // Tudo no Admin requer autenticação
-router.use(authMiddleware);
+router.use(protect(["admin"]));
 
 // Dashboard
 router.get("/stats", getAdminStats);

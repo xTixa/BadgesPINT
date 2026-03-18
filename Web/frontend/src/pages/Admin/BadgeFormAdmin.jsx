@@ -1,7 +1,7 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "/src/api";
 
 export default function BadgeFormAdmin() {
   const { id } = useParams(); // "novo" ou um id numérico
@@ -32,7 +32,7 @@ export default function BadgeFormAdmin() {
 
     const loadAreas = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/areas");
+        const res = await api.get("/api/areas");
         setAreas(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar áreas:", err);
@@ -42,7 +42,7 @@ export default function BadgeFormAdmin() {
     const loadBadge = async () => {
       if (isNovo) return;
       try {
-        const res = await axios.get(`http://localhost:4000/api/admin/badges/${id}`, {
+        const res = await api.get(`/api/admin/badges/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -97,11 +97,11 @@ export default function BadgeFormAdmin() {
     try {
       setLoading(true);
       if (isNovo) {
-        await axios.post("http://localhost:4000/api/admin/badges", payload, {
+        await api.post("/api/admin/badges", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await axios.put(`http://localhost:4000/api/admin/badges/${id}`, payload, {
+        await api.put(`/api/admin/badges/${id}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -314,7 +314,7 @@ export default function BadgeFormAdmin() {
               </button>
               <button
                 type="submit"
-                className="rounded-lg bg-[#2AA4BF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2AA4BF]"
+                className="rounded-lg bg-[#16558C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#16558C]"
                 disabled={loading}
               >
                 {loading ? "A guardar..." : "Guardar"}

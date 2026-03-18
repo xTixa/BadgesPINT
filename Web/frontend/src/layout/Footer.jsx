@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="relative z-10 mt-auto border-t border-[#2AA4BF]/20 bg-white text-slate-800">
+    <footer className="relative z-10 mt-auto border-t border-[#16558C]/20 bg-white text-slate-800">
       <div className="mx-auto max-w-[1200px] px-4 py-8">
         <div className="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(250px,1fr))]">
           <div>
@@ -41,7 +41,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-[#2AA4BF] pt-8 text-center text-sm text-slate-800">
+        <div className="mt-8 border-t border-[#16558C] pt-8 text-center text-sm text-slate-800">
           © {new Date().getFullYear()} Badges PINT. All rights reserved.
         </div>
       </div>

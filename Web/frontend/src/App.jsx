@@ -4,6 +4,7 @@ import { LanguageProvider } from "./context/LanguageContext";
 import { SidebarProvider } from "./context/SidebarContext";
 import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 // Auth Pages
 import Login from "./pages/Auth/Login";
@@ -90,47 +91,47 @@ function AppContent() {
           <Route path="/badges/:id/requirements" element={<Requirements />} />
 
           {/* Consultor */}
-          <Route path="/dashboard" element={<DashboardConsultor />} />
-          <Route path="/perfil" element={<PerfilConsultor />} />
-          <Route path="/editar-perfil" element={<EditarPerfil />} />
-          <Route path="/consultor/perfil" element={<PerfilConsultor />} />
-          <Route path="/consultor/ranking" element={<Ranking />} />
-          <Route path="/consultor/historico" element={<HistoricoBadges />} />
-          <Route path="/consultor/upload" element={<UploadEvidencias />} />
-          <Route path="/consultor/settings" element={<ConsultorSettingsPage />} />
+          <Route path="/dashboard" element={<ProtectedRoute role="consultant"><DashboardConsultor /></ProtectedRoute>} />
+          <Route path="/perfil" element={<ProtectedRoute role="consultant"><PerfilConsultor /></ProtectedRoute>} />
+          <Route path="/editar-perfil" element={<ProtectedRoute role="consultant"><EditarPerfil /></ProtectedRoute>} />
+          <Route path="/consultor/perfil" element={<ProtectedRoute role="consultant"><PerfilConsultor /></ProtectedRoute>} />
+          <Route path="/consultor/ranking" element={<ProtectedRoute role="consultant"><Ranking /></ProtectedRoute>} />
+          <Route path="/consultor/historico" element={<ProtectedRoute role="consultant"><HistoricoBadges /></ProtectedRoute>} />
+          <Route path="/consultor/upload" element={<ProtectedRoute role="consultant"><UploadEvidencias /></ProtectedRoute>} />
+          <Route path="/consultor/settings" element={<ProtectedRoute role="consultant"><ConsultorSettingsPage /></ProtectedRoute>} />
 
           {/* Talent Manager */}
-          <Route path="/tm/dashboard" element={<DashboardTalentManager />} />
-          <Route path="/tm/equipa" element={<Equipa />} />
-          <Route path="/tm/evidencias" element={<ValidarEvidencias />} />
-          <Route path="/tm/historico" element={<HistoricoValidacoes />} />
-          <Route path="/tm/relatorios" element={<RelatoriosTalent />} />
-          <Route path="/tm/settings" element={<TalentManagerSettingsPage />} />
+          <Route path="/tm/dashboard" element={<ProtectedRoute role="talent_manager"><DashboardTalentManager /></ProtectedRoute>} />
+          <Route path="/tm/equipa" element={<ProtectedRoute role="talent_manager"><Equipa /></ProtectedRoute>} />
+          <Route path="/tm/evidencias" element={<ProtectedRoute role="talent_manager"><ValidarEvidencias /></ProtectedRoute>} />
+          <Route path="/tm/historico" element={<ProtectedRoute role="talent_manager"><HistoricoValidacoes /></ProtectedRoute>} />
+          <Route path="/tm/relatorios" element={<ProtectedRoute role="talent_manager"><RelatoriosTalent /></ProtectedRoute>} />
+          <Route path="/tm/settings" element={<ProtectedRoute role="talent_manager"><TalentManagerSettingsPage /></ProtectedRoute>} />
 
           {/* Service Line */}
-          <Route path="/sl/dashboard" element={<DashboardServiceLine />} />
-          <Route path="/sl/settings" element={<ServiceLineSettingsPage />} />
+          <Route path="/sl/dashboard" element={<ProtectedRoute role="service_line_leader"><DashboardServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/settings" element={<ProtectedRoute role="service_line_leader"><ServiceLineSettingsPage /></ProtectedRoute>} />
 
           {/* Admin */}
-          <Route path="/admin/dashboard" element={<DashboardAdmin />} />
-          <Route path="/admin/gestao-utilizadores" element={<GestaoUtilizadores />} />
-          <Route path="/admin/gestao-pedidos-badges" element={<GestaoPedidosBadges />} />
-          <Route path="/admin/gestao-badges" element={<GestaoBadges />} />
-          <Route path="/admin/gestao-sla" element={<GestaoSLA />} />
-          <Route path="/admin/gestao-learning-paths" element={<GestaoLearningPaths />} />
-          <Route path="/admin/configuracoes" element={<Configuracoes />} />
-          <Route path="/admin/avisos" element={<Avisos />} />
-          <Route path="/admin/badges/:id" element={<BadgeFormAdmin />} />
-          <Route path="/admin/learning-paths/novo" element={<LearningPathFormAdmin />} />
-          <Route path="/admin/learning-paths/:id" element={<LearningPathFormAdmin />} />
-          <Route path="/admin/exportacao" element={<ExportacaoAdmin />} />
-          <Route path="/admin/logs" element={<VerLogsAuditoria />} />
-          <Route path="/admin/gestao-tickets" element={<GestaoTickets />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><DashboardAdmin /></ProtectedRoute>} />
+          <Route path="/admin/gestao-utilizadores" element={<ProtectedRoute role="admin"><GestaoUtilizadores /></ProtectedRoute>} />
+          <Route path="/admin/gestao-pedidos-badges" element={<ProtectedRoute role="admin"><GestaoPedidosBadges /></ProtectedRoute>} />
+          <Route path="/admin/gestao-badges" element={<ProtectedRoute role="admin"><GestaoBadges /></ProtectedRoute>} />
+          <Route path="/admin/gestao-sla" element={<ProtectedRoute role="admin"><GestaoSLA /></ProtectedRoute>} />
+          <Route path="/admin/gestao-learning-paths" element={<ProtectedRoute role="admin"><GestaoLearningPaths /></ProtectedRoute>} />
+          <Route path="/admin/configuracoes" element={<ProtectedRoute role="admin"><Configuracoes /></ProtectedRoute>} />
+          <Route path="/admin/avisos" element={<ProtectedRoute role="admin"><Avisos /></ProtectedRoute>} />
+          <Route path="/admin/badges/:id" element={<ProtectedRoute role="admin"><BadgeFormAdmin /></ProtectedRoute>} />
+          <Route path="/admin/learning-paths/novo" element={<ProtectedRoute role="admin"><LearningPathFormAdmin /></ProtectedRoute>} />
+          <Route path="/admin/learning-paths/:id" element={<ProtectedRoute role="admin"><LearningPathFormAdmin /></ProtectedRoute>} />
+          <Route path="/admin/exportacao" element={<ProtectedRoute role="admin"><ExportacaoAdmin /></ProtectedRoute>} />
+          <Route path="/admin/logs" element={<ProtectedRoute role="admin"><VerLogsAuditoria /></ProtectedRoute>} />
+          <Route path="/admin/gestao-tickets" element={<ProtectedRoute role="admin"><GestaoTickets /></ProtectedRoute>} />
 
           {/* Shared */}
-          <Route path="/criar-ticket" element={<CriarTicket />} />
-          <Route path="/meus-tickets" element={<MeusTickets />} />
-          <Route path="/notificacoes" element={<NotificacoesPage />} />
+          <Route path="/criar-ticket" element={<ProtectedRoute><CriarTicket /></ProtectedRoute>} />
+          <Route path="/meus-tickets" element={<ProtectedRoute><MeusTickets /></ProtectedRoute>} />
+          <Route path="/notificacoes" element={<ProtectedRoute><NotificacoesPage /></ProtectedRoute>} />
         </Routes>
       </main>
       {!hideLayout && <Footer />}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "/src/api";
 import Sidebar from "../layout/Sidebar";
 
 export default function CriarTicket() {
@@ -47,8 +47,8 @@ export default function CriarTicket() {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "http://localhost:4000/api/tickets",
+      const response = await api.post(
+        "/api/tickets",
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

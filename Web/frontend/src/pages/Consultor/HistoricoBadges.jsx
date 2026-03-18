@@ -43,7 +43,7 @@ export default function HistoricoBadges() {
             {badges.map((b) => (
               <div key={b.id} className="flex items-center justify-between gap-3 px-4 py-4">
                 <div className="flex items-center gap-3">
-                  <i className={`${b.icone} text-2xl`} style={{ color: "#2AA4BF" }}></i>
+                  <i className={`${b.icone} text-2xl`} style={{ color: "#16558C" }}></i>
                   <div>
                     <h6 className="mb-1 text-sm font-semibold text-slate-900 sm:text-base">{b.nome}</h6>
                     <p className={`m-0 text-xs font-semibold sm:text-sm ${b.cor}`}>{b.status}</p>

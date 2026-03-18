@@ -1,7 +1,7 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "/src/api";
 
 export default function GestaoBadges() {
   const [badges, setBadges] = useState([]);
@@ -36,10 +36,10 @@ export default function GestaoBadges() {
     async function loadData() {
       try {
         const [badgesRes, areasRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/admin/badges", {
+          api.get("/api/admin/badges", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:4000/api/areas")
+          api.get("/api/areas")
         ]);
         setBadges(badgesRes.data);
         setAreas(areasRes.data);
@@ -70,8 +70,8 @@ export default function GestaoBadges() {
   // Salvar edição do badge
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/admin/badges/${badgeEditando.id}`,
+      const response = await api.put(
+        `/api/admin/badges/${badgeEditando.id}`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -90,7 +90,7 @@ export default function GestaoBadges() {
     if (!window.confirm("Tem a certeza que deseja eliminar este badge?")) return;
 
     try {
-      await axios.delete(`http://localhost:4000/api/admin/badges/${id}`, {
+      await api.delete(`/api/admin/badges/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -108,8 +108,8 @@ export default function GestaoBadges() {
     if (!consultorId) return;
 
     try {
-      const response = await axios.post(
-        `http://localhost:4000/api/admin/badges/${badge.id}/certificado`,
+      const response = await api.post(
+        `/api/admin/badges/${badge.id}/certificado`,
         { consultorId: Number(consultorId) },
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -1,6 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "/src/api";
 
 export default function UploadEvidencias() {
   const [badges, setBadges] = useState([]);
@@ -28,7 +28,7 @@ export default function UploadEvidencias() {
 
     const loadBadges = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/consultor/${user.id}/badges`, {
+        const res = await api.get(`/api/consultor/${user.id}/badges`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBadges(res.data || []);
@@ -49,8 +49,8 @@ export default function UploadEvidencias() {
       try {
         setLoading(true);
         const [reqRes, evRes] = await Promise.all([
-          axios.get(`http://localhost:4000/badges/${selectedBadgeId}/requirements`),
-          axios.get(`http://localhost:4000/api/consultor/badges/${selectedBadgeId}/evidencias`, {
+          api.get(`/badges/${selectedBadgeId}/requirements`),
+          api.get(`/api/consultor/badges/${selectedBadgeId}/evidencias`, {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
@@ -72,8 +72,8 @@ export default function UploadEvidencias() {
     if (!token) return alert("Sem token. Faz login novamente.");
 
     try {
-      const res = await axios.post(
-        `http://localhost:4000/api/consultor/requirements/${requirementId}/evidencias`,
+      const res = await api.post(
+        `/api/consultor/requirements/${requirementId}/evidencias`,
         { evidence_url: evidenceUrl, notes },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -92,14 +92,14 @@ export default function UploadEvidencias() {
 
     try {
       setPedidoStatus("");
-      const createRes = await axios.post(
-        "http://localhost:4000/api/admin/pedidos",
+      const createRes = await api.post(
+        "/api/admin/pedidos",
         { badge_id: Number(selectedBadgeId) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      await axios.post(
-        `http://localhost:4000/api/admin/pedidos/${createRes.data.id}/submeter`,
+      await api.post(
+        `/api/admin/pedidos/${createRes.data.id}/submeter`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

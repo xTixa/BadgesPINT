@@ -33,13 +33,13 @@ export default function Badges() {
   // Função para determinar a cor do badge baseado no nível
   const getLevelColor = (level) => {
     const colors = {
-      Junior: "bg-[#2AA4BF]",
+      Junior: "bg-[#16558C]",
       Intermedio: "bg-[#04C4D9]",
-      Senior: "bg-[#2AA4BF]",
-      Especialista: "bg-[#2AA4BF]",
-      Lider: "bg-[#2AA4BF]",
+      Senior: "bg-[#16558C]",
+      Especialista: "bg-[#16558C]",
+      Lider: "bg-[#16558C]",
     };
-    return colors[level] || "bg-[#2AA4BF]";
+    return colors[level] || "bg-[#16558C]";
   };
 
   const getLevelBadgeColor = (level) => {
@@ -56,7 +56,7 @@ export default function Badges() {
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className="bg-[#2AA4BF] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
+      <div className="bg-[#16558C] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
@@ -82,7 +82,7 @@ export default function Badges() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#2AA4BF] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar badges...</p>
           </div>
         ) : badges.length > 0 ? (
@@ -90,7 +90,7 @@ export default function Badges() {
             {badges.map(b => (
               <div 
                 key={b.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]"
+                className="bg-white rounded-2xl overflow-hidden border border-[#16558C]"
               >
                 {/* Badge Icon Header */}
                 <div className={`h-40 ${getLevelColor(b.level)} flex items-center justify-center relative overflow-hidden`}>
@@ -133,7 +133,7 @@ export default function Badges() {
                   {/* Action Button */}
                   <Link
                     to={`/badges/${b.id}/requirements`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#2AA4BF] text-white font-semibold hover:bg-[#2AA4BF]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#16558C] text-white font-semibold hover:bg-[#16558C]"
                   >
                     Ver Requisitos →
                   </Link>

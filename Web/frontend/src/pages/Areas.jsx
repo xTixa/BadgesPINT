@@ -42,12 +42,12 @@ export default function Areas() {
 
   const getAreaColor = (index) => {
     const colors = [
-      "bg-[#2AA4BF]",
+      "bg-[#16558C]",
       "bg-[#04C4D9]",
-      "bg-[#2AA4BF]",
-      "bg-[#2AA4BF]",
+      "bg-[#16558C]",
+      "bg-[#16558C]",
       "bg-[#04C4D9]",
-      "bg-[#2AA4BF]",
+      "bg-[#16558C]",
     ];
     return colors[index % colors.length];
   };
@@ -73,7 +73,7 @@ export default function Areas() {
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className="bg-[#2AA4BF] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
+      <div className="bg-[#16558C] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
@@ -100,7 +100,7 @@ export default function Areas() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#2AA4BF] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar áreas...</p>
           </div>
         ) : areas.length > 0 ? (
@@ -108,7 +108,7 @@ export default function Areas() {
             {areas.map((a, index) => (
               <div 
                 key={a.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]"
+                className="bg-white rounded-2xl overflow-hidden border border-[#16558C]"
               >
                 <div className={`h-40 ${getAreaColor(index)} relative overflow-hidden`}>
                   
@@ -128,7 +128,7 @@ export default function Areas() {
 
                   {/* Info Badge */}
                   <div className="flex items-center gap-2 mb-6">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#16558C]">
                       5 Níveis disponíveis
                     </span>
                   </div>
@@ -136,7 +136,7 @@ export default function Areas() {
                   {/* Action Button */}
                   <Link
                     to={`/areas/${a.id}/badges`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#2AA4BF] text-white font-semibold hover:bg-[#2AA4BF]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#16558C] text-white font-semibold hover:bg-[#16558C]"
                   >
                     Ver Badges →
                   </Link>

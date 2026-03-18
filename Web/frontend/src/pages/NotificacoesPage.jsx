@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "/src/api";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 export default function NotificacoesPage() {
@@ -28,8 +28,8 @@ export default function NotificacoesPage() {
         params.append("lido", false);
       }
 
-      const response = await axios.get(
-        `http://localhost:4000/api/notifications?${params}`,
+      const response = await api.get(
+        `/api/notifications?${params}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -44,8 +44,8 @@ export default function NotificacoesPage() {
 
   const handleMarcarComoLida = async (id) => {
     try {
-      await axios.put(
-        `http://localhost:4000/api/notifications/${id}/read`,
+      await api.put(
+        `/api/notifications/${id}/read`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -59,8 +59,8 @@ export default function NotificacoesPage() {
 
   const handleMarcarTodasComoLidas = async () => {
     try {
-      await axios.put(
-        "http://localhost:4000/api/notifications/mark/all-read",
+      await api.put(
+        "/api/notifications/mark/all-read",
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -74,8 +74,8 @@ export default function NotificacoesPage() {
 
   const handleApagarNotificacao = async (id) => {
     try {
-      await axios.delete(
-        `http://localhost:4000/api/notifications/${id}`,
+      await api.delete(
+        `/api/notifications/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -120,7 +120,7 @@ export default function NotificacoesPage() {
             style={{
               fontSize: isMobile ? "1.5rem" : "2rem",
               fontWeight: "700",
-              color: "#2AA4BF",
+              color: "#16558C",
               marginBottom: "0.5rem",
             }}
           >
@@ -295,7 +295,7 @@ export default function NotificacoesPage() {
                           margin: 0,
                           fontSize: "1rem",
                           fontWeight: "600",
-                          color: "#2AA4BF",
+                          color: "#16558C",
                         }}
                       >
                         {notif.titulo}

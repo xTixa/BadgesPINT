@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-6xl space-y-12">
       {/* 🔹 Hero Section */}
-      <section className="overflow-hidden rounded-2xl border border-[#2AA4BF] bg-white">
+      <section className="overflow-hidden rounded-2xl border border-[#16558C] bg-white">
         <div className="py-14 px-6 md:px-10">
           <h1 className="text-center text-4xl font-extrabold tracking-tight text-slate-800 md:text-5xl">
             Conquista o teu Futuro com <span className="text-slate-800">Badges</span>
@@ -59,13 +59,13 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/learning-paths"
-              className="rounded-lg bg-[#2AA4BF] px-6 py-3 text-base font-semibold text-white"
+              className="rounded-lg bg-[#16558C] px-6 py-3 text-base font-semibold text-white"
             >
               Explorar Percursos
             </Link>
             <Link
               to="/badges"
-              className="rounded-lg border border-[#2AA4BF] bg-[#F2F2F2] px-6 py-3 text-base font-semibold text-slate-800"
+              className="rounded-lg border border-[#16558C] bg-[#F2F2F2] px-6 py-3 text-base font-semibold text-slate-800"
             >
               Ver Badges
             </Link>
@@ -115,15 +115,15 @@ export default function Home() {
 
       {/* 🔹 Stats Section */}
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
+        <div className="rounded-2xl border border-[#16558C] bg-white p-6 text-center">
           <div className="text-4xl font-extrabold text-slate-800 mb-1">1,000+</div>
           <p className="text-slate-800 text-sm uppercase tracking-wide">Utilizadores Ativos</p>
         </div>
-        <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
+        <div className="rounded-2xl border border-[#16558C] bg-white p-6 text-center">
           <div className="text-4xl font-extrabold text-slate-800 mb-1">{stats.totalBadges}+</div>
           <p className="text-slate-800 text-sm uppercase tracking-wide">Badges Disponíveis</p>
         </div>
-        <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
+        <div className="rounded-2xl border border-[#16558C] bg-white p-6 text-center">
           <div className="text-4xl font-extrabold text-slate-800 mb-1">{stats.totalPaths}</div>
           <p className="text-slate-800 text-sm uppercase tracking-wide">Percursos de Aprendizagem</p>
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 
 export default function GestaoPedidosBadges() {
@@ -21,10 +21,10 @@ export default function GestaoPedidosBadges() {
         setError(null);
 
         const url = filtro === "all" 
-          ? "http://localhost:4000/api/admin/pedidos"
-          : `http://localhost:4000/api/admin/pedidos?status=${filtro === "pending" ? "pendente" : filtro === "approved" ? "obtido" : "rejeitado"}`;
+          ? "/api/admin/pedidos"
+          : `/api/admin/pedidos?status=${filtro === "pending" ? "pendente" : filtro === "approved" ? "obtido" : "rejeitado"}`;
 
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -67,7 +67,7 @@ export default function GestaoPedidosBadges() {
     if (!window.confirm("Tem a certeza que deseja aprovar este pedido?")) return;
 
     try {
-      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/aprovar`, {}, {
+      await api.post(`/api/admin/pedidos/${id}/aprovar`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -85,7 +85,7 @@ export default function GestaoPedidosBadges() {
     if (!window.confirm("Tem a certeza que deseja rejeitar este pedido?")) return;
 
     try {
-      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/rejeitar`, {}, {
+      await api.post(`/api/admin/pedidos/${id}/rejeitar`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -129,7 +129,7 @@ export default function GestaoPedidosBadges() {
   const handleTmValidar = async (id) => {
     const comment = window.prompt("Comentário (opcional):") || "";
     try {
-      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/tm/validar`, { comment }, {
+      await api.post(`/api/admin/pedidos/${id}/tm/validar`, { comment }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "em_validacao", tmComment: comment } : p));
@@ -143,7 +143,7 @@ export default function GestaoPedidosBadges() {
     const comment = window.prompt("Comentário para devolução:") || "";
     if (!comment) return;
     try {
-      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/tm/devolver`, { comment }, {
+      await api.post(`/api/admin/pedidos/${id}/tm/devolver`, { comment }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "open", tmComment: comment } : p));
@@ -156,7 +156,7 @@ export default function GestaoPedidosBadges() {
   const handleSlAprovar = async (id) => {
     const comment = window.prompt("Comentário (opcional):") || "";
     try {
-      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/sl/aprovar`, { comment }, {
+      await api.post(`/api/admin/pedidos/${id}/sl/aprovar`, { comment }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "fechado", status: "approved", slComment: comment } : p));
@@ -169,7 +169,7 @@ export default function GestaoPedidosBadges() {
   const handleSlRejeitar = async (id) => {
     const comment = window.prompt("Comentário (opcional):") || "";
     try {
-      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/sl/rejeitar`, { comment }, {
+      await api.post(`/api/admin/pedidos/${id}/sl/rejeitar`, { comment }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "fechado", status: "rejected", slComment: comment } : p));
@@ -183,7 +183,7 @@ export default function GestaoPedidosBadges() {
     const comment = window.prompt("Comentário para devolução:") || "";
     if (!comment) return;
     try {
-      await axios.post(`http://localhost:4000/api/admin/pedidos/${id}/sl/devolver`, { comment }, {
+      await api.post(`/api/admin/pedidos/${id}/sl/devolver`, { comment }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "open", status: "pending", slComment: comment } : p));

@@ -1,6 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "/src/api";
 
 export default function GestaoSLA() {
   const [slas, setSlas] = useState([]);
@@ -29,14 +29,14 @@ export default function GestaoSLA() {
         setLoading(true);
         setError(null);
 
-        const response = await axios.get("http://localhost:4000/api/admin/slas", {
+        const response = await api.get("/api/admin/slas", {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         setSlas(response.data);
 
         // Carregar equipas também
-        const teamsRes = await axios.get("http://localhost:4000/api/users?role=talent_manager|service_line_leader", {
+        const teamsRes = await api.get("/api/users?role=talent_manager|service_line_leader", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTeams(teamsRes.data || []);
@@ -92,8 +92,8 @@ export default function GestaoSLA() {
     try {
       if (editingSLA) {
         // Atualizar SLA
-        await axios.put(
-          `http://localhost:4000/api/admin/slas/${editingSLA.id}`,
+        await api.put(
+          `/api/admin/slas/${editingSLA.id}`,
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -101,8 +101,8 @@ export default function GestaoSLA() {
         setSlas(prev => prev.map(s => s.id === editingSLA.id ? { ...s, ...formData } : s));
       } else {
         // Criar novo SLA
-        const response = await axios.post(
-          "http://localhost:4000/api/admin/slas",
+        const response = await api.post(
+          "/api/admin/slas",
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -123,7 +123,7 @@ export default function GestaoSLA() {
     if (!window.confirm("Tem a certeza que deseja apagar este SLA?")) return;
 
     try {
-      await axios.delete(`http://localhost:4000/api/admin/slas/${id}`, {
+      await api.delete(`/api/admin/slas/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

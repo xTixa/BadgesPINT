@@ -1,6 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "/src/api";
 
 export default function PerfilConsultor() {
   const [user, setUser] = useState(null);
@@ -15,7 +15,7 @@ export default function PerfilConsultor() {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:4000/api/auth/me", {
+        const response = await api.get("/api/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -54,7 +54,7 @@ export default function PerfilConsultor() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#2AA4BF]"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#16558C]"></div>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function PerfilConsultor() {
       <Sidebar user={{ role: "consultant", name: user.nome }} />
 
       <main className="admin-main">
-        <div className="mb-5 flex flex-col gap-4 rounded-2xl bg-[#2AA4BF] p-5 text-white shadow-sm md:flex-row md:items-center md:justify-between">
+        <div className="mb-5 flex flex-col gap-4 rounded-2xl bg-[#16558C] p-5 text-white shadow-sm md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <img
               src={user.imagem}

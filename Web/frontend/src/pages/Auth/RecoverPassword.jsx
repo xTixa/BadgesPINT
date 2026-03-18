@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "/src/api";
 
 export default function RecoverPassword() {
   const [email, setEmail] = useState("");
@@ -22,8 +22,8 @@ export default function RecoverPassword() {
     setInfo("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:4000/api/auth/recover-password",
+      const res = await api.post(
+        "/api/auth/recover-password",
         { email }
       );
 
@@ -64,8 +64,8 @@ export default function RecoverPassword() {
     }
 
     try {
-      const res = await axios.post(
-        "http://localhost:4000/api/auth/reset-password",
+      const res = await api.post(
+        "/api/auth/reset-password",
         { token: tokenInput, newPassword }
       );
 
@@ -82,7 +82,7 @@ export default function RecoverPassword() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#2AA4BF] text-white">
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#16558C] text-white">
 
         <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
@@ -96,7 +96,7 @@ export default function RecoverPassword() {
 
       {/* DIREITA */}
       <div className="flex-1 flex items-center justify-center bg-[#F2F2F2]">
-        <div className="w-full max-w-sm bg-white rounded-2xl px-10 py-12 mx-6 border border-[#2AA4BF]">
+        <div className="w-full max-w-sm bg-white rounded-2xl px-10 py-12 mx-6 border border-[#16558C]">
           <h2 className="text-2xl font-bold text-slate-800 mb-4 text-center">
             Recuperar Password
           </h2>
@@ -123,7 +123,7 @@ export default function RecoverPassword() {
                   type="email"
                   required
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 
-                  focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]"
+                  focus:outline-none focus:ring-2 focus:ring-[#16558C]"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemplo@dominio.com"
@@ -134,7 +134,7 @@ export default function RecoverPassword() {
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 rounded-lg font-semibold text-white 
-                bg-[#2AA4BF] hover:bg-[#2AA4BF]"
+                bg-[#16558C] hover:bg-[#16558C]"
               >
                 {loading ? "A enviar..." : "Enviar Instruções"}
               </button>
@@ -152,7 +152,7 @@ export default function RecoverPassword() {
                   required
                   value={tokenInput}
                   onChange={(e) => setTokenInput(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#16558C]"
                   placeholder="Cole o token enviado por email"
                 />
                 {resetToken && (
@@ -173,7 +173,7 @@ export default function RecoverPassword() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   className={`w-full px-4 py-3 rounded-lg border ${
                     newPassword && newPassword.length < 6 ? "border-red-400" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#16558C]`}
                   placeholder="Mínimo 6 caracteres"
                 />
               </div>
@@ -189,7 +189,7 @@ export default function RecoverPassword() {
                   onChange={(e) => setConfirm(e.target.value)}
                   className={`w-full px-4 py-3 rounded-lg border ${
                     confirm && confirm !== newPassword ? "border-red-400" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#16558C]`}
                   placeholder="Repete a password"
                 />
               </div>
@@ -198,7 +198,7 @@ export default function RecoverPassword() {
                 type="submit"
                 disabled={resetting}
                 className="w-full py-3 rounded-lg font-semibold text-white 
-                bg-[#2AA4BF] hover:bg-[#2AA4BF]"
+                bg-[#16558C] hover:bg-[#16558C]"
               >
                 {resetting ? "A guardar..." : "Redefinir Password"}
               </button>

@@ -1,6 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
-import axios from "axios";
+import api from "/src/api";
 
 const tipos = {
   info: { label: "Informação", cor: "info" },
@@ -47,8 +47,8 @@ export default function Avisos() {
       // Se "Todos", roles fica vazio (envia para todos)
 
       // Enviar via API
-      await axios.post(
-        "http://localhost:4000/api/notifications/broadcast",
+      await api.post(
+        "/api/notifications/broadcast",
         {
           titulo: `${tipos[form.tipo].label}: ${form.texto.substring(0, 30)}...`,
           mensagem: form.texto,

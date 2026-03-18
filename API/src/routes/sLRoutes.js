@@ -1,5 +1,5 @@
 import { Router } from "express";
-import authMiddleware from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
 import {
   getSL,
   getSLEstatisticas,
@@ -8,8 +8,10 @@ import {
 
 const router = Router();
 
-router.get("/me", authMiddleware, getSL);
-router.get("/estatisticas", authMiddleware, getSLEstatisticas);
-router.get("/kpis", authMiddleware, getSLKpis);
+router.use(protect(["service_line_leader"]));
+
+router.get("/me", getSL);
+router.get("/estatisticas", getSLEstatisticas);
+router.get("/kpis", getSLKpis);
 
 export default router;

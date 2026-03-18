@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 
 export default function LogsAuditoria() {
@@ -60,7 +60,7 @@ export default function LogsAuditoria() {
         ...filters,
       });
 
-      const res = await axios.get(`http://localhost:4000/api/audit-logs?${query}`, {
+      const res = await api.get(`/api/audit-logs?${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -81,7 +81,7 @@ export default function LogsAuditoria() {
       const token = localStorage.getItem("token");
       const query = new URLSearchParams(filters);
       
-      const res = await axios.get(`http://localhost:4000/api/audit-logs/stats?${query}`, {
+      const res = await api.get(`/api/audit-logs/stats?${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStats(res.data);
@@ -104,7 +104,7 @@ export default function LogsAuditoria() {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:4000/api/audit-logs/export", {
+      const res = await api.get("/api/audit-logs/export", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

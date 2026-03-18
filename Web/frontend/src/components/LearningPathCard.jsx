@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 export default function LearningPathCard({ path }) {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]">
-      <div className="h-2 w-full bg-[#2AA4BF]"></div>
+    <div className="bg-white rounded-2xl overflow-hidden border border-[#16558C]">
+      <div className="h-2 w-full bg-[#16558C]"></div>
       <div className="p-6">
         <h3 className="text-xl font-bold text-slate-800 mb-2">
           {path?.name || "Learning Path Name"}
@@ -15,10 +15,10 @@ export default function LearningPathCard({ path }) {
         </p>
 
         <div className="flex flex-wrap gap-2 mb-4">
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#16558C]">
             {path?.badgeCount || 5} Badges
           </span>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#16558C]">
             {path?.duration || 3} Meses
           </span>
         </div>
@@ -31,7 +31,7 @@ export default function LearningPathCard({ path }) {
           </div>
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-2 bg-[#2AA4BF] rounded-full"
+              className="h-2 bg-[#16558C] rounded-full"
               style={{ width: `${path?.progress || 0}%` }}
             ></div>
           </div>
@@ -40,7 +40,7 @@ export default function LearningPathCard({ path }) {
         <div className="flex justify-end items-center">
           <Link
             to={`/learning-paths/${path?.id || "1"}/service-lines`}
-            className="px-4 py-2 rounded-lg bg-[#2AA4BF] text-white text-sm font-semibold"
+            className="px-4 py-2 rounded-lg bg-[#16558C] text-white text-sm font-semibold"
           >
             Começar
           </Link>

@@ -1,5 +1,8 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
+import PageHeader from "/src/components/ui/PageHeader";
+import SectionCard from "/src/components/ui/SectionCard";
+import EmptyState from "/src/components/ui/EmptyState";
 
 export default function RelatoriosTalent() {
   const [filtros, setFiltros] = useState({ mes: "", ano: "", consultor: "", badge: "", scope: "pedidos" });
@@ -21,16 +24,16 @@ export default function RelatoriosTalent() {
 
   return (
     <div className="admin-shell">
-      <Sidebar user={{ role: "talentManager", name: "Talent Manager" }} />
+      <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
 
       <main className="admin-main">
-        <div className="mb-4 rounded-2xl bg-[#2AA4BF] p-4 text-white shadow-sm">
-          <h3 className="mb-1 text-xl font-bold sm:text-2xl">Relatórios & Exportações</h3>
-          <p className="m-0 text-sm text-white/80 sm:text-base">Exporta pedidos, badges, consultores, aprovações e rejeições em Excel/PDF.</p>
-        </div>
+        <PageHeader
+          title="Relatórios e Exportações"
+          subtitle="Exporta pedidos, badges, consultores, aprovações e rejeições em Excel/PDF."
+          icon="bi-bar-chart-line-fill"
+        />
 
-        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-funnel-fill mr-2 text-sky-600"></i>Filtros</h5>
+        <SectionCard className="mb-4" title="Filtros" icon="bi-funnel-fill">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium text-slate-700">Mês</label>
@@ -65,17 +68,16 @@ export default function RelatoriosTalent() {
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <button className="inline-flex items-center rounded-xl bg-[#2AA4BF] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#2AA4BF]" onClick={() => gerar("pdf")}>
+            <button className="inline-flex items-center rounded-xl bg-[#16558C] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#16558C]" onClick={() => gerar("pdf")}>
                 <i className="bi bi-file-earmark-pdf-fill mr-2"></i> Gerar PDF
               </button>
             <button className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700" onClick={() => gerar("excel")}>
                 <i className="bi bi-file-earmark-excel-fill mr-2"></i> Gerar Excel
               </button>
           </div>
-        </div>
+        </SectionCard>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-list-check mr-2 text-emerald-600"></i>Resultados</h5>
+        <SectionCard title="Resultados" icon="bi-list-check">
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-100 text-slate-700">
@@ -97,10 +99,17 @@ export default function RelatoriosTalent() {
                     <td className="px-3 py-2">{r.data}</td>
                     </tr>
                   ))}
+                  {!filtrados.length && (
+                    <tr>
+                      <td colSpan="5" className="px-3 py-4">
+                        <EmptyState message="Sem resultados para os filtros selecionados." icon="bi-search" />
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
-          </div>
+        </SectionCard>
       </main>
     </div>
   );

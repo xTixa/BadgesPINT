@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "/src/api";
 import Sidebar from "../layout/Sidebar";
 
 export default function MeusTickets() {
@@ -46,8 +46,8 @@ export default function MeusTickets() {
         ...(filtroPrioridade && { prioridade: filtroPrioridade }),
       });
 
-      const response = await axios.get(
-        `http://localhost:4000/api/tickets/meus?${query}`,
+      const response = await api.get(
+        `/api/tickets/meus?${query}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

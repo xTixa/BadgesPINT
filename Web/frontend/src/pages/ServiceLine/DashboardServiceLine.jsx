@@ -1,6 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "/src/api";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
@@ -32,7 +32,7 @@ export default function DashboardServiceLine() {
     datasets: [{
       label: "Badges obtidos",
       data: badgesByMonth.map((m) => m.count),
-      backgroundColor: "#2AA4BF",
+      backgroundColor: "#16558C",
       borderRadius: 6,
       barThickness: 14,
     }]
@@ -61,9 +61,9 @@ export default function DashboardServiceLine() {
     async function load() {
       try {
         const [me, stats, kpisRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/sl/me", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:4000/api/sl/estatisticas", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:4000/api/sl/kpis", { headers: { Authorization: `Bearer ${token}` }, params: { startDate, endDate } }),
+          api.get("/api/sl/me", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/api/sl/estatisticas", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/api/sl/kpis", { headers: { Authorization: `Bearer ${token}` }, params: { startDate, endDate } }),
         ]);
 
         setSL(me.data);

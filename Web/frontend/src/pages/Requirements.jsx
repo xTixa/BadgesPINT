@@ -35,19 +35,19 @@ export default function Requirements() {
 
   const getLevelColor = (level) => {
     const colors = {
-      Junior: "bg-[#2AA4BF]",
+      Junior: "bg-[#16558C]",
       Intermedio: "bg-[#04C4D9]",
-      Senior: "bg-[#2AA4BF]",
-      Especialista: "bg-[#2AA4BF]",
-      Lider: "bg-[#2AA4BF]",
+      Senior: "bg-[#16558C]",
+      Especialista: "bg-[#16558C]",
+      Lider: "bg-[#16558C]",
     };
-    return colors[level] || "bg-[#2AA4BF]";
+    return colors[level] || "bg-[#16558C]";
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className={`${badge ? getLevelColor(badge.level) : "bg-[#2AA4BF]"} text-white py-16 px-6 border-b border-[#2AA4BF]`}>
+      <div className={`${badge ? getLevelColor(badge.level) : "bg-[#16558C]"} text-white py-16 px-6 border-b border-[#16558C]`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
@@ -64,7 +64,7 @@ export default function Requirements() {
           <div className="flex items-center gap-6">
             {/* Badge Icon */}
             <div className="hidden md:block">
-              <div className="w-24 h-24 bg-[#2AA4BF] rounded-2xl flex items-center justify-center border border-[#F2F2F2]">
+              <div className="w-24 h-24 bg-[#16558C] rounded-2xl flex items-center justify-center border border-[#F2F2F2]">
                 <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 .806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
@@ -77,7 +77,7 @@ export default function Requirements() {
               </h1>
               {badge && (
                 <div className="flex flex-wrap items-center gap-3 mt-4">
-                  <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#2AA4BF] text-white">
+                  <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#16558C] text-white">
                     {badge.area?.name}
                   </span>
                   <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#F2F2F2] text-slate-800">
@@ -100,13 +100,13 @@ export default function Requirements() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#2AA4BF] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar requisitos...</p>
           </div>
         ) : reqs.length > 0 ? (
           <div className="space-y-6">
             {/* Info Card */}
-            <div className="bg-[#F2F2F2] border border-[#2AA4BF] rounded-2xl p-6 mb-8">
+            <div className="bg-[#F2F2F2] border border-[#16558C] rounded-2xl p-6 mb-8">
               <div className="flex items-start gap-4">
                 <svg className="w-6 h-6 text-slate-800 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -125,12 +125,12 @@ export default function Requirements() {
               {reqs.map((r, index) => (
                 <div 
                   key={r.id}
-                  className="bg-white rounded-xl border border-[#2AA4BF] overflow-hidden"
+                  className="bg-white rounded-xl border border-[#16558C] overflow-hidden"
                 >
                   <div className="flex items-start gap-4 p-6">
                     {/* Number Badge */}
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-[#2AA4BF] text-white flex items-center justify-center font-bold text-lg">
+                      <div className="w-12 h-12 rounded-full bg-[#16558C] text-white flex items-center justify-center font-bold text-lg">
                         {index + 1}
                       </div>
                     </div>
@@ -138,7 +138,7 @@ export default function Requirements() {
                     {/* Content */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#2AA4BF] text-white">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#16558C] text-white">
                           {r.code}
                         </span>
                       </div>
@@ -149,7 +149,7 @@ export default function Requirements() {
 
                     {/* Checkbox (decorativo) */}
                     <div className="flex-shrink-0">
-                      <div className="w-6 h-6 border-2 border-[#2AA4BF] rounded"></div>
+                      <div className="w-6 h-6 border-2 border-[#16558C] rounded"></div>
                     </div>
                   </div>
                 </div>
@@ -157,12 +157,12 @@ export default function Requirements() {
             </div>
 
             {/* Action Card */}
-            <div className="bg-[#2AA4BF] rounded-2xl p-8 mt-8 text-white text-center border border-[#2AA4BF]">
+            <div className="bg-[#16558C] rounded-2xl p-8 mt-8 text-white text-center border border-[#16558C]">
               <h3 className="text-2xl font-bold mb-3">Pronto para conquistares este badge?</h3>
               <p className="text-[#04C4D9] mb-6 max-w-2xl mx-auto">
                 Completa todos os requisitos e submete as tuas evidências para validação.
               </p>
-              <button className="px-8 py-3 bg-white text-slate-800 rounded-xl font-semibold border border-[#2AA4BF]">
+              <button className="px-8 py-3 bg-white text-slate-800 rounded-xl font-semibold border border-[#16558C]">
                 Submeter Evidências
               </button>
             </div>

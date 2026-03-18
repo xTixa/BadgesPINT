@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 
 const mockBadges = [
@@ -55,8 +55,8 @@ export default function DashboardConsultor() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return alert("Sem token. Faz login novamente.");
-      const response = await axios.post(
-        `http://localhost:4000/api/consultor/badges/${badgeId}/certificado`,
+      const response = await api.post(
+        `/api/consultor/badges/${badgeId}/certificado`,
         {},
         { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" }
       );
@@ -76,17 +76,17 @@ export default function DashboardConsultor() {
     const loadData = async () => {
       try {
         const parsedUser = JSON.parse(storedUser);
-        const userRes = await axios.get("http://localhost:4000/api/auth/me", {
+        const userRes = await api.get("/api/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(userRes.data);
 
         const [badgeRes, lpRes, recRes, expRes, progressRes] = await Promise.all([
-          axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/badges`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockBadges })),
-          axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/learning-paths`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockLPs })),
-          axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/recomendados`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockRecomendados })),
-          axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/badges-expirar`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockExpiracao })),
-          axios.get(`http://localhost:4000/api/consultor/${parsedUser.id}/badges-progress`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
+          api.get(`/api/consultor/${parsedUser.id}/badges`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockBadges })),
+          api.get(`/api/consultor/${parsedUser.id}/learning-paths`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockLPs })),
+          api.get(`/api/consultor/${parsedUser.id}/recomendados`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockRecomendados })),
+          api.get(`/api/consultor/${parsedUser.id}/badges-expirar`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: mockExpiracao })),
+          api.get(`/api/consultor/${parsedUser.id}/badges-progress`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
         ]);
 
         setBadges(badgeRes.data || mockBadges);
@@ -135,7 +135,7 @@ export default function DashboardConsultor() {
 
       <main className="admin-main">
         {/* Header de boas-vindas */}
-        <div className="mb-4 rounded-2xl bg-[#2AA4BF] p-5 text-white shadow-sm">
+        <div className="mb-4 rounded-2xl bg-[#16558C] p-5 text-white shadow-sm">
         <h3 className="mb-1 text-xl font-bold sm:text-2xl">
           {greeting}, {user.name.split(" ")[0]}!
         </h3>
@@ -176,7 +176,7 @@ export default function DashboardConsultor() {
             {badges.map((b) => (
               <div key={b.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="mb-2 flex items-center gap-2">
-                  <i className="bi bi-patch-check-fill text-xl" style={{ color: "#2AA4BF" }}></i>
+                  <i className="bi bi-patch-check-fill text-xl" style={{ color: "#16558C" }}></i>
                   <h6 className="m-0 text-sm font-semibold text-slate-900">{b.name}</h6>
                 </div>
                 <p className={`mb-2 text-sm font-semibold ${b.status === "obtido" ? "text-emerald-600" : b.status === "pendente" ? "text-amber-600" : "text-slate-500"}`}>
@@ -194,7 +194,7 @@ export default function DashboardConsultor() {
                     </div>
                     <div className="h-1.5 rounded-full bg-slate-200">
                       <div
-                        className="h-1.5 rounded-full bg-[#2AA4BF]"
+                        className="h-1.5 rounded-full bg-[#16558C]"
                         style={{
                           width: progressByBadge[b.id].total
                             ? `${Math.round((progressByBadge[b.id].approved / progressByBadge[b.id].total) * 100)}%`
@@ -263,7 +263,7 @@ export default function DashboardConsultor() {
                     <span className="rounded-full bg-cyan-100 px-2 py-1 text-xs font-semibold text-cyan-700">{lp.percentagem}%</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-slate-200">
-                    <div className="h-1.5 rounded-full bg-[#2AA4BF]" style={{ width: `${lp.percentagem}%` }}></div>
+                    <div className="h-1.5 rounded-full bg-[#16558C]" style={{ width: `${lp.percentagem}%` }}></div>
                   </div>
                 </li>
               ))}

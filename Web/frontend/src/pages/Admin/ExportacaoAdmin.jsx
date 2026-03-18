@@ -1,6 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useState } from "react";
-import axios from "axios";
+import api from "/src/api";
 import { useSidebar } from "../../context/SidebarContext";
 
 export default function ExportacaoAdmin() {
@@ -83,10 +83,10 @@ export default function ExportacaoAdmin() {
       const { start, end } = getDateRange();
 
       const endpoint = format === "excel" 
-        ? "http://localhost:4000/api/admin/export/excel"
-        : "http://localhost:4000/api/admin/export/pdf";
+        ? "/api/admin/export/excel"
+        : "/api/admin/export/pdf";
 
-      const response = await axios.post(
+      const response = await api.post(
         endpoint,
         {
           scope,
@@ -141,8 +141,8 @@ export default function ExportacaoAdmin() {
       const token = localStorage.getItem("token");
       const { start, end } = getDateRange();
 
-      const response = await axios.post(
-        "http://localhost:4000/api/admin/export/preview",
+      const response = await api.post(
+        "/api/admin/export/preview",
         {
           scope,
           startDate: start.toISOString(),

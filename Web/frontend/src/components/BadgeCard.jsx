@@ -5,28 +5,28 @@ export default function BadgeCard({ badge }) {
   // Função para determinar a cor do badge baseado no nível
   const getLevelColor = (level) => {
     const colors = {
-      Junior: "bg-[#2AA4BF]",
-      Intermedio: "bg-[#2AA4BF]",
-      Senior: "bg-[#2AA4BF]",
-      Especialista: "bg-[#2AA4BF]",
-      Lider: "bg-[#2AA4BF]",
+      Junior: "bg-[#16558C]",
+      Intermedio: "bg-[#16558C]",
+      Senior: "bg-[#16558C]",
+      Especialista: "bg-[#16558C]",
+      Lider: "bg-[#16558C]",
     };
-    return colors[level] || "bg-[#2AA4BF]";
+    return colors[level] || "bg-[#16558C]";
   };
 
   const getLevelBadgeColor = (level) => {
     const colors = {
-      Junior: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
-      Intermedio: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
-      Senior: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
-      Especialista: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
-      Lider: "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]",
+      Junior: "bg-[#F2F2F2] text-slate-800 border border-[#16558C]",
+      Intermedio: "bg-[#F2F2F2] text-slate-800 border border-[#16558C]",
+      Senior: "bg-[#F2F2F2] text-slate-800 border border-[#16558C]",
+      Especialista: "bg-[#F2F2F2] text-slate-800 border border-[#16558C]",
+      Lider: "bg-[#F2F2F2] text-slate-800 border border-[#16558C]",
     };
-    return colors[level] || "bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]";
+    return colors[level] || "bg-[#F2F2F2] text-slate-800 border border-[#16558C]";
   };
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]">
+    <div className="bg-white rounded-2xl overflow-hidden border border-[#16558C]">
       {/* Header / Ícone com cor dinâmica */}
       <div className={`flex items-center justify-center h-28 ${getLevelColor(badge?.level)}`}>
         <svg
@@ -70,14 +70,14 @@ export default function BadgeCard({ badge }) {
             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelBadgeColor(badge?.level)}`}>
               {badge?.level || "Junior"}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#2AA4BF]">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-slate-800 border border-[#16558C]">
               {badge?.points || 0} pts
             </span>
           </div>
 
           <Link
             to={`/badges/${badge?.id}/requirements`}
-            className="px-4 py-2 rounded-lg bg-[#2AA4BF] text-white text-sm font-semibold"
+            className="px-4 py-2 rounded-lg bg-[#16558C] text-white text-sm font-semibold"
           >
             Ver Detalhes
           </Link>

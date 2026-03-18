@@ -1,7 +1,7 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
@@ -44,8 +44,8 @@ export default function DashboardAdmin() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(
-          "http://localhost:4000/api/admin/stats/kpis",
+        const res = await api.get(
+          "/api/admin/stats/kpis",
           {
             headers: { Authorization: `Bearer ${token}` },
             params: { startDate, endDate },
@@ -71,7 +71,7 @@ export default function DashboardAdmin() {
       label: "Badges obtidos",
       data: kpis.badgesByMonth.map((item) => item.count),
       backgroundColor: "#04C4D9",
-      borderColor: "#2AA4BF",
+      borderColor: "#16558C",
       borderWidth: 1,
     }],
   } : null;
@@ -81,7 +81,7 @@ export default function DashboardAdmin() {
     datasets: [{
       label: "% de badges obtidos",
       data: kpis.badgesByMonth.map((item) => item.completionRate || 0),
-      borderColor: "#2AA4BF",
+      borderColor: "#16558C",
       backgroundColor: "rgba(90, 122, 154, 0.12)",
       tension: 0.4,
       fill: true,
@@ -92,7 +92,7 @@ export default function DashboardAdmin() {
     labels: kpis.usersByRole.map((r) => r.role),
     datasets: [{
       data: kpis.usersByRole.map((r) => Number(r.count)),
-      backgroundColor: ['#04C4D9', '#2AA4BF', '#04C4D9', '#2AA4BF', '#04C4D9'],
+      backgroundColor: ['#04C4D9', '#16558C', '#04C4D9', '#16558C', '#04C4D9'],
       borderWidth: 0,
     }],
   } : null;
@@ -103,7 +103,7 @@ export default function DashboardAdmin() {
       label: "Badges por nível",
       data: kpis.badgesByLevel.map((l) => Number(l.count)),
       backgroundColor: '#04C4D9',
-      borderColor: '#2AA4BF',
+      borderColor: '#16558C',
       borderWidth: 1,
     }],
   } : null;
@@ -113,8 +113,8 @@ export default function DashboardAdmin() {
     datasets: [{
       label: "Badges por Learning Path",
       data: kpis.badgesByLearningPath.map((lp) => Number(lp.count)),
-      backgroundColor: '#2AA4BF',
-      borderColor: '#2AA4BF',
+      backgroundColor: '#16558C',
+      borderColor: '#16558C',
       borderWidth: 1,
     }],
   } : null;
@@ -130,7 +130,7 @@ export default function DashboardAdmin() {
         display: true,
         position: 'bottom',
         labels: {
-          color: '#2AA4BF',
+          color: '#16558C',
           font: { size: 11 }
         }
       }
@@ -153,9 +153,9 @@ export default function DashboardAdmin() {
     { icon: "bi-hourglass-split", title: "SLA Equipa", subtitle: "Definir prazos", color: "#f0ad4e", route: "/admin/gestao-sla" },
     { icon: "bi-award-fill", title: "Gestão de Badges", subtitle: "Criar/Editar", color: "#04C4D9", route: "/admin/gestao-badges" },
     { icon: "bi-diagram-3-fill", title: "Learning Paths", subtitle: "Configurar", color: "#04C4D9", route: "/admin/gestao-learning-paths" },
-    { icon: "bi-people-fill", title: "Utilizadores", subtitle: "Perfis e permissões", color: "#2AA4BF", route: "/admin/gestao-utilizadores" },
+    { icon: "bi-people-fill", title: "Utilizadores", subtitle: "Perfis e permissões", color: "#16558C", route: "/admin/gestao-utilizadores" },
     { icon: "bi-file-earmark-arrow-down", title: "Exportar Dados", subtitle: "Excel/PDF", color: "#04C4D9", route: "/admin/exportacao" },
-    { icon: "bi-megaphone-fill", title: "Avisos", subtitle: "Broadcast interno", color: "#2AA4BF", route: "/admin/avisos" },
+    { icon: "bi-megaphone-fill", title: "Avisos", subtitle: "Broadcast interno", color: "#16558C", route: "/admin/avisos" },
     { icon: "bi-gear-fill", title: "Configurações", subtitle: "Notificações e RGPD", color: "#6f42c1", route: "/admin/configuracoes" }
   ];
 
@@ -178,8 +178,8 @@ export default function DashboardAdmin() {
 
     try {
       setIsGenerating(true);
-      const res = await axios.post(
-        "http://localhost:4000/api/admin/badges/generate-image",
+      const res = await api.post(
+        "/api/admin/badges/generate-image",
         { prompt: badgePrompt.trim(), size: badgeSize },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -221,8 +221,8 @@ export default function DashboardAdmin() {
 
     try {
       setIsUploading(true);
-      const res = await axios.post(
-        "http://localhost:4000/api/admin/badges/upload-image",
+      const res = await api.post(
+        "/api/admin/badges/upload-image",
         { image: badgeImage, folder: "badges" },
         { headers: { Authorization: `Bearer ${token}` } }
       );

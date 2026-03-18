@@ -33,8 +33,8 @@ export default function Configuracoes() {
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h2 style={{ fontWeight: "700", color: "#2AA4BF", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <i className="bi bi-gear-fill" style={{ color: "#2AA4BF" }}></i>
+            <h2 style={{ fontWeight: "700", color: "#16558C", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <i className="bi bi-gear-fill" style={{ color: "#16558C" }}></i>
               Configurações do Sistema
             </h2>
             <p style={{ color: "#04C4D9", fontSize: "0.95rem" }}>Gerir preferências e definições da plataforma</p>
@@ -58,7 +58,7 @@ export default function Configuracoes() {
                 style={{
                   padding: "0.75rem 1.25rem",
                   border: "none",
-                  background: activeTab === tab.id ? "#2AA4BF" : "transparent",
+                  background: activeTab === tab.id ? "#16558C" : "transparent",
                   color: activeTab === tab.id ? "white" : "#04C4D9",
                   borderRadius: "8px",
                   cursor: "pointer",
@@ -99,14 +99,14 @@ export default function Configuracoes() {
             {/* Conta e Segurança */}
             {activeTab === "security" && (
               <div>
-                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-shield-lock mr-2" style={{ color: "#2AA4BF" }}></i>
+                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-shield-lock mr-2" style={{ color: "#16558C" }}></i>
                   Conta e Segurança
                 </h4>
                 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div>
-                    <label style={{ display: "block", color: "#2AA4BF", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
+                    <label style={{ display: "block", color: "#16558C", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
                       Nova Password
                     </label>
                     <input
@@ -122,12 +122,12 @@ export default function Configuracoes() {
                         fontSize: "0.9rem",
                         outline: "none"
                       }}
-                      onFocus={(e) => e.target.style.borderColor = "#2AA4BF"}
+                      onFocus={(e) => e.target.style.borderColor = "#16558C"}
                       onBlur={(e) => e.target.style.borderColor = "#d4dfe9"}
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", color: "#2AA4BF", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
+                    <label style={{ display: "block", color: "#16558C", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
                       Confirmar Password
                     </label>
                     <input
@@ -143,7 +143,7 @@ export default function Configuracoes() {
                         fontSize: "0.9rem",
                         outline: "none"
                       }}
-                      onFocus={(e) => e.target.style.borderColor = "#2AA4BF"}
+                      onFocus={(e) => e.target.style.borderColor = "#16558C"}
                       onBlur={(e) => e.target.style.borderColor = "#d4dfe9"}
                     />
                   </div>
@@ -152,7 +152,7 @@ export default function Configuracoes() {
                 <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
                   <button style={{
                     padding: "0.75rem 1.5rem",
-                    backgroundColor: "#2AA4BF",
+                    backgroundColor: "#16558C",
                     color: "white",
                     border: "none",
                     borderRadius: "8px",
@@ -161,8 +161,8 @@ export default function Configuracoes() {
                     fontSize: "0.9rem",
                     transition: "all 0.2s"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2AA4BF"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2AA4BF"}>
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#16558C"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#16558C"}>
                     <i className="bi bi-check-circle mr-2"></i>
                     Alterar Password
                   </button>
@@ -196,17 +196,17 @@ export default function Configuracoes() {
             {/* Utilizadores */}
             {activeTab === "users" && (
               <div>
-                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-people mr-2" style={{ color: "#2AA4BF" }}></i>
+                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-people mr-2" style={{ color: "#16558C" }}></i>
                   Gestão de Utilizadores
                 </h4>
                 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
                   {[
                     { icon: "bi-person-plus", label: "Criar Utilizador", color: "#04C4D9" },
-                    { icon: "bi-person-gear", label: "Gerir Perfis", color: "#2AA4BF" },
+                    { icon: "bi-person-gear", label: "Gerir Perfis", color: "#16558C" },
                     { icon: "bi-diagram-3", label: "Service Lines", color: "#04C4D9" },
-                    { icon: "bi-building", label: "Áreas", color: "#2AA4BF" }
+                    { icon: "bi-building", label: "Áreas", color: "#16558C" }
                   ].map((action, idx) => (
                     <button key={idx} style={{
                       padding: "1.5rem",
@@ -230,10 +230,10 @@ export default function Configuracoes() {
                       e.currentTarget.style.backgroundColor = "white";
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.querySelector('i').style.color = action.color;
-                      e.currentTarget.querySelector('span').style.color = "#2AA4BF";
+                      e.currentTarget.querySelector('span').style.color = "#16558C";
                     }}>
                       <i className={action.icon} style={{ fontSize: "2rem", color: action.color, transition: "color 0.2s" }}></i>
-                      <span style={{ fontWeight: "600", color: "#2AA4BF", fontSize: "0.9rem", transition: "color 0.2s" }}>{action.label}</span>
+                      <span style={{ fontWeight: "600", color: "#16558C", fontSize: "0.9rem", transition: "color 0.2s" }}>{action.label}</span>
                     </button>
                   ))}
                 </div>
@@ -256,17 +256,17 @@ export default function Configuracoes() {
             {/* Conteúdo (Learning Paths e Badges) */}
             {activeTab === "content" && (
               <div>
-                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-archive mr-2" style={{ color: "#2AA4BF" }}></i>
+                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-archive mr-2" style={{ color: "#16558C" }}></i>
                   Gestão de Conteúdo
                 </h4>
                 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
                   {[
                     { icon: "bi-diagram-3-fill", label: "Learning Path", color: "#04C4D9" },
-                    { icon: "bi-award-fill", label: "Badge", color: "#2AA4BF" },
+                    { icon: "bi-award-fill", label: "Badge", color: "#16558C" },
                     { icon: "bi-building", label: "Service Line", color: "#04C4D9" },
-                    { icon: "bi-geo-alt", label: "Área", color: "#2AA4BF" },
+                    { icon: "bi-geo-alt", label: "Área", color: "#16558C" },
                     { icon: "bi-bar-chart-steps", label: "Nível", color: "#7b9ab4" },
                     { icon: "bi-list-check", label: "Requisito", color: "#6b8ca0" }
                   ].map((item, idx) => (
@@ -290,11 +290,11 @@ export default function Configuracoes() {
                       e.currentTarget.style.borderColor = `${item.color}20`;
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.querySelector('i').style.color = item.color;
-                      e.currentTarget.querySelector('span').style.color = "#2AA4BF";
+                      e.currentTarget.querySelector('span').style.color = "#16558C";
                     }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                         <i className={item.icon} style={{ fontSize: "1.75rem", color: item.color, transition: "color 0.2s" }}></i>
-                        <span style={{ fontWeight: "600", color: "#2AA4BF", fontSize: "0.85rem", transition: "color 0.2s", textAlign: "center" }}>
+                        <span style={{ fontWeight: "600", color: "#16558C", fontSize: "0.85rem", transition: "color 0.2s", textAlign: "center" }}>
                           Novo {item.label}
                         </span>
                       </div>
@@ -307,15 +307,15 @@ export default function Configuracoes() {
             {/* Gamificação */}
             {activeTab === "gamification" && (
               <div>
-                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-trophy mr-2" style={{ color: "#2AA4BF" }}></i>
+                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-trophy mr-2" style={{ color: "#16558C" }}></i>
                   Gamificação e Validação
                 </h4>
                 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-star-fill mr-2" style={{ color: "#fbbf24" }}></i>
                         Pontos por Badge (padrão)
                       </label>
@@ -337,7 +337,7 @@ export default function Configuracoes() {
 
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-clock-history mr-2" style={{ color: "#04C4D9" }}></i>
                         SLA Padrão (dias)
                       </label>
@@ -364,7 +364,7 @@ export default function Configuracoes() {
                         alignItems: "center", 
                         gap: "0.75rem",
                         cursor: "pointer",
-                        color: "#2AA4BF",
+                        color: "#16558C",
                         fontWeight: "600",
                         fontSize: "0.95rem"
                       }}>
@@ -389,8 +389,8 @@ export default function Configuracoes() {
             {/* Notificações */}
             {activeTab === "notifications" && (
               <div>
-                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-bell mr-2" style={{ color: "#2AA4BF" }}></i>
+                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-bell mr-2" style={{ color: "#16558C" }}></i>
                   Notificações e Integrações
                 </h4>
                 
@@ -402,9 +402,9 @@ export default function Configuracoes() {
                   ].map(notif => (
                     <div key={notif.key} style={{ 
                       padding: "1.5rem", 
-                      backgroundColor: notificationSettings[notif.key] ? "#2AA4BF15" : "#F2F2F2",
+                      backgroundColor: notificationSettings[notif.key] ? "#16558C15" : "#F2F2F2",
                       borderRadius: "10px", 
-                      border: `2px solid ${notificationSettings[notif.key] ? "#2AA4BF" : "#d4dfe9"}`,
+                      border: `2px solid ${notificationSettings[notif.key] ? "#16558C" : "#d4dfe9"}`,
                       transition: "all 0.2s"
                     }}>
                       <label style={{ 
@@ -414,9 +414,9 @@ export default function Configuracoes() {
                         cursor: "pointer"
                       }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                          <i className={notif.icon} style={{ fontSize: "1.5rem", color: "#2AA4BF" }}></i>
+                          <i className={notif.icon} style={{ fontSize: "1.5rem", color: "#16558C" }}></i>
                           <div>
-                            <div style={{ color: "#2AA4BF", fontWeight: "600", marginBottom: "0.25rem" }}>
+                            <div style={{ color: "#16558C", fontWeight: "600", marginBottom: "0.25rem" }}>
                               {notif.label}
                             </div>
                             <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
@@ -432,7 +432,7 @@ export default function Configuracoes() {
                             width: "3rem", 
                             height: "1.5rem", 
                             cursor: "pointer",
-                            accentColor: "#2AA4BF"
+                            accentColor: "#16558C"
                           }}
                         />
                       </label>
@@ -444,8 +444,8 @@ export default function Configuracoes() {
                   marginTop: "1.5rem",
                   padding: "0.75rem 1.5rem",
                   backgroundColor: "white",
-                  color: "#2AA4BF",
-                  border: "2px solid #2AA4BF",
+                  color: "#16558C",
+                  border: "2px solid #16558C",
                   borderRadius: "8px",
                   fontWeight: "600",
                   cursor: "pointer",
@@ -454,12 +454,12 @@ export default function Configuracoes() {
                   width: "100%"
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2AA4BF";
+                  e.currentTarget.style.backgroundColor = "#16558C";
                   e.currentTarget.style.color = "white";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "white";
-                  e.currentTarget.style.color = "#2AA4BF";
+                  e.currentTarget.style.color = "#16558C";
                 }}>
                   <i className="bi bi-envelope-paper mr-2"></i>
                   Configurar Templates de Email
@@ -470,13 +470,13 @@ export default function Configuracoes() {
             {/* RGPD */}
             {activeTab === "privacy" && (
               <div>
-                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-file-lock mr-2" style={{ color: "#2AA4BF" }}></i>
+                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-file-lock mr-2" style={{ color: "#16558C" }}></i>
                   RGPD e Privacidade
                 </h4>
                 
                 <div style={{ marginBottom: "1.5rem" }}>
-                  <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                  <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                     <i className="bi bi-file-text mr-2" style={{ color: "#04C4D9" }}></i>
                     Termos RGPD
                   </label>
@@ -499,9 +499,9 @@ export default function Configuracoes() {
 
                 <div style={{ 
                   padding: "1.5rem", 
-                  backgroundColor: privacySettings.publicGallery ? "#2AA4BF15" : "#F2F2F2",
+                  backgroundColor: privacySettings.publicGallery ? "#16558C15" : "#F2F2F2",
                   borderRadius: "10px", 
-                  border: `2px solid ${privacySettings.publicGallery ? "#2AA4BF" : "#d4dfe9"}`
+                  border: `2px solid ${privacySettings.publicGallery ? "#16558C" : "#d4dfe9"}`
                 }}>
                   <label style={{ 
                     display: "flex", 
@@ -510,9 +510,9 @@ export default function Configuracoes() {
                     cursor: "pointer"
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                      <i className="bi bi-images" style={{ fontSize: "1.5rem", color: "#2AA4BF" }}></i>
+                      <i className="bi bi-images" style={{ fontSize: "1.5rem", color: "#16558C" }}></i>
                       <div>
-                        <div style={{ color: "#2AA4BF", fontWeight: "600", marginBottom: "0.25rem" }}>
+                        <div style={{ color: "#16558C", fontWeight: "600", marginBottom: "0.25rem" }}>
                           Galeria Pública de Badges
                         </div>
                         <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
@@ -528,7 +528,7 @@ export default function Configuracoes() {
                         width: "3rem", 
                         height: "1.5rem", 
                         cursor: "pointer",
-                        accentColor: "#2AA4BF"
+                        accentColor: "#16558C"
                       }}
                     />
                   </label>
@@ -539,15 +539,15 @@ export default function Configuracoes() {
             {/* Interface */}
             {activeTab === "interface" && (
               <div>
-                <h4 style={{ color: "#2AA4BF", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-palette mr-2" style={{ color: "#2AA4BF" }}></i>
+                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-palette mr-2" style={{ color: "#16558C" }}></i>
                   Interface e Preferências
                 </h4>
                 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-translate mr-2" style={{ color: "#04C4D9" }}></i>
                         Idioma Padrão
                       </label>
@@ -573,7 +573,7 @@ export default function Configuracoes() {
 
                   <div>
                     <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#2AA4BF", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
                         <i className="bi bi-palette-fill mr-2" style={{ color: "#04C4D9" }}></i>
                         Tema
                       </label>
@@ -601,14 +601,14 @@ export default function Configuracoes() {
                 <div style={{ 
                   marginTop: "1.5rem", 
                   padding: "1.5rem", 
-                  backgroundColor: "#2AA4BF15", 
+                  backgroundColor: "#16558C15", 
                   borderRadius: "10px",
-                  border: "1px solid #2AA4BF30"
+                  border: "1px solid #16558C30"
                 }}>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
                     <i className="bi bi-lightbulb-fill" style={{ fontSize: "1.5rem", color: "#fbbf24" }}></i>
                     <div>
-                      <div style={{ color: "#2AA4BF", fontWeight: "600", marginBottom: "0.5rem" }}>
+                      <div style={{ color: "#16558C", fontWeight: "600", marginBottom: "0.5rem" }}>
                         Dica de Interface
                       </div>
                       <p style={{ color: "#04C4D9", margin: 0, fontSize: "0.9rem" }}>
@@ -627,7 +627,7 @@ export default function Configuracoes() {
           <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
             <button style={{
               padding: "1rem 2.5rem",
-              backgroundColor: "#2AA4BF",
+              backgroundColor: "#16558C",
               color: "white",
               border: "none",
               borderRadius: "10px",
@@ -639,12 +639,12 @@ export default function Configuracoes() {
             }}
             onClick={handleSave}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#2AA4BF";
+              e.currentTarget.style.backgroundColor = "#16558C";
               e.currentTarget.style.transform = "translateY(-2px)";
               e.currentTarget.style.boxShadow = "0 4px 12px rgba(90, 122, 154, 0.4)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#2AA4BF";
+              e.currentTarget.style.backgroundColor = "#16558C";
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.boxShadow = "0 2px 8px rgba(90, 122, 154, 0.3)";
             }}>

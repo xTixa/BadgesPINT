@@ -1,99 +1,136 @@
 ﻿import Sidebar from "../../layout/Sidebar";
-import React from "react";
+import { useState } from "react";
 
 export default function TalentManagerSettingsPage() {
+  const [settings, setSettings] = useState({
+    serviceLine: "",
+    areas: [],
+    notifyNew: true,
+    notifySla: true,
+    notifyStatus: true,
+    exportFormat: "excel",
+    period: "month",
+    rankingBy: "points",
+    showTimeline: true,
+    language: "pt",
+    theme: "light",
+  });
+
+  const handleChange = (key, value) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
   return (
-    <div className="settings-page">
-        <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
-      <h1>Definições do Talent Manager</h1>
+    <div className="admin-shell">
+      <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
 
-      {/* Âmbito */}
-      <section>
-        <h2>Âmbito</h2>
-        <label>
-          Service Line
-          <select>{/* options */}</select>
-        </label>
-        <label>
-          Áreas sob responsabilidade
-          <select multiple>{/* options */}</select>
-        </label>
-      </section>
+      <main className="admin-main">
+        <div className="mb-4 rounded-2xl bg-[#16558C] p-4 text-white shadow-sm">
+          <h3 className="mb-1 text-xl font-bold sm:text-2xl">Definições do Talent Manager</h3>
+          <p className="m-0 text-sm text-white/80 sm:text-base">Personaliza notificações, relatórios e preferências de trabalho.</p>
+        </div>
 
-      {/* Notificações */}
-      <section>
-        <h2>Notificações</h2>
-        <label>
-          Novas candidaturas
-          <input type="checkbox" />
-        </label>
-        <label>
-          Candidaturas com SLA ultrapassado
-          <input type="checkbox" />
-        </label>
-        <label>
-          Atualizações de estado (aprovado/rejeitado)
-          <input type="checkbox" />
-        </label>
-      </section>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
+            <h5 className="mb-3 text-base font-bold text-slate-900">Âmbito</h5>
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Service Line</label>
+                <select
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
+                  value={settings.serviceLine}
+                  onChange={(e) => handleChange("serviceLine", e.target.value)}
+                >
+                  <option value="">Selecionar</option>
+                  <option value="outsystems">Outsystems</option>
+                  <option value="devops">DevOps</option>
+                  <option value="cloud">Cloud</option>
+                </select>
+              </div>
 
-      {/* Relatórios e exportações */}
-      <section>
-        <h2>Relatórios e exportações</h2>
-        <label>
-          Formato padrão de exportação
-          <select>
-            <option value="excel">Excel</option>
-            <option value="pdf">PDF</option>
-          </select>
-        </label>
-        <label>
-          Filtro de período padrão
-          <select>
-            <option value="month">Último mês</option>
-            <option value="quarter">Último trimestre</option>
-            <option value="year">Último ano</option>
-          </select>
-        </label>
-      </section>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Áreas sob responsabilidade</label>
+                <select
+                  multiple
+                  className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
+                  value={settings.areas}
+                  onChange={(e) => handleChange("areas", Array.from(e.target.selectedOptions).map((o) => o.value))}
+                >
+                  <option value="backend">Backend</option>
+                  <option value="frontend">Frontend</option>
+                  <option value="qa">QA</option>
+                  <option value="data">Data</option>
+                </select>
+              </div>
+            </div>
+          </section>
 
-      {/* Gamification */}
-      <section>
-        <h2>Gamification e ranking</h2>
-        <label>
-          Ordenar ranking por
-          <select>
-            <option value="points">Pontos</option>
-            <option value="badges">Número de badges</option>
-          </select>
-        </label>
-        <label>
-          Mostrar timeline de evolução profissional
-          <input type="checkbox" />
-        </label>
-      </section>
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
+            <h5 className="mb-3 text-base font-bold text-slate-900">Notificações</h5>
+            <div className="space-y-3 text-sm text-slate-700">
+              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyNew} onChange={(e) => handleChange("notifyNew", e.target.checked)} /> Novas candidaturas</label>
+              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifySla} onChange={(e) => handleChange("notifySla", e.target.checked)} /> Candidaturas com SLA ultrapassado</label>
+              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyStatus} onChange={(e) => handleChange("notifyStatus", e.target.checked)} /> Atualizações de estado (aprovado/rejeitado)</label>
+            </div>
+          </section>
 
-      {/* Interface */}
-      <section>
-        <h2>Interface</h2>
-        <label>
-          Idioma
-          <select>
-            <option value="pt">Português</option>
-            <option value="en">Inglês</option>
-            <option value="es">Espanhol</option>
-          </select>
-        </label>
-        <label>
-          Tema
-          <select>
-            <option value="light">Claro</option>
-            <option value="dark">Escuro</option>
-          </select>
-        </label>
-      </section>
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
+            <h5 className="mb-3 text-base font-bold text-slate-900">Relatórios e Exportações</h5>
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Formato padrão de exportação</label>
+                <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.exportFormat} onChange={(e) => handleChange("exportFormat", e.target.value)}>
+                  <option value="excel">Excel</option>
+                  <option value="pdf">PDF</option>
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Filtro de período padrão</label>
+                <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.period} onChange={(e) => handleChange("period", e.target.value)}>
+                  <option value="month">Último mês</option>
+                  <option value="quarter">Último trimestre</option>
+                  <option value="year">Último ano</option>
+                </select>
+              </div>
+            </div>
+          </section>
 
-      <button>Guardar alterações</button>
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
+            <h5 className="mb-3 text-base font-bold text-slate-900">Gamification e Interface</h5>
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Ordenar ranking por</label>
+                <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.rankingBy} onChange={(e) => handleChange("rankingBy", e.target.value)}>
+                  <option value="points">Pontos</option>
+                  <option value="badges">Número de badges</option>
+                </select>
+              </div>
+              <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={settings.showTimeline} onChange={(e) => handleChange("showTimeline", e.target.checked)} /> Mostrar timeline de evolução profissional</label>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Idioma</label>
+                  <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.language} onChange={(e) => handleChange("language", e.target.value)}>
+                    <option value="pt">Português</option>
+                    <option value="en">Inglês</option>
+                    <option value="es">Espanhol</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Tema</label>
+                  <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.theme} onChange={(e) => handleChange("theme", e.target.value)}>
+                    <option value="light">Claro</option>
+                    <option value="dark">Escuro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div className="mt-4">
+          <button className="rounded-xl bg-[#16558C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3F76A6]" type="button" onClick={() => alert("Definições guardadas (mock).")}>Guardar alterações</button>
+        </div>
+      </main>
     </div>
   );
 }

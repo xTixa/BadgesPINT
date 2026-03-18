@@ -1,6 +1,9 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "/src/api";
+import PageHeader from "/src/components/ui/PageHeader";
+import SectionCard from "/src/components/ui/SectionCard";
+import EmptyState from "/src/components/ui/EmptyState";
 
 export default function ValidarEvidencias() {
   const [filtro, setFiltro] = useState("pendente");
@@ -22,7 +25,7 @@ export default function ValidarEvidencias() {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get("http://localhost:4000/api/tm/evidencias", {
+        const res = await api.get("/api/tm/evidencias", {
           headers: { Authorization: `Bearer ${token}` },
           params: { status: filtro }
         });
@@ -41,7 +44,7 @@ export default function ValidarEvidencias() {
   const aprovar = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:4000/api/tm/evidencias/${id}/aprovar`, {}, {
+      await api.put(`/api/tm/evidencias/${id}/aprovar`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setEvidencias((prev) => prev.map((e) => (e.id === id ? { ...e, status: "aprovado" } : e)));
@@ -54,7 +57,7 @@ export default function ValidarEvidencias() {
   const rejeitar = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:4000/api/tm/evidencias/${id}/rejeitar`, {}, {
+      await api.put(`/api/tm/evidencias/${id}/rejeitar`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setEvidencias((prev) => prev.map((e) => (e.id === id ? { ...e, status: "rejeitado" } : e)));
@@ -72,13 +75,14 @@ export default function ValidarEvidencias() {
 
   return (
     <div className="admin-shell">
-      <Sidebar user={{ role: "talentManager", name: "Talent Manager" }} />
+      <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
 
       <main className="admin-main">
-        <div className="mb-4 rounded-2xl bg-[#2AA4BF] p-4 text-white shadow-sm">
-          <h3 className="mb-1 text-xl font-bold sm:text-2xl">Validar Evidências</h3>
-          <p className="m-0 text-sm text-white/80 sm:text-base">Aprova/Rejeita evidências, envia notificações e acompanha status em tempo real.</p>
-        </div>
+        <PageHeader
+          title="Validar Evidências"
+          subtitle="Aprova/Rejeita evidências, envia notificações e acompanha status em tempo real."
+          icon="bi-folder-check"
+        />
 
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
@@ -120,18 +124,14 @@ export default function ValidarEvidencias() {
             </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h5 className="mb-3 text-base font-bold text-slate-900">
-            <i className="bi bi-folder-check mr-2 text-sky-600"></i>
-              Evidências
-            </h5>
+        <SectionCard title="Evidências" icon="bi-folder-check">
 
           {loading ? (
-            <div className="py-6 text-center"><div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-sky-700 border-r-transparent"></div></div>
+            <EmptyState message="A carregar evidências..." icon="bi-arrow-repeat" />
           ) : error ? (
             <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
           ) : filtradas.length === 0 ? (
-            <p className="text-sm text-slate-500">Não existem evidências neste estado.</p>
+            <EmptyState message="Não existem evidências neste estado." icon="bi-inbox" />
           ) : (
             <div className="overflow-x-auto rounded-xl border border-slate-200">
               <table className="min-w-full divide-y divide-slate-200 text-sm">
@@ -175,7 +175,7 @@ export default function ValidarEvidencias() {
               </table>
             </div>
           )}
-        </div>
+        </SectionCard>
       </main>
     </div>
   );
