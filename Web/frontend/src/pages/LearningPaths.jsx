@@ -20,12 +20,12 @@ export default function LearningPaths() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-[#191970] to-[#0f1b5b] text-white py-16 px-6 shadow-xl">
+      <div className="bg-[#013440] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
-            <Link to="/" className="text-blue-200 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
+            <Link to="/" className="text-[#04C4D9] hover:text-[#F2F2F2] flex items-center gap-2 text-sm font-medium">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
@@ -35,7 +35,7 @@ export default function LearningPaths() {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
             Percursos de Aprendizagem
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-3xl">
+          <p className="text-lg md:text-xl text-[#04C4D9] max-w-3xl">
             Descobre os percursos estruturados para evoluir na tua carreira e conquistar novas competências.
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function LearningPaths() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#191970] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#013440] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar percursos...</p>
           </div>
         ) : paths.length > 0 ? (
@@ -53,11 +53,9 @@ export default function LearningPaths() {
             {paths.map(p => (
               <div 
                 key={p.id} 
-                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]"
               >
-                {/* Card Header com gradiente */}
-                <div className="h-32 bg-gradient-to-br from-[#191970] to-[#3949ab] relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                <div className="h-32 bg-[#2AA4BF] relative overflow-hidden">
                   <div className="absolute bottom-4 left-6 right-6">
                     <div className="flex items-center gap-2">
                       <svg className="w-8 h-8 text-white opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +75,7 @@ export default function LearningPaths() {
                   {/* Action Button */}
                   <Link
                     to={`/learning-paths/${p.id}/service-lines`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#191970] text-white font-semibold hover:bg-[#101050] transition-all transform hover:-translate-y-0.5 shadow-md hover:shadow-lg"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#013440] text-white font-semibold hover:bg-[#013440]"
                   >
                     Explorar Percurso →
                   </Link>

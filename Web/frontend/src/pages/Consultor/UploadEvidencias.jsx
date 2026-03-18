@@ -1,6 +1,4 @@
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
@@ -36,7 +34,7 @@ export default function UploadEvidencias() {
         setBadges(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar badges:", err);
-        setError("Não foi possível carregar badges.");
+        setError("NÃ£o foi possÃ­vel carregar badges.");
       }
     };
 
@@ -60,7 +58,7 @@ export default function UploadEvidencias() {
         setEvidences(evRes.data || []);
       } catch (err) {
         console.error("Erro ao carregar requisitos:", err);
-        setError("Não foi possível carregar requisitos.");
+        setError("NÃ£o foi possÃ­vel carregar requisitos.");
       } finally {
         setLoading(false);
       }
@@ -82,8 +80,8 @@ export default function UploadEvidencias() {
 
       setEvidences((prev) => [res.data, ...prev]);
     } catch (err) {
-      console.error("Erro ao submeter evidência:", err);
-      alert("Erro ao submeter evidência.");
+      console.error("Erro ao submeter evidÃªncia:", err);
+      alert("Erro ao submeter evidÃªncia.");
     }
   };
 
@@ -114,24 +112,24 @@ export default function UploadEvidencias() {
   };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <h3 className="fw-bold text-dark mb-4">
-          <i className="bi bi-cloud-upload-fill me-2 text-primary"></i>
-          Upload de Evidências
+      <main className="admin-main">
+        <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
+          <i className="bi bi-cloud-upload-fill text-sky-600"></i>
+          Upload de EvidÃªncias
         </h3>
 
-        <div className="card border-0 shadow-sm rounded-4 p-4">
-          <p className="text-muted mb-3">
-            Seleciona um badge e submete evidências para cada requisito.
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <p className="mb-3 text-sm text-slate-500 sm:text-base">
+            Seleciona um badge e submete evidÃªncias para cada requisito.
           </p>
 
           <div className="mb-3">
-            <label className="form-label fw-semibold">Selecionar Badge</label>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">Selecionar Badge</label>
             <select
-              className="form-select rounded-3"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
               value={selectedBadgeId}
               onChange={(e) => setSelectedBadgeId(e.target.value)}
             >
@@ -142,9 +140,9 @@ export default function UploadEvidencias() {
             </select>
           </div>
 
-          <div className="d-flex justify-content-end mb-3">
+          <div className="mb-3 flex justify-end">
             <button
-              className="btn btn-outline-primary"
+              className="rounded-xl border border-sky-600 bg-white px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
               onClick={handleSubmitPedido}
               disabled={!selectedBadgeId}
             >
@@ -153,19 +151,19 @@ export default function UploadEvidencias() {
           </div>
 
           {pedidoStatus && (
-            <div className="alert alert-info">{pedidoStatus}</div>
+            <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">{pedidoStatus}</div>
           )}
 
           {error && (
-            <div className="alert alert-danger">{error}</div>
+            <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
           )}
 
           {loading ? (
-            <div className="text-center py-4">
-              <div className="spinner-border text-primary"></div>
+            <div className="py-6 text-center">
+              <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-sky-700 border-r-transparent"></div>
             </div>
           ) : (
-            <div className="d-flex flex-column gap-3">
+            <div className="flex flex-col gap-3">
               {requirements.map((req) => {
                 const evidence = evidenceByRequirement.get(req.id);
                 return (
@@ -179,7 +177,7 @@ export default function UploadEvidencias() {
               })}
 
               {!requirements.length && selectedBadgeId && (
-                <div className="text-muted">Este badge não tem requisitos definidos.</div>
+                <div className="text-sm text-slate-500">Este badge nÃ£o tem requisitos definidos.</div>
               )}
             </div>
           )}
@@ -195,7 +193,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSend = async () => {
-    if (!url) return alert("Insere o URL da evidência.");
+    if (!url) return alert("Insere o URL da evidÃªncia.");
     setSubmitting(true);
     await onSubmit(requirement.id, url, notes);
     setSubmitting(false);
@@ -204,12 +202,14 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
   };
 
   return (
-    <div className="card border-0 shadow-sm rounded-4">
-      <div className="card-body">
-        <div className="d-flex justify-content-between align-items-start">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div>
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="fw-semibold">{requirement.title} <span className="text-muted">({requirement.code})</span></div>
-            <div className="text-muted small">{requirement.description}</div>
+            <div className="text-sm font-semibold text-slate-900">
+              {requirement.title} <span className="text-slate-500">({requirement.code})</span>
+            </div>
+            <div className="text-xs text-slate-500 sm:text-sm">{requirement.description}</div>
           </div>
           {requirement.image_url && (
             <img src={requirement.image_url} alt={requirement.title} style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover" }} />
@@ -217,28 +217,37 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
         </div>
 
         {latestEvidence && (
-          <div className="mt-2 small">
-            Estado: <span className={`badge ${latestEvidence.status === "aprovado" ? "text-bg-success" : latestEvidence.status === "rejeitado" ? "text-bg-danger" : "text-bg-warning"}`}>
+          <div className="mt-2 text-xs sm:text-sm">
+            Estado:{" "}
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+                latestEvidence.status === "aprovado"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : latestEvidence.status === "rejeitado"
+                    ? "bg-rose-100 text-rose-700"
+                    : "bg-amber-100 text-amber-700"
+              }`}
+            >
               {latestEvidence.status}
             </span>
-            <span className="ms-2">Última evidência: <a href={latestEvidence.evidence_url} target="_blank" rel="noreferrer">ver</a></span>
+            <span className="ml-2 text-slate-600">Ãšltima evidÃªncia: <a className="text-sky-700 underline" href={latestEvidence.evidence_url} target="_blank" rel="noreferrer">ver</a></span>
           </div>
         )}
 
-        <div className="row g-2 mt-3">
-          <div className="col-md-7">
+        <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-12">
+          <div className="md:col-span-7">
             <input
               type="text"
-              className="form-control"
-              placeholder="URL da evidência (Drive, OneDrive, etc.)"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+              placeholder="URL da evidÃªncia (Drive, OneDrive, etc.)"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
             />
           </div>
-          <div className="col-md-5">
+          <div className="md:col-span-5">
             <input
               type="text"
-              className="form-control"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
               placeholder="Notas (opcional)"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -246,12 +255,17 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
           </div>
         </div>
 
-        <div className="d-flex justify-content-end mt-2">
-          <button className="btn btn-primary btn-sm" onClick={handleSend} disabled={submitting}>
-            {submitting ? "A enviar..." : "Submeter evidência"}
+        <div className="mt-2 flex justify-end">
+          <button
+            className="rounded-xl border border-sky-700 bg-sky-700 px-3 py-1 text-xs font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={handleSend}
+            disabled={submitting}
+          >
+            {submitting ? "A enviar..." : "Submeter evidÃªncia"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

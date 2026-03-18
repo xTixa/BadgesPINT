@@ -1,12 +1,19 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
 
 const tipos = {
   info: { label: "Informação", cor: "info" },
   success: { label: "Sucesso", cor: "success" },
   warning: { label: "Aviso", cor: "warning" },
   danger: { label: "Crítico", cor: "danger" }
+};
+
+const tipoBadgeClass = {
+  info: "bg-sky-100 text-sky-700",
+  success: "bg-emerald-100 text-emerald-700",
+  warning: "bg-amber-100 text-amber-700",
+  danger: "bg-rose-100 text-rose-700",
 };
 
 export default function Avisos() {
@@ -52,7 +59,7 @@ export default function Avisos() {
         }
       );
 
-      alert("✅ Aviso enviado com sucesso!");
+      alert("âœ… Aviso enviado com sucesso!");
       
       // Adicionar à lista local
       const novo = { ...form, id: Date.now() };
@@ -72,18 +79,20 @@ export default function Avisos() {
   };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-          <h3 className="fw-bold text-dark mb-0">
-            <i className="bi bi-megaphone-fill me-2 text-danger"></i>
+      <main className="admin-main">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h3 className="m-0 text-xl font-bold text-slate-900 sm:text-2xl">
+            <i className="bi bi-megaphone-fill mr-2 text-rose-600"></i>
             Avisos
           </h3>
-          <div className="btn-group" role="group">
+          <div className="flex flex-wrap gap-2" role="group">
             <button
-              className={`btn btn-sm ${filtro === "todos" ? "btn-secondary" : "btn-outline-secondary"}`}
+              className={`rounded-lg px-3 py-1 text-xs font-semibold transition sm:text-sm ${
+                filtro === "todos" ? "bg-slate-600 text-white" : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
               onClick={() => setFiltro("todos")}
             >
               Todos
@@ -91,7 +100,9 @@ export default function Avisos() {
             {Object.keys(tipos).map((t) => (
               <button
                 key={t}
-                className={`btn btn-sm ${filtro === t ? `btn-${tipos[t].cor}` : "btn-outline-light text-dark"}`}
+                className={`rounded-lg px-3 py-1 text-xs font-semibold transition sm:text-sm ${
+                  filtro === t ? tipoBadgeClass[t] : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
                 onClick={() => setFiltro(t)}
               >
                 {tipos[t].label}
@@ -100,24 +111,23 @@ export default function Avisos() {
           </div>
         </div>
 
-        <div className="row g-3 mb-4">
-          <div className="col-md-6">
-            <div className="card shadow-sm border-0 h-100">
-              <div className="card-body">
-                <h6 className="fw-semibold mb-3">Novo aviso</h6>
-                <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
+        <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Novo aviso</h6>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                   <textarea
-                    className="form-control"
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                     rows="3"
                     placeholder="Mensagem a comunicar"
                     value={form.texto}
                     onChange={(e) => setForm({ ...form, texto: e.target.value })}
                   />
-                  <div className="row g-2">
-                    <div className="col-md-6">
-                      <label className="form-label fw-semibold">Tipo</label>
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-semibold text-slate-700">Tipo</label>
                       <select
-                        className="form-select"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                         value={form.tipo}
                         onChange={(e) => setForm({ ...form, tipo: e.target.value })}
                       >
@@ -125,11 +135,11 @@ export default function Avisos() {
                           <option key={t} value={t}>{tipos[t].label}</option>
                         ))}
                       </select>
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label fw-semibold">Público</label>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-semibold text-slate-700">Público</label>
                       <select
-                        className="form-select"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                         value={form.publico}
                         onChange={(e) => setForm({ ...form, publico: e.target.value })}
                       >
@@ -138,26 +148,25 @@ export default function Avisos() {
                         <option>Talent Managers</option>
                         <option>Service Line</option>
                       </select>
-                    </div>
                   </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <label className="form-label fw-semibold mb-0">Agendar</label>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="text-sm font-semibold text-slate-700">Agendar</label>
                     <input
                       type="date"
-                      className="form-control"
-                      style={{ maxWidth: 200 }}
+                    className="w-[200px] rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                       value={form.agenda}
                       onChange={(e) => setForm({ ...form, agenda: e.target.value })}
                     />
-                    <button type="submit" className="btn btn-danger ms-auto" disabled={loading}>
+                  <button type="submit" className="ml-auto rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-60" disabled={loading}>
                       {loading ? (
                         <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
+                        <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/60 border-r-transparent"></span>
                           A enviar...
                         </>
                       ) : (
                         <>
-                          <i className="bi bi-send-fill me-1" /> Guardar e enviar aviso
+                        <i className="bi bi-send-fill mr-1" /> Guardar e enviar aviso
                         </>
                       )}
                     </button>
@@ -165,44 +174,41 @@ export default function Avisos() {
                 </form>
               </div>
             </div>
-          </div>
 
-          <div className="col-md-6">
-            <div className="card shadow-sm border-0 h-100">
-              <div className="card-body">
-                <h6 className="fw-semibold mb-3">Resumo</h6>
-                <div className="d-flex gap-3">
-                  {Object.keys(tipos).map((t) => (
-                    <div key={t} className="flex-fill text-center p-3 rounded" style={{ backgroundColor: "#f8f9fa" }}>
-                      <p className="text-muted mb-1">{tipos[t].label}</p>
-                      <h5 className="fw-bold mb-0">{avisos.filter((a) => a.tipo === t).length}</h5>
-                    </div>
-                  ))}
-                </div>
+          <div>
+            <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Resumo</h6>
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {Object.keys(tipos).map((t) => (
+                  <div key={t} className="rounded-xl bg-slate-50 p-3 text-center">
+                    <p className="mb-1 text-xs text-slate-500">{tipos[t].label}</p>
+                    <h5 className="m-0 text-lg font-bold text-slate-900">{avisos.filter((a) => a.tipo === t).length}</h5>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="card shadow-sm border-0 rounded-4">
-          <ul className="list-group list-group-flush">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <ul className="divide-y divide-slate-100">
             {filtrados.map((a) => (
-              <li key={a.id} className="list-group-item py-3 d-flex align-items-start gap-3">
-                <span className={`badge bg-${tipos[a.tipo].cor}`}>{tipos[a.tipo].label}</span>
-                <div className="flex-grow-1">
-                  <div className="fw-semibold">{a.texto}</div>
-                  <div className="text-muted small">{a.publico} · {a.agenda || "Imediato"}</div>
+              <li key={a.id} className="flex items-start gap-3 px-4 py-3">
+                <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${tipoBadgeClass[a.tipo]}`}>{tipos[a.tipo].label}</span>
+                <div className="flex-1">
+                  <div className="text-sm font-semibold text-slate-900">{a.texto}</div>
+                  <div className="text-xs text-slate-500">{a.publico} Â· {a.agenda || "Imediato"}</div>
                 </div>
-                <div className="btn-group btn-group-sm" role="group">
-                  <button className="btn btn-outline-secondary" onClick={() => setForm({ texto: a.texto, tipo: a.tipo, publico: a.publico, agenda: a.agenda })}>
+                <div className="flex gap-2" role="group">
+                  <button className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => setForm({ texto: a.texto, tipo: a.tipo, publico: a.publico, agenda: a.agenda })}>
                     Editar
                   </button>
-                  <button className="btn btn-outline-danger" onClick={() => remover(a.id)}>Apagar</button>
+                  <button className="rounded-lg border border-rose-500 px-3 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50" onClick={() => remover(a.id)}>Apagar</button>
                 </div>
               </li>
             ))}
             {!filtrados.length && (
-              <li className="list-group-item text-center text-muted py-4">Nenhum aviso neste filtro.</li>
+              <li className="px-4 py-4 text-center text-sm text-slate-500">Nenhum aviso neste filtro.</li>
             )}
           </ul>
         </div>
@@ -210,3 +216,5 @@ export default function Avisos() {
     </div>
   );
 }
+
+

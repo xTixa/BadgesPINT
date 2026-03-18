@@ -1,16 +1,14 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function PerfilConsultor() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [atividade] = useState([
-    { id: 1, acao: "Conquistou o badge 'DevOps Intermédio'", data: "Há 2 dias" },
-    { id: 2, acao: "Submeteu evidências para 'Outsystems Avançado'", data: "Há 5 dias" },
-    { id: 3, acao: "Atualizou perfil profissional", data: "Há 1 semana" },
+    { id: 1, acao: "Conquistou o badge 'DevOps IntermÃ©dio'", data: "HÃ¡ 2 dias" },
+    { id: 2, acao: "Submeteu evidÃªncias para 'Outsystems AvanÃ§ado'", data: "HÃ¡ 5 dias" },
+    { id: 3, acao: "Atualizou perfil profissional", data: "HÃ¡ 1 semana" },
   ]);
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export default function PerfilConsultor() {
           nome: response.data.name,
           cargo: getRoleLabel(response.data.role),
           email: response.data.email,
-          localizacao: response.data.localizacao || "Não definida",
+          localizacao: response.data.localizacao || "NÃ£o definida",
           imagem: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
           pontos: response.data.points_total || 0,
           badges: response.data.badges || 0,
@@ -34,7 +32,7 @@ export default function PerfilConsultor() {
         });
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
-        alert("Erro ao carregar perfil. Verifique a autenticação.");
+        alert("Erro ao carregar perfil. Verifique a autenticaÃ§Ã£o.");
       } finally {
         setLoading(false);
       }
@@ -55,140 +53,112 @@ export default function PerfilConsultor() {
 
   if (loading) {
     return (
-      <div className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
-        <div className="spinner-border text-primary" role="status"></div>
+      <div className="flex min-h-screen items-center justify-center bg-slate-100">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#013440]"></div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
-        <div className="alert alert-danger">Erro ao carregar perfil</div>
+      <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">Erro ao carregar perfil</div>
       </div>
     );
   }
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
-      
-      {/* Sidebar */}
+    <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: user.nome }} />
 
-      {/* Conteúdo */}
-      <main
-        className="flex-grow-1 p-5"
-        style={{ marginLeft: "250px", width: "calc(100% - 250px)" }}
-      >
-        {/* Cabeçalho */}
-        <div
-          className="rounded-4 p-4 mb-5 shadow-sm text-white d-flex align-items-center justify-content-between flex-wrap"
-          style={{ backgroundColor: "#191970" }}
-        >
-          <div className="d-flex align-items-center">
+      <main className="admin-main">
+        <div className="mb-5 flex flex-col gap-4 rounded-2xl bg-[#013440] p-5 text-white shadow-sm md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
             <img
               src={user.imagem}
               alt="Foto de perfil"
-              className="rounded-circle me-4 border border-white"
-              style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              className="h-20 w-20 rounded-full border border-white object-cover sm:h-24 sm:w-24"
             />
             <div>
-              <h3 className="fw-bold mb-1">{user.nome}</h3>
-              <p className="mb-0 text-light opacity-75">{user.cargo}</p>
+              <h3 className="mb-1 text-xl font-bold sm:text-2xl">{user.nome}</h3>
+              <p className="m-0 text-sm text-white/80 sm:text-base">{user.cargo}</p>
             </div>
           </div>
-          <div className="text-end mt-3 mt-md-0">
+          <div className="md:text-right">
             <button 
-              className="btn btn-light btn-sm fw-semibold"
+              className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-[#013440] hover:bg-slate-100"
               onClick={() => window.location.href = "/editar-perfil"}
             >
-              <i className="bi bi-pencil-square me-2"></i>Editar Perfil
+              <i className="bi bi-pencil-square mr-2"></i>Editar Perfil
             </button>
           </div>
         </div>
 
-        {/* Estatísticas */}
-        <div className="row g-4 mb-5">
-          <div className="col-md-4">
-            <div className="card shadow-sm border-0 rounded-4 text-center py-3">
-              <i className="bi bi-star-fill fs-3 text-warning mb-2"></i>
-              <h5 className="fw-semibold text-dark mb-1">{user.pontos}</h5>
-              <p className="text-muted small mb-0">Pontos Acumulados</p>
-            </div>
+        <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white py-4 text-center shadow-sm">
+            <i className="bi bi-star-fill mb-2 block text-2xl text-amber-500"></i>
+            <h5 className="mb-1 text-xl font-semibold text-slate-900">{user.pontos}</h5>
+            <p className="m-0 text-xs text-slate-500">Pontos Acumulados</p>
           </div>
-          <div className="col-md-4">
-            <div className="card shadow-sm border-0 rounded-4 text-center py-3">
-              <i className="bi bi-award-fill fs-3 text-success mb-2"></i>
-              <h5 className="fw-semibold text-dark mb-1">{user.badges}</h5>
-              <p className="text-muted small mb-0">Badges Obtidos</p>
-            </div>
+          <div className="rounded-2xl border border-slate-200 bg-white py-4 text-center shadow-sm">
+            <i className="bi bi-award-fill mb-2 block text-2xl text-emerald-600"></i>
+            <h5 className="mb-1 text-xl font-semibold text-slate-900">{user.badges}</h5>
+            <p className="m-0 text-xs text-slate-500">Badges Obtidos</p>
           </div>
-          <div className="col-md-4">
-            <div className="card shadow-sm border-0 rounded-4 text-center py-3">
-              <i className="bi bi-graph-up-arrow fs-3 text-primary mb-2"></i>
-              <h5 className="fw-semibold text-dark mb-1">{user.progresso}%</h5>
-              <p className="text-muted small mb-0">Progresso Global</p>
+          <div className="rounded-2xl border border-slate-200 bg-white py-4 text-center shadow-sm sm:col-span-2 lg:col-span-1">
+            <i className="bi bi-graph-up-arrow mb-2 block text-2xl text-sky-600"></i>
+            <h5 className="mb-1 text-xl font-semibold text-slate-900">{user.progresso}%</h5>
+            <p className="m-0 text-xs text-slate-500">Progresso Global</p>
+          </div>
+        </div>
+
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h5 className="mb-3 text-base font-bold text-slate-900">
+            <i className="bi bi-person-lines-fill mr-2 text-sky-600"></i>
+            Informacoes Pessoais
+          </h5>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <p className="mb-1 text-xs text-slate-500">Email</p>
+              <p className="text-sm font-semibold text-slate-900">{user.email}</p>
+            </div>
+            <div>
+              <p className="mb-1 text-xs text-slate-500">Localizacao</p>
+              <p className="text-sm font-semibold text-slate-900">{user.localizacao}</p>
             </div>
           </div>
         </div>
 
-        {/* Informações Pessoais */}
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="card-body">
-            <h5 className="fw-bold text-dark mb-3">
-              <i className="bi bi-person-lines-fill me-2 text-primary"></i>
-              Informações Pessoais
-            </h5>
-            <div className="row">
-              <div className="col-md-6">
-                <p className="mb-1 text-muted small">Email</p>
-                <p className="fw-semibold">{user.email}</p>
-              </div>
-              <div className="col-md-6">
-                <p className="mb-1 text-muted small">Localização</p>
-                <p className="fw-semibold">{user.localizacao}</p>
-              </div>
-            </div>
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h5 className="mb-3 text-base font-bold text-slate-900">
+            <i className="bi bi-lightbulb-fill mr-2 text-amber-500"></i>
+            Competencias
+          </h5>
+          <div className="flex flex-wrap gap-2">
+            {user.competencias.map((comp, i) => (
+              <span key={i} className="rounded-full bg-sky-700 px-3 py-1 text-xs font-semibold text-white">
+                {comp}
+              </span>
+            ))}
           </div>
         </div>
 
-        {/* Competências */}
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="card-body">
-            <h5 className="fw-bold text-dark mb-3">
-              <i className="bi bi-lightbulb-fill me-2 text-warning"></i>
-              Competências
-            </h5>
-            <div className="d-flex flex-wrap gap-2">
-              {user.competencias.map((comp, i) => (
-                <span key={i} className="badge rounded-pill text-bg-primary px-3 py-2">
-                  {comp}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Atividade Recente */}
-        <div className="card border-0 shadow-sm rounded-4">
-          <div className="card-body">
-            <h5 className="fw-bold text-dark mb-3">
-              <i className="bi bi-clock-history me-2 text-success"></i>
-              Atividade Recente
-            </h5>
-            <ul className="list-group list-group-flush">
-              {atividade.map((a) => (
-                <li key={a.id} className="list-group-item">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="text-dark">{a.acao}</span>
-                    <small className="text-muted">{a.data}</small>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h5 className="mb-3 text-base font-bold text-slate-900">
+            <i className="bi bi-clock-history mr-2 text-emerald-600"></i>
+            Atividade Recente
+          </h5>
+          <ul className="m-0 list-none divide-y divide-slate-100 p-0">
+            {atividade.map((a) => (
+              <li key={a.id} className="flex items-center justify-between gap-3 py-3">
+                <span className="text-sm text-slate-800">{a.acao}</span>
+                <small className="text-xs text-slate-500">{a.data}</small>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     </div>
   );
 }
+

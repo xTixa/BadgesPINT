@@ -1,5 +1,5 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
-import Sidebar from "../../components/sidebar/sidebar";
 import { Link } from "react-router-dom";
 
 const baseData = [
@@ -33,111 +33,117 @@ export default function GestaoLearningPaths() {
   };
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+      <main className="admin-main">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="fw-bold text-dark mb-0">
-              <i className="bi bi-diagram-3-fill text-warning me-2" />
-              Gestão de Learning Paths
+            <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
+              <i className="bi bi-diagram-3-fill text-amber-500" />
+              GestÃ£o de Learning Paths
             </h3>
-            <p className="text-muted small mb-0">Criar, ativar/desativar e exportar percursos.</p>
+            <p className="text-sm text-slate-500">Criar, ativar/desativar e exportar percursos.</p>
           </div>
 
-          <div className="d-flex gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             <input
-              className="form-control"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:min-w-[220px]"
               placeholder="Procurar por nome"
-              style={{ minWidth: 220 }}
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
             />
             <Link
               to="/admin/learning-paths/novo"
-              className="btn btn-primary"
-              style={{ backgroundColor: "#191970", borderColor: "#191970" }}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
             >
-              <i className="bi bi-plus-circle me-1" /> Novo
+              <i className="bi bi-plus-circle" /> Novo
             </Link>
           </div>
         </div>
 
-        <div className="row g-3 mb-3">
+        <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
           {[{ label: "Ativos", valor: lista.filter((lp) => lp.ativo).length }, { label: "Inativos", valor: lista.filter((lp) => !lp.ativo).length }, { label: "Total Badges", valor: lista.reduce((acc, lp) => acc + lp.badges, 0) }].map((card) => (
-            <div key={card.label} className="col-md-4">
-              <div className="card shadow-sm border-0 h-100">
-                <div className="card-body">
-                  <p className="text-muted small mb-1">{card.label}</p>
-                  <h4 className="mb-0 fw-bold">{card.valor}</h4>
-                </div>
-              </div>
+            <div key={card.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{card.label}</p>
+              <h4 className="mt-1 text-2xl font-bold text-slate-800">{card.valor}</h4>
             </div>
           ))}
         </div>
 
-        <div className="d-flex gap-2 mb-3">
+        <div className="mb-4 flex flex-wrap gap-2">
           <button
-            className={`btn btn-sm ${filtroAtivo === "todos" ? "btn-secondary" : "btn-outline-secondary"}`}
+            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+              filtroAtivo === "todos"
+                ? "bg-slate-800 text-white"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
             onClick={() => setFiltroAtivo("todos")}
           >
             Todos
           </button>
           <button
-            className={`btn btn-sm ${filtroAtivo === "ativos" ? "btn-success" : "btn-outline-success"}`}
+            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+              filtroAtivo === "ativos"
+                ? "bg-emerald-600 text-white"
+                : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+            }`}
             onClick={() => setFiltroAtivo("ativos")}
           >
             Ativos
           </button>
           <button
-            className={`btn btn-sm ${filtroAtivo === "inativos" ? "btn-warning" : "btn-outline-warning"}`}
+            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+              filtroAtivo === "inativos"
+                ? "bg-amber-500 text-white"
+                : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+            }`}
             onClick={() => setFiltroAtivo("inativos")}
           >
             Inativos
           </button>
         </div>
 
-        <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-          <table className="table mb-0 align-middle">
-            <thead className="table-light">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <table className="min-w-full divide-y divide-slate-200 text-sm">
+            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
-                <th>Nome</th>
-                <th>Badges</th>
-                <th>Duração</th>
-                <th>Público</th>
-                <th>Estado</th>
-                <th className="text-end">Ações</th>
+                <th className="px-4 py-3">Nome</th>
+                <th className="px-4 py-3">Badges</th>
+                <th className="px-4 py-3">DuraÃ§Ã£o</th>
+                <th className="px-4 py-3">PÃºblico</th>
+                <th className="px-4 py-3">Estado</th>
+                <th className="px-4 py-3 text-right">AÃ§Ãµes</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100 text-slate-700">
               {filtrados.map((l) => (
-                <tr key={l.id}>
-                  <td className="fw-semibold">{l.nome}</td>
-                  <td>{l.badges}</td>
-                  <td>{l.duracaoMeses} meses</td>
-                  <td>{l.publico}</td>
-                  <td>
-                    <span className={`badge bg-${l.ativo ? "success" : "secondary"}`}>
+                <tr key={l.id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 font-semibold text-slate-800">{l.nome}</td>
+                  <td className="px-4 py-3">{l.badges}</td>
+                  <td className="px-4 py-3">{l.duracaoMeses} meses</td>
+                  <td className="px-4 py-3">{l.publico}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${l.ativo ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>
                       {l.ativo ? "Ativo" : "Inativo"}
                     </span>
                   </td>
-                  <td className="text-end">
-                    <div className="btn-group" role="group">
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex flex-wrap justify-end gap-2">
                       <button
-                        className="btn btn-sm btn-outline-secondary"
+                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
                         onClick={() => toggleEstado(l.id)}
                       >
                         {l.ativo ? "Desativar" : "Ativar"}
                       </button>
                       <Link
                         to={`/admin/learning-paths/${l.id}`}
-                        className="btn btn-sm btn-outline-primary"
+                        className="rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
                       >
                         Editar
                       </Link>
                       <button
-                        className="btn btn-sm btn-outline-danger"
+                        className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
                         onClick={() => remover(l.id)}
                       >
                         Apagar
@@ -148,7 +154,7 @@ export default function GestaoLearningPaths() {
               ))}
               {!filtrados.length && (
                 <tr>
-                  <td colSpan="6" className="text-center text-muted py-4">Sem resultados para os filtros atuais.</td>
+                  <td colSpan="6" className="px-4 py-6 text-center text-sm text-slate-500">Sem resultados para os filtros atuais.</td>
                 </tr>
               )}
             </tbody>
@@ -158,3 +164,5 @@ export default function GestaoLearningPaths() {
     </div>
   );
 }
+
+

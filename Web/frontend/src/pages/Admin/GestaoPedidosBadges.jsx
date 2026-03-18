@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import Sidebar from "../../layout/Sidebar";
 
 export default function GestaoPedidosBadges() {
   const [pedidos, setPedidos] = useState([]);
@@ -209,7 +207,7 @@ export default function GestaoPedidosBadges() {
   };
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#F2F2F2" }}>
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>

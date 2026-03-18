@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function NotificacoesPage() {
   const { isMobile, isTablet } = useWindowSize();
@@ -107,7 +105,7 @@ export default function NotificacoesPage() {
       ticket_fechado: "#6b7280",
       geral: "#8b5cf6",
     };
-    return cores[tipo] || "#6b8cae";
+    return cores[tipo] || "#04C4D9";
   };
 
   const notificacoesNaoLidas = notificacoes.filter((n) => !n.lido).length;
@@ -122,14 +120,14 @@ export default function NotificacoesPage() {
             style={{
               fontSize: isMobile ? "1.5rem" : "2rem",
               fontWeight: "700",
-              color: "#244080",
+              color: "#013440",
               marginBottom: "0.5rem",
             }}
           >
             <i className="bi bi-bell-fill" style={{ marginRight: "0.5rem", color: "#f59e0b" }}></i>
             Notificações
           </h1>
-          <p style={{ color: "#6b8cae", fontSize: "0.95rem", margin: 0 }}>
+          <p style={{ color: "#04C4D9", fontSize: "0.95rem", margin: 0 }}>
             Gerencie todas as suas notificações do sistema
           </p>
         </div>
@@ -155,7 +153,7 @@ export default function NotificacoesPage() {
                 borderRadius: "6px",
                 border: filtro === "todas" ? "2px solid #3b82f6" : "1px solid #d1d5db",
                 backgroundColor: filtro === "todas" ? "#eff6ff" : "white",
-                color: filtro === "todas" ? "#3b82f6" : "#6b8cae",
+                color: filtro === "todas" ? "#3b82f6" : "#04C4D9",
                 fontWeight: "500",
                 cursor: "pointer",
                 fontSize: "0.875rem",
@@ -175,7 +173,7 @@ export default function NotificacoesPage() {
                 borderRadius: "6px",
                 border: filtro === "nao-lidas" ? "2px solid #3b82f6" : "1px solid #d1d5db",
                 backgroundColor: filtro === "nao-lidas" ? "#eff6ff" : "white",
-                color: filtro === "nao-lidas" ? "#3b82f6" : "#6b8cae",
+                color: filtro === "nao-lidas" ? "#3b82f6" : "#04C4D9",
                 fontWeight: "500",
                 cursor: "pointer",
                 fontSize: "0.875rem",
@@ -211,7 +209,7 @@ export default function NotificacoesPage() {
                 borderRadius: "6px",
                 border: "1px solid #d1d5db",
                 backgroundColor: "white",
-                color: "#6b8cae",
+                color: "#04C4D9",
                 fontWeight: "500",
                 cursor: "pointer",
                 fontSize: "0.875rem",
@@ -245,7 +243,7 @@ export default function NotificacoesPage() {
                   animation: "spin 1s linear infinite",
                 }}
               ></div>
-              <p style={{ marginTop: "1rem", color: "#6b8cae" }}>Carregando notificações...</p>
+              <p style={{ marginTop: "1rem", color: "#04C4D9" }}>Carregando notificações...</p>
             </div>
           ) : notificacoes.length > 0 ? (
             notificacoes.map((notif) => (
@@ -297,7 +295,7 @@ export default function NotificacoesPage() {
                           margin: 0,
                           fontSize: "1rem",
                           fontWeight: "600",
-                          color: "#244080",
+                          color: "#013440",
                         }}
                       >
                         {notif.titulo}
@@ -317,7 +315,7 @@ export default function NotificacoesPage() {
                       <p
                         style={{
                           margin: "0.5rem 0 0 0",
-                          color: "#6b8cae",
+                          color: "#04C4D9",
                           fontSize: "0.9rem",
                         }}
                       >
@@ -389,7 +387,7 @@ export default function NotificacoesPage() {
           ) : (
             <div style={{ textAlign: "center", padding: "4rem 1rem" }}>
               <i className="bi bi-inbox" style={{ fontSize: "3rem", color: "#d1d5db", display: "block", marginBottom: "1rem" }}></i>
-              <h5 style={{ color: "#6b8cae", marginBottom: "0.5rem" }}>Sem notificações</h5>
+              <h5 style={{ color: "#04C4D9", marginBottom: "0.5rem" }}>Sem notificações</h5>
               <p style={{ color: "#9ca3af", fontSize: "0.9rem", margin: 0 }}>
                 {filtro === "nao-lidas" ? "Todas as suas notificações foram lidas!" : "Você não tem notificações no momento"}
               </p>
@@ -409,7 +407,7 @@ export default function NotificacoesPage() {
                   borderRadius: "6px",
                   border: pagina === page ? "2px solid #3b82f6" : "1px solid #d1d5db",
                   backgroundColor: pagina === page ? "#3b82f6" : "white",
-                  color: pagina === page ? "white" : "#6b8cae",
+                  color: pagina === page ? "white" : "#04C4D9",
                   fontWeight: "500",
                   cursor: "pointer",
                   fontSize: "0.875rem",

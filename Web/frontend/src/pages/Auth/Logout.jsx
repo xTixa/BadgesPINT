@@ -24,10 +24,10 @@ export default function Logout() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f4f6f8] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F2F2F2] px-4">
       <div className="bg-white shadow-xl rounded-3xl p-10 max-w-md w-full text-center">
 
-        <h2 className="text-2xl font-bold text-[#191970] mb-6">
+        <h2 className="text-2xl font-bold text-[#013440] mb-6">
           Pretende terminar a sua sessão?
         </h2>
 

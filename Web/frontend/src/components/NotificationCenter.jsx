@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function NotificationCenter() {
   const { isMobile } = useWindowSize();
@@ -107,7 +105,7 @@ export default function NotificationCenter() {
       ticket_fechado: "#6b7280",
       geral: "#8b5cf6",
     };
-    return cores[tipo] || "#6b8cae";
+    return cores[tipo] || "#04C4D9";
   };
 
   return (
@@ -120,7 +118,7 @@ export default function NotificationCenter() {
           position: "relative",
           cursor: "pointer",
           fontSize: "1.25rem",
-          color: "#6b8cae",
+          color: "#04C4D9",
           padding: "0.5rem",
           display: "flex",
           alignItems: "center",
@@ -182,7 +180,7 @@ export default function NotificationCenter() {
               alignItems: "center",
             }}
           >
-            <h6 style={{ margin: 0, color: "#244080", fontWeight: "600" }}>
+            <h6 style={{ margin: 0, color: "#013440", fontWeight: "600" }}>
               Notificações
               {naoLidas > 0 && (
                 <span style={{ fontSize: "0.8rem", color: "#ef4444", marginLeft: "0.5rem" }}>
@@ -195,7 +193,7 @@ export default function NotificationCenter() {
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#6b8cae",
+                  color: "#04C4D9",
                   cursor: "pointer",
                   fontSize: "0.8rem",
                   padding: 0,
@@ -256,7 +254,7 @@ export default function NotificationCenter() {
                         margin: 0,
                         fontSize: "0.85rem",
                         fontWeight: "500",
-                        color: "#244080",
+                        color: "#013440",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -302,7 +300,7 @@ export default function NotificationCenter() {
                         style={{
                           background: "none",
                           border: "none",
-                          color: "#6b8cae",
+                          color: "#04C4D9",
                           cursor: "pointer",
                           padding: "0.25rem",
                           fontSize: "0.8rem",

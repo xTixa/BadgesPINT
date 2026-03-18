@@ -83,41 +83,28 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="relative flex-1 flex flex-col justify-center px-8 py-12 bg-[#191970] text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#191970] via-[#0f1b5b] to-[#000428] opacity-95"></div>
-        <div className="relative z-10 max-w-md mx-auto text-center md:text-left">
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#013440] text-[#F2F2F2]">
+        <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
             Bem-vindo de volta!
           </h1>
-          <p className="text-blue-100 text-lg mb-10">
+          <p className="text-[#04C4D9] text-lg mb-10">
             Entra na tua jornada de aprendizagem e continua a conquistar badges.
           </p>
-          <p className="italic text-sm text-blue-200">
+          <p className="italic text-sm text-[#2AA4BF]">
             “O conhecimento é a tua melhor credencial.”
           </p>
         </div>
-
-        <svg
-          className="absolute bottom-0 left-0 w-full opacity-10"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1440 320"
-        >
-          <path
-            fill="currentColor"
-            d="M0,224L60,213.3C120,203,240,181,360,154.7C480,128,600,96,720,112C840,128,960,192,1080,208C1200,224,1320,192,1380,176L1440,160V320H0Z"
-          />
-        </svg>
       </div>
 
       {/* FORMULÁRIO */}
-      <div className="flex-1 flex items-center justify-center bg-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#191970] to-blue-500"></div>
+      <div className="flex-1 flex items-center justify-center bg-[#F2F2F2]">
 
         <form
           onSubmit={handleLogin}
-          className="relative z-10 w-full max-w-sm bg-white/90 shadow-xl rounded-2xl px-10 py-12 mx-6 border border-gray-100"
+          className="w-full max-w-sm rounded-2xl bg-white px-10 py-12 mx-6 border border-[#2AA4BF]"
         >
-          <h2 className="text-2xl font-bold text-[#191970] mb-8 text-center">
+          <h2 className="text-2xl font-bold text-[#013440] mb-8 text-center">
             Iniciar Sessão
           </h2>
 
@@ -133,7 +120,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className={`w-full px-4 py-3 rounded-lg border ${
                 error ? "border-red-400" : "border-gray-300"
-              } focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all`}
+              } focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]`}
               placeholder="exemplo@dominio.com"
             />
           </div>
@@ -151,13 +138,13 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full px-4 py-3 rounded-lg border ${
                   error ? "border-red-400" : "border-gray-300"
-                } focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all pr-16`}
+                } focus:outline-none focus:ring-2 focus:ring-[#2AA4BF] pr-16`}
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-[#191970] hover:text-[#101050]"
+                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-[#013440] hover:text-[#013440]"
                 aria-label={showPassword ? "Ocultar password" : "Mostrar password"}
               >
                 {showPassword ? "Ocultar" : "Mostrar"}
@@ -171,14 +158,14 @@ export default function Login() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-[#191970] focus:ring-[#191970]"
+                className="h-4 w-4 rounded border-gray-300 text-[#013440] focus:ring-[#013440]"
               />
               Guardar dados da sessão
             </label>
             <button
               type="button"
               onClick={() => navigate("/recover")}
-              className="text-[#191970] hover:underline font-medium"
+              className="text-[#013440] hover:underline font-medium"
             >
               Esqueceste-te da password?
             </button>
@@ -187,8 +174,7 @@ export default function Login() {
           {/* BOTÃO */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg font-semibold text-white 
-            bg-[#191970] hover:bg-[#101050] transition-colors shadow-md hover:shadow-lg"
+            className="w-full py-3 rounded-lg font-semibold text-white bg-[#013440] hover:bg-[#013440]"
           >
             Entrar
           </button>
@@ -204,7 +190,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => navigate("/register")}
-              className="w-full py-3 rounded-lg font-semibold text-[#191970] border border-[#191970] hover:bg-[#191970] hover:text-white transition-colors"
+              className="w-full py-3 rounded-lg font-semibold text-[#013440] border border-[#013440] hover:bg-[#013440] hover:text-white"
             >
               Criar Conta
             </button>

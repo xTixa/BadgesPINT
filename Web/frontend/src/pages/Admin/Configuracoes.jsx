@@ -1,9 +1,7 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import React, { useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import Sidebar from "../../components/sidebar/sidebar";
 
 export default function Configuracoes() {
   const [passwordData, setPasswordData] = useState({ newPassword: "", confirmPassword: "" });
@@ -28,18 +26,18 @@ export default function Configuracoes() {
   ];
 
   return (
-    <div style={{ display: "flex", backgroundColor: "#e8eef5", minHeight: "100vh" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
       
-      <main style={{ flex: 1, padding: "2rem" }}>
+      <main className="admin-main">
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h2 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <i className="bi bi-gear-fill" style={{ color: "#5a7a9a" }}></i>
+            <h2 style={{ fontWeight: "700", color: "#013440", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <i className="bi bi-gear-fill" style={{ color: "#2AA4BF" }}></i>
               Configurações do Sistema
             </h2>
-            <p style={{ color: "#6b8cae", fontSize: "0.95rem" }}>Gerir preferências e definições da plataforma</p>
+            <p style={{ color: "#04C4D9", fontSize: "0.95rem" }}>Gerir preferências e definições da plataforma</p>
           </div>
 
           {/* Tabs Navigation */}
@@ -48,7 +46,7 @@ export default function Configuracoes() {
             borderRadius: "12px 12px 0 0", 
             padding: "1rem 1.5rem",
             boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-            borderBottom: "2px solid #e8eef5",
+            borderBottom: "2px solid #F2F2F2",
             display: "flex",
             gap: "0.5rem",
             overflowX: "auto"
@@ -60,8 +58,8 @@ export default function Configuracoes() {
                 style={{
                   padding: "0.75rem 1.25rem",
                   border: "none",
-                  background: activeTab === tab.id ? "#5a7a9a" : "transparent",
-                  color: activeTab === tab.id ? "white" : "#6b8cae",
+                  background: activeTab === tab.id ? "#2AA4BF" : "transparent",
+                  color: activeTab === tab.id ? "white" : "#04C4D9",
                   borderRadius: "8px",
                   cursor: "pointer",
                   fontWeight: activeTab === tab.id ? "600" : "500",
@@ -101,14 +99,14 @@ export default function Configuracoes() {
             {/* Conta e Segurança */}
             {activeTab === "security" && (
               <div>
-                <h4 style={{ color: "#244080", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-shield-lock me-2" style={{ color: "#5a7a9a" }}></i>
+                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-shield-lock mr-2" style={{ color: "#2AA4BF" }}></i>
                   Conta e Segurança
                 </h4>
                 
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label style={{ display: "block", color: "#244080", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <div>
+                    <label style={{ display: "block", color: "#013440", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
                       Nova Password
                     </label>
                     <input
@@ -124,12 +122,12 @@ export default function Configuracoes() {
                         fontSize: "0.9rem",
                         outline: "none"
                       }}
-                      onFocus={(e) => e.target.style.borderColor = "#5a7a9a"}
+                      onFocus={(e) => e.target.style.borderColor = "#2AA4BF"}
                       onBlur={(e) => e.target.style.borderColor = "#d4dfe9"}
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label style={{ display: "block", color: "#244080", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
+                  <div>
+                    <label style={{ display: "block", color: "#013440", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
                       Confirmar Password
                     </label>
                     <input
@@ -145,7 +143,7 @@ export default function Configuracoes() {
                         fontSize: "0.9rem",
                         outline: "none"
                       }}
-                      onFocus={(e) => e.target.style.borderColor = "#5a7a9a"}
+                      onFocus={(e) => e.target.style.borderColor = "#2AA4BF"}
                       onBlur={(e) => e.target.style.borderColor = "#d4dfe9"}
                     />
                   </div>
@@ -154,7 +152,7 @@ export default function Configuracoes() {
                 <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
                   <button style={{
                     padding: "0.75rem 1.5rem",
-                    backgroundColor: "#5a7a9a",
+                    backgroundColor: "#2AA4BF",
                     color: "white",
                     border: "none",
                     borderRadius: "8px",
@@ -163,9 +161,9 @@ export default function Configuracoes() {
                     fontSize: "0.9rem",
                     transition: "all 0.2s"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#4a6a8a"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#5a7a9a"}>
-                    <i className="bi bi-check-circle me-2"></i>
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2AA4BF"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2AA4BF"}>
+                    <i className="bi bi-check-circle mr-2"></i>
                     Alterar Password
                   </button>
                   
@@ -188,7 +186,7 @@ export default function Configuracoes() {
                     e.currentTarget.style.backgroundColor = "transparent";
                     e.currentTarget.style.color = "#ef4444";
                   }}>
-                    <i className="bi bi-box-arrow-right me-2"></i>
+                    <i className="bi bi-box-arrow-right mr-2"></i>
                     Terminar Todas as Sessões
                   </button>
                 </div>
@@ -198,17 +196,17 @@ export default function Configuracoes() {
             {/* Utilizadores */}
             {activeTab === "users" && (
               <div>
-                <h4 style={{ color: "#244080", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-people me-2" style={{ color: "#5a7a9a" }}></i>
+                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-people mr-2" style={{ color: "#2AA4BF" }}></i>
                   Gestão de Utilizadores
                 </h4>
                 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
                   {[
-                    { icon: "bi-person-plus", label: "Criar Utilizador", color: "#6b8cae" },
-                    { icon: "bi-person-gear", label: "Gerir Perfis", color: "#5a7a9a" },
-                    { icon: "bi-diagram-3", label: "Service Lines", color: "#8ba4be" },
-                    { icon: "bi-building", label: "Áreas", color: "#4a6a8a" }
+                    { icon: "bi-person-plus", label: "Criar Utilizador", color: "#04C4D9" },
+                    { icon: "bi-person-gear", label: "Gerir Perfis", color: "#2AA4BF" },
+                    { icon: "bi-diagram-3", label: "Service Lines", color: "#04C4D9" },
+                    { icon: "bi-building", label: "Áreas", color: "#2AA4BF" }
                   ].map((action, idx) => (
                     <button key={idx} style={{
                       padding: "1.5rem",
@@ -232,10 +230,10 @@ export default function Configuracoes() {
                       e.currentTarget.style.backgroundColor = "white";
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.querySelector('i').style.color = action.color;
-                      e.currentTarget.querySelector('span').style.color = "#244080";
+                      e.currentTarget.querySelector('span').style.color = "#013440";
                     }}>
                       <i className={action.icon} style={{ fontSize: "2rem", color: action.color, transition: "color 0.2s" }}></i>
-                      <span style={{ fontWeight: "600", color: "#244080", fontSize: "0.9rem", transition: "color 0.2s" }}>{action.label}</span>
+                      <span style={{ fontWeight: "600", color: "#013440", fontSize: "0.9rem", transition: "color 0.2s" }}>{action.label}</span>
                     </button>
                   ))}
                 </div>
@@ -243,12 +241,12 @@ export default function Configuracoes() {
                 <div style={{ 
                   marginTop: "2rem", 
                   padding: "1.5rem", 
-                  backgroundColor: "#f8f9fa", 
+                  backgroundColor: "#F2F2F2", 
                   borderRadius: "8px",
                   border: "1px solid #d4dfe9"
                 }}>
-                  <p style={{ color: "#6b8cae", margin: 0, fontSize: "0.9rem" }}>
-                    <i className="bi bi-info-circle me-2"></i>
+                  <p style={{ color: "#04C4D9", margin: 0, fontSize: "0.9rem" }}>
+                    <i className="bi bi-info-circle mr-2"></i>
                     Aceda à secção <strong>Gestão de Utilizadores</strong> no menu lateral para operações detalhadas.
                   </p>
                 </div>
@@ -258,17 +256,17 @@ export default function Configuracoes() {
             {/* Conteúdo (Learning Paths e Badges) */}
             {activeTab === "content" && (
               <div>
-                <h4 style={{ color: "#244080", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-archive me-2" style={{ color: "#5a7a9a" }}></i>
+                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-archive mr-2" style={{ color: "#2AA4BF" }}></i>
                   Gestão de Conteúdo
                 </h4>
                 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
                   {[
-                    { icon: "bi-diagram-3-fill", label: "Learning Path", color: "#6b8cae" },
-                    { icon: "bi-award-fill", label: "Badge", color: "#5a7a9a" },
-                    { icon: "bi-building", label: "Service Line", color: "#8ba4be" },
-                    { icon: "bi-geo-alt", label: "Área", color: "#4a6a8a" },
+                    { icon: "bi-diagram-3-fill", label: "Learning Path", color: "#04C4D9" },
+                    { icon: "bi-award-fill", label: "Badge", color: "#2AA4BF" },
+                    { icon: "bi-building", label: "Service Line", color: "#04C4D9" },
+                    { icon: "bi-geo-alt", label: "Área", color: "#2AA4BF" },
                     { icon: "bi-bar-chart-steps", label: "Nível", color: "#7b9ab4" },
                     { icon: "bi-list-check", label: "Requisito", color: "#6b8ca0" }
                   ].map((item, idx) => (
@@ -292,11 +290,11 @@ export default function Configuracoes() {
                       e.currentTarget.style.borderColor = `${item.color}20`;
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.querySelector('i').style.color = item.color;
-                      e.currentTarget.querySelector('span').style.color = "#244080";
+                      e.currentTarget.querySelector('span').style.color = "#013440";
                     }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                         <i className={item.icon} style={{ fontSize: "1.75rem", color: item.color, transition: "color 0.2s" }}></i>
-                        <span style={{ fontWeight: "600", color: "#244080", fontSize: "0.85rem", transition: "color 0.2s", textAlign: "center" }}>
+                        <span style={{ fontWeight: "600", color: "#013440", fontSize: "0.85rem", transition: "color 0.2s", textAlign: "center" }}>
                           Novo {item.label}
                         </span>
                       </div>
@@ -309,16 +307,16 @@ export default function Configuracoes() {
             {/* Gamificação */}
             {activeTab === "gamification" && (
               <div>
-                <h4 style={{ color: "#244080", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-trophy me-2" style={{ color: "#5a7a9a" }}></i>
+                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-trophy mr-2" style={{ color: "#2AA4BF" }}></i>
                   Gamificação e Validação
                 </h4>
                 
-                <div className="row g-4">
-                  <div className="col-md-6">
-                    <div style={{ padding: "1.5rem", backgroundColor: "#f8f9fa", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#244080", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-star-fill me-2" style={{ color: "#fbbf24" }}></i>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
+                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                        <i className="bi bi-star-fill mr-2" style={{ color: "#fbbf24" }}></i>
                         Pontos por Badge (padrão)
                       </label>
                       <input
@@ -337,10 +335,10 @@ export default function Configuracoes() {
                     </div>
                   </div>
 
-                  <div className="col-md-6">
-                    <div style={{ padding: "1.5rem", backgroundColor: "#f8f9fa", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#244080", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-clock-history me-2" style={{ color: "#6b8cae" }}></i>
+                  <div>
+                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
+                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                        <i className="bi bi-clock-history mr-2" style={{ color: "#04C4D9" }}></i>
                         SLA Padrão (dias)
                       </label>
                       <input
@@ -359,14 +357,14 @@ export default function Configuracoes() {
                     </div>
                   </div>
 
-                  <div className="col-12">
-                    <div style={{ padding: "1.5rem", backgroundColor: "#f8f9fa", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
+                  <div className="md:col-span-2">
+                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
                       <label style={{ 
                         display: "flex", 
                         alignItems: "center", 
                         gap: "0.75rem",
                         cursor: "pointer",
-                        color: "#244080",
+                        color: "#013440",
                         fontWeight: "600",
                         fontSize: "0.95rem"
                       }}>
@@ -379,7 +377,7 @@ export default function Configuracoes() {
                         <i className="bi bi-hourglass-split" style={{ color: "#ef4444" }}></i>
                         <span>Badges podem expirar</span>
                       </label>
-                      <p style={{ color: "#6b8cae", fontSize: "0.85rem", margin: "0.5rem 0 0 2.5rem" }}>
+                      <p style={{ color: "#04C4D9", fontSize: "0.85rem", margin: "0.5rem 0 0 2.5rem" }}>
                         Ativar período de validade para badges
                       </p>
                     </div>
@@ -391,8 +389,8 @@ export default function Configuracoes() {
             {/* Notificações */}
             {activeTab === "notifications" && (
               <div>
-                <h4 style={{ color: "#244080", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-bell me-2" style={{ color: "#5a7a9a" }}></i>
+                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-bell mr-2" style={{ color: "#2AA4BF" }}></i>
                   Notificações e Integrações
                 </h4>
                 
@@ -404,9 +402,9 @@ export default function Configuracoes() {
                   ].map(notif => (
                     <div key={notif.key} style={{ 
                       padding: "1.5rem", 
-                      backgroundColor: notificationSettings[notif.key] ? "#5a7a9a15" : "#f8f9fa",
+                      backgroundColor: notificationSettings[notif.key] ? "#2AA4BF15" : "#F2F2F2",
                       borderRadius: "10px", 
-                      border: `2px solid ${notificationSettings[notif.key] ? "#5a7a9a" : "#d4dfe9"}`,
+                      border: `2px solid ${notificationSettings[notif.key] ? "#2AA4BF" : "#d4dfe9"}`,
                       transition: "all 0.2s"
                     }}>
                       <label style={{ 
@@ -416,12 +414,12 @@ export default function Configuracoes() {
                         cursor: "pointer"
                       }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                          <i className={notif.icon} style={{ fontSize: "1.5rem", color: "#5a7a9a" }}></i>
+                          <i className={notif.icon} style={{ fontSize: "1.5rem", color: "#2AA4BF" }}></i>
                           <div>
-                            <div style={{ color: "#244080", fontWeight: "600", marginBottom: "0.25rem" }}>
+                            <div style={{ color: "#013440", fontWeight: "600", marginBottom: "0.25rem" }}>
                               {notif.label}
                             </div>
-                            <div style={{ color: "#6b8cae", fontSize: "0.85rem" }}>
+                            <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
                               {notif.desc}
                             </div>
                           </div>
@@ -434,7 +432,7 @@ export default function Configuracoes() {
                             width: "3rem", 
                             height: "1.5rem", 
                             cursor: "pointer",
-                            accentColor: "#5a7a9a"
+                            accentColor: "#2AA4BF"
                           }}
                         />
                       </label>
@@ -446,8 +444,8 @@ export default function Configuracoes() {
                   marginTop: "1.5rem",
                   padding: "0.75rem 1.5rem",
                   backgroundColor: "white",
-                  color: "#5a7a9a",
-                  border: "2px solid #5a7a9a",
+                  color: "#2AA4BF",
+                  border: "2px solid #2AA4BF",
                   borderRadius: "8px",
                   fontWeight: "600",
                   cursor: "pointer",
@@ -456,14 +454,14 @@ export default function Configuracoes() {
                   width: "100%"
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#5a7a9a";
+                  e.currentTarget.style.backgroundColor = "#2AA4BF";
                   e.currentTarget.style.color = "white";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "white";
-                  e.currentTarget.style.color = "#5a7a9a";
+                  e.currentTarget.style.color = "#2AA4BF";
                 }}>
-                  <i className="bi bi-envelope-paper me-2"></i>
+                  <i className="bi bi-envelope-paper mr-2"></i>
                   Configurar Templates de Email
                 </button>
               </div>
@@ -472,14 +470,14 @@ export default function Configuracoes() {
             {/* RGPD */}
             {activeTab === "privacy" && (
               <div>
-                <h4 style={{ color: "#244080", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-file-lock me-2" style={{ color: "#5a7a9a" }}></i>
+                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-file-lock mr-2" style={{ color: "#2AA4BF" }}></i>
                   RGPD e Privacidade
                 </h4>
                 
                 <div style={{ marginBottom: "1.5rem" }}>
-                  <label style={{ display: "block", color: "#244080", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                    <i className="bi bi-file-text me-2" style={{ color: "#6b8cae" }}></i>
+                  <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                    <i className="bi bi-file-text mr-2" style={{ color: "#04C4D9" }}></i>
                     Termos RGPD
                   </label>
                   <textarea
@@ -501,9 +499,9 @@ export default function Configuracoes() {
 
                 <div style={{ 
                   padding: "1.5rem", 
-                  backgroundColor: privacySettings.publicGallery ? "#5a7a9a15" : "#f8f9fa",
+                  backgroundColor: privacySettings.publicGallery ? "#2AA4BF15" : "#F2F2F2",
                   borderRadius: "10px", 
-                  border: `2px solid ${privacySettings.publicGallery ? "#5a7a9a" : "#d4dfe9"}`
+                  border: `2px solid ${privacySettings.publicGallery ? "#2AA4BF" : "#d4dfe9"}`
                 }}>
                   <label style={{ 
                     display: "flex", 
@@ -512,12 +510,12 @@ export default function Configuracoes() {
                     cursor: "pointer"
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                      <i className="bi bi-images" style={{ fontSize: "1.5rem", color: "#5a7a9a" }}></i>
+                      <i className="bi bi-images" style={{ fontSize: "1.5rem", color: "#2AA4BF" }}></i>
                       <div>
-                        <div style={{ color: "#244080", fontWeight: "600", marginBottom: "0.25rem" }}>
+                        <div style={{ color: "#013440", fontWeight: "600", marginBottom: "0.25rem" }}>
                           Galeria Pública de Badges
                         </div>
-                        <div style={{ color: "#6b8cae", fontSize: "0.85rem" }}>
+                        <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
                           Permitir visualização pública dos badges conquistados
                         </div>
                       </div>
@@ -530,7 +528,7 @@ export default function Configuracoes() {
                         width: "3rem", 
                         height: "1.5rem", 
                         cursor: "pointer",
-                        accentColor: "#5a7a9a"
+                        accentColor: "#2AA4BF"
                       }}
                     />
                   </label>
@@ -541,16 +539,16 @@ export default function Configuracoes() {
             {/* Interface */}
             {activeTab === "interface" && (
               <div>
-                <h4 style={{ color: "#244080", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-palette me-2" style={{ color: "#5a7a9a" }}></i>
+                <h4 style={{ color: "#013440", marginBottom: "1.5rem", fontWeight: "600" }}>
+                  <i className="bi bi-palette mr-2" style={{ color: "#2AA4BF" }}></i>
                   Interface e Preferências
                 </h4>
                 
-                <div className="row g-4">
-                  <div className="col-md-6">
-                    <div style={{ padding: "1.5rem", backgroundColor: "#f8f9fa", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#244080", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-translate me-2" style={{ color: "#6b8cae" }}></i>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
+                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                        <i className="bi bi-translate mr-2" style={{ color: "#04C4D9" }}></i>
                         Idioma Padrão
                       </label>
                       <select
@@ -566,17 +564,17 @@ export default function Configuracoes() {
                           cursor: "pointer"
                         }}
                       >
-                        <option value="pt">🇵🇹 Português</option>
-                        <option value="en">🇬🇧 English</option>
-                        <option value="es">🇪🇸 Español</option>
+                        <option value="pt"> Português</option>
+                        <option value="en"> English</option>
+                        <option value="es"> Español</option>
                       </select>
                     </div>
                   </div>
 
-                  <div className="col-md-6">
-                    <div style={{ padding: "1.5rem", backgroundColor: "#f8f9fa", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#244080", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-palette-fill me-2" style={{ color: "#6b8cae" }}></i>
+                  <div>
+                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
+                      <label style={{ display: "block", color: "#013440", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+                        <i className="bi bi-palette-fill mr-2" style={{ color: "#04C4D9" }}></i>
                         Tema
                       </label>
                       <select
@@ -592,9 +590,9 @@ export default function Configuracoes() {
                           cursor: "pointer"
                         }}
                       >
-                        <option value="light">☀️ Claro</option>
-                        <option value="dark">🌙 Escuro</option>
-                        <option value="auto">🔄 Automático</option>
+                        <option value="light"> Claro</option>
+                        <option value="dark"> Escuro</option>
+                        <option value="auto"> Automático</option>
                       </select>
                     </div>
                   </div>
@@ -603,17 +601,17 @@ export default function Configuracoes() {
                 <div style={{ 
                   marginTop: "1.5rem", 
                   padding: "1.5rem", 
-                  backgroundColor: "#5a7a9a15", 
+                  backgroundColor: "#2AA4BF15", 
                   borderRadius: "10px",
-                  border: "1px solid #5a7a9a30"
+                  border: "1px solid #2AA4BF30"
                 }}>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
                     <i className="bi bi-lightbulb-fill" style={{ fontSize: "1.5rem", color: "#fbbf24" }}></i>
                     <div>
-                      <div style={{ color: "#244080", fontWeight: "600", marginBottom: "0.5rem" }}>
+                      <div style={{ color: "#013440", fontWeight: "600", marginBottom: "0.5rem" }}>
                         Dica de Interface
                       </div>
-                      <p style={{ color: "#6b8cae", margin: 0, fontSize: "0.9rem" }}>
+                      <p style={{ color: "#04C4D9", margin: 0, fontSize: "0.9rem" }}>
                         As preferências de idioma e tema são aplicadas globalmente para todos os utilizadores. 
                         Cada utilizador pode personalizar suas preferências no seu perfil.
                       </p>
@@ -629,7 +627,7 @@ export default function Configuracoes() {
           <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
             <button style={{
               padding: "1rem 2.5rem",
-              backgroundColor: "#5a7a9a",
+              backgroundColor: "#2AA4BF",
               color: "white",
               border: "none",
               borderRadius: "10px",
@@ -641,16 +639,16 @@ export default function Configuracoes() {
             }}
             onClick={handleSave}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#4a6a8a";
+              e.currentTarget.style.backgroundColor = "#2AA4BF";
               e.currentTarget.style.transform = "translateY(-2px)";
               e.currentTarget.style.boxShadow = "0 4px 12px rgba(90, 122, 154, 0.4)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#5a7a9a";
+              e.currentTarget.style.backgroundColor = "#2AA4BF";
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.boxShadow = "0 2px 8px rgba(90, 122, 154, 0.3)";
             }}>
-              <i className="bi bi-check-circle me-2"></i>
+              <i className="bi bi-check-circle mr-2"></i>
               Guardar Todas as Alterações
             </button>
           </div>
@@ -659,3 +657,5 @@ export default function Configuracoes() {
     </div>
   );
 }
+
+

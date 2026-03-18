@@ -1,8 +1,10 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useState } from "react";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
+import { useSidebar } from "../../context/SidebarContext";
 
 export default function ExportacaoAdmin() {
+  const { collapsed } = useSidebar();
   const [format, setFormat] = useState("excel");
   const [scope, setScope] = useState("todos");
   const [loading, setLoading] = useState(false);
@@ -48,28 +50,28 @@ export default function ExportacaoAdmin() {
       case "pedidos":
         return "Pedidos";
       default:
-        return "—";
+        return "â€”";
     }
   };
 
   const getRangeLabel = (value) => {
     switch (value) {
       case "ultima-semana":
-        return "Última semana";
+        return "Ãšltima semana";
       case "ultimo-mes":
-        return "Último mês";
+        return "Ãšltimo mÃªs";
       case "ultimo-trimestre":
-        return "Último trimestre";
+        return "Ãšltimo trimestre";
       case "ano-atual":
         return "Ano atual";
       default:
-        return "—";
+        return "â€”";
     }
   };
 
   const handleExport = async () => {
     if (!scope) {
-      setError("Por favor, selecione um âmbito de exportação.");
+      setError("Por favor, selecione um Ambito de exportaÃ§Ã£o.");
       return;
     }
 
@@ -115,7 +117,7 @@ export default function ExportacaoAdmin() {
       });
 
     } catch (err) {
-      console.error("Erro na exportação:", err);
+      console.error("Erro na exportaÃ§Ã£o:", err);
       setError(err.response?.data?.message || "Erro ao exportar dados. Tente novamente.");
     } finally {
       setLoading(false);
@@ -123,10 +125,10 @@ export default function ExportacaoAdmin() {
   };
 
   const cards = [
-    { title: "Tudo", desc: "Todos os dados disponíveis", icon: "bi-database-fill", value: "todos" },
+    { title: "Tudo", desc: "Todos os dados disponÃ­veis", icon: "bi-database-fill", value: "todos" },
     { title: "Utilizadores", desc: "Dados completos e perfis", icon: "bi-people-fill", value: "users" },
-    { title: "Badges", desc: "Catálogo e requisitos", icon: "bi-award-fill", value: "badges" },
-    { title: "Pedidos", desc: "Fluxos de aprovação", icon: "bi-hourglass-split", value: "pedidos" },
+    { title: "Badges", desc: "CatÃ¡logo e requisitos", icon: "bi-award-fill", value: "badges" },
+    { title: "Pedidos", desc: "Fluxos de aprovaÃ§Ã£o", icon: "bi-hourglass-split", value: "pedidos" },
   ];
 
   const { start: previewStart, end: previewEnd } = getDateRange();
@@ -151,35 +153,35 @@ export default function ExportacaoAdmin() {
 
       setPreview(response.data);
     } catch (err) {
-      console.error("Erro na pré-visualização:", err);
-      setPreviewError("Não foi possível obter a pré-visualização.");
+      console.error("Erro na pre-visualizaÃ§Ã£o:", err);
+      setPreviewError("NÃ£o foi possi­vel obter a prÃ©-visualizaÃ§Ã£o.");
     } finally {
       setPreviewLoading(false);
     }
   };
 
   const renderTable = (columns, rows) => (
-    <div className="table-responsive">
-      <table className="table table-sm mb-0">
-        <thead className="table-light">
+    <div className="overflow-x-auto rounded-xl border border-slate-200">
+      <table className="min-w-full divide-y divide-slate-200 text-sm">
+        <thead className="bg-slate-100 text-slate-700">
           <tr>
             {columns.map((c, idx) => (
-              <th key={idx}>{c}</th>
+              <th key={idx} className="px-3 py-2 text-left font-semibold">{c}</th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
           {rows.map((r, idx) => (
             <tr key={idx}>
               {r.map((cell, i) => (
-                <td key={i}>{cell}</td>
+                <td key={i} className="px-3 py-2">{cell}</td>
               ))}
             </tr>
           ))}
           {!rows.length && (
             <tr>
-              <td colSpan={columns.length} className="text-muted">
-                Sem dados para este período.
+              <td colSpan={columns.length} className="px-3 py-4 text-slate-500">
+                Sem dados para este perÃ­odo.
               </td>
             </tr>
           )}
@@ -189,198 +191,185 @@ export default function ExportacaoAdmin() {
   );
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+    <div className="flex min-h-screen bg-slate-100">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <h3 className="fw-bold text-dark mb-0">
-              <i className="bi bi-file-earmark-arrow-down text-success me-2" />
-              Exportação de Dados
-            </h3>
-            <p className="text-muted small mt-1">Gerar relatórios para Excel ou PDF com um clique.</p>
+      <main
+        className={`w-full px-4 pb-6 pt-4 transition-all sm:px-5 md:px-6 lg:pt-6 ${collapsed ? "lg:ml-[80px]" : "lg:ml-[250px]"}`}
+      >
+        <div className="mb-5">
+          <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
+            <i className="bi bi-file-earmark-arrow-down text-emerald-600" />
+            ExportaÃ§Ã£o de Dados
+          </h3>
+          <p className="mt-1 text-sm text-slate-500">Gerar relatÃ³rios para Excel ou PDF com um clique.</p>
+        </div>
+
+        <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+          <h6 className="mb-1 text-sm font-semibold text-slate-900 sm:text-base">Passo 1 Â· Escolhe o formato</h6>
+          <p className="mb-3 text-xs text-slate-500 sm:text-sm">Excel para anÃ¡lise, PDF para relatÃ³rio pronto a partilhar.</p>
+
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:max-w-md">
+            <button
+              type="button"
+              onClick={() => setFormat("excel")}
+              className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                format === "excel"
+                  ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                  : "border-slate-300 bg-white text-slate-700 hover:border-emerald-400"
+              }`}
+            >
+              Excel
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormat("pdf")}
+              className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                format === "pdf"
+                  ? "border-rose-600 bg-rose-50 text-rose-700"
+                  : "border-slate-300 bg-white text-slate-700 hover:border-rose-400"
+              }`}
+            >
+              PDF
+            </button>
           </div>
-        </div>
+        </section>
 
-        {/* Passo 1: Formato */}
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="card-body">
-            <h6 className="fw-semibold mb-2">Passo 1 · Escolhe o formato</h6>
-            <p className="text-muted small mb-3">Excel para análise, PDF para relatório pronto a partilhar.</p>
-            <div className="btn-group" role="group">
-              <input
-                type="radio"
-                className="btn-check"
-                name="format"
-                id="fmtExcel"
-                value="excel"
-                checked={format === "excel"}
-                onChange={(e) => setFormat(e.target.value)}
-              />
-              <label className="btn btn-outline-success" htmlFor="fmtExcel">Excel</label>
-
-              <input
-                type="radio"
-                className="btn-check"
-                name="format"
-                id="fmtPdf"
-                value="pdf"
-                checked={format === "pdf"}
-                onChange={(e) => setFormat(e.target.value)}
-              />
-              <label className="btn btn-outline-danger" htmlFor="fmtPdf">PDF</label>
-            </div>
+        <section className="mb-4">
+          <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <h6 className="text-sm font-semibold text-slate-900 sm:text-base">Passo 2 Â· O que queres exportar?</h6>
+            <span className="text-xs text-slate-500 sm:text-sm">Ã‚mbito atual: {getScopeLabel(scope)}</span>
           </div>
-        </div>
 
-        {/* Passo 2: Âmbito */}
-        <div className="d-flex align-items-center justify-content-between mb-2">
-          <h6 className="fw-semibold mb-0">Passo 2 · O que queres exportar?</h6>
-          <span className="small text-muted">Âmbito atual: {getScopeLabel(scope)}</span>
-        </div>
-        <div className="row g-3 mb-4">
-          {cards.map((card) => (
-            <div key={card.value} className="col-md-3">
-              <div
-                className={`card h-100 shadow-sm border-0 ${scope === card.value ? "border border-success" : ""}`}
-                style={{ cursor: "pointer" }}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {cards.map((card) => (
+              <button
+                key={card.value}
+                type="button"
+                className={`rounded-2xl bg-white p-4 text-left shadow-sm transition hover:shadow-md ${
+                  scope === card.value ? "ring-2 ring-emerald-500" : "ring-1 ring-slate-200"
+                }`}
                 onClick={() => setScope(card.value)}
               >
-                <div className="card-body">
-                  <div className="d-flex align-items-center mb-2">
-                    <div className="rounded-circle d-flex align-items-center justify-content-center me-2"
-                      style={{ width: 40, height: 40, backgroundColor: "#e8f5e9" }}>
-                      <i className={`bi ${card.icon} text-success`}></i>
-                    </div>
-                    <h6 className="mb-0 fw-semibold">{card.title}</h6>
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                    <i className={`bi ${card.icon}`}></i>
                   </div>
-                  <p className="text-muted small mb-0">{card.desc}</p>
+                  <h6 className="m-0 text-sm font-semibold text-slate-900">{card.title}</h6>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Passo 3: Período */}
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="card-body">
-            <h6 className="fw-semibold mb-3">Passo 3 · Intervalo temporal</h6>
-            <div className="alert alert-info d-flex align-items-start mb-3" role="alert">
-              <i className="bi bi-info-circle me-2"></i>
-              <div>
-                <div className="fw-semibold">Resumo</div>
-                <div className="small">
-                  Formato: <strong>{format.toUpperCase()}</strong> · Âmbito: <strong>{getScopeLabel(scope)}</strong> · Período: <strong>{getRangeLabel(dateRange)}</strong>
-                </div>
-                <div className="small text-muted">
-                  Datas: {previewStart.toLocaleDateString("pt-PT")} → {previewEnd.toLocaleDateString("pt-PT")}
-                </div>
-                <div className="small text-muted">Ficheiro: {previewFile}</div>
-              </div>
-            </div>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">Intervalo temporal</label>
-                <select 
-                  className="form-select" 
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                >
-                  <option value="ultima-semana">Última semana</option>
-                  <option value="ultimo-mes">Último mês</option>
-                  <option value="ultimo-trimestre">Último trimestre</option>
-                  <option value="ano-atual">Ano atual</option>
-                </select>
-              </div>
-            </div>
-
-            {error && (
-              <div className="alert alert-danger mt-3 mb-0">
-                <i className="bi bi-exclamation-triangle me-2"></i>
-                {error}
-              </div>
-            )}
-
-            <div className="d-flex justify-content-end mt-4 gap-2">
-              <button 
-                className="btn btn-outline-secondary" 
-                onClick={() => {
-                  setLastExport(null);
-                  setError(null);
-                }}
-              >
-                Limpar histórico
+                <p className="m-0 text-xs text-slate-500 sm:text-sm">{card.desc}</p>
               </button>
-              <button
-                className="btn btn-outline-primary"
-                onClick={fetchPreview}
-                disabled={previewLoading}
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+          <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Passo 3 Â· Intervalo temporal</h6>
+
+          <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm text-slate-700">
+            <div className="mb-1 flex items-center gap-2 font-semibold text-sky-900">
+              <i className="bi bi-info-circle"></i>
+              Resumo
+            </div>
+            <div className="text-xs sm:text-sm">
+              Formato: <strong>{format.toUpperCase()}</strong> Â· Ã‚mbito: <strong>{getScopeLabel(scope)}</strong> Â· PerÃ­odo: <strong>{getRangeLabel(dateRange)}</strong>
+            </div>
+            <div className="mt-1 text-xs text-slate-500 sm:text-sm">
+              Datas: {previewStart.toLocaleDateString("pt-PT")} â†’ {previewEnd.toLocaleDateString("pt-PT")}
+            </div>
+            <div className="text-xs text-slate-500 sm:text-sm">Ficheiro: {previewFile}</div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Intervalo temporal</label>
+              <select
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none ring-emerald-500 focus:ring-2"
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
               >
-                {previewLoading ? "A carregar..." : "Ver pré-visualização"}
-              </button>
-              <button
-                className="btn btn-success"
-                disabled={loading}
-                onClick={handleExport}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    A gerar...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-cloud-arrow-down me-2" />
-                    Exportar
-                  </>
-                )}
-              </button>
+                <option value="ultima-semana">Ãšltima semana</option>
+                <option value="ultimo-mes">Ãšltimo mÃªs</option>
+                <option value="ultimo-trimestre">Ãšltimo trimestre</option>
+                <option value="ano-atual">Ano atual</option>
+              </select>
             </div>
           </div>
-        </div>
+
+          {error && (
+            <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+              <i className="bi bi-exclamation-triangle mr-2"></i>
+              {error}
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+            <button
+              className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              onClick={() => {
+                setLastExport(null);
+                setError(null);
+              }}
+            >
+              Limpar histÃ³rico
+            </button>
+
+            <button
+              className="rounded-xl border border-sky-300 px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={fetchPreview}
+              disabled={previewLoading}
+            >
+              {previewLoading ? "A carregar..." : "Ver prÃ©-visualizaÃ§Ã£o"}
+            </button>
+
+            <button
+              className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={loading}
+              onClick={handleExport}
+            >
+              {loading ? "A gerar..." : "Exportar"}
+            </button>
+          </div>
+        </section>
 
         {lastExport && (
-          <div className="alert alert-success d-flex align-items-center" role="alert">
-            <i className="bi bi-check-circle-fill me-2"></i>
-            <div>
-              Exportação pronta ({lastExport.formato.toUpperCase()}) | Âmbito: {lastExport.abrangencia} | Ficheiro: {lastExport.ficheiro} | {lastExport.data}
-            </div>
+          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+            <i className="bi bi-check-circle-fill mr-2"></i>
+            ExportaÃ§Ã£o pronta ({lastExport.formato.toUpperCase()}) | Ã‚mbito: {lastExport.abrangencia} | Ficheiro: {lastExport.ficheiro} | {lastExport.data}
           </div>
         )}
 
-        {/* Pré-visualização */}
         {previewError && (
-          <div className="alert alert-danger">
-            <i className="bi bi-exclamation-triangle me-2"></i>
+          <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+            <i className="bi bi-exclamation-triangle mr-2"></i>
             {previewError}
           </div>
         )}
 
         {preview && (
-          <div className="card border-0 shadow-sm rounded-4 mb-4">
-            <div className="card-body">
-              <h6 className="fw-semibold mb-3">Pré-visualização (amostra)</h6>
+          <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+            <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">PrÃ©-visualizaÃ§Ã£o (amostra)</h6>
 
-              {preview.sections ? (
-                <div className="d-flex flex-column gap-3">
-                  {preview.sections.map((section, idx) => (
-                    <div key={idx}>
-                      <div className="fw-semibold mb-2">{section.title}</div>
-                      {renderTable(section.columns, section.rows)}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  <div className="fw-semibold mb-2">{preview.title || getScopeLabel(scope)}</div>
-                  {renderTable(preview.columns || [], preview.rows || [])}
-                </>
-              )}
-            </div>
-          </div>
+            {preview.sections ? (
+              <div className="space-y-4">
+                {preview.sections.map((section, idx) => (
+                  <div key={idx}>
+                    <div className="mb-2 text-sm font-semibold text-slate-800">{section.title}</div>
+                    {renderTable(section.columns, section.rows)}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                <div className="mb-2 text-sm font-semibold text-slate-800">{preview.title || getScopeLabel(scope)}</div>
+                {renderTable(preview.columns || [], preview.rows || [])}
+              </>
+            )}
+          </section>
         )}
       </main>
     </div>
   );
 }
+
+

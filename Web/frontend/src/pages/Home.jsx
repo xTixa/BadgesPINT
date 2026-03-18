@@ -46,51 +46,40 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="space-y-20">
+    <div className="mx-auto max-w-6xl space-y-12">
       {/* 🔹 Hero Section */}
-      <section className="relative overflow-hidden bg-[#191970] text-white rounded-2xl shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#191970] via-[#0f1b5b] to-[#000428] opacity-95"></div>
-        <div className="relative z-10 text-center py-20 px-6">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">
-            Conquista o teu Futuro com <span className="text-blue-300">Badges</span>
+      <section className="overflow-hidden rounded-2xl border border-[#2AA4BF] bg-white">
+        <div className="py-14 px-6 md:px-10">
+          <h1 className="text-center text-4xl font-extrabold tracking-tight text-[#0D0D0D] md:text-5xl">
+            Conquista o teu Futuro com <span className="text-[#013440]">Badges</span>
           </h1>
-          <p className="text-xl md:text-2xl text-blue-100 max-w-2xl mx-auto mb-10">
+          <p className="mx-auto mb-8 mt-4 max-w-2xl text-center text-lg text-[#0D0D0D] md:text-xl">
             Explora percursos de aprendizagem, ganha reconhecimento e evolui na tua carreira.
           </p>
-          <div className="flex justify-center space-x-4">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/learning-paths"
-              className="px-8 py-3 text-lg font-semibold bg-white text-[#191970] rounded-lg shadow-md hover:bg-blue-50 transition-transform transform hover:-translate-y-0.5"
+              className="rounded-lg bg-[#2AA4BF] px-6 py-3 text-base font-semibold text-[#013440]"
             >
               Explorar Percursos
             </Link>
             <Link
               to="/badges"
-              className="px-8 py-3 text-lg font-semibold border border-white rounded-lg hover:bg-white hover:text-[#191970] transition-transform transform hover:-translate-y-0.5"
+              className="rounded-lg border border-[#013440] bg-[#F2F2F2] px-6 py-3 text-base font-semibold text-[#013440]"
             >
               Ver Badges
             </Link>
           </div>
         </div>
-        <svg
-          className="absolute bottom-0 left-0 w-full text-white opacity-10"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1440 320"
-        >
-          <path
-            fill="currentColor"
-            d="M0,160L60,144C120,128,240,96,360,106.7C480,117,600,171,720,170.7C840,171,960,117,1080,96C1200,75,1320,85,1380,90.7L1440,96L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
-          ></path>
-        </svg>
       </section>
 
       {/* 🔹 Featured Learning Paths */}
       <section>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-[#191970]">Percursos em Destaque</h2>
-          <Link to="/learning-paths" className="text-[#191970] hover:text-blue-700 font-semibold group flex items-center">
+          <h2 className="text-3xl font-bold text-[#013440]">Percursos em Destaque</h2>
+          <Link to="/learning-paths" className="text-[#013440] hover:text-[#2AA4BF] font-semibold flex items-center">
             Ver Todos 
-            <span className="ml-1 group-hover:translate-x-1 transition-transform inline-block">→</span>
+            <span className="ml-1 inline-block">→</span>
           </Link>
         </div>
         {loading ? (
@@ -107,10 +96,10 @@ export default function Home() {
       {/* 🔹 Popular Badges */}
       <section>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-[#191970]">Badges Populares</h2>
-          <Link to="/badges" className="text-[#191970] hover:text-blue-700 font-semibold group flex items-center">
+          <h2 className="text-3xl font-bold text-[#013440]">Badges Populares</h2>
+          <Link to="/badges" className="text-[#013440] hover:text-[#2AA4BF] font-semibold flex items-center">
             Ver Todos
-            <span className="ml-1 group-hover:translate-x-1 transition-transform inline-block">→</span>
+            <span className="ml-1 inline-block">→</span>
           </Link>
         </div>
         {loading ? (
@@ -125,20 +114,18 @@ export default function Home() {
       </section>
 
       {/* 🔹 Stats Section */}
-      <section className="rounded-2xl bg-[#191970] text-white py-14 px-6 text-center shadow-lg">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div className="hover:scale-105 transition-transform">
-            <div className="text-5xl font-extrabold text-blue-300 mb-2">1,000+</div>
-            <p className="text-blue-100 text-lg">Utilizadores Ativos</p>
-          </div>
-          <div className="hover:scale-105 transition-transform">
-            <div className="text-5xl font-extrabold text-blue-300 mb-2">{stats.totalBadges}+</div>
-            <p className="text-blue-100 text-lg">Badges Disponíveis</p>
-          </div>
-          <div className="hover:scale-105 transition-transform">
-            <div className="text-5xl font-extrabold text-blue-300 mb-2">{stats.totalPaths}</div>
-            <p className="text-blue-100 text-lg">Percursos de Aprendizagem</p>
-          </div>
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
+          <div className="text-4xl font-extrabold text-[#013440] mb-1">1,000+</div>
+          <p className="text-[#013440] text-sm uppercase tracking-wide">Utilizadores Ativos</p>
+        </div>
+        <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
+          <div className="text-4xl font-extrabold text-[#013440] mb-1">{stats.totalBadges}+</div>
+          <p className="text-[#013440] text-sm uppercase tracking-wide">Badges Disponíveis</p>
+        </div>
+        <div className="rounded-2xl border border-[#2AA4BF] bg-white p-6 text-center">
+          <div className="text-4xl font-extrabold text-[#013440] mb-1">{stats.totalPaths}</div>
+          <p className="text-[#013440] text-sm uppercase tracking-wide">Percursos de Aprendizagem</p>
         </div>
       </section>
     </div>

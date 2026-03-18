@@ -49,42 +49,29 @@ export default function FirstLogin() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="relative flex-1 flex flex-col justify-center px-8 py-12 bg-[#191970] text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#191970] via-[#0f1b5b] to-[#000428] opacity-95"></div>
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#013440] text-white">
 
-        <div className="relative z-10 max-w-md mx-auto text-center md:text-left">
+        <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
             Primeiro Login
           </h1>
-          <p className="text-blue-100 text-lg mb-10">
+          <p className="text-[#04C4D9] text-lg mb-10">
             Cria uma nova password para entrar na plataforma.
           </p>
-          <p className="italic text-sm text-blue-200">
+          <p className="italic text-sm text-[#2AA4BF]">
             “A tua jornada começa com um passo.”
           </p>
         </div>
-
-        <svg
-          className="absolute bottom-0 left-0 w-full opacity-10"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1440 320"
-        >
-          <path
-            fill="currentColor"
-            d="M0,224L60,213.3C120,203,240,181,360,154.7C480,128,600,96,720,112C840,128,960,192,1080,208C1200,224,1320,192,1380,176L1440,160V320H0Z"
-          />
-        </svg>
       </div>
 
       {/* DIREITA */}
-      <div className="flex-1 flex items-center justify-center bg-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#191970] to-blue-500"></div>
+      <div className="flex-1 flex items-center justify-center bg-[#F2F2F2]">
 
         <form
           onSubmit={handleSubmit}
-          className="relative z-10 w-full max-w-sm bg-white/90 shadow-xl rounded-2xl px-10 py-12 mx-6 border border-gray-100"
+          className="w-full max-w-sm bg-white rounded-2xl px-10 py-12 mx-6 border border-[#2AA4BF]"
         >
-          <h2 className="text-2xl font-bold text-[#191970] mb-8 text-center">
+          <h2 className="text-2xl font-bold text-[#013440] mb-8 text-center">
             Criar nova password
           </h2>
 
@@ -103,7 +90,7 @@ export default function FirstLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all"
+              focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]"
             />
           </div>
 
@@ -118,14 +105,14 @@ export default function FirstLogin() {
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-2 focus:ring-[#191970] transition-all"
+              focus:outline-none focus:ring-2 focus:ring-[#2AA4BF]"
             />
           </div>
 
           <button
             type="submit"
             className="w-full py-3 rounded-lg font-semibold text-white 
-            bg-[#191970] hover:bg-[#101050] transition-colors shadow-md hover:shadow-lg"
+            bg-[#013440] hover:bg-[#013440]"
           >
             Guardar Password
           </button>

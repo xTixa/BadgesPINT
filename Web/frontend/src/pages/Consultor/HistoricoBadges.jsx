@@ -1,58 +1,56 @@
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+﻿import Sidebar from "../../layout/Sidebar";
 
 export default function HistoricoBadges() {
   const badges = [
     {
       id: 1,
-      nome: "Júnior em Outsystems",
+      nome: "JÃºnior em Outsystems",
       status: "Obtido",
       data: "12/02/2025",
-      cor: "text-success",
+      cor: "text-emerald-600",
       icone: "bi-patch-check-fill",
     },
     {
       id: 2,
-      nome: "Intermédio em DevOps",
+      nome: "IntermÃ©dio em DevOps",
       status: "Em curso",
-      data: "—",
-      cor: "text-warning",
+      data: "â€”",
+      cor: "text-amber-600",
       icone: "bi-patch-exclamation-fill",
     },
     {
       id: 3,
-      nome: "DevOps Avançado",
+      nome: "DevOps AvanÃ§ado",
       status: "Pendente",
-      data: "—",
-      cor: "text-muted",
+      data: "â€”",
+      cor: "text-slate-500",
       icone: "bi-hourglass-split",
     },
   ];
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <h3 className="fw-bold text-dark mb-4">
-          <i className="bi bi-clock-history me-2 text-primary"></i>
-          Histórico de Badges
+      <main className="admin-main">
+        <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
+          <i className="bi bi-clock-history text-sky-600"></i>
+          HistÃ³rico de Badges
         </h3>
 
-        <div className="card border-0 shadow-sm rounded-4">
-          <div className="list-group list-group-flush">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="divide-y divide-slate-100">
             {badges.map((b) => (
-              <div key={b.id} className="list-group-item d-flex justify-content-between align-items-center py-3">
-                <div className="d-flex align-items-center">
-                  <i className={`${b.icone} fs-4 me-3`} style={{ color: "#191970" }}></i>
+              <div key={b.id} className="flex items-center justify-between gap-3 px-4 py-4">
+                <div className="flex items-center gap-3">
+                  <i className={`${b.icone} text-2xl`} style={{ color: "#013440" }}></i>
                   <div>
-                    <h6 className="fw-semibold mb-1">{b.nome}</h6>
-                    <p className={`mb-0 small fw-semibold ${b.cor}`}>{b.status}</p>
+                    <h6 className="mb-1 text-sm font-semibold text-slate-900 sm:text-base">{b.nome}</h6>
+                    <p className={`m-0 text-xs font-semibold sm:text-sm ${b.cor}`}>{b.status}</p>
                   </div>
                 </div>
 
-                <span className="text-muted small">{b.data}</span>
+                <span className="text-xs text-slate-500 sm:text-sm">{b.data}</span>
               </div>
             ))}
           </div>
@@ -61,3 +59,4 @@ export default function HistoricoBadges() {
     </div>
   );
 }
+

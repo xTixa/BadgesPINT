@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useWindowSize } from "../hooks/useWindowSize";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import Sidebar from "../layout/Sidebar";
 
 export default function CriarTicket() {
-  const { isMobile, isTablet } = useWindowSize();
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const sidebarUser = {
+    role: storedUser.role || "consultant",
+    name: storedUser.name || storedUser.nome || "Utilizador",
+  };
+
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(false);
   const [erro, setErro] = useState("");
@@ -70,119 +73,83 @@ export default function CriarTicket() {
   };
 
   return (
-    <div style={{ padding: isMobile ? "1rem" : isTablet ? "1.5rem" : "2rem" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h2 style={{ color: "#244080", fontWeight: "700", fontSize: isMobile ? "1.5rem" : "2rem" }}>
-          <i className="bi bi-ticket" style={{ marginRight: "0.5rem" }}></i>
-          {isMobile ? "Novo Ticket" : "Criar Novo Ticket"}
+    <div className="admin-shell">
+      <Sidebar user={sidebarUser} />
+
+      <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
+      <div className="mb-8">
+        <h2 className="flex items-center gap-2 text-2xl font-bold text-[#013440] sm:text-3xl">
+          <i className="bi bi-ticket"></i>
+          Criar Novo Ticket
         </h2>
-        <p style={{ color: "#6b8cae", fontSize: isMobile ? "0.85rem" : "0.95rem" }}>
+        <p className="mt-1 text-sm text-slate-500 sm:text-base">
           Descreva o problema ou solicitude detalhadamente
         </p>
       </div>
 
-      {/* Mensagens */}
       {sucesso && (
-        <div className="alert alert-success" role="alert">
-          <i className="bi bi-check-circle"></i> Ticket criado com sucesso! Em breve um administrador analisará.
+        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" role="alert">
+          <i className="bi bi-check-circle mr-2"></i> Ticket criado com sucesso! Em breve um administrador analisará.
         </div>
       )}
       {erro && (
-        <div className="alert alert-danger" role="alert">
-          <i className="bi bi-exclamation-circle"></i> {erro}
+        <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
+          <i className="bi bi-exclamation-circle mr-2"></i> {erro}
         </div>
       )}
 
-      {/* Formulário */}
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: isMobile ? "1.5rem" : "2rem",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        }}
-      >
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <form onSubmit={handleSubmit}>
-          {/* Título */}
           <div className="mb-3">
-            <label
-              htmlFor="titulo"
-              style={{
-                fontSize: isMobile ? "0.9rem" : "1rem",
-                fontWeight: "500",
-                color: "#244080",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <label htmlFor="titulo" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
               Título do Ticket <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="text"
-              className="form-control"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 sm:text-base"
               id="titulo"
               name="titulo"
               value={formData.titulo}
               onChange={handleChange}
               placeholder="Ex: Erro ao fazer login"
-              style={{ fontSize: isMobile ? "0.9rem" : "1rem" }}
               required
             />
-            <small style={{ color: "#6b8cae" }}>
+            <small className="text-xs text-slate-500 sm:text-sm">
               {formData.titulo.length}/100
             </small>
           </div>
 
-          {/* Descrição */}
           <div className="mb-3">
-            <label
-              htmlFor="descricao"
-              style={{
-                fontSize: isMobile ? "0.9rem" : "1rem",
-                fontWeight: "500",
-                color: "#244080",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <label htmlFor="descricao" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
               Descrição <span style={{ color: "red" }}>*</span>
             </label>
             <textarea
-              className="form-control"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 sm:text-base"
               id="descricao"
               name="descricao"
               value={formData.descricao}
               onChange={handleChange}
               placeholder="Descreva detalhadamente o problema..."
-              rows={isMobile ? 4 : 6}
-              style={{ fontSize: isMobile ? "0.9rem" : "1rem", fontFamily: "inherit" }}
+              rows={6}
+              style={{ fontFamily: "inherit" }}
               required
             />
-            <small style={{ color: "#6b8cae" }}>
+            <small className="text-xs text-slate-500 sm:text-sm">
               {formData.descricao.length}/5000
             </small>
           </div>
 
-          {/* Categoria e Prioridade */}
-          <div className="row g-2 mb-3">
-            <div className="col-12 col-sm-6">
-              <label
-                htmlFor="categoria"
-                style={{
-                  fontSize: isMobile ? "0.9rem" : "1rem",
-                  fontWeight: "500",
-                  color: "#244080",
-                  marginBottom: "0.5rem",
-                }}
-              >
+          <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label htmlFor="categoria" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
                 Categoria
               </label>
               <select
-                className="form-select"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 sm:text-base"
                 id="categoria"
                 name="categoria"
                 value={formData.categoria}
                 onChange={handleChange}
-                style={{ fontSize: isMobile ? "0.9rem" : "1rem" }}
               >
                 {categoriasOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -192,25 +159,16 @@ export default function CriarTicket() {
               </select>
             </div>
 
-            <div className="col-12 col-sm-6">
-              <label
-                htmlFor="prioridade"
-                style={{
-                  fontSize: isMobile ? "0.9rem" : "1rem",
-                  fontWeight: "500",
-                  color: "#244080",
-                  marginBottom: "0.5rem",
-                }}
-              >
+            <div>
+              <label htmlFor="prioridade" className="mb-2 block text-sm font-semibold text-[#013440] sm:text-base">
                 Prioridade
               </label>
               <select
-                className="form-select"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 sm:text-base"
                 id="prioridade"
                 name="prioridade"
                 value={formData.prioridade}
                 onChange={handleChange}
-                style={{ fontSize: isMobile ? "0.9rem" : "1rem" }}
               >
                 {prioridadeOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -221,17 +179,15 @@ export default function CriarTicket() {
             </div>
           </div>
 
-          {/* Botões */}
-          <div style={{ display: "flex", gap: isMobile ? "0.5rem" : "1rem", marginTop: "2rem" }}>
+          <div className="mt-8 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
             <button
               type="submit"
-              className="btn btn-primary"
+              className="inline-flex items-center justify-center rounded-xl border border-sky-700 bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
               disabled={loading}
-              style={{ flex: 1, fontSize: isMobile ? "0.9rem" : "1rem" }}
             >
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2"></span>
+                  <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></span>
                   Enviando...
                 </>
               ) : (
@@ -242,8 +198,7 @@ export default function CriarTicket() {
             </button>
             <button
               type="reset"
-              className="btn btn-outline-secondary"
-              style={{ flex: 1, fontSize: isMobile ? "0.9rem" : "1rem" }}
+              className="inline-flex items-center justify-center rounded-xl border border-slate-400 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:text-base"
               onClick={() => setFormData({ titulo: "", descricao: "", categoria: "outro", prioridade: "media" })}
             >
               <i className="bi bi-arrow-clockwise"></i> Limpar
@@ -251,20 +206,11 @@ export default function CriarTicket() {
           </div>
         </form>
 
-        {/* Dicas */}
-        <div
-          style={{
-            marginTop: "2rem",
-            padding: "1rem",
-            backgroundColor: "#f0f4f8",
-            borderRadius: "6px",
-            borderLeft: "4px solid #3b82f6",
-          }}
-        >
-          <h5 style={{ color: "#244080", marginBottom: "0.5rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
+        <div className="mt-8 rounded-xl border border-sky-200 bg-sky-50 p-4">
+          <h5 className="mb-2 text-sm font-semibold text-[#013440] sm:text-base">
             <i className="bi bi-lightbulb"></i> Dicas para um ticket melhor:
           </h5>
-          <ul style={{ fontSize: isMobile ? "0.8rem" : "0.9rem", color: "#6b8cae", marginBottom: 0 }}>
+          <ul className="mb-0 list-disc pl-5 text-xs text-slate-500 sm:text-sm">
             <li>Seja o mais descritivo possível</li>
             <li>Inclua os passos para reproduzir o problema</li>
             <li>Mencione qual navegador ou dispositivo está usando</li>
@@ -272,6 +218,7 @@ export default function CriarTicket() {
           </ul>
         </div>
       </div>
+      </main>
     </div>
   );
 }

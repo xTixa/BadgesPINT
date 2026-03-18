@@ -82,23 +82,22 @@ export default function RecoverPassword() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="relative flex-1 flex flex-col justify-center px-8 py-12 bg-[#191970] text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#191970] via-[#0f1b5b] to-[#000428] opacity-95"></div>
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#013440] text-white">
 
-        <div className="relative z-10 max-w-md mx-auto text-center md:text-left">
+        <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
             Recuperar Password
           </h1>
-          <p className="text-blue-100 text-lg mb-10">
+          <p className="text-[#04C4D9] text-lg mb-10">
             Introduz o teu email para receberes instruções.
           </p>
         </div>
       </div>
 
       {/* DIREITA */}
-      <div className="flex-1 flex items-center justify-center bg-white">
-        <div className="w-full max-w-sm bg-white/90 shadow-xl rounded-2xl px-10 py-12 mx-6 border border-gray-100">
-          <h2 className="text-2xl font-bold text-[#191970] mb-4 text-center">
+      <div className="flex-1 flex items-center justify-center bg-[#F2F2F2]">
+        <div className="w-full max-w-sm bg-white rounded-2xl px-10 py-12 mx-6 border border-[#2AA4BF]">
+          <h2 className="text-2xl font-bold text-[#013440] mb-4 text-center">
             Recuperar Password
           </h2>
 
@@ -124,7 +123,7 @@ export default function RecoverPassword() {
                   type="email"
                   required
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 
-                  focus:outline-none focus:ring-2 focus:ring-[#191970]"
+                  focus:outline-none focus:ring-2 focus:ring-[#013440]"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemplo@dominio.com"
@@ -135,7 +134,7 @@ export default function RecoverPassword() {
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 rounded-lg font-semibold text-white 
-                bg-[#191970] hover:bg-[#101050] transition-colors"
+                bg-[#013440] hover:bg-[#013440]"
               >
                 {loading ? "A enviar..." : "Enviar Instruções"}
               </button>
@@ -153,7 +152,7 @@ export default function RecoverPassword() {
                   required
                   value={tokenInput}
                   onChange={(e) => setTokenInput(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#191970]"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#013440]"
                   placeholder="Cole o token enviado por email"
                 />
                 {resetToken && (
@@ -174,7 +173,7 @@ export default function RecoverPassword() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   className={`w-full px-4 py-3 rounded-lg border ${
                     newPassword && newPassword.length < 6 ? "border-red-400" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-[#191970]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#013440]`}
                   placeholder="Mínimo 6 caracteres"
                 />
               </div>
@@ -190,7 +189,7 @@ export default function RecoverPassword() {
                   onChange={(e) => setConfirm(e.target.value)}
                   className={`w-full px-4 py-3 rounded-lg border ${
                     confirm && confirm !== newPassword ? "border-red-400" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-[#191970]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#013440]`}
                   placeholder="Repete a password"
                 />
               </div>
@@ -199,7 +198,7 @@ export default function RecoverPassword() {
                 type="submit"
                 disabled={resetting}
                 className="w-full py-3 rounded-lg font-semibold text-white 
-                bg-[#191970] hover:bg-[#101050] transition-colors"
+                bg-[#013440] hover:bg-[#013440]"
               >
                 {resetting ? "A guardar..." : "Redefinir Password"}
               </button>
@@ -213,7 +212,7 @@ export default function RecoverPassword() {
               </p>
               <Link
                 to="/login"
-                className="text-[#191970] font-semibold hover:underline"
+                className="text-[#013440] font-semibold hover:underline"
               >
                 Voltar ao login
               </Link>

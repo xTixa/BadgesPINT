@@ -1,434 +1,361 @@
-import { useEffect, useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { useWindowSize } from "../../hooks/useWindowSize";
 
-export default function GestaoUtilizadores() {
-  const [utilizadores, setUtilizadores] = useState([]);
+export default function GestaoTickets() {
+  const { isMobile } = useWindowSize();
+  const [tickets, setTickets] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [filtro, setFiltro] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "consultant",
-    area_id: ""
-  });
-  const [areas, setAreas] = useState([]);
+  const [filtroStatus, setFiltroStatus] = useState("");
+  const [filtroPrioridade, setFiltroPrioridade] = useState("");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, pages: 0 });
+  const [ticketSelecionado, setTicketSelecionado] = useState(null);
+  const [respostaAdmin, setRespostaAdmin] = useState("");
+  const [novoStatus, setNovoStatus] = useState("");
 
-  const roleLabel = (r) => {
-    switch (r) {
-      case "admin":
-        return "Admin";
-      case "consultant":
-        return "Consultor";
-      case "talent_manager":
-        return "Talent Manager";
-      case "service_line_leader":
-        return "Service Line Leader";
-      default:
-        return r;
-    }
-  };
+  const statusOptions = [
+    { value: "aberto", label: "ðŸ”µ Aberto" },
+    { value: "em_analise", label: "ðŸŸ¡ Em AnÃ¡lise" },
+    { value: "resolvido", label: "ðŸŸ¢ Resolvido" },
+    { value: "fechado", label: "âšª Fechado" },
+  ];
 
-  const roleBadgeColor = (r) => {
-    switch (r) {
-      case "admin":
-        return "danger";
-      case "talent_manager":
-        return "info";
-      case "service_line_leader":
-        return "warning";
-      case "consultant":
-        return "success";
-      default:
-        return "secondary";
-    }
-  };
+  const prioridadeOptions = [
+    { value: "baixa", label: "ðŸŸ¢ Baixa" },
+    { value: "media", label: "ðŸŸ¡ MÃ©dia" },
+    { value: "alta", label: "ðŸ”´ Alta" },
+    { value: "critica", label: "ðŸ”´ðŸ”´ CrÃ­tica" },
+  ];
 
-  // Carregar utilizadores e áreas
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        
-        console.log("Token:", token ? "presente" : "ausente");
-        console.log("User role:", user.role);
+    fetchTickets();
+    fetchStats();
+  }, [page, filtroStatus, filtroPrioridade]);
 
-        if (!token) {
-          alert("Token não encontrado. Por favor, faça login novamente.");
-          window.location.href = "/login";
-          return;
-        }
-
-        const [usersRes, areasRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/admin/users", {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get("http://localhost:4000/api/areas", {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-        ]);
-        setUtilizadores(usersRes.data);
-        setAreas(areasRes.data);
-      } catch (err) {
-        console.error("Erro completo:", err);
-        console.error("Response:", err.response?.data);
-        console.error("Status:", err.response?.status);
-        
-        if (err.response?.status === 401) {
-          alert("Sessão expirada. Por favor, faça login novamente.");
-          localStorage.clear();
-          window.location.href = "/login";
-        } else {
-          alert("Erro ao carregar dados: " + (err.response?.data?.message || err.message));
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // Abrir modal para novo utilizador
-  const handleNovoUtilizador = () => {
-    setEditingUser(null);
-    setFormData({ name: "", email: "", password: "", role: "consultant", area_id: "" });
-    setShowModal(true);
-  };
-
-  // Abrir modal para editar utilizador
-  const handleEditUser = (user) => {
-    setEditingUser(user);
-    setFormData({
-      name: user.name,
-      email: user.email,
-      password: "",
-      role: user.role,
-      area_id: user.area_id || ""
-    });
-    setShowModal(true);
-  };
-
-  // Salvar utilizador (criar ou atualizar)
-  const handleSaveUser = async () => {
-    if (!formData.name || !formData.email || !formData.role) {
-      alert("Por favor, preencha os campos obrigatórios.");
-      return;
-    }
-
-    if (formData.role === "service_line_leader" && !formData.area_id) {
-      alert("Service Line Leader deve ter uma área associada.");
-      return;
-    }
-
+  const fetchTickets = async () => {
     try {
-      if (editingUser) {
-        // Atualizar utilizador
-        const payload = { name: formData.name, email: formData.email, role: formData.role, area_id: formData.area_id };
-        if (formData.password) payload.password = formData.password;
-
-        const token = localStorage.getItem("token");
-        await axios.put(
-          `http://localhost:4000/api/users/${editingUser.id}`,
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        
-        setUtilizadores(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...payload } : u));
-      } else {
-        // Criar novo utilizador
-        if (!formData.password) {
-          alert("Senha é obrigatória para novos utilizadores.");
-          return;
-        }
-
-        const token = localStorage.getItem("token");
-        const response = await axios.post(
-          "http://localhost:4000/api/admin/users",
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        setUtilizadores([...utilizadores, response.data]);
-      }
-
-      setShowModal(false);
-      alert("Utilizador guardado com sucesso!");
-    } catch (err) {
-      console.error("Erro ao guardar utilizador:", err);
-      alert("Erro ao guardar utilizador: " + (err.response?.data?.message || err.message));
-    }
-  };
-
-  // Apagar utilizador
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm("Tem a certeza que deseja apagar este utilizador?")) return;
-
-    try {
+      setLoading(true);
       const token = localStorage.getItem("token");
-      await axios.delete(
-        `http://localhost:4000/api/admin/users/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const query = new URLSearchParams({
+        page,
+        limit: 15,
+        ...(filtroStatus && { status: filtroStatus }),
+        ...(filtroPrioridade && { prioridade: filtroPrioridade }),
+      });
+
+      const response = await axios.get(
+        `http://localhost:4000/api/tickets?${query}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
-      setUtilizadores(prev => prev.filter(u => u.id !== id));
-      alert("Utilizador removido com sucesso!");
-    } catch (err) {
-      console.error("Erro ao apagar utilizador:", err);
-      alert("Erro ao apagar utilizador.");
+      setTickets(response.data.data);
+      setPagination({
+        total: response.data.total,
+        pages: response.data.pages,
+      });
+    } catch (error) {
+      console.error("Erro ao carregar tickets:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Filtrar utilizadores
-  const utilizadoresFiltrados = utilizadores.filter(u =>
-    u.name.toLowerCase().includes(filtro.toLowerCase()) ||
-    u.email.toLowerCase().includes(filtro.toLowerCase())
-  );
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        "http://localhost:4000/api/tickets/stats/estatisticas",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = response.data?.data || {};
+      setStats({
+        total: data.total || 0,
+        porStatus: {
+          abertos: data.abertos || 0,
+          resolvidos: data.resolvidos || 0,
+        },
+        porPrioridade: [
+          { prioridade: "critica", count: data.criticos || 0 },
+        ],
+      });
+    } catch (error) {
+      console.error("Erro ao carregar estatÃ­sticas:", error);
+    }
+  };
+
+  const handleAtualizarTicket = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:4000/api/tickets/${ticketSelecionado.id}`,
+        {
+          status: novoStatus || ticketSelecionado.status,
+          resposta_admin: respostaAdmin,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setTicketSelecionado(null);
+      setRespostaAdmin("");
+      setNovoStatus("");
+      fetchTickets();
+      fetchStats();
+    } catch (error) {
+      console.error("Erro ao atualizar ticket:", error);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusMap = {
+      aberto: { className: "bg-blue-100 text-blue-700", label: "ðŸ”µ Aberto" },
+      em_analise: { className: "bg-amber-100 text-amber-700", label: "ðŸŸ¡ Em AnÃ¡lise" },
+      resolvido: { className: "bg-emerald-100 text-emerald-700", label: "ðŸŸ¢ Resolvido" },
+      fechado: { className: "bg-slate-100 text-slate-700", label: "âšª Fechado" },
+    };
+    const s = statusMap[status] || { className: "bg-slate-100 text-slate-700", label: status };
+    return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${s.className}`}>{s.label}</span>;
+  };
+
+  const getPriorityColor = (priority) => {
+    const colors = {
+      baixa: "#10b981",
+      media: "#f59e0b",
+      alta: "#ef4444",
+      critica: "#dc2626",
+    };
+    return colors[priority] || "#04C4D9";
+  };
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
-      <Sidebar user={{ role: "admin", name: "Admin" }} />
+    <div className="px-4 py-4 sm:px-5 md:px-6">
+      <div className="mb-8">
+        <h2 className={`flex items-center gap-2 font-bold text-slate-800 ${isMobile ? "text-2xl" : "text-3xl"}`}>
+          <i className="bi bi-ticket text-indigo-500"></i>
+          GestÃ£o de Tickets
+        </h2>
+      </div>
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <h3 className="fw-bold text-dark mb-0">
-              <i className="bi bi-people-fill text-success me-2"></i>
-              Gestão de Utilizadores e Permissões
-            </h3>
-            <p className="text-muted small mt-1">Criar, editar e gerir utilizadores do sistema</p>
+      {stats && (
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total</div>
+            <div className="mt-1 text-3xl font-bold text-slate-800">{stats.total}</div>
           </div>
-          <button
-            className="btn btn-success"
-            onClick={handleNovoUtilizador}
-          >
-            <i className="bi bi-plus-circle me-2"></i>
-            Novo Utilizador
-          </button>
-        </div>
 
-        {/* Filtro e Estatísticas */}
-        <div className="row mb-4">
-          <div className="col-md-6">
-            <div className="input-group">
-              <span className="input-group-text bg-white">
-                <i className="bi bi-search"></i>
-              </span>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Pesquisar por nome ou email..."
-                value={filtro}
-                onChange={(e) => setFiltro(e.target.value)}
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Abertos</div>
+            <div className="mt-1 text-3xl font-bold text-blue-600">{stats.porStatus?.abertos ?? stats.abertos ?? 0}</div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resolvidos</div>
+            <div className="mt-1 text-3xl font-bold text-emerald-600">{stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}</div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">CrÃ­ticos</div>
+            <div className="mt-1 text-3xl font-bold text-rose-600">
+              {stats.porPrioridade?.find((p) => p.prioridade === "critica")?.count ?? stats.criticos ?? 0}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mb-8 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
+          <div className="md:col-span-5">
+            <select
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              value={filtroStatus}
+              onChange={(e) => {
+                setFiltroStatus(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="">Todos os Status</option>
+              {statusOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="md:col-span-5">
+            <select
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              value={filtroPrioridade}
+              onChange={(e) => {
+                setFiltroPrioridade(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="">Todas as Prioridades</option>
+              {prioridadeOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="md:col-span-2">
+            <button
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              onClick={() => {
+                setFiltroStatus("");
+                setFiltroPrioridade("");
+                setPage(1);
+              }}
+            >
+              <i className="bi bi-arrow-clockwise"></i> Limpar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        {!isMobile ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-4 py-3">TÃ­tulo</th>
+                  <th className="px-4 py-3">Utilizador</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Prioridade</th>
+                  <th className="px-4 py-3">Data</th>
+                  <th className="px-4 py-3">AÃ§Ã£o</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {tickets.map((ticket, idx) => (
+                  <tr key={ticket.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
+                    <td className="px-4 py-3 font-semibold text-slate-800">{ticket.titulo}</td>
+                    <td className="px-4 py-3 text-slate-700">{ticket.utilizador?.name}</td>
+                    <td className="px-4 py-3">{getStatusBadge(ticket.status)}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                        style={{
+                          backgroundColor: `${getPriorityColor(ticket.prioridade)}20`,
+                          color: getPriorityColor(ticket.prioridade),
+                        }}
+                      >
+                        {ticket.prioridade}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-500">
+                      {new Date(ticket.createdAt).toLocaleDateString("pt-PT")}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        className="inline-flex items-center gap-1 rounded-lg bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-800"
+                        onClick={() => {
+                          setTicketSelecionado(ticket);
+                          setNovoStatus(ticket.status);
+                        }}
+                      >
+                        <i className="bi bi-pencil"></i> Editar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="space-y-3 p-4">
+            {tickets.length === 0 ? (
+              <p className="py-6 text-center text-sm text-slate-500">Sem tickets para mostrar.</p>
+            ) : (
+              tickets.map((ticket) => (
+                <button
+                  key={ticket.id}
+                  type="button"
+                  className="w-full rounded-xl border border-slate-200 p-3 text-left"
+                  onClick={() => {
+                    setTicketSelecionado(ticket);
+                    setNovoStatus(ticket.status);
+                  }}
+                >
+                  <p className="font-semibold text-slate-800">{ticket.titulo}</p>
+                  <p className="mt-1 text-xs text-slate-500">{ticket.utilizador?.name}</p>
+                  <div className="mt-2 flex items-center justify-between">
+                    {getStatusBadge(ticket.status)}
+                    <span className="text-xs text-slate-500">{new Date(ticket.createdAt).toLocaleDateString("pt-PT")}</span>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      {ticketSelecionado && (
+        <div
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4"
+          onClick={() => setTicketSelecionado(null)}
+        >
+          <div
+            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="mb-6 text-2xl font-bold text-slate-800">
+              {ticketSelecionado.titulo}
+            </h3>
+
+            <div className="mb-5">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">
+                Novo Status
+              </label>
+              <select
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                value={novoStatus}
+                onChange={(e) => setNovoStatus(e.target.value)}
+              >
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-5">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">
+                Resposta/Notas do Administrador
+              </label>
+              <textarea
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                value={respostaAdmin}
+                onChange={(e) => setRespostaAdmin(e.target.value)}
+                placeholder="Escreva sua resposta aqui..."
+                rows={6}
               />
             </div>
-          </div>
-          <div className="col-md-6 text-end">
-            <div className="text-muted">
-              <small>Total: <strong>{utilizadoresFiltrados.length}</strong> utilizadores</small>
-            </div>
-          </div>
-        </div>
 
-        {/* Tabela de Utilizadores */}
-        <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-          {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status"></div>
-              <p className="mt-3 text-muted">A carregar utilizadores...</p>
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <table className="table mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th style={{ width: "25%" }}>Nome</th>
-                    <th style={{ width: "30%" }}>Email</th>
-                    <th style={{ width: "15%" }}>Função</th>
-                    <th style={{ width: "30%" }}>Ações</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {utilizadoresFiltrados.map((u) => (
-                    <tr key={u.id} style={{ borderColor: "#e9ecef" }}>
-                      <td className="py-3">
-                        <div className="d-flex align-items-center">
-                          <div
-                            className="rounded-circle bg-success me-3"
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              color: "white",
-                              fontSize: "18px",
-                              fontWeight: "bold"
-                            }}
-                          >
-                            {u.name.charAt(0).toUpperCase()}
-                          </div>
-                          <strong>{u.name}</strong>
-                        </div>
-                      </td>
-                      <td className="py-3" style={{ color: "#6b8cae" }}>
-                        {u.email}
-                      </td>
-                      <td className="py-3">
-                        <span className={`badge bg-${roleBadgeColor(u.role)}`}>
-                          {roleLabel(u.role)}
-                        </span>
-                      </td>
-                      <td className="py-3">
-                        <button
-                          className="btn btn-sm btn-outline-primary me-2"
-                          onClick={() => handleEditUser(u)}
-                        >
-                          <i className="bi bi-pencil me-1"></i>
-                          Editar
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeleteUser(u.id)}
-                        >
-                          <i className="bi bi-trash me-1"></i>
-                          Apagar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-
-                  {utilizadoresFiltrados.length === 0 && (
-                    <tr>
-                      <td colSpan="4" className="text-center text-muted py-4">
-                        {filtro ? "Nenhum utilizador encontrado com esses critérios." : "Nenhum utilizador encontrado."}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </main>
-
-      {/* Modal para Criar/Editar Utilizador */}
-      {showModal && (
-        <div
-          className="modal show d-block"
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1050
-          }}
-        >
-          <div className="modal-dialog" style={{ maxWidth: "500px" }}>
-            <div className="modal-content border-0 rounded-4">
-              <div className="modal-header border-0 bg-light">
-                <h5 className="modal-title fw-bold">
-                  {editingUser ? "Editar Utilizador" : "Novo Utilizador"}
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
-              </div>
-
-              <div className="modal-body p-4">
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Nome *</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="João Silva"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Email *</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="joao@example.com"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">
-                    {editingUser ? "Nova Senha (deixe em branco para não alterar)" : "Senha *"}
-                  </label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder="••••••••"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Função *</label>
-                  <select
-                    className="form-select"
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  >
-                    <option value="consultant">Consultor</option>
-                    <option value="talent_manager">Talent Manager</option>
-                    <option value="service_line_leader">Service Line Leader</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Área {formData.role === "service_line_leader" && "(obrigatório)"}</label>
-                  <select
-                    className="form-select"
-                    value={formData.area_id}
-                    onChange={(e) => setFormData({ ...formData, area_id: e.target.value })}
-                  >
-                    <option value="">Selecione uma área...</option>
-                    {areas.map(a => (
-                      <option key={a.id} value={a.id}>{a.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="modal-footer border-0 bg-light">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={handleSaveUser}
-                >
-                  <i className="bi bi-check-circle me-1"></i>
-                  {editingUser ? "Atualizar" : "Criar"}
-                </button>
-              </div>
+            <div className="flex gap-2">
+              <button
+                className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
+                onClick={handleAtualizarTicket}
+              >
+                <i className="bi bi-check"></i> Atualizar
+              </button>
+              <button
+                className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                onClick={() => setTicketSelecionado(null)}
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
@@ -436,3 +363,4 @@ export default function GestaoUtilizadores() {
     </div>
   );
 }
+

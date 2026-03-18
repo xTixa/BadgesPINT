@@ -42,12 +42,12 @@ export default function Areas() {
 
   const getAreaColor = (index) => {
     const colors = [
-      'from-indigo-500 to-purple-600',
-      'from-cyan-500 to-blue-600',
-      'from-green-500 to-emerald-600',
-      'from-orange-500 to-amber-600',
-      'from-pink-500 to-rose-600',
-      'from-violet-500 to-purple-600'
+      "bg-[#2AA4BF]",
+      "bg-[#04C4D9]",
+      "bg-[#013440]",
+      "bg-[#2AA4BF]",
+      "bg-[#04C4D9]",
+      "bg-[#013440]",
     ];
     return colors[index % colors.length];
   };
@@ -71,14 +71,14 @@ export default function Areas() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-[#191970] to-[#0f1b5b] text-white py-16 px-6 shadow-xl">
+      <div className="bg-[#013440] text-[#F2F2F2] py-16 px-6 border-b border-[#2AA4BF]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
               to={`/learning-paths/1/service-lines`} 
-              className="text-blue-200 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium"
+              className="text-[#04C4D9] hover:text-[#F2F2F2] flex items-center gap-2 text-sm font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -89,7 +89,7 @@ export default function Areas() {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
             Áreas de Competência
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-3xl">
+          <p className="text-lg md:text-xl text-[#04C4D9] max-w-3xl">
             {serviceLineName && `${serviceLineName} - `}
             Explora as áreas técnicas e conquista badges de diferentes níveis de especialização.
           </p>
@@ -100,7 +100,7 @@ export default function Areas() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#191970] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#013440] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar áreas...</p>
           </div>
         ) : areas.length > 0 ? (
@@ -108,39 +108,27 @@ export default function Areas() {
             {areas.map((a, index) => (
               <div 
                 key={a.id} 
-                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-300 hover:scale-105"
+                className="bg-white rounded-2xl overflow-hidden border border-[#2AA4BF]"
               >
-                {/* Card Header com gradiente dinâmico */}
-                <div className={`h-40 bg-gradient-to-br ${getAreaColor(index)} relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                <div className={`h-40 ${getAreaColor(index)} relative overflow-hidden`}>
                   
                   {/* Ícone principal */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <svg className="w-20 h-20 text-white opacity-90 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       {getAreaIcon(index)}
-                    </svg>
-                  </div>
-                  
-                  {/* Pattern decorativo */}
-                  <div className="absolute inset-0 opacity-10">
-                    <svg width="100%" height="100%">
-                      <pattern id={`pattern-${index}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                        <circle cx="2" cy="2" r="1" fill="white" />
-                      </pattern>
-                      <rect x="0" y="0" width="100%" height="100%" fill={`url(#pattern-${index})`} />
                     </svg>
                   </div>
                 </div>
 
                 {/* Card Body */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-[#191970] mb-4 group-hover:text-blue-700 transition-colors min-h-[56px] flex items-center">
+                  <h3 className="text-xl font-bold text-[#013440] mb-4 min-h-[56px] flex items-center">
                     {a.name}
                   </h3>
 
                   {/* Info Badge */}
                   <div className="flex items-center gap-2 mb-6">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F2F2F2] text-[#013440] border border-[#2AA4BF]">
                       5 Níveis disponíveis
                     </span>
                   </div>
@@ -148,7 +136,7 @@ export default function Areas() {
                   {/* Action Button */}
                   <Link
                     to={`/areas/${a.id}/badges`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#191970] text-white font-semibold hover:bg-[#101050] transition-all transform hover:-translate-y-0.5 shadow-md hover:shadow-lg"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#013440] text-white font-semibold hover:bg-[#013440]"
                   >
                     Ver Badges →
                   </Link>

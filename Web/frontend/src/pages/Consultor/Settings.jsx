@@ -1,5 +1,5 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import React from "react";
-import Sidebar from "../../components/sidebar/sidebar";
 
 export default function ConsultorSettingsPage() {
   return (
@@ -10,10 +10,10 @@ export default function ConsultorSettingsPage() {
 
       <div className="flex">
 
-        {/* CONTEÚDO — agora empurrado automaticamente porque a sidebar tem largura fixa */}
+        {/* CONTEÃšDO â€” agora empurrado automaticamente porque a sidebar tem largura fixa */}
         <div className="flex-1 ml-[250px] p-8">
           <h1 className="text-3xl font-bold mb-8 text-gray-800">
-            Definições do Consultor
+            DefiniÃ§Ãµes do Consultor
           </h1>
 
           <div className="space-y-8 max-w-4xl">
@@ -36,7 +36,7 @@ export default function ConsultorSettingsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Área principal
+                    Ãrea principal
                   </label>
                   <select className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <option>Selecione...</option>
@@ -52,7 +52,7 @@ export default function ConsultorSettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Objetivo (ex.: nº de badges)
+                    Objetivo (ex.: nÂº de badges)
                   </label>
                   <input
                     type="number"
@@ -74,29 +74,29 @@ export default function ConsultorSettingsPage() {
               <div className="flex items-center space-x-2 mt-4">
                 <input type="checkbox" className="h-5 w-5 text-blue-600" />
                 <span className="text-gray-700">
-                  Ativar recomendações de próximos badges
+                  Ativar recomendaÃ§Ãµes de prÃ³ximos badges
                 </span>
               </div>
             </div>
 
-            {/* CARD - Notificações */}
+            {/* CARD - NotificaÃ§Ãµes */}
             <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Notificações</h2>
+              <h2 className="text-xl font-semibold mb-4">NotificaÃ§Ãµes</h2>
 
               <div className="space-y-3">
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Email de confirmação de candidatura</span>
+                  <span>Email de confirmaÃ§Ã£o de candidatura</span>
                 </label>
 
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Notificações de aprovação/rejeição</span>
+                  <span>NotificaÃ§Ãµes de aprovaÃ§Ã£o/rejeiÃ§Ã£o</span>
                 </label>
 
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Alertas de expiração de badges</span>
+                  <span>Alertas de expiraÃ§Ã£o de badges</span>
                 </label>
 
                 <label className="flex items-center space-x-2">
@@ -113,12 +113,12 @@ export default function ConsultorSettingsPage() {
               <div className="space-y-3">
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Aceito os termos RGPD para publicação de badges</span>
+                  <span>Aceito os termos RGPD para publicaÃ§Ã£o de badges</span>
                 </label>
 
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Permitir galeria pública de badges</span>
+                  <span>Permitir galeria pÃºblica de badges</span>
                 </label>
 
                 <label className="flex items-center space-x-2">
@@ -144,8 +144,8 @@ export default function ConsultorSettingsPage() {
                     Idioma
                   </label>
                   <select className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="pt">Português</option>
-                    <option value="en">Inglês</option>
+                    <option value="pt">PortuguÃªs</option>
+                    <option value="en">InglÃªs</option>
                     <option value="es">Espanhol</option>
                   </select>
                 </div>
@@ -162,9 +162,9 @@ export default function ConsultorSettingsPage() {
               </div>
             </div>
 
-            {/* Botão */}
+            {/* BotÃ£o */}
             <button className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
-              Guardar alterações
+              Guardar alteraÃ§Ãµes
             </button>
           </div>
         </div>
@@ -172,3 +172,4 @@ export default function ConsultorSettingsPage() {
     </div>
   );
 }
+

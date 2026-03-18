@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/sidebar/sidebar";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";
-import { SidebarProvider, useSidebar } from "./context/SidebarContext";
+import { SidebarProvider } from "./context/SidebarContext";
+import Navbar from "./layout/Navbar";
+import Footer from "./layout/Footer";
 
 // Auth Pages
 import Login from "./pages/Auth/Login";
@@ -59,42 +59,18 @@ import MeusTickets from "./pages/MeusTickets";
 import GestaoTickets from "./pages/Admin/GestaoTickets";
 import NotificacoesPage from "./pages/NotificacoesPage";
 
+// Rotas que escondem navbar/footer/sidebar
+const NO_LAYOUT_ROUTES = ["/login", "/first-login", "/recover", "/register"];
 
-// ⭐ COMPONENTE INTERNO PARA PERMITIR useLocation()
 function AppContent() {
   const location = useLocation();
-  const { collapsed } = useSidebar();
 
-  const noLayoutRoutes = ["/login", "/first-login", "/recover", "/register"];
-  const hideLayout = noLayoutRoutes.includes(location.pathname);
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-
-  const sidebarWidth = collapsed ? "80px" : "250px";
+  const hideLayout = NO_LAYOUT_ROUTES.includes(location.pathname);
 
   return (
-    <div style={{ 
-      minHeight: "100vh", 
-      display: "flex", 
-      flexDirection: "column", 
-      backgroundColor: "#f8f9fa" 
-    }}>
-
-      {/* 🔹 Navbar só quando permitido */}
+    <div className="flex min-h-screen flex-col bg-[#F2F2F2]">
       {!hideLayout && <Navbar />}
-      {!hideLayout && user && <Sidebar user={user} />}
-
-      <main
-        style={{ 
-          flex: 1,
-          padding: hideLayout ? "0" : "2rem 1rem",
-          marginLeft: user && !hideLayout ? sidebarWidth : "0",
-          marginTop: !hideLayout ? "64px" : "0",
-          minHeight: "calc(100vh - 64px)",
-          display: "flex",
-          flexDirection: "column",
-          transition: "margin-left 0.3s ease"
-        }}
-      >
+      <main className={`flex-1 ${hideLayout ? "" : "px-4 py-8"}`}>
         <Routes>
 
           {/* Auth */}
@@ -151,111 +127,17 @@ function AppContent() {
           <Route path="/admin/logs" element={<VerLogsAuditoria />} />
           <Route path="/admin/gestao-tickets" element={<GestaoTickets />} />
 
-          {/* Tickets */}
+          {/* Shared */}
           <Route path="/criar-ticket" element={<CriarTicket />} />
           <Route path="/meus-tickets" element={<MeusTickets />} />
           <Route path="/notificacoes" element={<NotificacoesPage />} />
-
         </Routes>
       </main>
-
-      {/* 🔹 Footer só quando permitido */}
-      {!hideLayout && (
-        <footer style={{ 
-          backgroundColor: "#244080", 
-          color: "#b8c5d6", 
-          marginTop: "auto",
-          marginLeft: user ? sidebarWidth : "0",
-          position: "relative",
-          zIndex: 1000,
-          transition: "margin-left 0.3s ease"
-        }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem 1rem" }}>
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", 
-              gap: "2rem" 
-            }}>
-              <div>
-                <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "1rem", color: "white" }}>
-                  About Badges PINT
-                </h3>
-                <p style={{ fontSize: "0.875rem", color: "#8b9aae" }}>
-                  Empowering professionals through recognized achievements and skill certifications.
-                </p>
-              </div>
-              <div>
-                <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "1rem", color: "white" }}>
-                  Quick Links
-                </h3>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  <li style={{ marginBottom: "0.5rem" }}>
-                    <a href="/learning-paths" style={{ 
-                      color: "#8b9aae", 
-                      textDecoration: "none", 
-                      fontSize: "0.875rem",
-                      transition: "color 0.2s" 
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = "white"}
-                    onMouseLeave={(e) => e.currentTarget.style.color = "#8b9aae"}>
-                      Learning Paths
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: "0.5rem" }}>
-                    <a href="/badges" style={{ 
-                      color: "#8b9aae", 
-                      textDecoration: "none", 
-                      fontSize: "0.875rem",
-                      transition: "color 0.2s" 
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = "white"}
-                    onMouseLeave={(e) => e.currentTarget.style.color = "#8b9aae"}>
-                      All Badges
-                    </a>
-                  </li>
-                  <li style={{ marginBottom: "0.5rem" }}>
-                    <a href="/areas" style={{ 
-                      color: "#8b9aae", 
-                      textDecoration: "none", 
-                      fontSize: "0.875rem",
-                      transition: "color 0.2s" 
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = "white"}
-                    onMouseLeave={(e) => e.currentTarget.style.color = "#8b9aae"}>
-                      Areas
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "1rem", color: "white" }}>
-                  Contact
-                </h3>
-                <p style={{ fontSize: "0.875rem", color: "#8b9aae" }}>
-                  Have questions? Reach out to us at support@badgespint.com
-                </p>
-              </div>
-            </div>
-            <div style={{ 
-              borderTop: "1px solid rgba(255,255,255,0.1)", 
-              marginTop: "2rem", 
-              paddingTop: "2rem", 
-              fontSize: "0.875rem", 
-              textAlign: "center", 
-              color: "#8b9aae" 
-            }}>
-              © {new Date().getFullYear()} Badges PINT. All rights reserved.
-            </div>
-          </div>
-        </footer>
-      )}
-
+      {!hideLayout && <Footer />}
     </div>
   );
 }
 
-
-// ⭐ WRAPPER COM ROUTER
 export default function App() {
   return (
     <ThemeProvider>

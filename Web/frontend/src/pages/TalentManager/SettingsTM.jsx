@@ -1,28 +1,28 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import React from "react";
-import Sidebar from "../../components/sidebar/sidebar";
 
 export default function TalentManagerSettingsPage() {
   return (
     <div className="settings-page">
         <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
-      <h1>Definições do Talent Manager</h1>
+      <h1>DefiniÃ§Ãµes do Talent Manager</h1>
 
-      {/* Âmbito */}
+      {/* Ã‚mbito */}
       <section>
-        <h2>Âmbito</h2>
+        <h2>Ã‚mbito</h2>
         <label>
           Service Line
           <select>{/* options */}</select>
         </label>
         <label>
-          Áreas sob responsabilidade
+          Ãreas sob responsabilidade
           <select multiple>{/* options */}</select>
         </label>
       </section>
 
-      {/* Notificações */}
+      {/* NotificaÃ§Ãµes */}
       <section>
-        <h2>Notificações</h2>
+        <h2>NotificaÃ§Ãµes</h2>
         <label>
           Novas candidaturas
           <input type="checkbox" />
@@ -32,27 +32,27 @@ export default function TalentManagerSettingsPage() {
           <input type="checkbox" />
         </label>
         <label>
-          Atualizações de estado (aprovado/rejeitado)
+          AtualizaÃ§Ãµes de estado (aprovado/rejeitado)
           <input type="checkbox" />
         </label>
       </section>
 
-      {/* Relatórios e exportações */}
+      {/* RelatÃ³rios e exportaÃ§Ãµes */}
       <section>
-        <h2>Relatórios e exportações</h2>
+        <h2>RelatÃ³rios e exportaÃ§Ãµes</h2>
         <label>
-          Formato padrão de exportação
+          Formato padrÃ£o de exportaÃ§Ã£o
           <select>
             <option value="excel">Excel</option>
             <option value="pdf">PDF</option>
           </select>
         </label>
         <label>
-          Filtro de período padrão
+          Filtro de perÃ­odo padrÃ£o
           <select>
-            <option value="month">Último mês</option>
-            <option value="quarter">Último trimestre</option>
-            <option value="year">Último ano</option>
+            <option value="month">Ãšltimo mÃªs</option>
+            <option value="quarter">Ãšltimo trimestre</option>
+            <option value="year">Ãšltimo ano</option>
           </select>
         </label>
       </section>
@@ -64,11 +64,11 @@ export default function TalentManagerSettingsPage() {
           Ordenar ranking por
           <select>
             <option value="points">Pontos</option>
-            <option value="badges">Número de badges</option>
+            <option value="badges">NÃºmero de badges</option>
           </select>
         </label>
         <label>
-          Mostrar timeline de evolução profissional
+          Mostrar timeline de evoluÃ§Ã£o profissional
           <input type="checkbox" />
         </label>
       </section>
@@ -79,8 +79,8 @@ export default function TalentManagerSettingsPage() {
         <label>
           Idioma
           <select>
-            <option value="pt">Português</option>
-            <option value="en">Inglês</option>
+            <option value="pt">PortuguÃªs</option>
+            <option value="en">InglÃªs</option>
             <option value="es">Espanhol</option>
           </select>
         </label>
@@ -93,7 +93,8 @@ export default function TalentManagerSettingsPage() {
         </label>
       </section>
 
-      <button>Guardar alterações</button>
+      <button>Guardar alteraÃ§Ãµes</button>
     </div>
   );
 }
+

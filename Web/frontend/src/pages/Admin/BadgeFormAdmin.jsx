@@ -1,9 +1,7 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function BadgeFormAdmin() {
   const { id } = useParams(); // "novo" ou um id numérico
@@ -143,22 +141,22 @@ export default function BadgeFormAdmin() {
   };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <h3 className="fw-bold text-dark mb-4">
-          <i className="bi bi-award-fill text-primary me-2" />
+      <main className="admin-main">
+        <h3 className="mb-4 text-xl font-bold text-slate-900 sm:text-2xl">
+          <i className="bi bi-award-fill mr-2 text-sky-600" />
           {isNovo ? "Criar Badge" : "Editar Badge"}
         </h3>
 
-        <div className="card border-0 shadow-sm rounded-4 p-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label className="form-label fw-semibold">Nome do Badge</label>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Nome do Badge</label>
               <input
                 type="text"
-                className="form-control"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                 name="description"
                 value={form.description}
                 onChange={handleChange}
@@ -166,11 +164,11 @@ export default function BadgeFormAdmin() {
               />
             </div>
 
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label className="form-label fw-semibold">Área</label>
+            <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Área</label>
                 <select
-                  className="form-select"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                   name="area_id"
                   value={form.area_id}
                   onChange={handleChange}
@@ -183,10 +181,10 @@ export default function BadgeFormAdmin() {
                 </select>
               </div>
 
-              <div className="col-md-6 mb-3">
-                <label className="form-label fw-semibold">Nível</label>
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Nível</label>
                 <select
-                  className="form-select"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                   name="level"
                   value={form.level}
                   onChange={handleChange}
@@ -200,23 +198,23 @@ export default function BadgeFormAdmin() {
               </div>
             </div>
 
-            <div className="row">
-              <div className="col-md-4 mb-3">
-                <label className="form-label fw-semibold">Pontos</label>
+            <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Pontos</label>
                 <input
                   type="number"
-                  className="form-control"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                   name="points"
                   value={form.points}
                   onChange={handleChange}
                   min="0"
                 />
               </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label fw-semibold">Expira em (dias)</label>
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Expira em (dias)</label>
                 <input
                   type="number"
-                  className="form-control"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                   name="expiry_days"
                   value={form.expiry_days}
                   onChange={handleChange}
@@ -224,11 +222,11 @@ export default function BadgeFormAdmin() {
                   placeholder="Opcional"
                 />
               </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label fw-semibold">Imagem (URL)</label>
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Imagem (URL)</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                   name="image_url"
                   value={form.image_url}
                   onChange={handleChange}
@@ -237,89 +235,86 @@ export default function BadgeFormAdmin() {
               </div>
             </div>
 
-            <div className="border-top pt-4 mt-2">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h6 className="fw-semibold mb-0">Requisitos do Nível</h6>
-                <button type="button" className="btn btn-outline-primary btn-sm" onClick={addRequirement}>
-                  <i className="bi bi-plus-circle me-1"></i>
+            <div className="mt-2 border-t border-slate-200 pt-4">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h6 className="m-0 text-sm font-semibold text-slate-900 sm:text-base">Requisitos do Ní­vel</h6>
+                <button type="button" className="rounded-lg border border-sky-600 px-3 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50" onClick={addRequirement}>
+                  <i className="bi bi-plus-circle mr-1"></i>
                   Adicionar requisito
                 </button>
               </div>
 
-              <div className="d-flex flex-column gap-3">
+              <div className="flex flex-col gap-3">
                 {requirements.map((req, idx) => (
-                  <div key={idx} className="card border-0 shadow-sm rounded-4">
-                    <div className="card-body">
-                      <div className="row g-3">
-                        <div className="col-md-4">
-                          <label className="form-label fw-semibold">Título</label>
+                  <div key={idx} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
+                        <div className="md:col-span-4">
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">Título</label>
                           <input
                             type="text"
-                            className="form-control"
+                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                             value={req.title}
                             onChange={(e) => updateRequirement(idx, "title", e.target.value)}
                             required
                           />
                         </div>
-                        <div className="col-md-2">
-                          <label className="form-label fw-semibold">Código</label>
+                        <div className="md:col-span-2">
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">Código</label>
                           <input
                             type="text"
-                            className="form-control"
+                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                             value={req.code}
                             onChange={(e) => updateRequirement(idx, "code", e.target.value)}
                             required
                           />
                         </div>
-                        <div className="col-md-6">
-                          <label className="form-label fw-semibold">Imagem (URL)</label>
+                        <div className="md:col-span-6">
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">Imagem (URL)</label>
                           <input
                             type="text"
-                            className="form-control"
+                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                             value={req.image_url}
                             onChange={(e) => updateRequirement(idx, "image_url", e.target.value)}
                             placeholder="https://..."
                           />
                         </div>
-                        <div className="col-12">
-                          <label className="form-label fw-semibold">Descrição / Evidência</label>
+                        <div className="md:col-span-12">
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">Descrição / Evidência</label>
                           <textarea
-                            className="form-control"
+                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                             rows="2"
                             value={req.description}
                             onChange={(e) => updateRequirement(idx, "description", e.target.value)}
                             required
                           />
                         </div>
-                      </div>
-                      <div className="d-flex justify-content-end mt-3">
+                    </div>
+                    <div className="mt-3 flex justify-end">
                         <button
                           type="button"
-                          className="btn btn-outline-danger btn-sm"
+                          className="rounded-lg border border-rose-500 px-3 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50"
                           onClick={() => removeRequirement(idx)}
                           disabled={requirements.length === 1}
                         >
                           Remover
                         </button>
-                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="d-flex justify-content-end gap-2">
+            <div className="mt-4 flex justify-end gap-2">
               <button
                 type="button"
-                className="btn btn-outline-secondary"
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                 onClick={() => navigate("/admin/badges")}
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="btn btn-primary"
-                style={{ backgroundColor: "#191970", borderColor: "#191970" }}
+                className="rounded-lg bg-[#013440] px-4 py-2 text-sm font-semibold text-white hover:bg-[#013440]"
                 disabled={loading}
               >
                 {loading ? "A guardar..." : "Guardar"}
@@ -331,3 +326,5 @@ export default function BadgeFormAdmin() {
     </div>
   );
 }
+
+

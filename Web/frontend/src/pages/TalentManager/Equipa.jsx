@@ -1,11 +1,9 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function Equipa() {
   const [filtroNome, setFiltroNome] = useState("");
-  const [consultores, setConsultores] = useState(sampleConsultores);
+  const [consultores] = useState(sampleConsultores);
 
   const filtrados = useMemo(
     () => consultores.filter((c) => c.nome.toLowerCase().includes(filtroNome.toLowerCase())),
@@ -16,42 +14,37 @@ export default function Equipa() {
   const mediaProgresso = Math.round(consultores.reduce((acc, c) => acc + c.progresso, 0) / consultores.length);
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "talentManager", name: "Talent Manager" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <div className="rounded-4 p-4 mb-4 shadow-sm" style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">Equipa</h3>
-          <p className="mb-0 text-light opacity-75">Progresso, requisitos e timeline de evolução por consultor.</p>
+      <main className="admin-main">
+        <div className="mb-4 rounded-2xl bg-[#013440] p-4 text-white shadow-sm">
+          <h3 className="mb-1 text-xl font-bold sm:text-2xl">Equipa</h3>
+          <p className="m-0 text-sm text-white/80 sm:text-base">Progresso, requisitos e timeline de evoluÃ§Ã£o por consultor.</p>
         </div>
 
-        <div className="row g-4 mb-4">
-          {[{ label: "Total de Consultores", icon: "bi-people-fill", valor: consultores.length, cor: "text-primary" }, { label: "Média de Pontos", icon: "bi-star-fill", valor: mediaPontos, cor: "text-warning" }, { label: "Média de Progresso", icon: "bi-graph-up-arrow", valor: `${mediaProgresso}%`, cor: "text-success" }].map((card) => (
-            <div key={card.label} className="col-md-4">
-              <div className="card border-0 shadow-sm rounded-4 h-100">
-                <div className="card-body">
-                  <div className="d-flex align-items-center mb-2">
-                    <i className={`bi ${card.icon} fs-3 me-2 ${card.cor}`}></i>
-                    <h6 className="mb-0 text-secondary">{card.label}</h6>
-                  </div>
-                  <h3 className="fw-bold mb-0">{card.valor}</h3>
-                </div>
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[{ label: "Total de Consultores", icon: "bi-people-fill", valor: consultores.length, cor: "text-sky-600" }, { label: "MÃ©dia de Pontos", icon: "bi-star-fill", valor: mediaPontos, cor: "text-amber-500" }, { label: "MÃ©dia de Progresso", icon: "bi-graph-up-arrow", valor: `${mediaProgresso}%`, cor: "text-emerald-600" }].map((card) => (
+            <div key={card.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="mb-2 flex items-center gap-2">
+                <i className={`bi ${card.icon} text-2xl ${card.cor}`}></i>
+                <h6 className="m-0 text-sm text-slate-600">{card.label}</h6>
               </div>
+              <h3 className="m-0 text-2xl font-bold text-slate-900">{card.valor}</h3>
             </div>
           ))}
         </div>
 
-        <div className="row g-3 mb-4">
-          <div className="col-lg-8">
-            <div className="card border-0 shadow-sm rounded-4">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                  <h5 className="fw-bold text-dark mb-0"><i className="bi bi-person-lines-fill me-2 text-primary"></i>Consultores</h5>
-                  <div className="input-group" style={{ maxWidth: "260px" }}>
-                    <span className="input-group-text bg-white border-end-0"><i className="bi bi-search text-muted"></i></span>
+        <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <h5 className="m-0 text-base font-bold text-slate-900"><i className="bi bi-person-lines-fill mr-2 text-sky-600"></i>Consultores</h5>
+                <div className="flex w-full items-center overflow-hidden rounded-xl border border-slate-300 bg-white sm:w-[260px]">
+                  <span className="px-3 text-slate-500"><i className="bi bi-search"></i></span>
                     <input
                       type="text"
-                      className="form-control border-start-0"
+                    className="w-full border-0 px-2 py-2 text-sm text-slate-800 outline-none"
                       placeholder="Procurar por nome..."
                       value={filtroNome}
                       onChange={(e) => setFiltroNome(e.target.value)}
@@ -59,120 +52,113 @@ export default function Equipa() {
                   </div>
                 </div>
 
-                <div className="table-responsive">
-                  <table className="table align-middle">
-                    <thead>
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="min-w-full divide-y divide-slate-200 text-sm">
+                  <thead className="bg-slate-100 text-slate-700">
                       <tr>
-                        <th>Consultor</th>
-                        <th>Função</th>
-                        <th>Service Line</th>
-                        <th>Pontos</th>
-                        <th>Badges</th>
-                        <th>Expiração</th>
-                        <th>Progresso</th>
-                        <th className="text-end">Timeline</th>
+                      <th className="px-3 py-2 text-left font-semibold">Consultor</th>
+                      <th className="px-3 py-2 text-left font-semibold">FunÃ§Ã£o</th>
+                      <th className="px-3 py-2 text-left font-semibold">Service Line</th>
+                      <th className="px-3 py-2 text-left font-semibold">Pontos</th>
+                      <th className="px-3 py-2 text-left font-semibold">Badges</th>
+                      <th className="px-3 py-2 text-left font-semibold">ExpiraÃ§Ã£o</th>
+                      <th className="px-3 py-2 text-left font-semibold">Progresso</th>
+                      <th className="px-3 py-2 text-right font-semibold">Timeline</th>
                       </tr>
                     </thead>
-                    <tbody>
+                  <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
                       {filtrados.map((c) => (
                         <tr key={c.id}>
-                          <td className="fw-semibold">{c.nome}</td>
-                          <td className="text-muted">{c.cargo}</td>
-                          <td>{c.serviceLine}</td>
-                          <td>{c.pontos}</td>
-                          <td>{c.badges}</td>
-                          <td>
+                        <td className="px-3 py-2 font-semibold text-slate-900">{c.nome}</td>
+                        <td className="px-3 py-2 text-slate-500">{c.cargo}</td>
+                        <td className="px-3 py-2">{c.serviceLine}</td>
+                        <td className="px-3 py-2">{c.pontos}</td>
+                        <td className="px-3 py-2">{c.badges}</td>
+                        <td className="px-3 py-2">
                             {c.expirando ? (
-                              <span className="badge bg-warning text-dark">{c.expirando} dias</span>
+                            <span className="inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">{c.expirando} dias</span>
                             ) : (
-                              <span className="badge bg-success">OK</span>
+                            <span className="inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">OK</span>
                             )}
                           </td>
-                          <td style={{ minWidth: "160px" }}>
-                            <div className="d-flex align-items-center gap-2">
-                              <div className="progress flex-grow-1" style={{ height: "6px" }}>
-                                <div className="progress-bar" role="progressbar" style={{ width: `${c.progresso}%`, backgroundColor: "#191970" }} aria-valuenow={c.progresso} aria-valuemin="0" aria-valuemax="100"></div>
+                        <td className="min-w-[160px] px-3 py-2">
+                          <div className="flex items-center gap-2">
+                            <div className="h-1.5 flex-1 rounded-full bg-slate-200">
+                              <div className="h-1.5 rounded-full bg-[#013440]" style={{ width: `${c.progresso}%` }}></div>
                               </div>
-                              <span className="small text-muted">{c.progresso}%</span>
+                            <span className="text-xs text-slate-500">{c.progresso}%</span>
                             </div>
                           </td>
-                          <td className="text-end">
-                            <button className="btn btn-outline-secondary btn-sm" onClick={() => alert("Timeline profissional (mock)")}>Ver timeline</button>
+                        <td className="px-3 py-2 text-right">
+                          <button className="rounded-lg border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => alert("Timeline profissional (mock)")}>Ver timeline</button>
                           </td>
                         </tr>
                       ))}
                       {!filtrados.length && (
                         <tr>
-                          <td colSpan="8" className="text-center text-muted py-4">Nenhum consultor encontrado com esse filtro.</td>
+                        <td colSpan="8" className="px-3 py-4 text-center text-sm text-slate-500">Nenhum consultor encontrado com esse filtro.</td>
                         </tr>
                       )}
                     </tbody>
                   </table>
-                </div>
               </div>
             </div>
           </div>
 
-          <div className="col-lg-4">
-            <div className="card border-0 shadow-sm rounded-4 mb-3">
-              <div className="card-body">
-                <h6 className="fw-bold mb-2"><i className="bi bi-fire me-2 text-danger"></i>Badges próximos da expiração</h6>
-                <ul className="list-group list-group-flush">
+          <div className="lg:col-span-4">
+            <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h6 className="mb-2 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-fire mr-2 text-rose-600"></i>Badges prÃ³ximos da expiraÃ§Ã£o</h6>
+              <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
                   {consultores
                     .flatMap((c) => c.badgesExpirando)
                     .slice(0, 4)
                     .map((b, idx) => (
-                      <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
+                    <li key={idx} className="flex items-center justify-between gap-3 px-3 py-3">
                         <div>
-                          <div className="fw-semibold">{b.nome}</div>
-                          <div className="text-muted small">{b.consultor}</div>
+                        <div className="text-sm font-semibold text-slate-900">{b.nome}</div>
+                        <div className="text-xs text-slate-500">{b.consultor}</div>
                         </div>
-                        <span className="badge bg-danger-subtle text-danger">{b.expiraEmDias} dias</span>
+                      <span className="inline-flex rounded-full bg-rose-100 px-2 py-1 text-xs font-semibold text-rose-700">{b.expiraEmDias} dias</span>
                       </li>
                     ))}
                   {!consultores.some((c) => c.badgesExpirando.length) && (
-                    <li className="list-group-item text-muted">Sem expirações próximas.</li>
+                  <li className="px-3 py-3 text-sm text-slate-500">Sem expiraÃ§Ãµes prÃ³ximas.</li>
                   )}
                 </ul>
-              </div>
             </div>
 
-            <div className="card border-0 shadow-sm rounded-4">
-              <div className="card-body">
-                <h6 className="fw-bold mb-2"><i className="bi bi-patch-check-fill me-2 text-success"></i>Requisitos por badge</h6>
-                <ul className="list-group list-group-flush">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h6 className="mb-2 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-patch-check-fill mr-2 text-emerald-600"></i>Requisitos por badge</h6>
+              <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
                   {requisitos.map((r) => (
-                    <li key={r.id} className="list-group-item">
-                      <div className="fw-semibold">{r.badge}</div>
-                      <div className="text-muted small">{r.requisito}</div>
+                  <li key={r.id} className="px-3 py-3">
+                    <div className="text-sm font-semibold text-slate-900">{r.badge}</div>
+                    <div className="text-xs text-slate-500">{r.requisito}</div>
                     </li>
                   ))}
                 </ul>
-              </div>
             </div>
           </div>
         </div>
 
-        <div className="card border-0 shadow-sm rounded-4">
-          <div className="card-body">
-            <h6 className="fw-bold mb-3"><i className="bi bi-stars me-2 text-warning"></i>Sistema de pontos e conquistas especiais</h6>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <div className="alert alert-primary mb-0">Cada badge atribui pontos; badges de conquistas especiais valem pontos extra e aparecem no perfil.</div>
-              </div>
-              <div className="col-md-6 d-flex flex-column gap-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h6 className="mb-3 text-sm font-bold text-slate-900 sm:text-base"><i className="bi bi-stars mr-2 text-amber-500"></i>Sistema de pontos e conquistas especiais</h6>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+              <div className="rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm text-sky-700">Cada badge atribui pontos; badges de conquistas especiais valem pontos extra e aparecem no perfil.</div>
+            </div>
+            <div className="flex flex-col gap-2">
                 {conquistas.map((c) => (
-                  <div key={c.id} className="d-flex align-items-center gap-2">
+                <div key={c.id} className="flex items-center gap-2">
                     <i className={`${c.icon} text-warning`}></i>
                     <div>
-                      <div className="fw-semibold">{c.nome}</div>
-                      <div className="text-muted small">{c.desc}</div>
+                    <div className="text-sm font-semibold text-slate-900">{c.nome}</div>
+                    <div className="text-xs text-slate-500">{c.desc}</div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
         </div>
       </main>
     </div>
@@ -182,18 +168,18 @@ export default function Equipa() {
 const sampleConsultores = [
   {
     id: 1,
-    nome: "Patrícia Almeida",
-    cargo: "Consultora Júnior",
+    nome: "PatrÃ­cia Almeida",
+    cargo: "Consultora JÃºnior",
     serviceLine: "Outsystems",
     pontos: 820,
     progresso: 75,
     badges: 4,
     expirando: 15,
-    badgesExpirando: [{ consultor: "Patrícia", nome: "Outsystems Avançado", expiraEmDias: 15 }],
+    badgesExpirando: [{ consultor: "PatrÃ­cia", nome: "Outsystems AvanÃ§ado", expiraEmDias: 15 }],
   },
   {
     id: 2,
-    nome: "João Silva",
+    nome: "JoÃ£o Silva",
     cargo: "Consultor",
     serviceLine: "DevOps",
     pontos: 960,
@@ -216,12 +202,14 @@ const sampleConsultores = [
 ];
 
 const requisitos = [
-  { id: 1, badge: "DevOps Intermédio", requisito: "Pipeline CI/CD + Monitorização" },
+  { id: 1, badge: "DevOps IntermÃ©dio", requisito: "Pipeline CI/CD + MonitorizaÃ§Ã£o" },
   { id: 2, badge: "React Advanced", requisito: "Projetos com hooks e testes" },
-  { id: 3, badge: "Azure Fundamentals", requisito: "Certificação AZ-900" },
+  { id: 3, badge: "Azure Fundamentals", requisito: "CertificaÃ§Ã£o AZ-900" },
 ];
 
 const conquistas = [
-  { id: 1, nome: "Badge Elite", desc: "Badges concluídos sem rejeições", icon: "bi-trophy-fill" },
+  { id: 1, nome: "Badge Elite", desc: "Badges concluÃ­dos sem rejeiÃ§Ãµes", icon: "bi-trophy-fill" },
   { id: 2, nome: "Ponto Extra", desc: "Cumpriu prazos antes do SLA", icon: "bi-lightning-fill" },
 ];
+
+

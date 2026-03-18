@@ -1,8 +1,6 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
@@ -34,7 +32,7 @@ export default function DashboardServiceLine() {
     datasets: [{
       label: "Badges obtidos",
       data: badgesByMonth.map((m) => m.count),
-      backgroundColor: "#4a6a8a",
+      backgroundColor: "#2AA4BF",
       borderRadius: 6,
       barThickness: 14,
     }]
@@ -43,16 +41,16 @@ export default function DashboardServiceLine() {
   const badgesNivelChart = {
     labels: badgesByLevel.map((l) => l.level),
     datasets: [{
-      label: "Badges por nível",
+      label: "Badges por nÃ­vel",
       data: badgesByLevel.map((l) => Number(l.count)),
-      backgroundColor: "#20c997",
+      backgroundColor: "#04C4D9",
       borderRadius: 6,
       barThickness: 14,
     }]
   };
 
   useEffect(() => {
-    // Carregar saudação guardada no login
+    // Carregar saudaÃ§Ã£o guardada no login
     const msg = localStorage.getItem("greeting");
     if (msg) setGreeting(msg);
   }, []);
@@ -82,133 +80,118 @@ export default function DashboardServiceLine() {
     load();
   }, [startDate, endDate]);
 
-  if (loading) return <div className="p-4">A carregar...</div>;
-  if (!sl) return <div className="p-4">Erro ao carregar dados.</div>;
+  if (loading) return <div className="p-4 text-slate-500">A carregar...</div>;
+  if (!sl) return <div className="p-4 text-rose-600">Erro ao carregar dados.</div>;
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "serviceLine", name: "Service Line" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
+      <main className="admin-main">
 
-        {/* Cabeçalho com saudação */}
-        <div
-          className="rounded-4 p-4 mb-4 shadow-sm"
-          style={{ backgroundColor: "#191970", color: "#fff" }}
-        >
-          <h3 className="fw-bold mb-1">
+        <div className="mb-6 rounded-2xl bg-indigo-900 p-4 text-white shadow-sm">
+          <h3 className="mb-1 text-2xl font-bold">
             {greeting} {sl.name?.split(" ")[0]}!
           </h3>
-          <p className="mb-0">Estatísticas da tua Service Line.</p>
+          <p className="m-0 text-sm text-indigo-100">EstatÃ­sticas da tua Service Line.</p>
         </div>
 
-        <div className="row g-4 mb-4">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
 
-          <div className="col-md-4">
-            <div className="card p-4 shadow-sm rounded-4 text-center">
-              <i className="bi bi-person-badge-fill fs-3 text-primary mb-2"></i>
-              <h3>{dados.totalConsultores}</h3>
-              <p className="text-muted">Consultores</p>
+          <div className="rounded-2xl bg-white p-4 text-center shadow-sm">
+              <i className="bi bi-person-badge-fill mb-2 block text-3xl text-blue-600"></i>
+              <h3 className="text-3xl font-bold text-slate-800">{dados.totalConsultores}</h3>
+              <p className="text-slate-500">Consultores</p>
             </div>
-          </div>
 
-          <div className="col-md-4">
-            <div className="card p-4 shadow-sm rounded-4 text-center">
-              <i className="bi bi-book-fill fs-3 text-info mb-2"></i>
-              <h3>{dados.cursosAtivos}</h3>
-              <p className="text-muted">Cursos Ativos</p>
+          <div className="rounded-2xl bg-white p-4 text-center shadow-sm">
+              <i className="bi bi-book-fill mb-2 block text-3xl text-cyan-600"></i>
+              <h3 className="text-3xl font-bold text-slate-800">{dados.cursosAtivos}</h3>
+              <p className="text-slate-500">Cursos Ativos</p>
             </div>
-          </div>
 
-          <div className="col-md-4">
-            <div className="card p-4 shadow-sm rounded-4 text-center">
-              <i className="bi bi-patch-exclamation-fill fs-3 text-warning mb-2"></i>
-              <h3>{dados.badgesPendentes}</h3>
-              <p className="text-muted">Badges Pendentes</p>
+          <div className="rounded-2xl bg-white p-4 text-center shadow-sm">
+              <i className="bi bi-patch-exclamation-fill mb-2 block text-3xl text-amber-500"></i>
+              <h3 className="text-3xl font-bold text-slate-800">{dados.badgesPendentes}</h3>
+              <p className="text-slate-500">Badges Pendentes</p>
             </div>
-          </div>
 
         </div>
 
-        {/* Progresso Global */}
-        <div className="card p-4 mb-4 shadow-sm rounded-4">
-          <h5 className="fw-bold text-dark mb-2">Progresso Global</h5>
+        <div className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
+          <h5 className="mb-2 text-lg font-bold text-slate-800">Progresso Global</h5>
 
-          <div className="progress" style={{ height: "8px" }}>
+          <div className="h-2 overflow-hidden rounded-full bg-slate-200">
             <div
-              className="progress-bar"
-              style={{ width: `${dados.progressoMedio}%`, backgroundColor: "#191970" }}
+              className="h-full rounded-full bg-indigo-900"
+              style={{ width: `${dados.progressoMedio}%` }}
             ></div>
           </div>
 
-          <p className="text-muted small mt-2">
-            Progresso médio de todos os consultores.
+          <p className="mt-2 text-sm text-slate-500">
+            Progresso mÃ©dio de todos os consultores.
           </p>
         </div>
 
-        <div className="card p-4 mb-4 shadow-sm rounded-4">
-          <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-            <h5 className="fw-bold mb-0">
-              <i className="bi bi-bar-chart-fill me-2 text-primary"></i>
+        <div className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h5 className="m-0 text-lg font-bold text-slate-800">
+              <i className="bi bi-bar-chart-fill mr-2 text-blue-600"></i>
               KPIs de Badges
             </h5>
-            <div className="d-flex align-items-center gap-2">
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="form-control form-control-sm" style={{ width: 140 }} />
-              <span className="text-muted small">até</span>
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="form-control form-control-sm" style={{ width: 140 }} />
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-[140px] rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+              />
+              <span className="text-sm text-slate-500">ate</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-[140px] rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+              />
             </div>
           </div>
 
-          <div className="row g-3 mb-3">
-            <div className="col-md-3">
-              <div className="p-3 rounded-3 border bg-light h-100 text-center">
-                <div className="text-muted small">Utilizadores na área</div>
-                <div className="fw-bold fs-4 text-primary">{summary.totalUsers}</div>
+          <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
+                <div className="text-xs text-slate-500">Utilizadores na Ã¡rea</div>
+                <div className="text-3xl font-bold text-blue-600">{summary.totalUsers}</div>
               </div>
-            </div>
-            <div className="col-md-3">
-              <div className="p-3 rounded-3 border bg-light h-100 text-center">
-                <div className="text-muted small">Badges obtidos (total)</div>
-                <div className="fw-bold fs-4 text-success">{summary.badgesObtidosTotal}</div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
+                <div className="text-xs text-slate-500">Badges obtidos (total)</div>
+                <div className="text-3xl font-bold text-emerald-600">{summary.badgesObtidosTotal}</div>
               </div>
-            </div>
-            <div className="col-md-3">
-              <div className="p-3 rounded-3 border bg-light h-100 text-center">
-                <div className="text-muted small">No período</div>
-                <div className="fw-bold fs-4 text-warning">{badgesByRange?.count || 0}</div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
+                <div className="text-xs text-slate-500">No perÃ­odo</div>
+                <div className="text-3xl font-bold text-amber-500">{badgesByRange?.count || 0}</div>
               </div>
-            </div>
           </div>
 
-          <div className="row g-4">
-            <div className="col-lg-6">
-              <div className="card shadow-sm border-0 rounded-4 h-100">
-                <div className="card-body">
-                  <h6 className="fw-bold mb-3"><i className="bi bi-calendar3 me-2 text-primary"></i>Badges obtidos por mês</h6>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <h6 className="mb-3 text-base font-bold text-slate-800"><i className="bi bi-calendar3 mr-2 text-blue-600"></i>Badges obtidos por mÃªs</h6>
                   <div style={{ height: 240 }}>
                     {badgesByMonth.length ? (
                       <Bar data={badgesMesChart} options={{ responsive: true, plugins: { legend: { display: false } } }} />
                     ) : (
-                      <div className="text-muted small d-flex align-items-center h-100">Sem registos para o período.</div>
+                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos para o perÃ­odo.</div>
                     )}
                   </div>
-                </div>
-              </div>
             </div>
 
-            <div className="col-lg-6">
-              <div className="card shadow-sm border-0 rounded-4 h-100">
-                <div className="card-body">
-                  <h6 className="fw-bold mb-3"><i className="bi bi-layers me-2 text-success"></i>Badges por nível</h6>
+            <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <h6 className="mb-3 text-base font-bold text-slate-800"><i className="bi bi-layers mr-2 text-emerald-600"></i>Badges por nÃ­vel</h6>
                   <div style={{ height: 240 }}>
                     {badgesByLevel.length ? (
                       <Bar data={badgesNivelChart} options={{ responsive: true, plugins: { legend: { display: false } } }} />
                     ) : (
-                      <div className="text-muted small d-flex align-items-center h-100">Sem registos de níveis para o período.</div>
+                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos de nÃ­veis para o perÃ­odo.</div>
                     )}
                   </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -217,3 +200,5 @@ export default function DashboardServiceLine() {
     </div>
   );
 }
+
+

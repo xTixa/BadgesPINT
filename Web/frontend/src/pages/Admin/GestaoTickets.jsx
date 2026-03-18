@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import Sidebar from "../../layout/Sidebar";
 
 export default function GestaoTickets() {
-  const { isMobile, isTablet } = useWindowSize();
+  const { isMobile } = useWindowSize();
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -117,13 +116,13 @@ export default function GestaoTickets() {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      aberto: { bg: "primary", label: "🔵 Aberto" },
-      em_analise: { bg: "warning", label: "🟡 Em Análise" },
-      resolvido: { bg: "success", label: "🟢 Resolvido" },
-      fechado: { bg: "secondary", label: "⚪ Fechado" },
+      aberto: { className: "bg-blue-100 text-blue-700", label: "🔵 Aberto" },
+      em_analise: { className: "bg-amber-100 text-amber-700", label: "🟡 Em Análise" },
+      resolvido: { className: "bg-emerald-100 text-emerald-700", label: "🟢 Resolvido" },
+      fechado: { className: "bg-slate-100 text-slate-700", label: "⚪ Fechado" },
     };
-    const s = statusMap[status];
-    return <span className={`badge bg-${s.bg}`}>{s.label}</span>;
+    const s = statusMap[status] || { className: "bg-slate-100 text-slate-700", label: status };
+    return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${s.className}`}>{s.label}</span>;
   };
 
   const getPriorityColor = (priority) => {
@@ -133,116 +132,57 @@ export default function GestaoTickets() {
       alta: "#ef4444",
       critica: "#dc2626",
     };
-    return colors[priority] || "#6b8cae";
+    return colors[priority] || "#04C4D9";
   };
 
   return (
-    <div style={{ padding: isMobile ? "1rem" : isTablet ? "1.5rem" : "2rem" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h2 style={{ color: "#244080", fontWeight: "700", fontSize: isMobile ? "1.5rem" : "2rem" }}>
-          <i className="bi bi-ticket" style={{ marginRight: "0.5rem" }}></i>
+    <div className="admin-shell">
+      <Sidebar user={{ role: "admin", name: "Admin" }} />
+
+      <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
+      <div className="mb-8">
+        <h2 className={`flex items-center gap-2 font-bold text-slate-800 ${isMobile ? "text-2xl" : "text-3xl"}`}>
+          <i className="bi bi-ticket text-indigo-500"></i>
           Gestão de Tickets
         </h2>
       </div>
 
-      {/* Estatísticas */}
       {stats && (
-        <div className="row g-3 mb-4">
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                Total
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#244080" }}>
-                {stats.total}
-              </div>
-            </div>
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total</div>
+            <div className="mt-1 text-3xl font-bold text-slate-800">{stats.total}</div>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                Abertos
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#3b82f6" }}>
-                {stats.porStatus?.abertos ?? stats.abertos ?? 0}
-              </div>
-            </div>
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Abertos</div>
+            <div className="mt-1 text-3xl font-bold text-blue-600">{stats.porStatus?.abertos ?? stats.abertos ?? 0}</div>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                Resolvidos
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#10b981" }}>
-                {stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}
-              </div>
-            </div>
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resolvidos</div>
+            <div className="mt-1 text-3xl font-bold text-emerald-600">{stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}</div>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                Críticos
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#dc2626" }}>
-                {stats.porPrioridade?.find(p => p.prioridade === "critica")?.count ?? stats.criticos ?? 0}
-              </div>
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Críticos</div>
+            <div className="mt-1 text-3xl font-bold text-rose-600">
+              {stats.porPrioridade?.find((p) => p.prioridade === "critica")?.count ?? stats.criticos ?? 0}
             </div>
           </div>
         </div>
       )}
 
-      {/* Filtros */}
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: isMobile ? "1rem" : "1.5rem",
-          borderRadius: "8px",
-          marginBottom: "2rem",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        }}
-      >
-        <div className="row g-2">
-          <div className="col-12 col-sm-6 col-md-5">
+      <div className="mb-8 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
+          <div className="md:col-span-5">
             <select
-              className="form-select"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               value={filtroStatus}
               onChange={(e) => {
                 setFiltroStatus(e.target.value);
                 setPage(1);
               }}
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
             >
               <option value="">Todos os Status</option>
               {statusOptions.map((opt) => (
@@ -253,15 +193,14 @@ export default function GestaoTickets() {
             </select>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-5">
+          <div className="md:col-span-5">
             <select
-              className="form-select"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               value={filtroPrioridade}
               onChange={(e) => {
                 setFiltroPrioridade(e.target.value);
                 setPage(1);
               }}
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
             >
               <option value="">Todas as Prioridades</option>
               {prioridadeOptions.map((opt) => (
@@ -272,15 +211,14 @@ export default function GestaoTickets() {
             </select>
           </div>
 
-          <div className="col-12 col-md-2">
+          <div className="md:col-span-2">
             <button
-              className="btn btn-outline-secondary w-100"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
               onClick={() => {
                 setFiltroStatus("");
                 setFiltroPrioridade("");
                 setPage(1);
               }}
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
             >
               <i className="bi bi-arrow-clockwise"></i> Limpar
             </button>
@@ -288,51 +226,43 @@ export default function GestaoTickets() {
         </div>
       </div>
 
-      {/* Tabela de Tickets */}
-      <div
-        style={{
-          backgroundColor: "white",
-          borderRadius: "8px",
-          overflow: isMobile ? "visible" : "hidden",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        }}
-      >
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
         {!isMobile ? (
-          <div style={{ overflowX: "auto" }}>
-            <table className="table" style={{ marginBottom: 0 }}>
-              <thead>
-                <tr style={{ backgroundColor: "#f8f9fa" }}>
-                  <th style={{ color: "#6b8cae", padding: "1rem" }}>Título</th>
-                  <th style={{ color: "#6b8cae", padding: "1rem" }}>Utilizador</th>
-                  <th style={{ color: "#6b8cae", padding: "1rem" }}>Status</th>
-                  <th style={{ color: "#6b8cae", padding: "1rem" }}>Prioridade</th>
-                  <th style={{ color: "#6b8cae", padding: "1rem" }}>Data</th>
-                  <th style={{ color: "#6b8cae", padding: "1rem" }}>Ação</th>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-4 py-3">Título</th>
+                  <th className="px-4 py-3">Utilizador</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Prioridade</th>
+                  <th className="px-4 py-3">Data</th>
+                  <th className="px-4 py-3">Ação</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
                 {tickets.map((ticket, idx) => (
-                  <tr key={ticket.id} style={{ backgroundColor: idx % 2 === 0 ? "white" : "#f8f9fa" }}>
-                    <td style={{ padding: "1rem", color: "#244080" }}>{ticket.titulo}</td>
-                    <td style={{ padding: "1rem", color: "#244080" }}>{ticket.utilizador?.name}</td>
-                    <td style={{ padding: "1rem" }}>{getStatusBadge(ticket.status)}</td>
-                    <td style={{ padding: "1rem" }}>
-                      <span style={{
-                        padding: "0.25rem 0.75rem",
-                        borderRadius: "4px",
-                        backgroundColor: getPriorityColor(ticket.prioridade) + "20",
-                        color: getPriorityColor(ticket.prioridade),
-                        fontSize: "0.85rem",
-                      }}>
+                  <tr key={ticket.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
+                    <td className="px-4 py-3 font-semibold text-slate-800">{ticket.titulo}</td>
+                    <td className="px-4 py-3 text-slate-700">{ticket.utilizador?.name}</td>
+                    <td className="px-4 py-3">{getStatusBadge(ticket.status)}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                        style={{
+                          backgroundColor: `${getPriorityColor(ticket.prioridade)}20`,
+                          color: getPriorityColor(ticket.prioridade),
+                        }}
+                      >
                         {ticket.prioridade}
                       </span>
                     </td>
-                    <td style={{ padding: "1rem", color: "#6b8cae", fontSize: "0.85rem" }}>
+                    <td className="px-4 py-3 text-xs text-slate-500">
                       {new Date(ticket.createdAt).toLocaleDateString("pt-PT")}
                     </td>
-                    <td style={{ padding: "1rem" }}>
+                    <td className="px-4 py-3">
                       <button
-                        className="btn btn-sm btn-primary"
+                        className="inline-flex items-center gap-1 rounded-lg bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-800"
                         onClick={() => {
                           setTicketSelecionado(ticket);
                           setNovoStatus(ticket.status);
@@ -347,52 +277,52 @@ export default function GestaoTickets() {
             </table>
           </div>
         ) : (
-          <div style={{ padding: "2rem", textAlign: "center", color: "#6b8cae" }}>
-            Clique nos tickets para gerenciar
+          <div className="space-y-3 p-4">
+            {tickets.length === 0 ? (
+              <p className="py-6 text-center text-sm text-slate-500">Sem tickets para mostrar.</p>
+            ) : (
+              tickets.map((ticket) => (
+                <button
+                  key={ticket.id}
+                  type="button"
+                  className="w-full rounded-xl border border-slate-200 p-3 text-left"
+                  onClick={() => {
+                    setTicketSelecionado(ticket);
+                    setNovoStatus(ticket.status);
+                  }}
+                >
+                  <p className="font-semibold text-slate-800">{ticket.titulo}</p>
+                  <p className="mt-1 text-xs text-slate-500">{ticket.utilizador?.name}</p>
+                  <div className="mt-2 flex items-center justify-between">
+                    {getStatusBadge(ticket.status)}
+                    <span className="text-xs text-slate-500">{new Date(ticket.createdAt).toLocaleDateString("pt-PT")}</span>
+                  </div>
+                </button>
+              ))
+            )}
           </div>
         )}
       </div>
 
-      {/* Modal de Edição */}
       {ticketSelecionado && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: isMobile ? "1rem" : "0",
-          }}
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4"
           onClick={() => setTicketSelecionado(null)}
         >
           <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "8px",
-              padding: isMobile ? "1.5rem" : "2rem",
-              maxWidth: "600px",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              width: "100%",
-            }}
+            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 sm:p-8"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ color: "#244080", marginBottom: "1.5rem" }}>
+            <h3 className="mb-6 text-2xl font-bold text-slate-800">
               {ticketSelecionado.titulo}
             </h3>
 
-            <div style={{ marginBottom: "1.5rem" }}>
-              <label style={{ fontWeight: "500", color: "#244080", marginBottom: "0.5rem" }}>
+            <div className="mb-5">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">
                 Novo Status
               </label>
               <select
-                className="form-select"
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 value={novoStatus}
                 onChange={(e) => setNovoStatus(e.target.value)}
               >
@@ -404,12 +334,12 @@ export default function GestaoTickets() {
               </select>
             </div>
 
-            <div style={{ marginBottom: "1.5rem" }}>
-              <label style={{ fontWeight: "500", color: "#244080", marginBottom: "0.5rem" }}>
+            <div className="mb-5">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">
                 Resposta/Notas do Administrador
               </label>
               <textarea
-                className="form-control"
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 value={respostaAdmin}
                 onChange={(e) => setRespostaAdmin(e.target.value)}
                 placeholder="Escreva sua resposta aqui..."
@@ -417,17 +347,15 @@ export default function GestaoTickets() {
               />
             </div>
 
-            <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div className="flex gap-2">
               <button
-                className="btn btn-primary"
-                style={{ flex: 1 }}
+                className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
                 onClick={handleAtualizarTicket}
               >
                 <i className="bi bi-check"></i> Atualizar
               </button>
               <button
-                className="btn btn-outline-secondary"
-                style={{ flex: 1 }}
+                className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                 onClick={() => setTicketSelecionado(null)}
               >
                 Cancelar
@@ -436,6 +364,7 @@ export default function GestaoTickets() {
           </div>
         </div>
       )}
+      </main>
     </div>
   );
 }

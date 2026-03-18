@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useWindowSize } from "../hooks/useWindowSize";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import Sidebar from "../layout/Sidebar";
 
 export default function MeusTickets() {
-  const { isMobile, isTablet } = useWindowSize();
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const sidebarUser = {
+    role: storedUser.role || "consultant",
+    name: storedUser.name || storedUser.nome || "Utilizador",
+  };
+
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtroStatus, setFiltroStatus] = useState("");
@@ -64,13 +67,13 @@ export default function MeusTickets() {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      aberto: { bg: "primary", label: "🔵 Aberto" },
-      em_analise: { bg: "warning", label: "🟡 Em Análise" },
-      resolvido: { bg: "success", label: "🟢 Resolvido" },
-      fechado: { bg: "secondary", label: "⚪ Fechado" },
+      aberto: { color: "bg-sky-100 text-sky-700", label: "🔵 Aberto" },
+      em_analise: { color: "bg-amber-100 text-amber-700", label: "🟡 Em Análise" },
+      resolvido: { color: "bg-emerald-100 text-emerald-700", label: "🟢 Resolvido" },
+      fechado: { color: "bg-slate-200 text-slate-700", label: "⚪ Fechado" },
     };
     const s = statusMap[status];
-    return <span className={`badge bg-${s.bg}`}>{s.label}</span>;
+    return <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${s.color}`}>{s.label}</span>;
   };
 
   const getPriorityColor = (priority) => {
@@ -80,52 +83,48 @@ export default function MeusTickets() {
       alta: "#ef4444",
       critica: "#dc2626",
     };
-    return colors[priority] || "#6b8cae";
+    return colors[priority] || "#04C4D9";
   };
 
   if (loading && tickets.length === 0) {
     return (
-      <div style={{ padding: isMobile ? "1rem" : "2rem", textAlign: "center" }}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Carregando...</span>
-        </div>
+      <div className="admin-shell">
+        <Sidebar user={sidebarUser} />
+
+        <main className="admin-main px-4 py-8 text-center sm:px-5 md:px-6">
+          <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-sky-700 border-r-transparent" role="status">
+            <span className="visually-hidden">Carregando...</span>
+          </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: isMobile ? "1rem" : isTablet ? "1.5rem" : "2rem" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h2 style={{ color: "#244080", fontWeight: "700", fontSize: isMobile ? "1.5rem" : "2rem" }}>
-          <i className="bi bi-ticket-detailed" style={{ marginRight: "0.5rem" }}></i>
-          {isMobile ? "Meus Tickets" : "Meus Tickets"}
+    <div className="admin-shell">
+      <Sidebar user={sidebarUser} />
+
+      <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
+      <div className="mb-8">
+        <h2 className="flex items-center gap-2 text-2xl font-bold text-[#013440] sm:text-3xl">
+          <i className="bi bi-ticket-detailed"></i>
+          Meus Tickets
         </h2>
-        <p style={{ color: "#6b8cae", fontSize: isMobile ? "0.85rem" : "0.95rem" }}>
+        <p className="mt-1 text-sm text-slate-500 sm:text-base">
           Total: <strong>{pagination.total}</strong> tickets
         </p>
       </div>
 
-      {/* Filtros */}
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: isMobile ? "1rem" : "1.5rem",
-          borderRadius: "8px",
-          marginBottom: "2rem",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        }}
-      >
-        <div className="row g-2">
-          <div className="col-12 col-sm-6 col-md-5">
+      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
+          <div className="md:col-span-5">
             <select
-              className="form-select"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
               value={filtroStatus}
               onChange={(e) => {
                 setFiltroStatus(e.target.value);
                 setPage(1);
               }}
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
             >
               <option value="">Todos os Status</option>
               {statusOptions.map((opt) => (
@@ -136,15 +135,14 @@ export default function MeusTickets() {
             </select>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-5">
+          <div className="md:col-span-5">
             <select
-              className="form-select"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
               value={filtroPrioridade}
               onChange={(e) => {
                 setFiltroPrioridade(e.target.value);
                 setPage(1);
               }}
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
             >
               <option value="">Todas as Prioridades</option>
               {prioridadeOptions.map((opt) => (
@@ -155,15 +153,14 @@ export default function MeusTickets() {
             </select>
           </div>
 
-          <div className="col-12 col-md-2">
+          <div className="md:col-span-2">
             <button
-              className="btn btn-outline-secondary w-100"
+              className="w-full rounded-xl border border-slate-400 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               onClick={() => {
                 setFiltroStatus("");
                 setFiltroPrioridade("");
                 setPage(1);
               }}
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
             >
               <i className="bi bi-arrow-clockwise"></i> Limpar
             </button>
@@ -173,53 +170,31 @@ export default function MeusTickets() {
 
       {/* Tickets */}
       {tickets.length > 0 ? (
-        <div className="row g-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {tickets.map((ticket) => (
-            <div key={ticket.id} className="col-12 col-md-6 col-lg-4">
+            <div key={ticket.id}>
               <div
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "8px",
-                  padding: "1.5rem",
-                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-                  borderLeft: `4px solid ${getPriorityColor(ticket.prioridade)}`,
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.12)")}
-                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)")}
+                className="cursor-pointer rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md"
+                style={{ borderLeft: `4px solid ${getPriorityColor(ticket.prioridade)}` }}
                 onClick={() => setTicketSelecionado(ticket)}
               >
-                <div style={{ marginBottom: "1rem" }}>
-                  <h5 style={{ color: "#244080", marginBottom: "0.5rem", fontSize: isMobile ? "0.95rem" : "1rem" }}>
+                <div className="mb-4">
+                  <h5 className="mb-2 text-base font-semibold text-[#013440]">
                     {ticket.titulo}
                   </h5>
-                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                  <div className="flex flex-wrap gap-2">
                     {getStatusBadge(ticket.status)}
-                    <span className="badge bg-info" style={{ fontSize: isMobile ? "0.75rem" : "0.85rem" }}>
+                    <span className="inline-flex items-center rounded-full bg-cyan-100 px-2 py-1 text-xs font-semibold text-cyan-700">
                       {ticket.categoria}
                     </span>
                   </div>
                 </div>
 
-                <p style={{
-                  color: "#6b8cae",
-                  fontSize: isMobile ? "0.8rem" : "0.9rem",
-                  marginBottom: "1rem",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}>
+                <p className="mb-4 overflow-hidden text-sm text-slate-500" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                   {ticket.descricao}
                 </p>
 
-                <div style={{
-                  fontSize: isMobile ? "0.75rem" : "0.85rem",
-                  color: "#9ca3af",
-                  borderTop: "1px solid #e5e7eb",
-                  paddingTop: "0.75rem",
-                }}>
+                <div className="border-t border-slate-200 pt-3 text-xs text-slate-400 sm:text-sm">
                   <i className="bi bi-calendar"></i> {new Date(ticket.createdAt).toLocaleDateString("pt-PT")}
                 </div>
               </div>
@@ -227,15 +202,9 @@ export default function MeusTickets() {
           ))}
         </div>
       ) : (
-        <div style={{
-          backgroundColor: "white",
-          padding: "3rem",
-          textAlign: "center",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        }}>
+        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center shadow-sm">
           <i style={{ fontSize: "3rem", color: "#d1d5db" }} className="bi bi-inbox"></i>
-          <p style={{ color: "#6b8cae", marginTop: "1rem" }}>
+          <p className="mt-4 text-slate-500">
             Nenhum ticket encontrado
           </p>
         </div>
@@ -243,10 +212,14 @@ export default function MeusTickets() {
 
       {/* Paginação */}
       {pagination.pages > 1 && (
-        <nav className="mt-4">
-          <ul className="pagination justify-content-center">
-            <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
-              <button className="page-link" onClick={() => setPage(1)} disabled={page === 1}>
+        <nav className="mt-6">
+          <ul className="flex flex-wrap items-center justify-center gap-2">
+            <li>
+              <button
+                className="rounded-lg border border-slate-300 px-3 py-1 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => setPage(1)}
+                disabled={page === 1}
+              >
                 Primeira
               </button>
             </li>
@@ -254,15 +227,26 @@ export default function MeusTickets() {
               const pageNum = page > 3 ? page - 2 + i : i + 1;
               if (pageNum > pagination.pages) return null;
               return (
-                <li key={pageNum} className={`page-item ${page === pageNum ? "active" : ""}`}>
-                  <button className="page-link" onClick={() => setPage(pageNum)}>
+                <li key={pageNum}>
+                  <button
+                    className={`rounded-lg border px-3 py-1 text-sm ${
+                      page === pageNum
+                        ? "border-sky-700 bg-sky-700 text-white"
+                        : "border-slate-300 text-slate-700"
+                    }`}
+                    onClick={() => setPage(pageNum)}
+                  >
                     {pageNum}
                   </button>
                 </li>
               );
             })}
-            <li className={`page-item ${page === pagination.pages ? "disabled" : ""}`}>
-              <button className="page-link" onClick={() => setPage(pagination.pages)} disabled={page === pagination.pages}>
+            <li>
+              <button
+                className="rounded-lg border border-slate-300 px-3 py-1 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => setPage(pagination.pages)}
+                disabled={page === pagination.pages}
+              >
                 Última
               </button>
             </li>
@@ -273,94 +257,70 @@ export default function MeusTickets() {
       {/* Modal de Detalhes */}
       {ticketSelecionado && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: isMobile ? "1rem" : "0",
-          }}
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4"
           onClick={() => setTicketSelecionado(null)}
         >
           <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "8px",
-              padding: isMobile ? "1.5rem" : "2rem",
-              maxWidth: "600px",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              width: "100%",
-            }}
+            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 sm:p-8"
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
-              <h3 style={{ color: "#244080", fontSize: isMobile ? "1.2rem" : "1.5rem" }}>
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <h3 className="text-xl font-bold text-[#013440] sm:text-2xl">
                 {ticketSelecionado.titulo}
               </h3>
               <button
-                style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#6b8cae" }}
+                className="text-2xl text-slate-500"
                 onClick={() => setTicketSelecionado(null)}
               >
                 ✕
               </button>
             </div>
 
-            <div style={{ marginBottom: "1.5rem" }}>
-              <div style={{ marginBottom: "1rem" }}>
-                <strong style={{ color: "#244080" }}>Status:</strong>
-                <div style={{ marginTop: "0.5rem" }}>
+            <div className="mb-6 space-y-4">
+              <div>
+                <strong className="text-[#013440]">Status:</strong>
+                <div className="mt-2">
                   {getStatusBadge(ticketSelecionado.status)}
                 </div>
               </div>
 
-              <div style={{ marginBottom: "1rem" }}>
-                <strong style={{ color: "#244080" }}>Prioridade:</strong>
-                <span style={{
-                  marginLeft: "0.5rem",
-                  padding: "0.25rem 0.75rem",
-                  borderRadius: "4px",
-                  backgroundColor: getPriorityColor(ticketSelecionado.prioridade) + "20",
-                  color: getPriorityColor(ticketSelecionado.prioridade),
-                }}>
+              <div>
+                <strong className="text-[#013440]">Prioridade:</strong>
+                <span
+                  className="ml-2 rounded px-3 py-1 text-sm"
+                  style={{ backgroundColor: getPriorityColor(ticketSelecionado.prioridade) + "20", color: getPriorityColor(ticketSelecionado.prioridade) }}
+                >
                   {prioridadeOptions.find(p => p.value === ticketSelecionado.prioridade)?.label}
                 </span>
               </div>
 
-              <div style={{ marginBottom: "1rem" }}>
-                <strong style={{ color: "#244080" }}>Criado em:</strong>
-                <p style={{ color: "#6b8cae", marginTop: "0.25rem" }}>
+              <div>
+                <strong className="text-[#013440]">Criado em:</strong>
+                <p className="mt-1 text-slate-500">
                   {new Date(ticketSelecionado.createdAt).toLocaleString("pt-PT")}
                 </p>
               </div>
             </div>
 
-            <div style={{ marginBottom: "1.5rem", paddingBottom: "1.5rem", borderBottom: "1px solid #e5e7eb" }}>
-              <strong style={{ color: "#244080" }}>Descrição:</strong>
-              <p style={{ color: "#6b8cae", marginTop: "0.75rem", whiteSpace: "pre-wrap" }}>
+            <div className="mb-6 border-b border-slate-200 pb-6">
+              <strong className="text-[#013440]">Descrição:</strong>
+              <p className="mt-3 whitespace-pre-wrap text-slate-500">
                 {ticketSelecionado.descricao}
               </p>
             </div>
 
             {ticketSelecionado.resposta_admin && (
-              <div style={{ backgroundColor: "#f0f4f8", padding: "1rem", borderRadius: "6px", marginBottom: "1rem" }}>
-                <strong style={{ color: "#244080" }}>Resposta do Administrador:</strong>
-                <p style={{ color: "#6b8cae", marginTop: "0.75rem", whiteSpace: "pre-wrap" }}>
+              <div className="mb-4 rounded-lg bg-slate-100 p-4">
+                <strong className="text-[#013440]">Resposta do Administrador:</strong>
+                <p className="mt-3 whitespace-pre-wrap text-slate-500">
                   {ticketSelecionado.resposta_admin}
                 </p>
               </div>
             )}
 
-            <div style={{ display: "flex", gap: "0.5rem" }}>
+            <div className="flex gap-2">
               <button
-                className="btn btn-primary"
-                style={{ flex: 1, fontSize: isMobile ? "0.9rem" : "1rem" }}
+                className="w-full rounded-xl border border-sky-700 bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800 sm:text-base"
                 onClick={() => setTicketSelecionado(null)}
               >
                 Fechar
@@ -369,6 +329,7 @@ export default function MeusTickets() {
           </div>
         </div>
       )}
+      </main>
     </div>
   );
 }

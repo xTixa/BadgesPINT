@@ -1,9 +1,7 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function GestaoBadges() {
   const [badges, setBadges] = useState([]);
@@ -25,15 +23,15 @@ export default function GestaoBadges() {
 
   const token = localStorage.getItem("token");
   const niveisBadges = ["Junior", "Intermedio", "Senior", "Especialista", "Lider"];
-  const levelColors = {
-    "Junior": "success",
-    "Intermedio": "info",
-    "Senior": "warning",
-    "Especialista": "danger",
-    "Lider": "dark"
+  const levelBadgeClass = {
+    "Junior": "bg-emerald-100 text-emerald-700",
+    "Intermedio": "bg-cyan-100 text-cyan-700",
+    "Senior": "bg-amber-100 text-amber-700",
+    "Especialista": "bg-rose-100 text-rose-700",
+    "Lider": "bg-slate-200 text-slate-800"
   };
 
-  // Carregar badges e áreas
+  // Carregar badges e Ã¡reas
   useEffect(() => {
     async function loadData() {
       try {
@@ -56,7 +54,7 @@ export default function GestaoBadges() {
     loadData();
   }, []);
 
-  // Abrir modal de edição
+  // Abrir modal de ediÃ§Ã£o
   const handleEditBadge = (badge) => {
     setBadgeEditando(badge);
     setFormData({
@@ -69,7 +67,7 @@ export default function GestaoBadges() {
     setShowEditModal(true);
   };
 
-  // Salvar edição do badge
+  // Salvar ediÃ§Ã£o do badge
   const handleSaveEdit = async () => {
     try {
       const response = await axios.put(
@@ -136,51 +134,37 @@ export default function GestaoBadges() {
     return matchFiltro && matchArea && matchNivel;
   });
 
-  // Calcular dias até expiração
-  const diasAteExpiracao = (badge) => {
-    if (!badge.expiry_days) return null;
-    return badge.expiry_days;
-  };
-
   return (
-    <div
-      className="d-flex"
-      style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}
-    >
+    <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+      <main className="admin-main">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="fw-bold text-dark mb-0">
-              <i className="bi bi-award-fill text-primary me-2" />
-              Gestão de Badges
+            <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
+              <i className="bi bi-award-fill text-indigo-500" />
+              GestÃ£o de Badges
             </h3>
-            <p className="text-muted small mt-1">Criar, editar e gerir badges (expiração, pontos, níveis)</p>
+            <p className="text-sm text-slate-500">Criar, editar e gerir badges (expiraÃ§Ã£o, pontos, nÃ­veis)</p>
           </div>
 
           <Link
             to="/admin/badges/novo"
-            className="btn btn-primary"
-            style={{ backgroundColor: "#191970", borderColor: "#191970" }}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
           >
-            <i className="bi bi-plus-circle me-2"></i>
+            <i className="bi bi-plus-circle"></i>
             Criar novo Badge
           </Link>
         </div>
 
-        {/* Filtros */}
-        <div className="row mb-4 g-3">
-          <div className="col-md-4">
-            <label className="form-label fw-semibold small">Pesquisar</label>
-            <div className="input-group">
-              <span className="input-group-text bg-white">
-                <i className="bi bi-search"></i>
-              </span>
+        <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Pesquisar</label>
+            <div className="relative">
+              <i className="bi bi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input
                 type="text"
-                className="form-control"
+                className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 placeholder="Nome do badge..."
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
@@ -188,28 +172,28 @@ export default function GestaoBadges() {
             </div>
           </div>
 
-          <div className="col-md-4">
-            <label className="form-label fw-semibold small">Área</label>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Ãrea</label>
             <select
-              className="form-select"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               value={filtroArea}
               onChange={(e) => setFiltroArea(e.target.value)}
             >
-              <option value="">Todas as áreas</option>
+              <option value="">Todas as Ã¡reas</option>
               {areas.map(a => (
                 <option key={a.id} value={a.id}>{a.name}</option>
               ))}
             </select>
           </div>
 
-          <div className="col-md-4">
-            <label className="form-label fw-semibold small">Nível</label>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">NÃ­vel</label>
             <select
-              className="form-select"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               value={filtroNivel}
               onChange={(e) => setFiltroNivel(e.target.value)}
             >
-              <option value="">Todos os níveis</option>
+              <option value="">Todos os nÃ­veis</option>
               {niveisBadges.map(n => (
                 <option key={n} value={n}>{n}</option>
               ))}
@@ -217,98 +201,98 @@ export default function GestaoBadges() {
           </div>
         </div>
 
-        {/* Tabela */}
         {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary"></div>
-            <p className="text-muted mt-3">A carregar...</p>
+          <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-500">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500"></div>
+            <p className="text-sm">A carregar...</p>
           </div>
         ) : erro ? (
-          <div className="alert alert-danger">{erro}</div>
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{erro}</div>
         ) : (
-          <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <div className="table-responsive">
-              <table className="table mb-0">
-                <thead className="table-light">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200 text-sm">
+                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th style={{ width: "25%" }}>Nome</th>
-                    <th style={{ width: "15%" }}>Nível</th>
-                    <th style={{ width: "15%" }}>Área</th>
-                    <th style={{ width: "10%" }}>Pontos</th>
-                    <th style={{ width: "15%" }}>Expiração (dias)</th>
-                    <th style={{ width: "20%" }}>Ações</th>
+                    <th className="px-4 py-3">Nome</th>
+                    <th className="px-4 py-3">NÃ­vel</th>
+                    <th className="px-4 py-3">Ãrea</th>
+                    <th className="px-4 py-3">Pontos</th>
+                    <th className="px-4 py-3">ExpiraÃ§Ã£o (dias)</th>
+                    <th className="px-4 py-3">AÃ§Ãµes</th>
                   </tr>
                 </thead>
 
-                <tbody>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
                   {badgesFiltrados.map((b) => (
-                    <tr key={b.id} style={{ borderColor: "#e9ecef" }}>
-                      <td className="py-3">
-                        <div className="d-flex align-items-center">
+                    <tr key={b.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
                           {b.image_url && (
                             <img
                               src={b.image_url}
                               alt={b.description}
-                              style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "12px", objectFit: "cover" }}
+                              className="h-10 w-10 rounded-full object-cover"
                             />
                           )}
                           <div>
-                            <strong>{b.description}</strong>
-                            <br />
-                            <small style={{ color: "#6b8cae" }}>ID: {b.id}</small>
+                            <p className="font-semibold text-slate-800">{b.description}</p>
+                            <p className="text-xs text-slate-500">ID: {b.id}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-3">
-                        <span className={`badge bg-${levelColors[b.level]}`}>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${levelBadgeClass[b.level] || "bg-slate-100 text-slate-700"}`}>
                           {b.level}
                         </span>
                       </td>
-                      <td className="py-3">
-                        {b.area?.name || "—"}
+                      <td className="px-4 py-3">
+                        {b.area?.name || "â€”"}
                       </td>
-                      <td className="py-3">
-                        <strong>{b.points}</strong> pts
+                      <td className="px-4 py-3">
+                        <span className="font-semibold text-slate-800">{b.points}</span> pts
                       </td>
-                      <td className="py-3">
+                      <td className="px-4 py-3">
                         {b.expiry_days ? (
-                          <span style={{ color: b.expiry_days < 30 ? "#dc3545" : "#198754" }}>
+                          <span className={b.expiry_days < 30 ? "text-rose-600" : "text-emerald-600"}>
                             {b.expiry_days} dias
                           </span>
                         ) : (
-                          <span style={{ color: "#6b8cae" }}>Sem expiração</span>
+                          <span className="text-slate-500">Sem expiraÃ§Ã£o</span>
                         )}
                       </td>
-                      <td className="py-3">
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-2">
                         <button
-                          className="btn btn-sm btn-outline-primary me-2"
+                          className="inline-flex items-center gap-1 rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
                           onClick={() => handleEditBadge(b)}
                         >
-                          <i className="bi bi-pencil me-1"></i>
+                          <i className="bi bi-pencil"></i>
                           Editar
                         </button>
                         <button
-                          className="btn btn-sm btn-outline-success me-2"
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
                           onClick={() => handleGenerateCertificate(b)}
                         >
-                          <i className="bi bi-file-earmark-pdf me-1"></i>
+                          <i className="bi bi-file-earmark-pdf"></i>
                           Retificar Certificado
                         </button>
                         <button
-                          className="btn btn-sm btn-outline-danger"
+                          className="inline-flex items-center gap-1 rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
                           onClick={() => handleDelete(b.id)}
                         >
-                          <i className="bi bi-trash me-1"></i>
+                          <i className="bi bi-trash"></i>
                           Apagar
                         </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
 
                   {badgesFiltrados.length === 0 && (
                     <tr>
-                      <td colSpan="6" className="text-center py-4 text-muted">
-                        {filtro || filtroArea || filtroNivel ? "Nenhum badge encontrado com esses critérios." : "Nenhum badge encontrado."}
+                      <td colSpan="6" className="px-4 py-6 text-center text-sm text-slate-500">
+                        {filtro || filtroArea || filtroNivel ? "Nenhum badge encontrado com esses critÃ©rios." : "Nenhum badge encontrado."}
                       </td>
                     </tr>
                   )}
@@ -319,46 +303,37 @@ export default function GestaoBadges() {
         )}
       </main>
 
-      {/* Modal de Edição */}
       {showEditModal && badgeEditando && (
         <div
-          className="modal show d-block"
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1050
-          }}
+          className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4"
         >
-          <div className="modal-dialog" style={{ maxWidth: "500px" }}>
-            <div className="modal-content border-0 rounded-4">
-              <div className="modal-header border-0 bg-light">
-                <h5 className="modal-title fw-bold">Editar Badge</h5>
+          <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-4">
+                <h5 className="text-lg font-bold text-slate-800">Editar Badge</h5>
                 <button
                   type="button"
-                  className="btn-close"
+                  className="rounded-md px-2 py-1 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
                   onClick={() => setShowEditModal(false)}
-                ></button>
+                >
+                  <i className="bi bi-x-lg"></i>
+                </button>
               </div>
 
-              <div className="modal-body p-4">
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Nome do Badge *</label>
+              <div className="space-y-4 p-5">
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">Nome do Badge *</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Nível *</label>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">NÃ­vel *</label>
                   <select
-                    className="form-select"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     value={formData.level}
                     onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                   >
@@ -368,34 +343,34 @@ export default function GestaoBadges() {
                   </select>
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Pontos *</label>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">Pontos *</label>
                   <input
                     type="number"
-                    className="form-control"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     value={formData.points}
                     onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) })}
                     min="0"
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Dias até Expiração</label>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">Dias atÃ© ExpiraÃ§Ã£o</label>
                   <input
                     type="number"
-                    className="form-control"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     value={formData.expiry_days || ""}
                     onChange={(e) => setFormData({ ...formData, expiry_days: e.target.value ? parseInt(e.target.value) : null })}
-                    placeholder="Deixe em branco se sem expiração"
+                    placeholder="Deixe em branco se sem expiraÃ§Ã£o"
                     min="0"
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">URL da Imagem</label>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">URL da Imagem</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     value={formData.image_url || ""}
                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                     placeholder="https://..."
@@ -403,27 +378,28 @@ export default function GestaoBadges() {
                 </div>
               </div>
 
-              <div className="modal-footer border-0 bg-light">
+              <div className="flex items-center justify-end gap-2 border-t border-slate-200 bg-slate-50 px-5 py-4">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                   onClick={() => setShowEditModal(false)}
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="inline-flex items-center gap-1 rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
                   onClick={handleSaveEdit}
                 >
-                  <i className="bi bi-check-circle me-1"></i>
-                  Guardar Alterações
+                  <i className="bi bi-check-circle"></i>
+                  Guardar AlteraÃ§Ãµes
                 </button>
               </div>
-            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
+
+

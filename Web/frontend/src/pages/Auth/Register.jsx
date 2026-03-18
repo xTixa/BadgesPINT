@@ -51,26 +51,25 @@ export default function Register() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* ESQUERDA */}
-      <div className="relative flex-1 flex flex-col justify-center px-8 py-12 bg-[#191970] text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#191970] to-[#000428] opacity-95"></div>
+      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#013440] text-white">
 
-        <div className="relative z-10 max-w-md mx-auto text-center md:text-left">
+        <div className="max-w-md mx-auto text-center md:text-left">
           <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
             Criar Conta
           </h1>
-          <p className="text-blue-100 text-lg mb-10">
+          <p className="text-[#04C4D9] text-lg mb-10">
             O teu acesso à plataforma começa aqui.
           </p>
         </div>
       </div>
 
       {/* DIREITA */}
-      <div className="flex-1 flex items-center justify-center bg-white">
+      <div className="flex-1 flex items-center justify-center bg-[#F2F2F2]">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-sm bg-white/90 shadow-xl rounded-2xl px-10 py-12 mx-6 border border-gray-100"
+          className="w-full max-w-sm bg-white rounded-2xl px-10 py-12 mx-6 border border-[#2AA4BF]"
         >
-          <h2 className="text-2xl font-bold text-[#191970] mb-8 text-center">
+          <h2 className="text-2xl font-bold text-[#013440] mb-8 text-center">
             Novo Utilizador
           </h2>
 
@@ -95,7 +94,7 @@ export default function Register() {
               name="nome"
               required
               className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-[#191970] focus:ring-2"
+              focus:outline-none focus:ring-[#013440] focus:ring-2"
               value={form.nome}
               onChange={handleChange}
             />
@@ -111,7 +110,7 @@ export default function Register() {
               name="email"
               required
               className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-[#191970] focus:ring-2"
+              focus:outline-none focus:ring-[#013440] focus:ring-2"
               value={form.email}
               onChange={handleChange}
             />
@@ -125,7 +124,7 @@ export default function Register() {
             <select
               name="area"
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-[#191970] focus:ring-2"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-[#013440] focus:ring-2"
               value={form.area}
               onChange={handleChange}
             >
@@ -158,8 +157,8 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-lg font-semibold text-white bg-[#191970] 
-            hover:bg-[#101050] transition-colors"
+            className="w-full py-3 rounded-lg font-semibold text-white bg-[#013440] 
+            hover:bg-[#013440]"
           >
             {loading ? "A criar..." : "Criar Utilizador"}
           </button>

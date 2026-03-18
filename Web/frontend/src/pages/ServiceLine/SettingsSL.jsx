@@ -1,13 +1,13 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import React from "react";
-import Sidebar from "../../components/sidebar/sidebar";
 
 export default function ServiceLineSettingsPage() {
   return (
     <div className="settings-page">
         <Sidebar user={{ role: "service_line", name: "Service Line" }} />
-      <h1>Definições do Service Line</h1>
+      <h1>DefiniÃ§Ãµes do Service Line</h1>
 
-      {/* Service Line e áreas */}
+      {/* Service Line e Ã¡reas */}
       <section>
         <h2>Service Line</h2>
         <label>
@@ -15,16 +15,16 @@ export default function ServiceLineSettingsPage() {
           <select>{/* options */}</select>
         </label>
         <label>
-          Áreas visíveis por defeito
+          Ãreas visÃ­veis por defeito
           <select multiple>{/* options */}</select>
         </label>
       </section>
 
-      {/* Notificações */}
+      {/* NotificaÃ§Ãµes */}
       <section>
-        <h2>Notificações</h2>
+        <h2>NotificaÃ§Ãµes</h2>
         <label>
-          Candidaturas em validação da Service Line
+          Candidaturas em validaÃ§Ã£o da Service Line
           <input type="checkbox" />
         </label>
         <label>
@@ -33,11 +33,11 @@ export default function ServiceLineSettingsPage() {
         </label>
       </section>
 
-      {/* Relatórios e ranking */}
+      {/* RelatÃ³rios e ranking */}
       <section>
-        <h2>Relatórios e ranking</h2>
+        <h2>RelatÃ³rios e ranking</h2>
         <label>
-          Formato padrão de exportação
+          Formato padrÃ£o de exportaÃ§Ã£o
           <select>
             <option value="excel">Excel</option>
             <option value="pdf">PDF</option>
@@ -49,11 +49,11 @@ export default function ServiceLineSettingsPage() {
         </label>
       </section>
 
-      {/* Métricas comparativas */}
+      {/* MÃ©tricas comparativas */}
       <section>
-        <h2>Métricas comparativas</h2>
+        <h2>MÃ©tricas comparativas</h2>
         <label>
-          Ativar comparação entre consultores da mesma experiência/área
+          Ativar comparaÃ§Ã£o entre consultores da mesma experiÃªncia/Ã¡rea
           <input type="checkbox" />
         </label>
       </section>
@@ -64,8 +64,8 @@ export default function ServiceLineSettingsPage() {
         <label>
           Idioma
           <select>
-            <option value="pt">Português</option>
-            <option value="en">Inglês</option>
+            <option value="pt">PortuguÃªs</option>
+            <option value="en">InglÃªs</option>
             <option value="es">Espanhol</option>
           </select>
         </label>
@@ -78,7 +78,9 @@ export default function ServiceLineSettingsPage() {
         </label>
       </section>
 
-      <button>Guardar alterações</button>
+      <button>Guardar alteraÃ§Ãµes</button>
     </div>
   );
 }
+
+

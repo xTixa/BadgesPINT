@@ -1,7 +1,5 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
-import Sidebar from "../../components/sidebar/sidebar";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function RelatoriosTalent() {
   const [filtros, setFiltros] = useState({ mes: "", ano: "", consultor: "", badge: "", scope: "pedidos" });
@@ -15,101 +13,105 @@ export default function RelatoriosTalent() {
     alert(`Export ${formato.toUpperCase()} gerada para ${filtros.scope} (mock)`);
   };
 
+  const situacaoClass = (situacao) => {
+    if (situacao === "Aprovado") return "text-emerald-600";
+    if (situacao === "Rejeitado") return "text-rose-600";
+    return "text-amber-600";
+  };
+
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "talentManager", name: "Talent Manager" }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        <div className="rounded-4 p-4 mb-4 shadow-sm" style={{ backgroundColor: "#191970", color: "#fff" }}>
-          <h3 className="fw-bold mb-1">Relatórios & Exportações</h3>
-          <p className="mb-0 text-light opacity-75">Exporta pedidos, badges, consultores, aprovações e rejeições em Excel/PDF.</p>
+      <main className="admin-main">
+        <div className="mb-4 rounded-2xl bg-[#013440] p-4 text-white shadow-sm">
+          <h3 className="mb-1 text-xl font-bold sm:text-2xl">RelatÃ³rios & ExportaÃ§Ãµes</h3>
+          <p className="m-0 text-sm text-white/80 sm:text-base">Exporta pedidos, badges, consultores, aprovaÃ§Ãµes e rejeiÃ§Ãµes em Excel/PDF.</p>
         </div>
 
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="card-body">
-            <h5 className="fw-bold text-dark mb-3"><i className="bi bi-funnel-fill me-2 text-primary"></i>Filtros</h5>
-            <div className="row g-3">
-              <div className="col-md-2">
-                <label className="form-label">Mês</label>
-                <select name="mes" onChange={handleFilter} className="form-select rounded-3">
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-funnel-fill mr-2 text-sky-600"></i>Filtros</h5>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">MÃªs</label>
+              <select name="mes" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200">
                   <option value="">Todos</option>
                   {["01","02","03","04","05","06","07","08","09","10","11","12"].map((m) => <option key={m} value={m}>{m}</option>)}
                 </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Ano</label>
-                <input type="number" name="ano" placeholder="2026" onChange={handleFilter} className="form-control rounded-3" />
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Consultor</label>
-                <input type="text" name="consultor" placeholder="Nome" onChange={handleFilter} className="form-control rounded-3" />
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Badge</label>
-                <input type="text" name="badge" placeholder="Badge" onChange={handleFilter} className="form-control rounded-3" />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">Âmbito</label>
-                <select name="scope" value={filtros.scope} onChange={handleFilter} className="form-select rounded-3">
+            </div>
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">Ano</label>
+              <input type="number" name="ano" placeholder="2026" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">Consultor</label>
+              <input type="text" name="consultor" placeholder="Nome" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">Badge</label>
+              <input type="text" name="badge" placeholder="Badge" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
+            </div>
+            <div className="md:col-span-4">
+              <label className="mb-1 block text-sm font-medium text-slate-700">Ã‚mbito</label>
+              <select name="scope" value={filtros.scope} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200">
                   <option value="pedidos">Pedidos de badges</option>
-                  <option value="badges">Catálogo de badges</option>
+                  <option value="badges">CatÃ¡logo de badges</option>
                   <option value="consultores">Consultores</option>
-                  <option value="aprovacoes">Aprovações</option>
-                  <option value="rejeicoes">Rejeições</option>
+                  <option value="aprovacoes">AprovaÃ§Ãµes</option>
+                  <option value="rejeicoes">RejeiÃ§Ãµes</option>
                   <option value="todos">Todos</option>
                 </select>
-              </div>
             </div>
+          </div>
 
-            <div className="mt-4 d-flex gap-2">
-              <button className="btn btn-primary fw-semibold" onClick={() => gerar("pdf")} style={{ backgroundColor: "#191970" }}>
-                <i className="bi bi-file-earmark-pdf-fill me-2"></i> Gerar PDF
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button className="inline-flex items-center rounded-xl bg-[#013440] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#013440]" onClick={() => gerar("pdf")}>
+                <i className="bi bi-file-earmark-pdf-fill mr-2"></i> Gerar PDF
               </button>
-              <button className="btn btn-success fw-semibold" onClick={() => gerar("excel")}>
-                <i className="bi bi-file-earmark-excel-fill me-2"></i> Gerar Excel
+            <button className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700" onClick={() => gerar("excel")}>
+                <i className="bi bi-file-earmark-excel-fill mr-2"></i> Gerar Excel
               </button>
-            </div>
           </div>
         </div>
 
-        <div className="card border-0 shadow-sm rounded-4">
-          <div className="card-body">
-            <h5 className="fw-bold mb-3 text-dark"><i className="bi bi-list-check me-2 text-success"></i>Resultados</h5>
-            <div className="table-responsive">
-              <table className="table align-middle">
-                <thead>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-list-check mr-2 text-emerald-600"></i>Resultados</h5>
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <th>Tipo</th>
-                    <th>Consultor</th>
-                    <th>Badge</th>
-                    <th>Situação</th>
-                    <th>Data</th>
+                  <th className="px-3 py-2 text-left font-semibold">Tipo</th>
+                  <th className="px-3 py-2 text-left font-semibold">Consultor</th>
+                  <th className="px-3 py-2 text-left font-semibold">Badge</th>
+                  <th className="px-3 py-2 text-left font-semibold">SituaÃ§Ã£o</th>
+                  <th className="px-3 py-2 text-left font-semibold">Data</th>
                   </tr>
                 </thead>
-                <tbody>
+              <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
                   {filtrados.map((r) => (
                     <tr key={r.id}>
-                      <td>{r.tipo}</td>
-                      <td>{r.consultor}</td>
-                      <td>{r.badge}</td>
-                      <td className={r.situacao === "Aprovado" ? "text-success fw-semibold" : r.situacao === "Rejeitado" ? "text-danger fw-semibold" : "text-warning fw-semibold"}>{r.situacao}</td>
-                      <td>{r.data}</td>
+                    <td className="px-3 py-2">{r.tipo}</td>
+                    <td className="px-3 py-2">{r.consultor}</td>
+                    <td className="px-3 py-2">{r.badge}</td>
+                    <td className={`px-3 py-2 font-semibold ${situacaoClass(r.situacao)}`}>{r.situacao}</td>
+                    <td className="px-3 py-2">{r.data}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </div>
-        </div>
       </main>
     </div>
   );
 }
 
 const mockResultados = [
-  { id: 1, tipo: "pedidos", consultor: "João Silva", badge: "DevOps Intermédio", situacao: "Pendente", data: "2026-01-10" },
-  { id: 2, tipo: "aprovacoes", consultor: "Patrícia Almeida", badge: "Outsystems Avançado", situacao: "Aprovado", data: "2026-01-08" },
+  { id: 1, tipo: "pedidos", consultor: "JoÃ£o Silva", badge: "DevOps IntermÃ©dio", situacao: "Pendente", data: "2026-01-10" },
+  { id: 2, tipo: "aprovacoes", consultor: "PatrÃ­cia Almeida", badge: "Outsystems AvanÃ§ado", situacao: "Aprovado", data: "2026-01-08" },
   { id: 3, tipo: "rejeicoes", consultor: "Ana Costa", badge: "Azure Fundamentals", situacao: "Rejeitado", data: "2026-01-07" },
   { id: 4, tipo: "consultores", consultor: "Carlos Mendes", badge: "SQL Expert", situacao: "Ativo", data: "2026-01-05" },
-  { id: 5, tipo: "badges", consultor: "-", badge: "React Advanced", situacao: "Catálogo", data: "2026-01-04" },
+  { id: 5, tipo: "badges", consultor: "-", badge: "React Advanced", situacao: "CatÃ¡logo", data: "2026-01-04" },
 ];
+
+

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import { useWindowSize } from "../../hooks/useWindowSize";
 
 export default function LogsAuditoria() {
@@ -142,8 +140,13 @@ export default function LogsAuditoria() {
 
   const getStatusBadge = (status) => {
     const option = statusOptions.find((opt) => opt.value === status);
+    const tone = {
+      success: "bg-emerald-100 text-emerald-700",
+      failure: "bg-rose-100 text-rose-700",
+      warning: "bg-amber-100 text-amber-700",
+    };
     return (
-      <span className={`badge bg-${option?.color || "secondary"}`}>
+      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${tone[option?.value] || "bg-slate-100 text-slate-700"}`}>
         {option?.label || status}
       </span>
     );
@@ -163,126 +166,68 @@ export default function LogsAuditoria() {
 
   if (loading && logs.length === 0) {
     return (
-      <div style={{ padding: isMobile ? "1rem" : "2rem", textAlign: "center" }}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Carregando...</span>
+      <div className={`text-center ${isMobile ? "p-4" : "p-8"}`}>
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500" role="status">
+          <span className="sr-only">Carregando...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: isMobile ? "1rem" : isTablet ? "1.5rem" : "2rem" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h3 style={{ color: "#244080", fontWeight: "700", fontSize: isMobile ? "1.5rem" : "2rem" }}>
-          <i className="bi bi-clock-history" style={{ marginRight: "0.5rem", fontSize: isMobile ? "1.3rem" : "2rem" }}></i>
+    <div className={`${isMobile ? "p-4" : isTablet ? "p-6" : "p-8"}`}>
+      <div className="mb-8">
+        <h3 className={`flex items-center gap-2 font-bold text-slate-800 ${isMobile ? "text-2xl" : "text-3xl"}`}>
+          <i className={`bi bi-clock-history text-slate-500 ${isMobile ? "text-xl" : "text-3xl"}`}></i>
           {isMobile ? "Logs" : "Logs de Auditoria"}
         </h3>
-        <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.85rem" : "0.95rem" }}>
+        <p className={`mb-0 text-slate-500 ${isMobile ? "text-sm" : "text-base"}`}>
           {isMobile ? "Histórico de ações" : "Histórico completo de todas as ações realizadas na plataforma"}
         </p>
       </div>
 
-      {/* Estatísticas */}
       {stats && (
-        <div className="row g-3" style={{ marginBottom: "2rem" }}>
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem", marginBottom: "0.5rem" }}>
-                Total de Logs
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#244080" }}>
-                {stats.totalLogs}
-              </div>
+        <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Total de Logs</div>
+            <div className="text-3xl font-bold text-slate-800">{stats.totalLogs}</div>
+          </div>
+
+          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Sucessos</div>
+            <div className="text-3xl font-bold text-emerald-600">
+              {stats.logsByStatus?.find((s) => s.status === "success")?.count || 0}
             </div>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem", marginBottom: "0.5rem" }}>
-                Sucessos
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#28a745" }}>
-                {stats.logsByStatus?.find((s) => s.status === "success")?.count || 0}
-              </div>
+          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Falhas</div>
+            <div className="text-3xl font-bold text-rose-600">
+              {stats.logsByStatus?.find((s) => s.status === "failure")?.count || 0}
             </div>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem", marginBottom: "0.5rem" }}>
-                Falhas
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#dc3545" }}>
-                {stats.logsByStatus?.find((s) => s.status === "failure")?.count || 0}
-              </div>
-            </div>
-          </div>
-
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: isMobile ? "1rem" : "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-              }}
-            >
-              <div style={{ color: "#6b8cae", fontSize: isMobile ? "0.8rem" : "0.9rem", marginBottom: "0.5rem" }}>
-                Avisos
-              </div>
-              <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: "700", color: "#ffc107" }}>
-                {stats.logsByStatus?.find((s) => s.status === "warning")?.count || 0}
-              </div>
+          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Avisos</div>
+            <div className="text-3xl font-bold text-amber-500">
+              {stats.logsByStatus?.find((s) => s.status === "warning")?.count || 0}
             </div>
           </div>
         </div>
       )}
 
-      {/* Filtros */}
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: isMobile ? "1rem" : "1.5rem",
-          borderRadius: "8px",
-          marginBottom: "2rem",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        }}
-      >
-        <h5 style={{ marginBottom: "1rem", color: "#244080", fontSize: isMobile ? "1rem" : "1.1rem" }}>Filtros</h5>
-        <div className="row g-2">
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <label style={{ fontSize: isMobile ? "0.8rem" : "0.9rem", color: "#6b8cae", marginBottom: "0.5rem" }}>
+      <div className="mb-8 rounded-xl bg-white p-4 shadow-sm sm:p-6">
+        <h5 className="mb-4 text-lg font-semibold text-slate-800">Filtros</h5>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <label className="mb-2 block text-sm text-slate-500">
               Ação
             </label>
             <select
               name="action"
               value={filters.action}
               onChange={handleFilterChange}
-              className="form-select"
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             >
               <option value="">Todas as ações</option>
               {actionOptions.map((opt) => (
@@ -293,16 +238,15 @@ export default function LogsAuditoria() {
             </select>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <label style={{ fontSize: isMobile ? "0.8rem" : "0.9rem", color: "#6b8cae", marginBottom: "0.5rem" }}>
+          <div>
+            <label className="mb-2 block text-sm text-slate-500">
               Entidade
             </label>
             <select
               name="entity"
               value={filters.entity}
               onChange={handleFilterChange}
-              className="form-select"
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             >
               <option value="">Todas as entidades</option>
               {entityOptions.map((opt) => (
@@ -313,16 +257,15 @@ export default function LogsAuditoria() {
             </select>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <label style={{ fontSize: isMobile ? "0.8rem" : "0.9rem", color: "#6b8cae", marginBottom: "0.5rem" }}>
+          <div>
+            <label className="mb-2 block text-sm text-slate-500">
               Status
             </label>
             <select
               name="status"
               value={filters.status}
               onChange={handleFilterChange}
-              className="form-select"
-              style={{ fontSize: isMobile ? "0.85rem" : "0.9rem" }}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             >
               <option value="">Todos os status</option>
               {statusOptions.map((opt) => (
@@ -333,22 +276,20 @@ export default function LogsAuditoria() {
             </select>
           </div>
 
-          <div className="col-12 col-sm-6 col-md-3 mb-0">
-            <label style={{ fontSize: isMobile ? "0.8rem" : "0.9rem", color: "#6b8cae", marginBottom: "0.5rem" }}>
+          <div>
+            <label className="mb-2 block text-sm text-slate-500">
               Ações
             </label>
-            <div style={{ display: "flex", gap: isMobile ? "0.25rem" : "0.5rem", flexDirection: isMobile ? "column" : "row" }}>
+            <div className={`flex gap-2 ${isMobile ? "flex-col" : "flex-row"}`}>
               <button
                 onClick={handleClearFilters}
-                className="btn btn-outline-secondary btn-sm"
-                style={{ flex: 1, fontSize: isMobile ? "0.75rem" : "0.9rem" }}
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
               >
                 {isMobile ? "Limpar" : (<><i className="bi bi-arrow-clockwise"></i> Limpar</>)}
               </button>
               <button
                 onClick={handleExport}
-                className="btn btn-outline-success btn-sm"
-                style={{ flex: 1, fontSize: isMobile ? "0.75rem" : "0.9rem" }}
+                className="flex-1 rounded-lg border border-emerald-300 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
               >
                 {isMobile ? "CSV" : (<><i className="bi bi-download"></i> Exportar</>)}
               </button>
@@ -357,74 +298,55 @@ export default function LogsAuditoria() {
         </div>
       </div>
 
-      {/* Tabela de Logs */}
-      <div
-        style={{
-          backgroundColor: "white",
-          borderRadius: "8px",
-          overflow: isMobile ? "visible" : "hidden",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        }}
-      >
+      <div className="overflow-hidden rounded-xl bg-white shadow-sm">
         {!isMobile ? (
-          <div style={{ overflowX: "auto" }}>
-            <table className="table" style={{ marginBottom: 0 }}>
-            <thead>
-              <tr style={{ backgroundColor: "#f8f9fa", borderBottom: "2px solid #dee2e6" }}>
-                <th style={{ color: "#6b8cae", fontWeight: "600", padding: "1rem" }}>Data</th>
-                <th style={{ color: "#6b8cae", fontWeight: "600", padding: "1rem" }}>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+            <thead className="bg-slate-50">
+              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <th className="px-4 py-3">Data</th>
+                <th className="px-4 py-3">
                   Utilizador
                 </th>
-                <th style={{ color: "#6b8cae", fontWeight: "600", padding: "1rem" }}>Ação</th>
-                <th style={{ color: "#6b8cae", fontWeight: "600", padding: "1rem" }}>Entidade</th>
-                <th style={{ color: "#6b8cae", fontWeight: "600", padding: "1rem" }}>Status</th>
-                <th style={{ color: "#6b8cae", fontWeight: "600", padding: "1rem" }}>
+                <th className="px-4 py-3">Ação</th>
+                <th className="px-4 py-3">Entidade</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">
                   Descrição
                 </th>
-                <th style={{ color: "#6b8cae", fontWeight: "600", padding: "1rem" }}>IP</th>
+                <th className="px-4 py-3">IP</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100 text-slate-700">
               {logs.length > 0 ? (
                 logs.map((log, index) => (
                   <tr
                     key={log.id}
-                    style={{
-                      borderBottom: "1px solid #dee2e6",
-                      backgroundColor: index % 2 === 0 ? "white" : "#f8f9fa",
-                    }}
+                    className={index % 2 === 0 ? "bg-white" : "bg-slate-50/50"}
                   >
-                    <td style={{ padding: "1rem", fontSize: "0.9rem", color: "#244080" }}>
+                    <td className="px-4 py-3 text-sm text-slate-800">
                       {new Date(log.createdAt).toLocaleString("pt-PT")}
                     </td>
-                    <td style={{ padding: "1rem", fontSize: "0.9rem", color: "#244080" }}>
+                    <td className="px-4 py-3 text-sm text-slate-800">
                       {log.user?.name || "Desconhecido"}
                     </td>
-                    <td style={{ padding: "1rem", fontSize: "0.9rem" }}>
-                      <span style={{ marginRight: "0.5rem" }}>
+                    <td className="px-4 py-3 text-sm">
+                      <span className="mr-2">
                         <i className={`bi ${getActionIcon(log.action)}`}></i>
                       </span>
                       {log.action}
                     </td>
-                    <td style={{ padding: "1rem", fontSize: "0.9rem", color: "#244080" }}>
+                    <td className="px-4 py-3 text-sm text-slate-800">
                       {log.entity}
                     </td>
-                    <td style={{ padding: "1rem" }}>{getStatusBadge(log.status)}</td>
+                    <td className="px-4 py-3">{getStatusBadge(log.status)}</td>
                     <td
-                      style={{
-                        padding: "1rem",
-                        fontSize: "0.9rem",
-                        color: "#6b8cae",
-                        maxWidth: "200px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
+                      className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap px-4 py-3 text-sm text-slate-500"
                       title={log.description}
                     >
                       {log.description || "-"}
                     </td>
-                    <td style={{ padding: "1rem", fontSize: "0.85rem", color: "#6b8cae" }}>
+                    <td className="px-4 py-3 text-xs text-slate-500">
                       {log.ipAddress}
                     </td>
                   </tr>
@@ -433,11 +355,7 @@ export default function LogsAuditoria() {
                 <tr>
                   <td
                     colSpan="7"
-                    style={{
-                      padding: "2rem",
-                      textAlign: "center",
-                      color: "#6b8cae",
-                    }}
+                    className="px-4 py-8 text-center text-sm text-slate-500"
                   >
                     Nenhum log encontrado
                   </td>
@@ -447,27 +365,27 @@ export default function LogsAuditoria() {
           </table>
           </div>
         ) : (
-          <div style={{ padding: "2rem", textAlign: "center", color: "#6b8cae" }}>
+          <div className="p-8 text-center text-sm text-slate-500">
             Tabela não disponível em dispositivos móveis. Use filtros acima.
           </div>
         )}
 
         {pagination.pages > 1 && (
-          <div style={{ padding: "1.5rem", borderTop: "1px solid #dee2e6" }}>
+          <div className="border-t border-slate-200 p-6">
             <nav aria-label="Page navigation">
-              <ul className="pagination justify-content-center" style={{ marginBottom: 0 }}>
-                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+              <ul className="mb-0 flex flex-wrap items-center justify-center gap-2">
+                <li>
                   <button
-                    className="page-link"
+                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
                     onClick={() => setPage(1)}
                     disabled={page === 1}
                   >
                     Primeira
                   </button>
                 </li>
-                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                <li>
                   <button
-                    className="page-link"
+                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
                   >
@@ -479,12 +397,13 @@ export default function LogsAuditoria() {
                   const pageNum = page > 3 ? page - 2 + i : i + 1;
                   if (pageNum > pagination.pages) return null;
                   return (
-                    <li
-                      key={pageNum}
-                      className={`page-item ${page === pageNum ? "active" : ""}`}
-                    >
+                    <li key={pageNum}>
                       <button
-                        className="page-link"
+                        className={`rounded-lg border px-3 py-1.5 text-sm transition ${
+                          page === pageNum
+                            ? "border-indigo-700 bg-indigo-700 text-white"
+                            : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                        }`}
                         onClick={() => setPage(pageNum)}
                       >
                         {pageNum}
@@ -493,18 +412,18 @@ export default function LogsAuditoria() {
                   );
                 })}
 
-                <li className={`page-item ${page === pagination.pages ? "disabled" : ""}`}>
+                <li>
                   <button
-                    className="page-link"
+                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.pages}
                   >
                     Próxima
                   </button>
                 </li>
-                <li className={`page-item ${page === pagination.pages ? "disabled" : ""}`}>
+                <li>
                   <button
-                    className="page-link"
+                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
                     onClick={() => setPage(pagination.pages)}
                     disabled={page === pagination.pages}
                   >
@@ -513,14 +432,7 @@ export default function LogsAuditoria() {
                 </li>
               </ul>
             </nav>
-            <p
-              style={{
-                textAlign: "center",
-                color: "#6b8cae",
-                fontSize: "0.9rem",
-                marginTop: "1rem",
-              }}
-            >
+            <p className="mt-4 text-center text-sm text-slate-500">
               Página {page} de {pagination.pages} • Total: {pagination.total} registos
             </p>
           </div>

@@ -6,14 +6,23 @@ export default {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
+    screens: {
+      xs: "480px",
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+    },
     extend: {
-      breakpoints: {
-        'xs': '0px',
-        'sm': '640px',
-        'md': '768px',
-        'lg': '1024px',
-        'xl': '1280px',
-        '2xl': '1536px',
+      colors: {
+        brand: {
+          900: "#013440",
+          500: "#2AA4BF",
+          400: "#04C4D9",
+          50: "#F2F2F2",
+          950: "#0D0D0D",
+        },
       },
       spacing: {
         'xs': '0.5rem',

@@ -1,10 +1,8 @@
+﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import Sidebar from "../../components/sidebar/sidebar";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
@@ -18,7 +16,7 @@ export default function DashboardAdmin() {
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
   const [startDate, setStartDate] = useState(toDateInput(defaultStart));
   const [endDate, setEndDate] = useState(toDateInput(defaultEnd));
-  const [badgePrompt, setBadgePrompt] = useState("Badge circular dourado, ícone de estrela, estilo flat, fundo azul escuro");
+  const [badgePrompt, setBadgePrompt] = useState("Badge circular dourado, Ã­cone de estrela, estilo flat, fundo azul escuro");
   const [badgeSize, setBadgeSize] = useState("1024x1024");
   const [badgeImage, setBadgeImage] = useState("");
   const [badgeImageUrl, setBadgeImageUrl] = useState("");
@@ -57,7 +55,7 @@ export default function DashboardAdmin() {
         setKpis(res.data);
 
       } catch (err) {
-        console.error("Erro a carregar estatísticas do admin:", err);
+        console.error("Erro a carregar estatÃ­sticas do admin:", err);
       } finally {
         setLoading(false);
       }
@@ -72,8 +70,8 @@ export default function DashboardAdmin() {
     datasets: [{
       label: "Badges obtidos",
       data: kpis.badgesByMonth.map((item) => item.count),
-      backgroundColor: "#6b8cae",
-      borderColor: "#4a6a8a",
+      backgroundColor: "#04C4D9",
+      borderColor: "#2AA4BF",
       borderWidth: 1,
     }],
   } : null;
@@ -83,7 +81,7 @@ export default function DashboardAdmin() {
     datasets: [{
       label: "% de badges obtidos",
       data: kpis.badgesByMonth.map((item) => item.completionRate || 0),
-      borderColor: "#5a7a9a",
+      borderColor: "#2AA4BF",
       backgroundColor: "rgba(90, 122, 154, 0.12)",
       tension: 0.4,
       fill: true,
@@ -94,7 +92,7 @@ export default function DashboardAdmin() {
     labels: kpis.usersByRole.map((r) => r.role),
     datasets: [{
       data: kpis.usersByRole.map((r) => Number(r.count)),
-      backgroundColor: ['#6b8cae', '#5a7a9a', '#8ba4be', '#4a6a8a', '#20c997'],
+      backgroundColor: ['#04C4D9', '#2AA4BF', '#04C4D9', '#2AA4BF', '#04C4D9'],
       borderWidth: 0,
     }],
   } : null;
@@ -102,10 +100,10 @@ export default function DashboardAdmin() {
   const levelChartData = kpis.badgesByLevel.length ? {
     labels: kpis.badgesByLevel.map((l) => l.level),
     datasets: [{
-      label: "Badges por nível",
+      label: "Badges por nÃ­vel",
       data: kpis.badgesByLevel.map((l) => Number(l.count)),
-      backgroundColor: '#8ba4be',
-      borderColor: '#4a6a8a',
+      backgroundColor: '#04C4D9',
+      borderColor: '#2AA4BF',
       borderWidth: 1,
     }],
   } : null;
@@ -115,8 +113,8 @@ export default function DashboardAdmin() {
     datasets: [{
       label: "Badges por Learning Path",
       data: kpis.badgesByLearningPath.map((lp) => Number(lp.count)),
-      backgroundColor: '#4a6a8a',
-      borderColor: '#244080',
+      backgroundColor: '#2AA4BF',
+      borderColor: '#013440',
       borderWidth: 1,
     }],
   } : null;
@@ -132,7 +130,7 @@ export default function DashboardAdmin() {
         display: true,
         position: 'bottom',
         labels: {
-          color: '#4a6a8a',
+          color: '#2AA4BF',
           font: { size: 11 }
         }
       }
@@ -140,11 +138,11 @@ export default function DashboardAdmin() {
     scales: {
       y: {
         beginAtZero: true,
-        ticks: { color: '#6b8cae' },
+        ticks: { color: '#04C4D9' },
         grid: { color: 'rgba(107, 140, 174, 0.1)' }
       },
       x: {
-        ticks: { color: '#6b8cae' },
+        ticks: { color: '#04C4D9' },
         grid: { color: 'rgba(107, 140, 174, 0.1)' }
       }
     }
@@ -153,12 +151,12 @@ export default function DashboardAdmin() {
   const shortcuts = [
     { icon: "bi-inbox", title: "Pedidos de Badges", subtitle: "Aprovar/Rejeitar", color: "#0dcaf0", route: "/admin/gestao-pedidos-badges" },
     { icon: "bi-hourglass-split", title: "SLA Equipa", subtitle: "Definir prazos", color: "#f0ad4e", route: "/admin/gestao-sla" },
-    { icon: "bi-award-fill", title: "Gestão de Badges", subtitle: "Criar/Editar", color: "#6b8cae", route: "/admin/gestao-badges" },
-    { icon: "bi-diagram-3-fill", title: "Learning Paths", subtitle: "Configurar", color: "#8ba4be", route: "/admin/gestao-learning-paths" },
-    { icon: "bi-people-fill", title: "Utilizadores", subtitle: "Perfis e permissões", color: "#5a7a9a", route: "/admin/gestao-utilizadores" },
-    { icon: "bi-file-earmark-arrow-down", title: "Exportar Dados", subtitle: "Excel/PDF", color: "#20c997", route: "/admin/exportacao" },
-    { icon: "bi-megaphone-fill", title: "Avisos", subtitle: "Broadcast interno", color: "#4a6a8a", route: "/admin/avisos" },
-    { icon: "bi-gear-fill", title: "Configurações", subtitle: "Notificações e RGPD", color: "#6f42c1", route: "/admin/configuracoes" }
+    { icon: "bi-award-fill", title: "GestÃ£o de Badges", subtitle: "Criar/Editar", color: "#04C4D9", route: "/admin/gestao-badges" },
+    { icon: "bi-diagram-3-fill", title: "Learning Paths", subtitle: "Configurar", color: "#04C4D9", route: "/admin/gestao-learning-paths" },
+    { icon: "bi-people-fill", title: "Utilizadores", subtitle: "Perfis e permissÃµes", color: "#2AA4BF", route: "/admin/gestao-utilizadores" },
+    { icon: "bi-file-earmark-arrow-down", title: "Exportar Dados", subtitle: "Excel/PDF", color: "#04C4D9", route: "/admin/exportacao" },
+    { icon: "bi-megaphone-fill", title: "Avisos", subtitle: "Broadcast interno", color: "#2AA4BF", route: "/admin/avisos" },
+    { icon: "bi-gear-fill", title: "ConfiguraÃ§Ãµes", subtitle: "NotificaÃ§Ãµes e RGPD", color: "#6f42c1", route: "/admin/configuracoes" }
   ];
 
   async function handleGenerateBadge() {
@@ -168,7 +166,7 @@ export default function DashboardAdmin() {
     setBadgeUploadError("");
 
     if (!badgePrompt.trim()) {
-      setBadgeError("Escreve uma descrição do badge.");
+      setBadgeError("Escreve uma descriÃ§Ã£o do badge.");
       return;
     }
 
@@ -188,19 +186,19 @@ export default function DashboardAdmin() {
 
       setBadgeImage(res.data?.image || "");
       if (!res.data?.image) {
-        setBadgeError("A resposta não trouxe imagem.");
+        setBadgeError("A resposta nÃ£o trouxe imagem.");
       }
     } catch (err) {
       console.error("Erro ao gerar badge:", err);
       const status = err?.response?.status;
       const details = err?.response?.data?.details;
       if (status === 410) {
-        setBadgeError("Modelo indisponível. Tenta mudar o HF_MODEL_ID ou aceita os termos do modelo no Hugging Face.");
+        setBadgeError("Modelo indisponÃ­vel. Tenta mudar o HF_MODEL_ID ou aceita os termos do modelo no Hugging Face.");
       } else if (details) {
         const detailText = typeof details === "string" ? details : JSON.stringify(details);
-        setBadgeError(`Não foi possível gerar a imagem. ${detailText}`);
+        setBadgeError(`NÃ£o foi possÃ­vel gerar a imagem. ${detailText}`);
       } else {
-        setBadgeError("Não foi possível gerar a imagem.");
+        setBadgeError("NÃ£o foi possÃ­vel gerar a imagem.");
       }
     } finally {
       setIsGenerating(false);
@@ -231,191 +229,118 @@ export default function DashboardAdmin() {
 
       setBadgeImageUrl(res.data?.url || "");
       if (!res.data?.url) {
-        setBadgeUploadError("A resposta não trouxe URL.");
+        setBadgeUploadError("A resposta nÃ£o trouxe URL.");
       }
     } catch (err) {
       console.error("Erro ao fazer upload:", err);
-      setBadgeUploadError("Não foi possível guardar a imagem.");
+      setBadgeUploadError("NÃ£o foi possÃ­vel guardar a imagem.");
     } finally {
       setIsUploading(false);
     }
   }
 
   return (
-    <div style={{ display: "flex", backgroundColor: "#e8eef5", minHeight: "100vh" }}>
+    <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main style={{ flex: 1, padding: isMobile ? "1rem" : isTablet ? "1.5rem" : "2rem" }}>
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-          <h2 style={{ 
-            fontWeight: "700", 
-            color: "#244080", 
-            marginBottom: "2rem", 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "0.5rem",
-            fontSize: isMobile ? "1.5rem" : isTablet ? "2rem" : "2.25rem"
-          }}>
-            <i className="bi bi-speedometer2" style={{ color: "#5a7a9a" }}></i>
+      <main className="admin-main">
+        <div className="mx-auto max-w-[1400px]">
+          <h2
+            className={`mb-8 flex items-center gap-2 font-bold text-slate-800 ${
+              isMobile ? "text-2xl" : isTablet ? "text-3xl" : "text-4xl"
+            }`}
+          >
+            <i className="bi bi-speedometer2 text-slate-500"></i>
             {isMobile ? "Dashboard" : "Dashboard do Administrador"}
           </h2>
 
           {loading ? (
-            <div style={{ textAlign: "center", padding: "5rem 0" }}>
-              <div className="spinner-border" style={{ color: "#5a7a9a" }}></div>
-              <p style={{ marginTop: "1rem", color: "#6b8cae" }}>A carregar dados...</p>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-500"></div>
+              <p className="mt-3 text-sm">A carregar dados...</p>
             </div>
           ) : (
             <>
-              {/* Cards de Estatísticas */}
-              <div className="row g-3 mb-4">
-                <div className="col-12 col-sm-6 col-md-4">
-                  <div style={{ 
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    textAlign: "center",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <i className="bi bi-award-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#6b8cae", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.totalBadges}</h4>
-                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Badges Ativos</p>
+              <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  {
+                    icon: "bi-award-fill",
+                    value: kpis.summary.totalBadges,
+                    label: "Badges Ativos",
+                    color: "text-sky-600",
+                  },
+                  {
+                    icon: "bi-people-fill",
+                    value: kpis.summary.totalUsers,
+                    label: "Utilizadores Registados",
+                    color: "text-slate-600",
+                  },
+                  {
+                    icon: "bi-diagram-3-fill",
+                    value: kpis.summary.totalLearningPaths,
+                    label: "Learning Paths",
+                    color: "text-indigo-500",
+                  },
+                  {
+                    icon: "bi-graph-up",
+                    value: kpis.summary.badgesObtidosTotal,
+                    label: "Badges obtidos (total)",
+                    color: "text-emerald-600",
+                  },
+                ].map((card) => (
+                  <div
+                    key={card.label}
+                    className="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm sm:p-6"
+                  >
+                    <i className={`bi ${card.icon} mb-2 block text-3xl sm:text-4xl ${card.color}`}></i>
+                    <h4 className="mb-1 text-3xl font-bold text-slate-800">{card.value}</h4>
+                    <p className="m-0 text-sm text-slate-500">{card.label}</p>
                   </div>
-                </div>
+                ))}
+              </div>
 
-                <div className="col-12 col-sm-6 col-md-4">
-                  <div style={{ 
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    textAlign: "center",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <i className="bi bi-people-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#5a7a9a", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.totalUsers}</h4>
-                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Utilizadores Registados</p>
-                  </div>
-                </div>
-
-                <div className="col-12 col-sm-6 col-md-4">
-                  <div style={{ 
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    textAlign: "center",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <i className="bi bi-diagram-3-fill" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#8ba4be", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.totalLearningPaths}</h4>
-                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Learning Paths</p>
-                  </div>
-                </div>
-
-                <div className="col-12 col-sm-6 col-md-4">
-                  <div style={{ 
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    textAlign: "center",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <i className="bi bi-graph-up" style={{ fontSize: isMobile ? "2rem" : "2.5rem", color: "#20c997", marginBottom: "0.5rem" }}></i>
-                    <h4 style={{ fontWeight: "700", color: "#244080", marginBottom: "0.25rem", fontSize: isMobile ? "1.5rem" : "2rem" }}>{kpis.summary.badgesObtidosTotal}</h4>
-                    <p style={{ color: "#6b8cae", marginBottom: 0, fontSize: isMobile ? "0.8rem" : "0.9rem" }}>Badges obtidos (total)</p>
+              <div className="mb-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm sm:px-5 sm:py-4">
+                  <span className="font-semibold">
+                      Badges obtidos no perÃ­odo ({rangeStart} a {rangeEnd})
+                  </span>
+                  <span className="text-xl font-bold text-emerald-600">{kpis.badgesByRange?.count || 0}</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+                    />
+                    <span className="text-sm text-slate-500">ate</span>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+                    />
                   </div>
                 </div>
               </div>
 
-              <div className="row g-3 mb-4">
-                <div className="col-12">
-                  <div style={{
-                    backgroundColor: "white",
-                    borderRadius: "12px",
-                    padding: isMobile ? "0.75rem 1rem" : "1rem 1.25rem",
-                    border: "1px solid #d4dfe9",
-                    boxShadow: "0 2px 6px rgba(44, 62, 90, 0.06)",
-                    color: "#244080",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: "0.75rem"
-                  }}>
-                    <span style={{ fontWeight: 600 }}>
-                      Badges obtidos no período ({rangeStart} a {rangeEnd})
-                    </span>
-                    <span style={{ fontWeight: 700, color: "#20c997", fontSize: isMobile ? "1.1rem" : "1.25rem" }}>
-                      {kpis.badgesByRange?.count || 0}
-                    </span>
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        style={{ border: "1px solid #d4dfe9", borderRadius: "8px", padding: "0.35rem 0.5rem" }}
-                      />
-                      <span style={{ color: "#6b8cae", fontSize: "0.9rem" }}>até</span>
-                      <input
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        style={{ border: "1px solid #d4dfe9", borderRadius: "8px", padding: "0.35rem 0.5rem" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Atalhos Rápidos */}
-              <div style={{ marginBottom: "2rem" }}>
-                <h5 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "1rem" : "1.1rem" }}>Atalhos Rápidos</h5>
-                <div className="row g-2">
+              <div className="mb-8">
+                <h5 className="mb-4 text-lg font-semibold text-slate-800">Atalhos Rapidos</h5>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                   {shortcuts.map((shortcut, index) => (
-                    <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div key={index}>
                       <div
                         onClick={() => navigate(shortcut.route)}
-                        style={{
-                          backgroundColor: "white",
-                          borderRadius: "12px",
-                          padding: isMobile ? "1rem" : "1.25rem",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                          boxShadow: "0 2px 6px rgba(44, 62, 90, 0.06)",
-                          border: "1px solid #d4dfe9",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: isMobile ? "0.75rem" : "1rem"
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = "translateY(-2px)";
-                          e.currentTarget.style.boxShadow = "0 4px 12px rgba(44, 62, 90, 0.12)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = "translateY(0)";
-                          e.currentTarget.style.boxShadow = "0 2px 6px rgba(44, 62, 90, 0.06)";
-                        }}
+                        className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                       >
-                        <div style={{
-                          width: isMobile ? "40px" : "48px",
-                          height: isMobile ? "40px" : "48px",
-                          borderRadius: "10px",
-                          backgroundColor: shortcut.color,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "white",
-                          fontSize: isMobile ? "1.1rem" : "1.3rem",
-                          flexShrink: 0
-                        }}>
+                        <div
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg text-white sm:h-12 sm:w-12 sm:text-xl"
+                          style={{ backgroundColor: shortcut.color }}
+                        >
                           <i className={shortcut.icon}></i>
                         </div>
                         <div>
-                          <div style={{ fontWeight: "600", color: "#244080", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>{shortcut.title}</div>
-                          <div style={{ fontSize: isMobile ? "0.65rem" : "0.75rem", color: "#6b8cae" }}>{shortcut.subtitle}</div>
+                          <div className="text-sm font-semibold text-slate-800">{shortcut.title}</div>
+                          <div className="text-xs text-slate-500">{shortcut.subtitle}</div>
                         </div>
                       </div>
                     </div>
@@ -423,37 +348,30 @@ export default function DashboardAdmin() {
                 </div>
               </div>
 
-              {/* Gerador de Badges (AI) */}
-              <div style={{ marginBottom: "2rem" }}>
-                <h5 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "1rem" : "1.1rem" }}>
+              <div className="mb-8">
+                <h5 className="mb-4 text-lg font-semibold text-slate-800">
                   Gerar Badge com IA
                 </h5>
-                <div style={{
-                  backgroundColor: "white",
-                  borderRadius: "16px",
-                  padding: isMobile ? "1rem" : "1.5rem",
-                  boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                  border: "1px solid #d4dfe9"
-                }}>
-                  <div className="row g-3 align-items-end">
-                    <div className="col-12 col-lg-7">
-                      <label className="form-label" style={{ color: "#4a6a8a", fontWeight: 600 }}>
-                        Descrição do badge
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                  <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:items-end">
+                    <div className="lg:col-span-7">
+                      <label className="mb-1 block text-sm font-semibold text-slate-700">
+                        DescriÃ§Ã£o do badge
                       </label>
                       <textarea
-                        className="form-control"
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                         rows={3}
-                        placeholder="Ex.: Badge circular dourado, ícone de estrela, estilo flat, fundo azul escuro"
+                        placeholder="Ex.: Badge circular dourado, Ã­cone de estrela, estilo flat, fundo azul escuro"
                         value={badgePrompt}
                         onChange={(e) => setBadgePrompt(e.target.value)}
                       />
                     </div>
-                    <div className="col-12 col-lg-3">
-                      <label className="form-label" style={{ color: "#4a6a8a", fontWeight: 600 }}>
+                    <div className="lg:col-span-3">
+                      <label className="mb-1 block text-sm font-semibold text-slate-700">
                         Tamanho
                       </label>
                       <select
-                        className="form-select"
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                         value={badgeSize}
                         onChange={(e) => setBadgeSize(e.target.value)}
                       >
@@ -462,12 +380,11 @@ export default function DashboardAdmin() {
                         <option value="512x512">512x512</option>
                       </select>
                     </div>
-                    <div className="col-12 col-lg-2 d-grid">
+                    <div className="lg:col-span-2">
                       <button
-                        className="btn btn-primary"
+                        className="w-full rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-60"
                         onClick={handleGenerateBadge}
                         disabled={isGenerating}
-                        style={{ backgroundColor: "#244080", borderColor: "#244080" }}
                       >
                         {isGenerating ? "A gerar..." : "Gerar"}
                       </button>
@@ -475,28 +392,26 @@ export default function DashboardAdmin() {
                   </div>
 
                   {badgeError && (
-                    <div className="alert alert-warning mt-3 mb-0" role="alert">
+                    <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700" role="alert">
                       {badgeError}
                     </div>
                   )}
 
                   {badgeImage && (
-                    <div className="mt-3 d-flex flex-column align-items-start">
-                      <div style={{
-                        width: "200px",
-                        height: "200px",
-                        borderRadius: "12px",
-                        overflow: "hidden",
-                        border: "1px solid #d4dfe9"
-                      }}>
+                    <div className="mt-4 flex flex-col items-start">
+                      <div className="h-[200px] w-[200px] overflow-hidden rounded-xl border border-slate-200">
                         <img src={badgeImage} alt="Badge gerado" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       </div>
-                      <div className="d-flex gap-2 mt-2 flex-wrap">
-                        <a href={badgeImage} download="badge.png" className="btn btn-outline-secondary btn-sm">
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <a
+                          href={badgeImage}
+                          download="badge.png"
+                          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+                        >
                           Download
                         </a>
                         <button
-                          className="btn btn-outline-primary btn-sm"
+                          className="rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60"
                           onClick={handleUploadBadge}
                           disabled={isUploading}
                         >
@@ -504,10 +419,10 @@ export default function DashboardAdmin() {
                         </button>
                       </div>
                       {badgeUploadError && (
-                        <div className="text-danger small mt-2">{badgeUploadError}</div>
+                        <div className="mt-2 text-xs text-rose-600">{badgeUploadError}</div>
                       )}
                       {badgeImageUrl && (
-                        <div className="mt-2 small">
+                        <div className="mt-2 text-xs text-slate-600">
                           URL: <a href={badgeImageUrl} target="_blank" rel="noreferrer">{badgeImageUrl}</a>
                         </div>
                       )}
@@ -516,42 +431,24 @@ export default function DashboardAdmin() {
                 </div>
               </div>
 
-              {/* Gráficos */}
-              <div className="row g-3">
-                {/* Gráfico de Barras */}
-                <div className="col-12 col-lg-6">
-                  <div style={{
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
-                      <i className="bi bi-bar-chart-fill me-2" style={{ color: "#6b8cae" }}></i>
-                      Badges obtidos por mês
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                    <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
+                      <i className="bi bi-bar-chart-fill text-slate-500"></i>
+                      Badges obtidos por mÃªs
                     </h6>
                     {barChartData ? (
                       <div style={{ height: isMobile ? "250px" : "300px" }}>
                         <Bar data={barChartData} options={chartOptions} />
                       </div>
                     ) : (
-                      <p style={{ color: "#6b8cae" }}>Sem registos para o período selecionado.</p>
+                      <p className="text-sm text-slate-500">Sem registos para o perÃ­odo selecionado.</p>
                     )}
-                  </div>
                 </div>
 
-                {/* Gráfico de Linha */}
-                <div className="col-12 col-lg-6">
-                  <div style={{
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
-                      <i className="bi bi-graph-up me-2" style={{ color: "#5a7a9a" }}></i>
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                    <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
+                      <i className="bi bi-graph-up text-slate-500"></i>
                       % de badges obtidos (mensal)
                     </h6>
                     {lineChartData ? (
@@ -559,45 +456,27 @@ export default function DashboardAdmin() {
                         <Line data={lineChartData} options={chartOptions} />
                       </div>
                     ) : (
-                      <p style={{ color: "#6b8cae" }}>Sem registos para o período selecionado.</p>
+                      <p className="text-sm text-slate-500">Sem registos para o perÃ­odo selecionado.</p>
                     )}
-                  </div>
                 </div>
 
-                {/* Gráfico Doughnut */}
-                <div className="col-12 col-lg-6">
-                  <div style={{
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
-                      <i className="bi bi-pie-chart-fill me-2" style={{ color: "#8ba4be" }}></i>
-                      Distribuição por Tipo de Utilizador
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                    <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
+                      <i className="bi bi-pie-chart-fill text-slate-500"></i>
+                      DistribuiÃ§Ã£o por Tipo de Utilizador
                     </h6>
                     {doughnutDataUsers ? (
                       <div style={{ height: isMobile ? "250px" : "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <Doughnut data={doughnutDataUsers} options={{ ...chartOptions, scales: undefined }} />
                       </div>
                     ) : (
-                      <p style={{ color: "#6b8cae" }}>Sem utilizadores neste contexto.</p>
+                      <p className="text-sm text-slate-500">Sem utilizadores neste contexto.</p>
                     )}
-                  </div>
                 </div>
 
-                {/* Badges por Learning Path */}
-                <div className="col-12 col-lg-6">
-                  <div style={{
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
-                      <i className="bi bi-diagram-3 me-2" style={{ color: "#4a6a8a" }}></i>
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                    <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
+                      <i className="bi bi-diagram-3 text-slate-500"></i>
                       Badges por Learning Path
                     </h6>
                     {learningPathChartData ? (
@@ -605,32 +484,22 @@ export default function DashboardAdmin() {
                         <Bar data={learningPathChartData} options={chartOptions} />
                       </div>
                     ) : (
-                      <p style={{ color: "#6b8cae" }}>Sem registos de badges por learning path.</p>
+                      <p className="text-sm text-slate-500">Sem registos de badges por learning path.</p>
                     )}
-                  </div>
                 </div>
 
-                {/* Badges por Nível */}
-                <div className="col-12 col-lg-6">
-                  <div style={{
-                    backgroundColor: "white",
-                    borderRadius: "16px",
-                    padding: isMobile ? "1rem" : "1.5rem",
-                    boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-                    border: "1px solid #d4dfe9"
-                  }}>
-                    <h6 style={{ fontWeight: "600", color: "#244080", marginBottom: "1rem", fontSize: isMobile ? "0.9rem" : "1rem" }}>
-                      <i className="bi bi-layers me-2" style={{ color: "#20c997" }}></i>
-                      Badges por Nível
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                    <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
+                      <i className="bi bi-layers text-emerald-500"></i>
+                      Badges por NÃ­vel
                     </h6>
                     {levelChartData ? (
                       <div style={{ height: isMobile ? "250px" : "300px" }}>
                         <Bar data={levelChartData} options={chartOptions} />
                       </div>
                     ) : (
-                      <p style={{ color: "#6b8cae" }}>Sem registos de badges por nível.</p>
+                      <p className="text-sm text-slate-500">Sem registos de badges por nÃ­vel.</p>
                     )}
-                  </div>
                 </div>
               </div>
             </>
@@ -640,3 +509,4 @@ export default function DashboardAdmin() {
     </div>
   );
 }
+
