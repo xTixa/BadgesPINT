@@ -5,6 +5,7 @@ class ConsultantUser {
     required this.email,
     required this.role,
     required this.pointsTotal,
+    this.areaId,
     this.location,
   });
 
@@ -13,6 +14,7 @@ class ConsultantUser {
   final String email;
   final String role;
   final int pointsTotal;
+  final int? areaId;
   final String? location;
 
   factory ConsultantUser.fromJson(Map<String, dynamic> json) {
@@ -22,7 +24,22 @@ class ConsultantUser {
       email: (json['email'] ?? '').toString(),
       role: (json['role'] ?? 'consultant').toString(),
       pointsTotal: _readInt(json['points_total']) ?? 0,
+      areaId: _readInt(json['area_id']),
       location: json['localizacao']?.toString(),
+    );
+  }
+}
+
+class AreaItem {
+  AreaItem({required this.id, required this.name});
+
+  final int id;
+  final String name;
+
+  factory AreaItem.fromJson(Map<String, dynamic> json) {
+    return AreaItem(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? '').toString(),
     );
   }
 }
@@ -163,6 +180,91 @@ class RankingItem {
   final int position;
   final String name;
   final int points;
+}
+
+class CatalogBadgeItem {
+  CatalogBadgeItem({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.points,
+    required this.level,
+    this.areaName,
+    this.areaId,
+  });
+
+  final int id;
+  final String name;
+  final String description;
+  final int points;
+  final int level;
+  final String? areaName;
+  final int? areaId;
+
+  factory CatalogBadgeItem.fromJson(Map<String, dynamic> json) {
+    final area = json['area'];
+
+    return CatalogBadgeItem(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? 'Badge').toString(),
+      description: (json['description'] ?? '').toString(),
+      points: _readInt(json['points']) ?? 0,
+      level: _readInt(json['level']) ?? 1,
+      areaName: area is Map<String, dynamic> ? area['name']?.toString() : null,
+      areaId: _readInt(json['area_id']),
+    );
+  }
+}
+
+class PedidoBadgeStatus {
+  PedidoBadgeStatus({
+    required this.id,
+    required this.status,
+    required this.workflowStatus,
+    required this.badgeName,
+    this.submittedAt,
+  });
+
+  final int id;
+  final String status;
+  final String workflowStatus;
+  final String badgeName;
+  final String? submittedAt;
+
+  factory PedidoBadgeStatus.fromJson(Map<String, dynamic> json) {
+    final badge = json['badge'];
+
+    return PedidoBadgeStatus(
+      id: _readInt(json['id']) ?? 0,
+      status: (json['status'] ?? '').toString(),
+      workflowStatus: (json['workflow_status'] ?? '').toString(),
+      badgeName: badge is Map<String, dynamic> ? (badge['name'] ?? 'Badge').toString() : 'Badge',
+      submittedAt: json['submitted_at']?.toString(),
+    );
+  }
+}
+
+class UserNotificationItem {
+  UserNotificationItem({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.read,
+  });
+
+  final int id;
+  final String title;
+  final String message;
+  final bool read;
+
+  factory UserNotificationItem.fromJson(Map<String, dynamic> json) {
+    return UserNotificationItem(
+      id: _readInt(json['id']) ?? 0,
+      title: (json['titulo'] ?? '').toString(),
+      message: (json['mensagem'] ?? '').toString(),
+      read: json['lido'] == true,
+    );
+  }
 }
 
 int? _readInt(dynamic value) {

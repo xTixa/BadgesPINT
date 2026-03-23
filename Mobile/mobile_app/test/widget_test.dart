@@ -10,10 +10,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app/app.dart';
 
 void main() {
-  testWidgets('Consultor shell loads', (WidgetTester tester) async {
+  testWidgets('Login screen loads', (WidgetTester tester) async {
     await tester.pumpWidget(const BadgesPintApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Dashboard'), findsOneWidget);
+    expect(find.text('Iniciar Sessao'), findsOneWidget);
   });
 }

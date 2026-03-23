@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../config/app_config.dart';
+import 'app_config.dart';
 
 class ApiClient {
   const ApiClient();
@@ -30,6 +30,16 @@ class ApiClient {
 
   Future<dynamic> post(String path, {String? token, Map<String, dynamic>? body}) async {
     final response = await http.post(
+      _resolveUri(path),
+      headers: _headers(token: token, jsonBody: true),
+      body: jsonEncode(body ?? <String, dynamic>{}),
+    );
+
+    return _decodeResponse(response);
+  }
+
+  Future<dynamic> put(String path, {String? token, Map<String, dynamic>? body}) async {
+    final response = await http.put(
       _resolveUri(path),
       headers: _headers(token: token, jsonBody: true),
       body: jsonEncode(body ?? <String, dynamic>{}),
