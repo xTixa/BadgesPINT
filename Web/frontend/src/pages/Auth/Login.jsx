@@ -88,7 +88,13 @@ export default function Login() {
             Bem-vindo de volta!
           </h1>
           <p className="text-[#04C4D9] text-lg mb-10">
-            Entra na tua jornada de aprendizagem e continua a conquistar badges.
+            Credenciais de teste:
+            <br />
+            admin: admin@example.com / Password123
+            <br />
+            tm: tm@soft.pt / qwerty
+            <br />
+            consultant: guilherme@softinsa.pt / Password123
           </p>
           <p className="italic text-sm text-slate-800">
             “O conhecimento é a tua melhor credencial.”

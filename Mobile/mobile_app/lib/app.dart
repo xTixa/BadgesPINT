@@ -10,12 +10,7 @@ import 'consultor/consultor_controller.dart';
 import 'consultor/consultor_models.dart';
 import 'consultor/pages/consultor_shell_page.dart';
 
-enum AuthStage {
-  login,
-  register,
-  firstLogin,
-  authenticated,
-}
+enum AuthStage { login, register, firstLogin, authenticated }
 
 class BadgesPintApp extends StatefulWidget {
   const BadgesPintApp({super.key});
