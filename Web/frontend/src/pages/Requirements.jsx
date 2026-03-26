@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
+import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
+import PublicJourneyStepper from "../components/PublicJourneyStepper";
 
 export default function Requirements() {
   const { id } = useParams(); // badge id
   const [reqs, setReqs] = useState([]);
   const [badge, setBadge] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!id) return;
     
     setLoading(true);
+    setError("");
     
     // Buscar requisitos
     api.get(`/badges/${id}/requirements`)
@@ -21,6 +25,7 @@ export default function Requirements() {
       })
       .catch(err => {
         console.error(err);
+        setError("Não foi possível carregar os requisitos deste badge.");
         setLoading(false);
       });
 
@@ -36,7 +41,7 @@ export default function Requirements() {
   const getLevelColor = (level) => {
     const colors = {
       Junior: "bg-[#16558C]",
-      Intermedio: "bg-[#04C4D9]",
+      Intermedio: "bg-[#2B6EA8]",
       Senior: "bg-[#16558C]",
       Especialista: "bg-[#16558C]",
       Lider: "bg-[#16558C]",
@@ -52,7 +57,7 @@ export default function Requirements() {
           <div className="flex items-center mb-4">
             <Link 
               to="/badges" 
-              className="text-[#F2F2F2] hover:text-[#04C4D9] flex items-center gap-2 text-sm font-medium"
+              className="text-white/90 hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -98,15 +103,34 @@ export default function Requirements() {
 
       {/* Content Section */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <PublicBreadcrumbs
+          items={[
+            { label: "Início", to: "/" },
+            { label: "Badges", to: "/badges" },
+            { label: "Requisitos" },
+          ]}
+        />
+        <PublicJourneyStepper currentStep="requirements" />
+
+        <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
+          Passo final: completa os requisitos e submete evidências para validação.
+        </div>
+
+        {error && (
+          <div role="alert" className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
+            <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
+          </div>
+        )}
+
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
+          <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar requisitos...</p>
           </div>
         ) : reqs.length > 0 ? (
           <div className="space-y-6">
             {/* Info Card */}
-            <div className="bg-[#F2F2F2] border border-[#16558C] rounded-2xl p-6 mb-8">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 mb-8 shadow-sm">
               <div className="flex items-start gap-4">
                 <svg className="w-6 h-6 text-slate-800 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -125,7 +149,7 @@ export default function Requirements() {
               {reqs.map((r, index) => (
                 <div 
                   key={r.id}
-                  className="bg-white rounded-xl border border-[#16558C] overflow-hidden"
+                  className="bg-white rounded-xl border border-slate-200/80 overflow-hidden shadow-sm"
                 >
                   <div className="flex items-start gap-4 p-6">
                     {/* Number Badge */}
@@ -157,14 +181,14 @@ export default function Requirements() {
             </div>
 
             {/* Action Card */}
-            <div className="bg-[#16558C] rounded-2xl p-8 mt-8 text-white text-center border border-[#16558C]">
+            <div className="bg-gradient-to-r from-[#16558C] to-[#2B6EA8] rounded-2xl p-8 mt-8 text-white text-center border border-[#16558C] shadow-sm">
               <h3 className="text-2xl font-bold mb-3">Pronto para conquistares este badge?</h3>
               <p className="text-[#04C4D9] mb-6 max-w-2xl mx-auto">
                 Completa todos os requisitos e submete as tuas evidências para validação.
               </p>
-              <button className="px-8 py-3 bg-white text-slate-800 rounded-xl font-semibold border border-[#16558C]">
+              <Link to="/consultor/upload" className="inline-block px-8 py-3 bg-white text-slate-800 rounded-xl font-semibold border border-[#16558C] shadow-sm transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-white/70">
                 Submeter Evidências
-              </button>
+              </Link>
             </div>
           </div>
         ) : (

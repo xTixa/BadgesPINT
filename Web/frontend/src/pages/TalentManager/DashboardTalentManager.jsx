@@ -59,7 +59,7 @@ export default function DashboardTalentManager() {
     <div className="admin-shell">
       <Sidebar user={{ role: "talent_manager", name: tm?.name || "Talent Manager" }} />
 
-      <main className="admin-main">
+      <main className="admin-main bg-slate-50/50">
         <PageHeader
           title="Dashboard Talent Manager"
           subtitle="Visão geral da tua equipa, validações e progresso."
@@ -67,10 +67,12 @@ export default function DashboardTalentManager() {
         />
 
         {loading ? (
-          <EmptyState message="A carregar dados..." icon="bi-arrow-repeat" />
+          <div className="py-10">
+            <EmptyState message="A carregar dados do dashboard..." icon="bi-hourglass-split" />
+          </div>
         ) : (
           <>
-            <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 { label: "Consultores na Equipa", value: stats.totalEquipa, icon: "bi-people-fill", tone: "sky" },
                 { label: "Evidências Pendentes", value: stats.evidenciasPendentes, icon: "bi-hourglass-split", tone: "amber" },
@@ -81,7 +83,7 @@ export default function DashboardTalentManager() {
               ))}
             </div>
 
-            <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
+            <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
               <div className="lg:col-span-7">
                 <SectionCard title="Resumo de KPIs" icon="bi-bar-chart-fill" className="h-full">
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -110,7 +112,7 @@ export default function DashboardTalentManager() {
                         <span className="ui-muted-chip">{item.count}</span>
                       </li>
                     ))}
-                    {!kpis.usersByRole?.length && <li className="py-2"><EmptyState /></li>}
+                    {!kpis.usersByRole?.length && <li className="py-2 text-sm text-slate-500">Sem dados disponíveis.</li>}
                   </ul>
                 </SectionCard>
               </div>
@@ -123,10 +125,10 @@ export default function DashboardTalentManager() {
                     {(kpis.badgesByLevel || []).map((item) => (
                       <li key={item.level} className="flex items-center justify-between py-2">
                         <span className="text-sm text-slate-700">{item.level || "Sem nível"}</span>
-                        <span className="rounded-full bg-cyan-100 px-2 py-1 text-xs font-semibold text-cyan-700">{item.count}</span>
+                        <span className="ui-muted-chip">{item.count}</span>
                       </li>
                     ))}
-                    {!kpis.badgesByLevel?.length && <li className="py-2"><EmptyState /></li>}
+                    {!kpis.badgesByLevel?.length && <li className="py-2 text-sm text-slate-500">Sem dados disponíveis.</li>}
                   </ul>
                 </SectionCard>
               </div>
@@ -137,10 +139,10 @@ export default function DashboardTalentManager() {
                     {(kpis.badgesByMonth || []).slice(-6).map((item) => (
                       <li key={item.month} className="flex items-center justify-between py-2">
                         <span className="text-sm text-slate-700">{item.month}</span>
-                        <span className="rounded-full bg-indigo-100 px-2 py-1 text-xs font-semibold text-indigo-700">{item.count}</span>
+                        <span className="ui-muted-chip">{item.count}</span>
                       </li>
                     ))}
-                    {!kpis.badgesByMonth?.length && <li className="py-2"><EmptyState /></li>}
+                    {!kpis.badgesByMonth?.length && <li className="py-2 text-sm text-slate-500">Sem dados disponíveis.</li>}
                   </ul>
                 </SectionCard>
               </div>

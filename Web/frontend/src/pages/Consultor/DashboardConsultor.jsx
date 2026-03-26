@@ -112,6 +112,9 @@ export default function DashboardConsultor() {
   }, []);
 
   const pontosPorBadge = useMemo(() => badges.reduce((acc, b) => acc + (b.pontos || 0), 0), [badges]);
+  const panelClass = "h-full rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-shadow hover:shadow-md";
+  const secondaryActionClass = "rounded-lg border border-[#16558C]/35 px-3 py-1.5 text-xs font-semibold text-[#16558C] transition hover:bg-[#16558C]/10";
+  const secondaryActionClassLarge = "rounded-lg border border-[#16558C]/35 px-3 py-2 text-xs font-semibold text-[#16558C] transition hover:bg-[#16558C]/10 sm:text-sm";
 
   if (!user) {
     return (
@@ -133,27 +136,27 @@ export default function DashboardConsultor() {
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: user.name }} />
 
-      <main className="admin-main">
+      <main className="admin-main bg-slate-50/50">
         {/* Header de boas-vindas */}
-        <div className="mb-4 rounded-2xl bg-[#16558C] p-5 text-white shadow-sm">
-        <h3 className="mb-1 text-xl font-bold sm:text-2xl">
+        <div className="mb-6 rounded-2xl bg-gradient-to-r from-[#16558C] via-[#1C639E] to-[#2B6EA8] p-6 text-white shadow-sm">
+        <h3 className="mb-1 text-xl font-extrabold sm:text-2xl">
           {greeting}, {user.name.split(" ")[0]}!
         </h3>
-        <p className="m-0 text-sm text-white/80 sm:text-base">
+        <p className="m-0 text-sm text-white/85 sm:text-base">
           Continua a tua jornada e conquista novos badges.
         </p>
         </div>
 
         {/* KPI cards */}
-        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[
-          { icon: "bi-graph-up-arrow", cor: "text-primary", label: "Progresso Global", valor: `${progresso}%` },
-          { icon: "bi-star-fill", cor: "text-warning", label: "Pontos Totais", valor: user.points_total || pontosPorBadge },
-          { icon: "bi-award-fill", cor: "text-success", label: "Badges Obtidos", valor: badges.filter((b) => b.status === "obtido").length },
-          { icon: "bi-flag", cor: "text-info", label: "LPs em progresso", valor: learningPaths.filter((lp) => lp.status === "em progresso").length },
-          { icon: "bi-fire", cor: "text-danger", label: "Badges a expirar", valor: alertsExpiracao.length },
+          { icon: "bi-graph-up-arrow", cor: "text-[#16558C]", label: "Progresso Global", valor: `${progresso}%` },
+          { icon: "bi-star-fill", cor: "text-amber-500", label: "Pontos Totais", valor: user.points_total || pontosPorBadge },
+          { icon: "bi-award-fill", cor: "text-emerald-600", label: "Badges Obtidos", valor: badges.filter((b) => b.status === "obtido").length },
+          { icon: "bi-flag", cor: "text-cyan-600", label: "LPs em progresso", valor: learningPaths.filter((lp) => lp.status === "em progresso").length },
+          { icon: "bi-fire", cor: "text-rose-600", label: "Badges a expirar", valor: alertsExpiracao.length },
         ].map((card, idx) => (
-          <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div key={idx} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
             <div className="mb-2 flex items-center gap-2">
               <i className={`bi ${card.icon} text-2xl ${card.cor}`}></i>
               <h6 className="m-0 text-sm text-slate-600">{card.label}</h6>
@@ -164,17 +167,17 @@ export default function DashboardConsultor() {
         </div>
 
         {/* Badges + Recomendações */}
-        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h4 className="text-lg font-bold text-slate-900">Próximos Badges</h4>
-            <Link to="/badges" className="text-sm font-semibold text-slate-800 no-underline">
+            <Link to="/badges" className="text-sm font-semibold text-[#16558C] no-underline hover:opacity-80">
               Ver catálogo <i className="bi bi-arrow-right"></i>
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {badges.map((b) => (
-              <div key={b.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div key={b.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
                 <div className="mb-2 flex items-center gap-2">
                   <i className="bi bi-patch-check-fill text-xl" style={{ color: "#16558C" }}></i>
                   <h6 className="m-0 text-sm font-semibold text-slate-900">{b.name}</h6>
@@ -205,15 +208,15 @@ export default function DashboardConsultor() {
                   </div>
                 )}
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button className="rounded-lg border border-sky-600 px-3 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50" onClick={() => alert("Notificação enviada (mock)")}>
+                  <button className={secondaryActionClass} onClick={() => alert("Notificação enviada (mock)")}>
                     Ativar notificações
                   </button>
                   {b.status === "obtido" && (
-                    <button className="rounded-lg border border-emerald-600 px-3 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50" onClick={() => handleDownloadCertificate(b.id)}>
+                    <button className={secondaryActionClass} onClick={() => handleDownloadCertificate(b.id)}>
                       Download Certificado
                     </button>
                   )}
-                  <button className="rounded-lg border border-cyan-600 px-3 py-1 text-xs font-semibold text-cyan-700 hover:bg-cyan-50" onClick={() => alert("Partilhado no LinkedIn (mock)")}>
+                  <button className={secondaryActionClass} onClick={() => alert("Partilhado no LinkedIn (mock)")}>
                     Partilhar
                   </button>
                 </div>
@@ -223,7 +226,7 @@ export default function DashboardConsultor() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className={panelClass}>
             <h5 className="mb-3 text-base font-bold text-slate-900">
               <i className="bi bi-lightbulb mr-2 text-amber-500"></i>Recomendações
             </h5>
@@ -243,9 +246,9 @@ export default function DashboardConsultor() {
         </div>
 
         {/* Learning Paths + Alertas expiração */}
-        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className={panelClass}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <h5 className="m-0 text-base font-bold text-slate-900">
                 <i className="bi bi-diagram-3 mr-2 text-emerald-600"></i>Progresso em Learning Paths
@@ -272,7 +275,7 @@ export default function DashboardConsultor() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className={panelClass}>
             <h5 className="mb-3 text-base font-bold text-slate-900">
               <i className="bi bi-fire mr-2 text-rose-600"></i>Alertas de Expiração
             </h5>
@@ -283,7 +286,7 @@ export default function DashboardConsultor() {
                     <div className="text-sm font-semibold text-slate-900">{a.nome}</div>
                     <div className="text-xs text-slate-500">Expira em {a.expiraEmDias} dias</div>
                   </div>
-                  <button className="rounded-lg border border-rose-600 px-3 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50" onClick={() => alert("Lembrete enviado (mock)")}>
+                  <button className={secondaryActionClass} onClick={() => alert("Lembrete enviado (mock)")}>
                     Lembrar-me
                   </button>
                 </li>
@@ -295,9 +298,9 @@ export default function DashboardConsultor() {
         </div>
 
         {/* Notificações + Conquistas */}
-        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className={panelClass}>
             <h5 className="mb-3 text-base font-bold text-slate-900">
               <i className="bi bi-bell-fill mr-2 text-sky-600"></i>Notificações e Lembretes
             </h5>
@@ -316,7 +319,7 @@ export default function DashboardConsultor() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className={panelClass}>
             <h5 className="mb-3 text-base font-bold text-slate-900">
               <i className="bi bi-stars mr-2 text-amber-500"></i>Conquistas Especiais
             </h5>
@@ -336,15 +339,15 @@ export default function DashboardConsultor() {
         </div>
 
         {/* Partilha */}
-        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="mb-6 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
         <h5 className="mb-3 text-base font-bold text-slate-900">
           <i className="bi bi-share mr-2 text-cyan-600"></i>Partilha e Assinatura
         </h5>
         <div className="flex flex-wrap gap-2">
-          <button className="rounded-lg border border-cyan-600 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-50 sm:text-sm" onClick={() => alert("Partilhado no LinkedIn (mock)")}>Partilhar no LinkedIn</button>
-          <button className="rounded-lg border border-sky-600 px-3 py-2 text-xs font-semibold text-sky-700 hover:bg-sky-50 sm:text-sm" onClick={() => alert("Badge copiado para assinatura (mock)")}>Copiar badge para assinatura</button>
-          <button className="rounded-lg border border-slate-500 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:text-sm" onClick={() => alert("Template de email aplicado (mock)")}>Aplicar template de email</button>
-          <button className="rounded-lg border border-emerald-600 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 sm:text-sm" onClick={() => alert("Página pública aberta (mock)")}>Ver galeria pública</button>
+          <button className={secondaryActionClassLarge} onClick={() => alert("Partilhado no LinkedIn (mock)")}>Partilhar no LinkedIn</button>
+          <button className={secondaryActionClassLarge} onClick={() => alert("Badge copiado para assinatura (mock)")}>Copiar badge para assinatura</button>
+          <button className={secondaryActionClassLarge} onClick={() => alert("Template de email aplicado (mock)")}>Aplicar template de email</button>
+          <button className={secondaryActionClassLarge} onClick={() => alert("Página pública aberta (mock)")}>Ver galeria pública</button>
         </div>
         </div>
       </main>

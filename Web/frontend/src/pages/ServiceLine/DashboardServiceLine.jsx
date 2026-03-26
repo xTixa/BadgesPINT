@@ -1,6 +1,10 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import api from "/src/api";
+import PageHeader from "/src/components/ui/PageHeader";
+import StatCard from "/src/components/ui/StatCard";
+import SectionCard from "/src/components/ui/SectionCard";
+import EmptyState from "/src/components/ui/EmptyState";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
@@ -80,8 +84,8 @@ export default function DashboardServiceLine() {
     load();
   }, [startDate, endDate]);
 
-  if (loading) return <div className="p-4 text-slate-500">A carregar...</div>;
-  if (!sl) return <div className="p-4 text-rose-600">Erro ao carregar dados.</div>;
+  if (loading) return <div className="p-4"><EmptyState message="A carregar dashboard..." icon="bi-arrow-repeat" /></div>;
+  if (!sl) return <div className="p-4"><EmptyState message="Não foi possível carregar os dados do dashboard." icon="bi-exclamation-triangle" /></div>;
 
   return (
     <div className="admin-shell">
@@ -89,41 +93,23 @@ export default function DashboardServiceLine() {
 
       <main className="admin-main">
 
-        <div className="mb-6 rounded-2xl bg-indigo-900 p-4 text-white shadow-sm">
-          <h3 className="mb-1 text-2xl font-bold">
-            {greeting} {sl.name?.split(" ")[0]}!
-          </h3>
-          <p className="m-0 text-sm text-indigo-100">Estatísticas da tua Service Line.</p>
-        </div>
+        <PageHeader
+          title={`${greeting} ${sl.name?.split(" ")[0]}!`}
+          subtitle="Acompanha a evolução da tua linha de serviço em tempo real."
+          icon="bi-speedometer2"
+        />
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-
-          <div className="rounded-2xl bg-white p-4 text-center shadow-sm">
-              <i className="bi bi-person-badge-fill mb-2 block text-3xl text-blue-600"></i>
-              <h3 className="text-3xl font-bold text-slate-800">{dados.totalConsultores}</h3>
-              <p className="text-slate-500">Consultores</p>
-            </div>
-
-          <div className="rounded-2xl bg-white p-4 text-center shadow-sm">
-              <i className="bi bi-book-fill mb-2 block text-3xl text-cyan-600"></i>
-              <h3 className="text-3xl font-bold text-slate-800">{dados.cursosAtivos}</h3>
-              <p className="text-slate-500">Cursos Ativos</p>
-            </div>
-
-          <div className="rounded-2xl bg-white p-4 text-center shadow-sm">
-              <i className="bi bi-patch-exclamation-fill mb-2 block text-3xl text-amber-500"></i>
-              <h3 className="text-3xl font-bold text-slate-800">{dados.badgesPendentes}</h3>
-              <p className="text-slate-500">Badges Pendentes</p>
-            </div>
-
+          <StatCard label="Consultores" value={dados.totalConsultores} icon="bi-person-badge-fill" tone="sky" />
+          <StatCard label="Cursos ativos" value={dados.cursosAtivos} icon="bi-book-fill" tone="cyan" />
+          <StatCard label="Badges pendentes" value={dados.badgesPendentes} icon="bi-patch-exclamation-fill" tone="amber" />
         </div>
 
-        <div className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
-          <h5 className="mb-2 text-lg font-bold text-slate-800">Progresso Global</h5>
+        <SectionCard title="Progresso Global" icon="bi-graph-up-arrow" className="mb-6">
 
           <div className="h-2 overflow-hidden rounded-full bg-slate-200">
             <div
-              className="h-full rounded-full bg-indigo-900"
+              className="h-full rounded-full bg-[#16558C]"
               style={{ width: `${dados.progressoMedio}%` }}
             ></div>
           </div>
@@ -131,27 +117,23 @@ export default function DashboardServiceLine() {
           <p className="mt-2 text-sm text-slate-500">
             Progresso médio de todos os consultores.
           </p>
-        </div>
+        </SectionCard>
 
-        <div className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
+        <SectionCard title="KPIs de Badges" icon="bi-bar-chart-fill" className="mb-6">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h5 className="m-0 text-lg font-bold text-slate-800">
-              <i className="bi bi-bar-chart-fill mr-2 text-blue-600"></i>
-              KPIs de Badges
-            </h5>
             <div className="flex items-center gap-2">
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-[140px] rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+                className="ui-input w-[140px]"
               />
-              <span className="text-sm text-slate-500">ate</span>
+              <span className="text-sm text-slate-500">até</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-[140px] rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+                className="ui-input w-[140px]"
               />
             </div>
           </div>
@@ -178,7 +160,7 @@ export default function DashboardServiceLine() {
                     {badgesByMonth.length ? (
                       <Bar data={badgesMesChart} options={{ responsive: true, plugins: { legend: { display: false } } }} />
                     ) : (
-                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos para o período.</div>
+                      <div className="flex h-full items-center text-sm text-slate-500">Sem registos para o período selecionado.</div>
                     )}
                   </div>
             </div>
@@ -194,7 +176,7 @@ export default function DashboardServiceLine() {
                   </div>
             </div>
           </div>
-        </div>
+        </SectionCard>
 
       </main>
     </div>

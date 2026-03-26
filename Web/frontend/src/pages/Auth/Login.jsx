@@ -1,6 +1,7 @@
 import api from "/src/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "/src/assets/logo.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -80,14 +81,21 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-100">
       {/* ESQUERDA */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-12 bg-[#16558C] text-[#F2F2F2]">
-        <div className="max-w-md mx-auto text-center md:text-left">
-          <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
+      <div className="relative flex-1 flex flex-col justify-center overflow-hidden px-8 py-14 md:py-16 bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] text-[#F2F2F2]">
+        <div className="pointer-events-none absolute -top-20 -left-20 h-56 w-56 rounded-full bg-white/10 blur-2xl"></div>
+        <div className="pointer-events-none absolute bottom-8 right-0 h-40 w-40 rounded-full bg-cyan-300/20 blur-2xl"></div>
+        <div className="relative max-w-md mx-auto text-center md:text-left">
+          <img
+            src={logo}
+            alt="Softinsa"
+            className="h-16 md:h-20 w-auto mb-8 mx-auto md:mx-0 drop-shadow-[0_5px_14px_rgba(0,0,0,0.28)]"
+          />
+          <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
             Bem-vindo de volta!
           </h1>
-          <p className="text-[#04C4D9] text-lg mb-10">
+          <p className="text-[#04C4D9] text-lg mb-8">
             Credenciais de teste:
             <br />
             admin: admin@example.com / Password123
@@ -103,11 +111,11 @@ export default function Login() {
       </div>
 
       {/* FORMULÁRIO */}
-      <div className="flex-1 flex items-center justify-center bg-[#F2F2F2]">
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-[#F6F8FB] to-[#EEF2F7]">
 
         <form
           onSubmit={handleLogin}
-          className="w-full max-w-sm rounded-2xl bg-white px-10 py-12 mx-6 border border-[#16558C]"
+          className="w-full max-w-sm rounded-2xl bg-white px-10 py-10 md:py-12 mx-6 border border-[#16558C]/30 shadow-[0_14px_35px_rgba(15,23,42,0.12)]"
         >
           <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
             Iniciar Sessão
@@ -125,7 +133,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className={`w-full px-4 py-3 rounded-lg border ${
                 error ? "border-red-400" : "border-gray-300"
-              } focus:outline-none focus:ring-2 focus:ring-[#16558C]`}
+              } focus:outline-none focus:ring-2 focus:ring-[#16558C]/40`}
               placeholder="exemplo@dominio.com"
             />
           </div>
@@ -143,7 +151,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full px-4 py-3 rounded-lg border ${
                   error ? "border-red-400" : "border-gray-300"
-                } focus:outline-none focus:ring-2 focus:ring-[#16558C] pr-16`}
+                } focus:outline-none focus:ring-2 focus:ring-[#16558C]/40 pr-16`}
                 placeholder="••••••••"
               />
               <button
@@ -179,7 +187,7 @@ export default function Login() {
           {/* BOTÃO */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg font-semibold text-white bg-[#16558C] hover:bg-[#16558C]"
+            className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-[#16558C] to-[#2B6EA8] hover:shadow-md"
           >
             Entrar
           </button>

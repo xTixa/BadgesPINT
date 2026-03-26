@@ -1,31 +1,36 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
+import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
+import PublicJourneyStepper from "../components/PublicJourneyStepper";
 
 export default function ServiceLines() {
   const { id } = useParams(); // learning path id
   const [sls, setSls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pathName, setPathName] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!id) return;
     
     setLoading(true);
+    setError("");
     
     // Buscar service lines
-    api.get(`learning-paths/${id}/service-lines`)
+    api.get(`/learning-paths/${id}/service-lines`)
       .then(res => {
         setSls(res.data);
         setLoading(false);
       })
       .catch(err => {
         console.error(err);
+        setError("Não foi possível carregar as service lines neste momento.");
         setLoading(false);
       });
 
     // Buscar nome do learning path
-    api.get(`learning-paths`)
+    api.get(`/learning-paths`)
       .then(res => {
         const path = res.data.find(p => p.id === parseInt(id));
         if (path) setPathName(path.name);
@@ -46,19 +51,18 @@ export default function ServiceLines() {
   };
 
   const getCardColor = (index) => {
-    const colors = ["bg-[#16558C]", "bg-[#04C4D9]", "bg-[#16558C]", "bg-[#16558C]"];
+    const colors = ["bg-[#16558C]", "bg-[#2B6EA8]", "bg-[#16558C]", "bg-[#1D6AA8]"];
     return colors[index % colors.length];
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      {/* Header Section */}
-      <div className="bg-[#16558C] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
+      <div className="bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
               to="/learning-paths" 
-              className="text-[#04C4D9] hover:text-[#F2F2F2] flex items-center gap-2 text-sm font-medium"
+              className="text-[#04C4D9] hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -67,7 +71,7 @@ export default function ServiceLines() {
             </Link>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-            Service Lines
+            Linhas de Serviço
           </h1>
           <p className="text-lg md:text-xl text-[#04C4D9] max-w-3xl">
             {pathName && `Percurso: ${pathName} - `}
@@ -78,19 +82,39 @@ export default function ServiceLines() {
 
       {/* Content Section */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <PublicBreadcrumbs
+          items={[
+            { label: "Início", to: "/" },
+            { label: "Percursos", to: "/learning-paths" },
+            { label: "Linhas de Serviço" },
+          ]}
+        />
+        <PublicJourneyStepper currentStep="service-lines" />
+
+        <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
+          Passo 2: Escolhe uma linha de serviço para veres as áreas de competência.
+        </div>
+
+        {error && (
+          <div role="alert" className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
+            <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
+          </div>
+        )}
+
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
+          <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
-            <p className="text-gray-600 text-lg">A carregar service lines...</p>
+            <p className="text-gray-600 text-lg">A carregar linhas de serviço...</p>
           </div>
         ) : sls.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sls.map((sl, index) => (
               <div 
                 key={sl.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-[#16558C]"
+                className="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div className={`h-48 ${getCardColor(index)} relative overflow-hidden`}>
+                  <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
                   
                   {/* Ícone grande */}
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -117,7 +141,7 @@ export default function ServiceLines() {
                   {/* Action Button */}
                   <Link
                     to={`/service-lines/${sl.id}/areas`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#16558C] text-white font-semibold hover:bg-[#16558C]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] text-white font-semibold shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#16558C]/35"
                   >
                     Ver Áreas →
                   </Link>
@@ -130,7 +154,7 @@ export default function ServiceLines() {
             <svg className="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
-            <p className="text-gray-500 text-lg">Nenhuma service line disponível</p>
+            <p className="text-gray-500 text-lg">Nenhuma linha de serviço disponível</p>
           </div>
         )}
       </div>

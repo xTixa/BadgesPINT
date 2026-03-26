@@ -55,6 +55,7 @@ export default function Sidebar({ user }) {
 
   return (
     <>
+      {/* Mobile menu button */}
       {isMobile && (
         <button
           type="button"
@@ -79,9 +80,6 @@ export default function Sidebar({ user }) {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#16558C]/15 px-4 py-3">
           <div className={`flex items-center ${collapsed && !isMobile ? "justify-center" : "gap-3"}`}>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#16558C]/10 text-[#16558C]">
-              <i className="bi bi-grid-1x2-fill text-sm"></i>
-            </div>
             {(!collapsed || isMobile) && (
               <div>
                 <span className="block text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">Painel</span>
@@ -89,7 +87,7 @@ export default function Sidebar({ user }) {
               </div>
             )}
           </div>
-
+          
           <button
             type="button"
             onClick={() => {

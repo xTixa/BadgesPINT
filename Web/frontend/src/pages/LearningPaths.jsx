@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 import { Link } from "react-router-dom";
+import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
+import PublicJourneyStepper from "../components/PublicJourneyStepper";
 
 export default function LearningPaths() {
   const [paths, setPaths] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setLoading(true);
+    setError("");
     api.get("/learning-paths")
       .then(res => {
         setPaths(res.data);
@@ -15,17 +19,17 @@ export default function LearningPaths() {
       })
       .catch(err => {
         console.error(err);
+        setError("Não foi possível carregar os percursos neste momento.");
         setLoading(false);
       });
   }, []);
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      {/* Header Section */}
-      <div className="bg-[#16558C] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
+      <div className="bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
-            <Link to="/" className="text-[#04C4D9] hover:text-[#F2F2F2] flex items-center gap-2 text-sm font-medium">
+            <Link to="/" className="text-[#04C4D9] hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
@@ -43,8 +47,21 @@ export default function LearningPaths() {
 
       {/* Content Section */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <PublicBreadcrumbs items={[{ label: "Início", to: "/" }, { label: "Percursos" }]} />
+        <PublicJourneyStepper currentStep="paths" />
+
+        <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
+          Passo 1: Escolhe um percurso para veres as respetivas linhas de serviço.
+        </div>
+
+        {error && (
+          <div role="alert" className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
+            <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
+          </div>
+        )}
+
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
+          <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar percursos...</p>
           </div>
@@ -53,9 +70,9 @@ export default function LearningPaths() {
             {paths.map(p => (
               <div 
                 key={p.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-[#16558C]"
+                className="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
-                <div className="h-32 bg-[#16558C] relative overflow-hidden">
+                <div className="h-32 bg-gradient-to-br from-[#16558C] to-[#2B6EA8] relative overflow-hidden">
                   <div className="absolute bottom-4 left-6 right-6">
                     <div className="flex items-center gap-2">
                       <svg className="w-8 h-8 text-white opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +92,7 @@ export default function LearningPaths() {
                   {/* Action Button */}
                   <Link
                     to={`/learning-paths/${p.id}/service-lines`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#16558C] text-white font-semibold hover:bg-[#16558C]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] text-white font-semibold shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#16558C]/35"
                   >
                     Explorar Percurso →
                   </Link>

@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
+import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
+import PublicJourneyStepper from "../components/PublicJourneyStepper";
 
 export default function Badges() {
   const { id } = useParams(); // area id (opcional)
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [areaName, setAreaName] = useState("");
 
   useEffect(() => {
     setLoading(true);
+    setError("");
     
     // Se há um ID de área, procura badges dessa área
     // Senão, procura todos os badges
@@ -26,6 +30,7 @@ export default function Badges() {
       })
       .catch(err => {
         console.error(err);
+        setError("Não foi possível carregar os badges neste momento.");
         setLoading(false);
       });
   }, [id]);
@@ -34,7 +39,7 @@ export default function Badges() {
   const getLevelColor = (level) => {
     const colors = {
       Junior: "bg-[#16558C]",
-      Intermedio: "bg-[#04C4D9]",
+      Intermedio: "bg-[#2B6EA8]",
       Senior: "bg-[#16558C]",
       Especialista: "bg-[#16558C]",
       Lider: "bg-[#16558C]",
@@ -44,24 +49,23 @@ export default function Badges() {
 
   const getLevelBadgeColor = (level) => {
     const colors = {
-      'Junior': 'bg-green-100 text-green-800',
-      'Intermedio': 'bg-blue-100 text-blue-800',
-      'Senior': 'bg-purple-100 text-purple-800',
-      'Especialista': 'bg-orange-100 text-orange-800',
-      'Lider': 'bg-red-100 text-red-800'
+      'Junior': 'bg-[#16558C]/10 text-[#16558C]',
+      'Intermedio': 'bg-[#16558C]/10 text-[#16558C]',
+      'Senior': 'bg-[#16558C]/10 text-[#16558C]',
+      'Especialista': 'bg-[#16558C]/10 text-[#16558C]',
+      'Lider': 'bg-[#16558C]/10 text-[#16558C]'
     };
-    return colors[level] || 'bg-gray-100 text-gray-800';
+    return colors[level] || 'bg-slate-100 text-slate-700';
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      {/* Header Section */}
-      <div className="bg-[#16558C] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
+      <div className="bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
               to={id ? `/areas` : "/"} 
-              className="text-[#04C4D9] hover:text-[#F2F2F2] flex items-center gap-2 text-sm font-medium"
+              className="text-[#04C4D9] hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -80,8 +84,29 @@ export default function Badges() {
 
       {/* Content Section */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <PublicBreadcrumbs
+          items={id
+            ? [
+                { label: "Início", to: "/" },
+                { label: "Áreas", to: "/areas" },
+                { label: "Badges" },
+              ]
+            : [{ label: "Início", to: "/" }, { label: "Badges" }]}
+        />
+        <PublicJourneyStepper currentStep="badges" />
+
+        <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
+          Passo 4: Abre um badge para veres os requisitos necessários para o concluir.
+        </div>
+
+        {error && (
+          <div role="alert" className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
+            <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
+          </div>
+        )}
+
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
+          <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar badges...</p>
           </div>
@@ -90,10 +115,11 @@ export default function Badges() {
             {badges.map(b => (
               <div 
                 key={b.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-[#16558C]"
+                className="group bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
                 {/* Badge Icon Header */}
                 <div className={`h-40 ${getLevelColor(b.level)} flex items-center justify-center relative overflow-hidden`}>
+                  <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
                   <svg
                     className="h-20 w-20 text-white relative z-10"
                     fill="none"
@@ -133,7 +159,7 @@ export default function Badges() {
                   {/* Action Button */}
                   <Link
                     to={`/badges/${b.id}/requirements`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-[#16558C] text-white font-semibold hover:bg-[#16558C]"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] text-white font-semibold shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#16558C]/35"
                   >
                     Ver Requisitos →
                   </Link>

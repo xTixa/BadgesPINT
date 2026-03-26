@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import PageHeader from "../../components/ui/PageHeader";
+import EmptyState from "../../components/ui/EmptyState";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
@@ -10,7 +12,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 
 export default function DashboardAdmin() {
   const navigate = useNavigate();
-  const { isMobile, isTablet } = useWindowSize();
+  const { isMobile } = useWindowSize();
   const toDateInput = (date) => date.toISOString().slice(0, 10);
   const defaultEnd = new Date();
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -245,19 +247,15 @@ export default function DashboardAdmin() {
 
       <main className="admin-main">
         <div className="mx-auto max-w-[1400px]">
-          <h2
-            className={`mb-8 flex items-center gap-2 font-bold text-slate-800 ${
-              isMobile ? "text-2xl" : isTablet ? "text-3xl" : "text-4xl"
-            }`}
-          >
-            <i className="bi bi-speedometer2 text-slate-500"></i>
-            {isMobile ? "Dashboard" : "Dashboard do Administrador"}
-          </h2>
+          <PageHeader
+            title={isMobile ? "Dashboard" : "Dashboard do Administrador"}
+            subtitle="Visão geral de gestão, métricas e operações do programa de badges."
+            icon="bi-speedometer2"
+          />
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-              <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-500"></div>
-              <p className="mt-3 text-sm">A carregar dados...</p>
+            <div className="py-10">
+              <EmptyState message="A carregar dados do dashboard..." icon="bi-hourglass-split" />
             </div>
           ) : (
             <>
@@ -310,21 +308,21 @@ export default function DashboardAdmin() {
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+                      className="ui-input"
                     />
-                    <span className="text-sm text-slate-500">ate</span>
+                    <span className="text-sm text-slate-500">até</span>
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-indigo-500"
+                      className="ui-input"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="mb-8">
-                <h5 className="mb-4 text-lg font-semibold text-slate-800">Atalhos Rapidos</h5>
+                <h5 className="mb-4 text-lg font-semibold text-slate-800">Atalhos Rápidos</h5>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                   {shortcuts.map((shortcut, index) => (
                     <div key={index}>
@@ -359,7 +357,7 @@ export default function DashboardAdmin() {
                         Descrição do badge
                       </label>
                       <textarea
-                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                        className="ui-input px-3 py-2"
                         rows={3}
                         placeholder="Ex.: Badge circular dourado, ícone de estrela, estilo flat, fundo azul escuro"
                         value={badgePrompt}
@@ -371,7 +369,7 @@ export default function DashboardAdmin() {
                         Tamanho
                       </label>
                       <select
-                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                        className="ui-input px-3 py-2"
                         value={badgeSize}
                         onChange={(e) => setBadgeSize(e.target.value)}
                       >
@@ -382,7 +380,7 @@ export default function DashboardAdmin() {
                     </div>
                     <div className="lg:col-span-2">
                       <button
-                        className="w-full rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="ui-btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
                         onClick={handleGenerateBadge}
                         disabled={isGenerating}
                       >
@@ -406,12 +404,12 @@ export default function DashboardAdmin() {
                         <a
                           href={badgeImage}
                           download="badge.png"
-                          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+                          className="ui-btn-secondary !rounded-lg !px-3 !py-1.5 !text-xs"
                         >
                           Download
                         </a>
                         <button
-                          className="rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="ui-btn-secondary !rounded-lg !border-[#16558C]/50 !px-3 !py-1.5 !text-xs disabled:cursor-not-allowed disabled:opacity-60"
                           onClick={handleUploadBadge}
                           disabled={isUploading}
                         >

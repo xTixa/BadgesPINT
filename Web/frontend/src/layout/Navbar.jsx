@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import NotificationCenter from "../components/NotificationCenter";
+import logo from "/src/assets/logo.png";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const publicLinks = [
-    { to: "/learning-paths", label: "Learning Paths" },
+    { to: "/learning-paths", label: "Percursos" },
     { to: "/badges", label: "Badges" },
     { to: "/areas", label: "Áreas" },
   ];
@@ -25,8 +27,8 @@ export default function Navbar() {
   };
 
   const roleDashboardMap = {
-    consultant: "/consultor/perfil",
-    consultor: "/consultor/perfil",
+    consultant: "/dashboard",
+    consultor: "/dashboard",
     talent_manager: "/tm/dashboard",
     talentManager: "/tm/dashboard",
     service_line_leader: "/sl/dashboard",
@@ -46,12 +48,20 @@ export default function Navbar() {
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
+    if (!stored) return;
+    try {
+      setUser(JSON.parse(stored));
+    } catch {
+      localStorage.removeItem("user");
+      setUser(null);
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
+    setOpen(false);
+    setDropdownOpen(false);
     navigate("/login");
   };
 
@@ -61,46 +71,56 @@ export default function Navbar() {
     return () => window.removeEventListener("click", close);
   }, []);
 
+  useEffect(() => {
+    setOpen(false);
+    setDropdownOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const onEscape = (event) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        setDropdownOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onEscape);
+    return () => window.removeEventListener("keydown", onEscape);
+  }, []);
+
   const firstName = user?.name?.trim()?.split(" ")?.[0] || "Conta";
   const roleLabel = roleLabelMap[user?.role] || "Utilizador";
   const dashboardPath = roleDashboardMap[user?.role] || "/";
   const settingsPath = roleSettingsMap[user?.role] || "/";
 
   const navLinkClass = ({ isActive }) =>
-    `rounded-full px-3 py-1.5 text-sm font-semibold transition
+    `rounded-full px-3.5 py-2 text-sm font-semibold transition-all duration-200
     ${
     isActive
-    ? "bg-[#16558C]/10 text-[#16558C]"
+    ? "bg-[#16558C]/12 text-[#16558C] ring-1 ring-[#16558C]/20"
     : "text-slate-600 hover:bg-[#16558C]/10 hover:text-[#16558C]"
     }`;
 
+  const mobileLinkClass = ({ isActive }) =>
+    `mb-1 block rounded-md px-3 py-2 no-underline text-sm font-semibold transition ${
+      isActive
+        ? "bg-[#16558C]/12 text-[#16558C]"
+        : "text-slate-700 hover:bg-[#16558C]/10 hover:text-[#16558C]"
+    }`;
+
   return (
-    <header className="sticky top-0 z-[1000] border-b border-[#16558C]/20 bg-white/95 backdrop-blur">
-      <nav className="mx-auto max-w-[1280px] px-4">
-        <div className="flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-[1000] border-b border-[#16558C]/15 bg-white/90 shadow-sm backdrop-blur-md">
+      <nav className="mx-auto max-w-[1320px] px-4">
+        <div className="flex h-[72px] items-center justify-between">
 
             {/* LOGO */}
             <Link
               to="/"
-              className="flex items-center gap-3 no-underline text-slate-800"
+              className="flex items-center gap-3 rounded-xl px-1 py-1 no-underline text-slate-800"
             >
-              <div className="flex items-center justify-center rounded-xl bg-gradient-to-br from-[#16558C] to-[#3F76A6] p-2 text-[#F2F2F2] shadow-sm">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-6 w-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2a.75.75 0 01.36.09l7.5 4a.75.75 0 01.39.66v5.5c0 5.1-3.27 8.9-7.61 10.43a.75.75 0 01-.48 0C7.27 21.15 4 17.35 4 12.25V6.75a.75.75 0 01.39-.66l7.5-4A.75.75 0 0112 2z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
+              <img src={logo} alt="Softinsa" className="h-9 w-auto" />
               <div className="leading-tight">
-                <span className="block text-lg font-semibold tracking-tight text-slate-800">Badges</span>
-                <span className="hidden text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500 sm:block">
+                <span className="block text-lg font-bold tracking-tight text-slate-800">Badges</span>
+                <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:block">
                   Plataforma de evolução
                 </span>
               </div>
@@ -108,7 +128,7 @@ export default function Navbar() {
 
             {/* LINKS DESKTOP */}
             {!user && (
-            <div className="hidden md:flex items-center gap-2 rounded-full border border-[#16558C]/20 bg-white p-1">
+            <div className="hidden md:flex items-center gap-1.5 rounded-full border border-[#16558C]/20 bg-white/80 p-1 shadow-sm">
               {publicLinks.map(({ to, label }) => (
                 <NavLink
                   key={to}
@@ -126,17 +146,13 @@ export default function Navbar() {
               {!user ? (
                 <Link
                   to="/login"
-                  className="rounded-xl bg-[#16558C] px-5 py-2 text-sm font-semibold text-white no-underline shadow-sm transition hover:bg-[#3F76A6]"
+                  className="rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] px-5 py-2 text-sm font-semibold text-white no-underline shadow-sm transition hover:shadow-md"
                 >
-                  Sign In
+                  Entrar
                 </Link>
               ) : (
                 <>
                   <NotificationCenter />
-
-                  <span className="rounded-full border border-[#16558C]/20 bg-[#16558C]/10 px-3 py-1 text-xs font-semibold text-[#16558C]">
-                    {roleLabel}
-                  </span>
 
                   <div
                     className="relative"
@@ -146,7 +162,12 @@ export default function Navbar() {
                     }}
                   >
                     <button
-                      className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#16558C]/30 bg-white px-3 py-2 font-semibold text-slate-800 transition hover:border-[#16558C]"
+                      type="button"
+                      aria-haspopup="menu"
+                      aria-expanded={dropdownOpen}
+                      aria-controls="account-menu"
+                      aria-label="Abrir menu da conta"
+                      className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#16558C]/25 bg-white px-3 py-2 font-semibold text-slate-800 shadow-sm transition hover:border-[#16558C] focus-visible:ring-2 focus-visible:ring-[#16558C]/30"
                     >
                       <i className="bi bi-person-circle text-lg text-[#16558C]"></i>
                       {firstName}
@@ -155,6 +176,9 @@ export default function Navbar() {
 
                     {dropdownOpen && (
                       <div
+                        id="account-menu"
+                        role="menu"
+                        aria-label="Menu da conta"
                         className="absolute right-0 z-[1000] mt-2 w-52 rounded-xl border border-[#16558C]/20 bg-white p-1.5 text-slate-800 shadow-lg"
                       >
                         {[
@@ -173,6 +197,7 @@ export default function Navbar() {
                           <Link
                             key={`${to}-${label}`}
                             to={to}
+                            role="menuitem"
                             className="mb-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm no-underline text-slate-700 transition hover:bg-[#16558C]/10 hover:text-[#16558C]"
                           >
                             <i className={`bi ${icon}`}></i>
@@ -182,6 +207,7 @@ export default function Navbar() {
 
                         <button
                           onClick={handleLogout}
+                          role="menuitem"
                           className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg border-0 border-t border-[#16558C]/20 bg-transparent px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50"
                         >
                           <i className="bi bi-box-arrow-right"></i>
@@ -196,7 +222,11 @@ export default function Navbar() {
 
             {/* MOBILE BUTTON */}
             <button
-              className="cursor-pointer rounded-lg border border-[#16558C]/30 bg-white p-2 text-slate-800 transition hover:border-[#16558C] md:hidden"
+              type="button"
+              aria-label={open ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              className="cursor-pointer rounded-lg border border-[#16558C]/30 bg-white p-2 text-slate-800 transition hover:border-[#16558C] focus-visible:ring-2 focus-visible:ring-[#16558C]/30 md:hidden"
               onClick={() => setOpen(!open)}
             >
               <i className={`bi ${open ? "bi-x-lg" : "bi-list"} text-xl`}></i>
@@ -205,13 +235,13 @@ export default function Navbar() {
 
         {/* MOBILE MENU */}
         {open && (
-          <div className="border-t border-[#16558C]/20 bg-white px-4 py-3 md:hidden">
+          <div id="mobile-menu" className="border-t border-[#16558C]/20 bg-white px-4 py-3 md:hidden">
             {!user && publicLinks.map(({ to, label }) => (
               <NavLink
                 key={to}
                 to={to}
                 onClick={() => setOpen(false)}
-                className="mb-1 block rounded-md px-3 py-2 no-underline text-slate-800 hover:bg-[#16558C]/10"
+                className={mobileLinkClass}
               >
                 {label}
               </NavLink>
@@ -221,36 +251,36 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="mt-2 block rounded-md bg-[#16558C] px-3 py-2 text-center text-sm font-semibold text-white no-underline"
+                className="mt-2 block rounded-md bg-gradient-to-r from-[#16558C] to-[#2B6EA8] px-3 py-2 text-center text-sm font-semibold text-white no-underline shadow-sm"
               >
-                Sign In
+                Entrar
               </Link>
             ) : (
               <>
-                <Link
+                <NavLink
                   to={dashboardPath}
                   onClick={() => setOpen(false)}
-                  className="mb-1 block rounded-md px-3 py-2 no-underline text-slate-800 hover:bg-[#16558C]/10"
+                  className={mobileLinkClass}
                 >
                   Dashboard
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to={settingsPath}
                   onClick={() => setOpen(false)}
-                  className="mb-1 block rounded-md px-3 py-2 no-underline text-slate-800 hover:bg-[#16558C]/10"
+                  className={mobileLinkClass}
                 >
                   Configurações
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/notificacoes"
                   onClick={() => setOpen(false)}
-                  className="mb-1 block rounded-md px-3 py-2 no-underline text-slate-800 hover:bg-[#16558C]/10"
+                  className={mobileLinkClass}
                 >
                   Notificações
-                </Link>
+                </NavLink>
                 <button
                   onClick={handleLogout}
-                  className="mt-2 block w-full cursor-pointer rounded-md border-0 bg-[#16558C] px-3 py-2 text-sm font-semibold text-white"
+                  className="mt-2 block w-full cursor-pointer rounded-md border-0 bg-gradient-to-r from-[#16558C] to-[#2B6EA8] px-3 py-2 text-sm font-semibold text-white shadow-sm"
                 >
                   Terminar Sessão
                 </button>
