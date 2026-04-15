@@ -83,71 +83,114 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            final bool isWide = constraints.maxWidth >= 900;
+    final scheme = Theme.of(context).colorScheme;
 
-            final leftPanel = Container(
-              width: isWide ? constraints.maxWidth * 0.45 : double.infinity,
-              color: const Color(0xFF16558C),
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 48),
-              child: Align(
-                alignment: isWide ? Alignment.centerLeft : Alignment.center,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: isWide ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Bem-vindo de volta!',
-                        textAlign: isWide ? TextAlign.left : TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFFF2F2F2),
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          height: 1.1,
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final bool isWide = constraints.maxWidth >= 960;
+
+          final leftPanel = Container(
+            width: isWide ? constraints.maxWidth * 0.44 : double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Color(0xFF0A5D8F), Color(0xFF0B3B73)],
+              ),
+            ),
+            padding: const EdgeInsets.fromLTRB(30, 48, 30, 30),
+            child: Align(
+              alignment: isWide ? Alignment.centerLeft : Alignment.center,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment:
+                      isWide
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.24),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Entra na tua jornada de aprendizagem e continua a conquistar badges.',
-                        textAlign: isWide ? TextAlign.left : TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF04C4D9),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      const Text(
-                        '"O conhecimento e a tua melhor credencial."',
+                      child: const Text(
+                        'BADGES PINT',
                         style: TextStyle(
-                          color: Color(0xFFCBD5E1),
-                          fontStyle: FontStyle.italic,
-                          fontSize: 13,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      'Mostra o teu crescimento.\nConquista o proximo badge.',
+                      textAlign: isWide ? TextAlign.left : TextAlign.center,
+                      style: const TextStyle(
+                        color: Color(0xFFF8FAFC),
+                        fontSize: 35,
+                        fontWeight: FontWeight.w900,
+                        height: 1.08,
+                        letterSpacing: -0.6,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'Acede ao teu dashboard de competencias, submete evidencias e acompanha progresso em tempo real.',
+                      textAlign: isWide ? TextAlign.left : TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.86),
+                        fontSize: 16,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            );
+            ),
+          );
 
-            final formPanel = Container(
-              width: isWide ? constraints.maxWidth * 0.55 : double.infinity,
-              color: const Color(0xFFF2F2F2),
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
+          final formPanel = Container(
+            width: isWide ? constraints.maxWidth * 0.56 : double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[Color(0xFFF6FAFF), Color(0xFFEEF4FD)],
+              ),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 430),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                          color: Color(0x220F172A),
+                          blurRadius: 36,
+                          offset: Offset(0, 14),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                     child: Card(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: const BorderSide(color: Color(0xFF16558C)),
+                        borderRadius: BorderRadius.circular(24),
+                        side: BorderSide(
+                          color: scheme.primary.withValues(alpha: 0.2),
+                        ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
@@ -159,10 +202,19 @@ class _LoginPageState extends State<LoginPage> {
                               Text(
                                 'Iniciar Sessao',
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF1E293B),
-                                    ),
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.4,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Usa as tuas credenciais para entrar no portal de badges.',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: const Color(0xFF64748B)),
                               ),
                               const SizedBox(height: 22),
                               TextFormField(
@@ -176,7 +228,8 @@ class _LoginPageState extends State<LoginPage> {
                                 validator: (String? value) {
                                   final text = (value ?? '').trim();
                                   if (text.isEmpty) return 'Indica o teu email';
-                                  if (!text.contains('@')) return 'Email invalido';
+                                  if (!text.contains('@'))
+                                    return 'Email invalido';
                                   return null;
                                 },
                               ),
@@ -190,13 +243,20 @@ class _LoginPageState extends State<LoginPage> {
                                   prefixIcon: const Icon(Icons.lock_outline),
                                   suffixIcon: TextButton(
                                     onPressed: () {
-                                      setState(() => _obscurePassword = !_obscurePassword);
+                                      setState(
+                                        () =>
+                                            _obscurePassword =
+                                                !_obscurePassword,
+                                      );
                                     },
-                                    child: Text(_obscurePassword ? 'Mostrar' : 'Ocultar'),
+                                    child: Text(
+                                      _obscurePassword ? 'Mostrar' : 'Ocultar',
+                                    ),
                                   ),
                                 ),
                                 validator: (String? value) {
-                                  if ((value ?? '').isEmpty) return 'Indica a password';
+                                  if ((value ?? '').isEmpty)
+                                    return 'Indica a password';
                                   return null;
                                 },
                               ),
@@ -206,16 +266,25 @@ class _LoginPageState extends State<LoginPage> {
                                 children: <Widget>[
                                   Expanded(
                                     child: InkWell(
+                                      borderRadius: BorderRadius.circular(12),
                                       onTap: () {
-                                        setState(() => _rememberEmail = !_rememberEmail);
+                                        setState(
+                                          () =>
+                                              _rememberEmail = !_rememberEmail,
+                                        );
                                       },
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Checkbox(
                                             value: _rememberEmail,
                                             onChanged: (bool? value) {
-                                              setState(() => _rememberEmail = value ?? false);
+                                              setState(
+                                                () =>
+                                                    _rememberEmail =
+                                                        value ?? false,
+                                              );
                                             },
                                           ),
                                           const Expanded(
@@ -232,10 +301,8 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                   TextButton(
-                                    onPressed: () {
-                                      widget.onRecoverPassword();
-                                    },
-                                    child: const Text('Esqueceste-te da password?'),
+                                    onPressed: widget.onRecoverPassword,
+                                    child: const Text('Esqueceste-te?'),
                                   ),
                                 ],
                               ),
@@ -246,21 +313,16 @@ class _LoginPageState extends State<LoginPage> {
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     color: Color(0xFFDC2626),
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ],
                               const SizedBox(height: 10),
                               FilledButton(
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFF16558C),
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
                                 onPressed: _isSubmitting ? null : _submit,
-                                child: Text(_isSubmitting ? 'A entrar...' : 'Entrar'),
+                                child: Text(
+                                  _isSubmitting ? 'A entrar...' : 'Entrar',
+                                ),
                               ),
                               const SizedBox(height: 16),
                               const Text(
@@ -270,17 +332,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               const SizedBox(height: 8),
                               OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF1E293B),
-                                  side: const BorderSide(color: Color(0xFF16558C)),
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  widget.onOpenRegister();
-                                },
+                                onPressed: widget.onOpenRegister,
                                 child: const Text('Criar Conta'),
                               ),
                             ],
@@ -291,22 +343,26 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-            );
+            ),
+          );
 
-            if (isWide) {
-              return Row(
+          if (isWide) {
+            return SafeArea(
+              child: Row(
                 children: <Widget>[leftPanel, Expanded(child: formPanel)],
-              );
-            }
+              ),
+            );
+          }
 
-            return Column(
+          return SafeArea(
+            child: Column(
               children: <Widget>[
-                SizedBox(height: 250, child: leftPanel),
+                SizedBox(height: 265, child: leftPanel),
                 Expanded(child: formPanel),
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -16,7 +16,8 @@ class RegisterPage extends StatefulWidget {
     required String email,
     int? areaId,
     required bool acceptedRgpd,
-  }) onRegister;
+  })
+  onRegister;
   final VoidCallback onBackToLogin;
 
   @override
@@ -56,12 +57,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() {
       _submitting = false;
-      _message = result ?? 'Conta criada com sucesso. Confirma o email e faz login.';
+      _message =
+          result ?? 'Conta criada com sucesso. Confirma o email e faz login.';
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Criar Conta'),
@@ -76,65 +80,114 @@ class _RegisterPageState extends State<RegisterPage> {
           child: ListView(
             padding: const EdgeInsets.all(20),
             children: <Widget>[
-              const Text(
-                'Registo de Consultor',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: <Color>[Color(0xFF0A5D8F), Color(0xFF0B3B73)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Registo de Consultor',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.4,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'Cria o teu acesso para submeter evidencias e acompanhar badges.',
+                      style: TextStyle(color: Color(0xFFE2E8F0)),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 18),
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome',
-                  prefixIcon: Icon(Icons.person_outline),
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(
+                    color: scheme.primary.withValues(alpha: 0.2),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.mail_outline),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: <Widget>[
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Nome',
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.mail_outline),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<int>(
+                        value: _selectedAreaId,
+                        decoration: const InputDecoration(
+                          labelText: 'Area principal',
+                          prefixIcon: Icon(Icons.category_outlined),
+                        ),
+                        items:
+                            widget.areas
+                                .map(
+                                  (AreaItem area) => DropdownMenuItem<int>(
+                                    value: area.id,
+                                    child: Text(area.name),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (int? value) {
+                          setState(() => _selectedAreaId = value);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      CheckboxListTile(
+                        value: _acceptedRgpd,
+                        onChanged: (bool? value) {
+                          setState(() => _acceptedRgpd = value ?? false);
+                        },
+                        title: const Text(
+                          'Aceito os termos RGPD para partilha/publicacao de badges.',
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: _submitting ? null : _submit,
+                          child: Text(_submitting ? 'A criar...' : 'Registar'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<int>(
-                value: _selectedAreaId,
-                decoration: const InputDecoration(
-                  labelText: 'Area principal',
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
-                items: widget.areas
-                    .map((AreaItem area) => DropdownMenuItem<int>(
-                          value: area.id,
-                          child: Text(area.name),
-                        ))
-                    .toList(),
-                onChanged: (int? value) {
-                  setState(() => _selectedAreaId = value);
-                },
-              ),
-              const SizedBox(height: 10),
-              CheckboxListTile(
-                value: _acceptedRgpd,
-                onChanged: (bool? value) {
-                  setState(() => _acceptedRgpd = value ?? false);
-                },
-                title: const Text('Aceito os termos RGPD para partilha/publicacao de badges.'),
-                contentPadding: EdgeInsets.zero,
-              ),
-              const SizedBox(height: 10),
-              FilledButton(
-                onPressed: _submitting ? null : _submit,
-                child: Text(_submitting ? 'A criar...' : 'Registar'),
               ),
               if (_message != null) ...<Widget>[
                 const SizedBox(height: 12),
                 Text(
                   _message!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ],
             ],

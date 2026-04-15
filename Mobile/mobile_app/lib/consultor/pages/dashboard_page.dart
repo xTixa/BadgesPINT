@@ -12,7 +12,9 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firstName = (controller.profile?.name ?? 'Consultor').split(' ').first;
+    final scheme = Theme.of(context).colorScheme;
+    final firstName =
+        (controller.profile?.name ?? 'Consultor').split(' ').first;
     final hasMilestone = controller.badgesObtidos >= 3;
 
     return ListView(
@@ -21,20 +23,23 @@ class DashboardPage extends StatelessWidget {
         if (hasMilestone)
           Container(
             margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFFECFDF5),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF34D399)),
+              color: scheme.secondaryContainer.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: scheme.secondary, width: 1.2),
             ),
-            child: const Row(
+            child: Row(
               children: <Widget>[
-                Icon(Icons.celebration, color: Color(0xFF059669)),
-                SizedBox(width: 8),
+                Icon(Icons.celebration, color: scheme.secondary),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Parabens! Alcancaste um marco importante de badges obtidos.',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: scheme.onSecondaryContainer,
+                    ),
                   ),
                 ),
               ],
@@ -42,20 +47,50 @@ class DashboardPage extends StatelessWidget {
           ),
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: const <BoxShadow>[
+              BoxShadow(
+                color: Color(0x260A4E7A),
+                blurRadius: 28,
+                offset: Offset(0, 14),
+              ),
+            ],
             gradient: const LinearGradient(
-              colors: <Color>[Color(0xFF16558C), Color(0xFF0E7490)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[Color(0xFF0A5D8F), Color(0xFF0E7490)],
             ),
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'Resumo de hoje',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               Text(
                 'Ola, $firstName',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.3,
                 ),
               ),
               const SizedBox(height: 4),
@@ -64,6 +99,31 @@ class DashboardPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white.withValues(alpha: 0.9),
                 ),
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  _quickActionChip(
+                    context,
+                    'Historico',
+                    Icons.workspace_premium_outlined,
+                    onTap: () => controller.changeTab(1),
+                  ),
+                  _quickActionChip(
+                    context,
+                    'Upload',
+                    Icons.cloud_upload_outlined,
+                    onTap: () => controller.changeTab(2),
+                  ),
+                  _quickActionChip(
+                    context,
+                    'Ranking',
+                    Icons.leaderboard_outlined,
+                    onTap: () => controller.changeTab(3),
+                  ),
+                ],
               ),
             ],
           ),
@@ -103,7 +163,11 @@ class DashboardPage extends StatelessWidget {
             ),
             StatCard(
               label: 'Notificacoes',
-              value: controller.notifications.where((UserNotificationItem n) => !n.read).length.toString(),
+              value:
+                  controller.notifications
+                      .where((UserNotificationItem n) => !n.read)
+                      .length
+                      .toString(),
               icon: Icons.notifications_active,
               iconColor: const Color(0xFF0EA5E9),
             ),
@@ -118,19 +182,32 @@ class DashboardPage extends StatelessWidget {
         const SizedBox(height: 12),
         SectionCard(
           title: 'Badges preferenciais da tua area',
-          child: controller.preferredAreaBadges.isEmpty
-              ? const Text('Sem area definida no perfil para mostrar badges preferenciais.')
-              : Column(
-                  children: controller.preferredAreaBadges.take(5).map((CatalogBadgeItem badge) {
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.auto_awesome, color: Color(0xFF16558C)),
-                      title: Text(badge.name),
-                      subtitle: Text(badge.description, maxLines: 2, overflow: TextOverflow.ellipsis),
-                      trailing: Text('${badge.points} pts'),
-                    );
-                  }).toList(),
-                ),
+          child:
+              controller.preferredAreaBadges.isEmpty
+                  ? const Text(
+                    'Sem area definida no perfil para mostrar badges preferenciais.',
+                  )
+                  : Column(
+                    children:
+                        controller.preferredAreaBadges.take(5).map((
+                          CatalogBadgeItem badge,
+                        ) {
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(
+                              Icons.auto_awesome,
+                              color: Color(0xFF0A5D8F),
+                            ),
+                            title: Text(badge.name),
+                            subtitle: Text(
+                              badge.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: Text('${badge.points} pts'),
+                          );
+                        }).toList(),
+                  ),
         ),
         const SizedBox(height: 12),
         SectionCard(
@@ -146,53 +223,62 @@ class DashboardPage extends StatelessWidget {
         SectionCard(
           title: 'Proximos Badges',
           child: Column(
-            children: controller.badges.map((BadgeItem badge) {
-              final progress = controller.progressForBadge(badge.id);
+            children:
+                controller.badges.map((BadgeItem badge) {
+                  final progress = controller.progressForBadge(badge.id);
 
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(badge.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('Estado: ${badge.status} | ${badge.points} pts'),
-                    if (progress != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: LinearProgressIndicator(
-                          value: progress.total > 0 ? (progress.approved / progress.total) : 0,
-                          minHeight: 6,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                  ],
-                ),
-                trailing: badge.expireInDays != null
-                    ? Chip(
-                        label: Text('Expira ${badge.expireInDays}d'),
-                        backgroundColor: const Color(0xFFFFE4E6),
-                      )
-                    : null,
-              );
-            }).toList(),
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      badge.name,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('Estado: ${badge.status} | ${badge.points} pts'),
+                        if (progress != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: LinearProgressIndicator(
+                              value:
+                                  progress.total > 0
+                                      ? (progress.approved / progress.total)
+                                      : 0,
+                              minHeight: 6,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                      ],
+                    ),
+                    trailing:
+                        badge.expireInDays != null
+                            ? Chip(
+                              label: Text('Expira ${badge.expireInDays}d'),
+                              backgroundColor: scheme.errorContainer,
+                            )
+                            : null,
+                  );
+                }).toList(),
           ),
         ),
         const SizedBox(height: 12),
         SectionCard(
           title: 'Recomendacoes',
           child: Column(
-            children: controller.recommendations.map((RecommendationItem rec) {
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(
-                  backgroundColor: Color(0xFFE0F2FE),
-                  child: Icon(Icons.lightbulb, color: Color(0xFF0369A1)),
-                ),
-                title: Text(rec.name),
-                subtitle: Text(rec.reason),
-                trailing: Chip(label: Text('${rec.points} pts')),
-              );
-            }).toList(),
+            children:
+                controller.recommendations.map((RecommendationItem rec) {
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xFFE0F2FE),
+                      child: Icon(Icons.lightbulb, color: Color(0xFF0369A1)),
+                    ),
+                    title: Text(rec.name),
+                    subtitle: Text(rec.reason),
+                    trailing: Chip(label: Text('${rec.points} pts')),
+                  );
+                }).toList(),
           ),
         ),
       ],
@@ -222,7 +308,12 @@ class _LearningPathTile extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.w600))),
+              Expanded(
+                child: Text(
+                  name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
               Text('$done/$total'),
             ],
           ),
@@ -236,4 +327,24 @@ class _LearningPathTile extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _quickActionChip(
+  BuildContext context,
+  String label,
+  IconData icon, {
+  required VoidCallback onTap,
+}) {
+  final scheme = Theme.of(context).colorScheme;
+
+  return ActionChip(
+    onPressed: onTap,
+    avatar: Icon(icon, size: 16, color: scheme.primary),
+    label: Text(label),
+    labelStyle: TextStyle(color: scheme.primary, fontWeight: FontWeight.w700),
+    backgroundColor: Colors.white.withValues(alpha: 0.96),
+    side: BorderSide.none,
+    materialTapTargetSize: MaterialTapTargetSize.padded,
+    visualDensity: VisualDensity.standard,
+  );
 }

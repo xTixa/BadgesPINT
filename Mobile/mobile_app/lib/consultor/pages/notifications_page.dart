@@ -10,6 +10,8 @@ class NotificationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notificacoes'),
@@ -20,7 +22,11 @@ class NotificationsPage extends StatelessWidget {
               if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(ok ? 'Notificacoes marcadas como lidas.' : 'Nao foi possivel marcar todas.'),
+                  content: Text(
+                    ok
+                        ? 'Notificacoes marcadas como lidas.'
+                        : 'Nao foi possivel marcar todas.',
+                  ),
                 ),
               );
             },
@@ -32,49 +38,105 @@ class NotificationsPage extends StatelessWidget {
         animation: controller,
         builder: (BuildContext context, Widget? child) {
           if (controller.notifications.isEmpty) {
-            return const Center(
-              child: Text('Sem notificacoes de momento.'),
-            );
+            return const Center(child: Text('Sem notificacoes de momento.'));
           }
 
-          return ListView.separated(
+          return ListView(
             padding: const EdgeInsets.all(16),
-            itemCount: controller.notifications.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
-            itemBuilder: (BuildContext context, int index) {
-              final UserNotificationItem item = controller.notifications[index];
-
-              return Card(
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: item.read ? const Color(0xFFE2E8F0) : const Color(0xFFDBEAFE),
-                    child: Icon(
-                      item.read ? Icons.mark_email_read_outlined : Icons.notifications_active,
-                      color: item.read ? const Color(0xFF475569) : const Color(0xFF1D4ED8),
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: <Color>[
+                      scheme.primary.withValues(alpha: 0.88),
+                      scheme.tertiary.withValues(alpha: 0.84),
+                    ],
+                  ),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    const Icon(
+                      Icons.notifications_active_rounded,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Centro de Notificacoes',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${controller.notifications.where((n) => !n.read).length} novas',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...controller.notifications.map((UserNotificationItem item) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor:
+                            item.read
+                                ? scheme.outlineVariant.withValues(alpha: 0.45)
+                                : scheme.primaryContainer,
+                        child: Icon(
+                          item.read
+                              ? Icons.mark_email_read_outlined
+                              : Icons.notifications_active,
+                          color:
+                              item.read
+                                  ? scheme.onSurfaceVariant
+                                  : scheme.primary,
+                        ),
+                      ),
+                      title: Text(
+                        item.title.isEmpty ? 'Notificacao' : item.title,
+                        style: TextStyle(
+                          fontWeight:
+                              item.read ? FontWeight.w600 : FontWeight.w800,
+                        ),
+                      ),
+                      subtitle: Text(item.message),
+                      trailing:
+                          item.read
+                              ? const Icon(Icons.done, color: Color(0xFF10B981))
+                              : TextButton(
+                                onPressed: () async {
+                                  final ok = await controller
+                                      .markNotificationAsRead(item.id);
+                                  if (!context.mounted) return;
+                                  if (!ok) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Falha ao marcar notificacao.',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text('Marcar lida'),
+                              ),
                     ),
                   ),
-                  title: Text(
-                    item.title.isEmpty ? 'Notificacao' : item.title,
-                    style: TextStyle(fontWeight: item.read ? FontWeight.w500 : FontWeight.w800),
-                  ),
-                  subtitle: Text(item.message),
-                  trailing: item.read
-                      ? const Icon(Icons.done, color: Color(0xFF10B981))
-                      : TextButton(
-                          onPressed: () async {
-                            final ok = await controller.markNotificationAsRead(item.id);
-                            if (!context.mounted) return;
-                            if (!ok) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Falha ao marcar notificacao.')),
-                              );
-                            }
-                          },
-                          child: const Text('Marcar lida'),
-                        ),
-                ),
-              );
-            },
+                );
+              }),
+            ],
           );
         },
       ),

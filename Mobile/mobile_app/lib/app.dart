@@ -24,6 +24,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
 
   ConsultorController? _controller;
   bool _booting = true;
+  ThemeMode _themeMode = ThemeMode.light;
   AuthStage _authStage = AuthStage.login;
   List<AreaItem> _areas = <AreaItem>[];
 
@@ -42,6 +43,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   Future<void> _bootstrap() async {
     await SessionStorage.instance.load();
     _areas = await _repository.getAreas();
+    _themeMode = _parseThemeMode(SessionStorage.instance.themeMode);
 
     if (SessionStorage.instance.hasSession) {
       final ok = await _openDashboard();
@@ -56,6 +58,26 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     setState(() {
       _booting = false;
     });
+  }
+
+  ThemeMode _parseThemeMode(String? value) {
+    switch (value) {
+      case 'dark':
+        return ThemeMode.dark;
+      case 'light':
+      default:
+        return ThemeMode.light;
+    }
+  }
+
+  Future<void> _handleThemeChange(ThemeMode mode) async {
+    if (_themeMode == mode) return;
+    setState(() {
+      _themeMode = mode;
+    });
+    await SessionStorage.instance.setThemeMode(
+      mode == ThemeMode.dark ? 'dark' : 'light',
+    );
   }
 
   Future<bool> _openDashboard() async {
@@ -118,7 +140,9 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   }
 
   Future<String?> _handleFirstLogin(String newPassword) async {
-    final success = await _repository.completeFirstLogin(newPassword: newPassword);
+    final success = await _repository.completeFirstLogin(
+      newPassword: newPassword,
+    );
     if (!success) {
       return 'Nao foi possivel atualizar a password.';
     }
@@ -180,13 +204,13 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     Widget home;
 
     if (_booting) {
-      home = const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      home = const Scaffold(body: Center(child: CircularProgressIndicator()));
     } else if (_authStage == AuthStage.authenticated && _controller != null) {
       home = ConsultorShellPage(
         controller: _controller!,
         onLogout: _handleLogout,
+        currentThemeMode: _themeMode,
+        onThemeModeChanged: _handleThemeChange,
       );
     } else if (_authStage == AuthStage.firstLogin) {
       home = FirstLoginPage(onSubmit: _handleFirstLogin);
@@ -208,6 +232,14 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       debugShowCheckedModeBanner: false,
       title: 'Badges PINT',
       theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: _themeMode,
+      builder: (BuildContext context, Widget? child) {
+        return DecoratedBox(
+          decoration: AppTheme.appBackground(Theme.of(context).brightness),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       home: home,
     );
   }

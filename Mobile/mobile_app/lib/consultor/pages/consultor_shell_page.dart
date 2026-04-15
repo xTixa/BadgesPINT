@@ -14,11 +14,15 @@ class ConsultorShellPage extends StatelessWidget {
   const ConsultorShellPage({
     required this.controller,
     required this.onLogout,
+    required this.currentThemeMode,
+    required this.onThemeModeChanged,
     super.key,
   });
 
   final ConsultorController controller;
   final Future<void> Function() onLogout;
+  final ThemeMode currentThemeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
 
   static const List<String> _titles = <String>[
     'Dashboard',
@@ -29,19 +33,80 @@ class ConsultorShellPage extends StatelessWidget {
     'Definicoes do Consultor',
   ];
 
+  Future<void> _openNotifications(BuildContext context) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => NotificationsPage(controller: controller),
+      ),
+    );
+  }
+
+  Future<void> _openSessionMenu(BuildContext context, int unread) async {
+    final action = await showMenu<String>(
+      context: context,
+      position: const RelativeRect.fromLTRB(1000, 74, 16, 0),
+      items: <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(
+          value: 'settings',
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.tune_rounded),
+            title: Text('Definicoes'),
+            subtitle: Text('Tema e preferencias'),
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'notifications',
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.notifications_none_rounded),
+            title: const Text('Notificacoes'),
+            subtitle: Text(unread == 0 ? 'Sem novas' : '$unread por ler'),
+          ),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<String>(
+          value: 'logout',
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.logout_rounded),
+            title: Text('Terminar sessao'),
+          ),
+        ),
+      ],
+    );
+
+    if (action == null || !context.mounted) return;
+
+    if (action == 'settings') {
+      controller.changeTab(5);
+    } else if (action == 'notifications') {
+      await _openNotifications(context);
+    } else if (action == 'logout') {
+      await onLogout();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
       builder: (BuildContext context, Widget? child) {
+        final scheme = Theme.of(context).colorScheme;
         final unread = controller.notifications.where((n) => !n.read).length;
+        final selectedNavIndex =
+            controller.selectedTab <= 4 ? controller.selectedTab : 4;
+
         final pages = <Widget>[
           DashboardPage(controller: controller),
           HistoryPage(controller: controller),
           UploadPage(controller: controller),
           RankingPage(controller: controller),
           ProfilePage(controller: controller),
-          const SettingsPage(),
+          SettingsPage(
+            currentThemeMode: currentThemeMode,
+            onThemeModeChanged: onThemeModeChanged,
+          ),
         ];
 
         if (controller.isLoading) {
@@ -54,34 +119,39 @@ class ConsultorShellPage extends StatelessWidget {
           appBar: AppBar(
             title: Text(_titles[controller.selectedTab]),
             actions: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(right: 4),
+              Semantics(
+                label:
+                    unread == 0
+                        ? 'Notificacoes, sem novas'
+                        : 'Notificacoes, $unread por ler',
+                button: true,
                 child: Stack(
                   children: <Widget>[
                     IconButton(
                       tooltip: 'Notificacoes',
-                      onPressed: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => NotificationsPage(controller: controller),
-                          ),
-                        );
-                      },
+                      onPressed: () => _openNotifications(context),
                       icon: const Icon(Icons.notifications_none_rounded),
                     ),
                     if (unread > 0)
                       Positioned(
-                        right: 8,
+                        right: 9,
                         top: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 1,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFDC2626),
+                            color: scheme.error,
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
                             unread > 9 ? '9+' : unread.toString(),
-                            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
@@ -89,43 +159,40 @@ class ConsultorShellPage extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Terminar sessao',
-                onPressed: onLogout,
-                icon: const Icon(Icons.logout_rounded),
+                tooltip: 'Menu da sessao',
+                onPressed: () => _openSessionMenu(context, unread),
+                icon: const Icon(Icons.tune_rounded),
               ),
             ],
           ),
           body: pages[controller.selectedTab],
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () => controller.changeTab(2),
-            icon: const Icon(Icons.upload_file_outlined),
-            label: const Text('Upload rapido'),
-          ),
           bottomNavigationBar: SafeArea(
             minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22),
+                color: scheme.surface.withValues(alpha: 0.94),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: scheme.outlineVariant),
                 boxShadow: const <BoxShadow>[
                   BoxShadow(
-                    color: Color(0x22000000),
-                    blurRadius: 18,
-                    offset: Offset(0, 8),
+                    color: Color(0x240F172A),
+                    blurRadius: 24,
+                    offset: Offset(0, 12),
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(24),
                 child: NavigationBar(
-                  selectedIndex: controller.selectedTab,
+                  selectedIndex: selectedNavIndex,
                   onDestinationSelected: (int index) {
                     HapticFeedback.selectionClick();
                     controller.changeTab(index);
                   },
-                  height: 74,
-                  backgroundColor: Colors.white,
-                  indicatorColor: const Color(0xFFDCEEFF),
-                  labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+                  height: 80,
+                  backgroundColor: Colors.transparent,
+                  indicatorColor: scheme.primaryContainer,
+                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                   destinations: const <NavigationDestination>[
                     NavigationDestination(
                       icon: Icon(Icons.dashboard_outlined),
@@ -151,11 +218,6 @@ class ConsultorShellPage extends StatelessWidget {
                       icon: Icon(Icons.account_circle_outlined),
                       selectedIcon: Icon(Icons.account_circle),
                       label: 'Perfil',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.tune_outlined),
-                      selectedIcon: Icon(Icons.tune),
-                      label: 'Definicoes',
                     ),
                   ],
                 ),

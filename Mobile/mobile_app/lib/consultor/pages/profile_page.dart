@@ -13,11 +13,16 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final profile = controller.profile;
     final fullName = profile?.name ?? 'Consultant';
-    final obtained = controller.badges.where((BadgeItem b) => b.isObtained).toList();
+    final obtained =
+        controller.badges.where((BadgeItem b) => b.isObtained).toList();
     final latestBadge = obtained.isNotEmpty ? obtained.first : null;
-    final badgePublicLink = latestBadge != null ? 'https://badges.softinsa.pt/badge/${latestBadge.id}' : null;
+    final badgePublicLink =
+        latestBadge != null
+            ? 'https://badges.softinsa.pt/badge/${latestBadge.id}'
+            : null;
     final competencies = <String>['React', 'DevOps', 'Outsystems', 'SQL'];
 
     return ListView(
@@ -25,9 +30,21 @@ class ProfilePage extends StatelessWidget {
       children: <Widget>[
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            gradient: const LinearGradient(
-              colors: <Color>[Color(0xFF16558C), Color(0xFF1D4ED8)],
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: const <BoxShadow>[
+              BoxShadow(
+                color: Color(0x200A4E7A),
+                blurRadius: 24,
+                offset: Offset(0, 12),
+              ),
+            ],
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[
+                scheme.primary.withValues(alpha: 0.95),
+                scheme.tertiary.withValues(alpha: 0.85),
+              ],
             ),
           ),
           padding: const EdgeInsets.all(16),
@@ -36,7 +53,7 @@ class ProfilePage extends StatelessWidget {
               const CircleAvatar(
                 radius: 34,
                 backgroundColor: Colors.white,
-                child: Icon(Icons.person, size: 38, color: Color(0xFF16558C)),
+                child: Icon(Icons.person, size: 38, color: Color(0xFF0A5D8F)),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -53,7 +70,9 @@ class ProfilePage extends StatelessWidget {
                     ),
                     Text(
                       _roleLabel(profile?.role ?? 'consultant'),
-                      style: TextStyle(color: Colors.white.withValues(alpha: 0.85)),
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.85),
+                      ),
                     ),
                   ],
                 ),
@@ -61,7 +80,9 @@ class ProfilePage extends StatelessWidget {
               FilledButton.tonalIcon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Edicao de perfil disponivel brevemente.')),
+                    const SnackBar(
+                      content: Text('Edicao de perfil disponivel brevemente.'),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.edit_outlined),
@@ -79,9 +100,24 @@ class ProfilePage extends StatelessWidget {
           mainAxisSpacing: 10,
           childAspectRatio: 1.1,
           children: <Widget>[
-            _kpiCard(Icons.star, const Color(0xFFF59E0B), '${controller.totalPoints}', 'Pontos Acumulados'),
-            _kpiCard(Icons.workspace_premium, const Color(0xFF059669), '${controller.badgesObtidos}', 'Badges Obtidos'),
-            _kpiCard(Icons.trending_up, const Color(0xFF0EA5E9), '${controller.globalProgress}%', 'Progresso Global'),
+            _kpiCard(
+              Icons.star,
+              const Color(0xFFF59E0B),
+              '${controller.totalPoints}',
+              'Pontos Acumulados',
+            ),
+            _kpiCard(
+              Icons.workspace_premium,
+              const Color(0xFF059669),
+              '${controller.badgesObtidos}',
+              'Badges Obtidos',
+            ),
+            _kpiCard(
+              Icons.trending_up,
+              const Color(0xFF0EA5E9),
+              '${controller.globalProgress}%',
+              'Progresso Global',
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -101,15 +137,19 @@ class ProfilePage extends StatelessWidget {
           child: Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: competencies
-                .map(
-                  (String comp) => Chip(
-                    label: Text(comp),
-                    backgroundColor: const Color(0xFF0EA5E9),
-                    labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                  ),
-                )
-                .toList(),
+            children:
+                competencies
+                    .map(
+                      (String comp) => Chip(
+                        label: Text(comp),
+                        backgroundColor: const Color(0xFF0EA5E9),
+                        labelStyle: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    )
+                    .toList(),
           ),
         ),
         const SizedBox(height: 12),
@@ -137,10 +177,16 @@ class ProfilePage extends StatelessWidget {
                   children: <Widget>[
                     OutlinedButton.icon(
                       onPressed: () async {
-                        await Clipboard.setData(ClipboardData(text: badgePublicLink));
+                        await Clipboard.setData(
+                          ClipboardData(text: badgePublicLink),
+                        );
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Link copiado para a area de transferencia.')),
+                          const SnackBar(
+                            content: Text(
+                              'Link copiado para a area de transferencia.',
+                            ),
+                          ),
                         );
                       },
                       icon: const Icon(Icons.link),
@@ -151,7 +197,10 @@ class ProfilePage extends StatelessWidget {
                         final uri = Uri.parse(
                           'https://www.linkedin.com/sharing/share-offsite/?url=${Uri.encodeComponent(badgePublicLink)}',
                         );
-                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
                       },
                       icon: const Icon(Icons.share_outlined),
                       label: const Text('Partilhar no LinkedIn'),
@@ -168,7 +217,10 @@ class ProfilePage extends StatelessWidget {
             children: const <Widget>[
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.check_circle_outline, color: Color(0xFF059669)),
+                leading: Icon(
+                  Icons.check_circle_outline,
+                  color: Color(0xFF059669),
+                ),
                 title: Text('Conquistou o badge DevOps Intermedio'),
                 subtitle: Text('Ha 2 dias'),
               ),
@@ -198,11 +250,26 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(icon, color: color),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
             const SizedBox(height: 6),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+            Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+            ),
             const SizedBox(height: 2),
-            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+            ),
           ],
         ),
       ),
@@ -228,15 +295,9 @@ class ProfilePage extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(color: Color(0xFF475569)),
-          ),
+          child: Text(label, style: const TextStyle(color: Color(0xFF475569))),
         ),
-        Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
       ],
     );
   }
