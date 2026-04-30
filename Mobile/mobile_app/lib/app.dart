@@ -235,10 +235,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       darkTheme: AppTheme.dark(),
       themeMode: _themeMode,
       builder: (BuildContext context, Widget? child) {
-        return DecoratedBox(
-          decoration: AppTheme.appBackground(Theme.of(context).brightness),
-          child: child ?? const SizedBox.shrink(),
-        );
+        return child ?? const SizedBox.shrink();
       },
       home: home,
     );

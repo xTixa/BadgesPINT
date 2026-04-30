@@ -92,33 +92,44 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        GridView.count(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 1.1,
-          children: <Widget>[
-            _kpiCard(
-              Icons.star,
-              const Color(0xFFF59E0B),
-              '${controller.totalPoints}',
-              'Pontos Acumulados',
-            ),
-            _kpiCard(
-              Icons.workspace_premium,
-              const Color(0xFF059669),
-              '${controller.badgesObtidos}',
-              'Badges Obtidos',
-            ),
-            _kpiCard(
-              Icons.trending_up,
-              const Color(0xFF0EA5E9),
-              '${controller.globalProgress}%',
-              'Progresso Global',
-            ),
-          ],
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final int crossAxisCount =
+                constraints.maxWidth >= 700
+                    ? 3
+                    : constraints.maxWidth >= 420
+                    ? 2
+                    : 1;
+
+            return GridView.count(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: crossAxisCount == 1 ? 3.2 : 1.1,
+              children: <Widget>[
+                _kpiCard(
+                  Icons.star,
+                  const Color(0xFFF59E0B),
+                  '${controller.totalPoints}',
+                  'Pontos Acumulados',
+                ),
+                _kpiCard(
+                  Icons.workspace_premium,
+                  const Color(0xFF059669),
+                  '${controller.badgesObtidos}',
+                  'Badges Obtidos',
+                ),
+                _kpiCard(
+                  Icons.trending_up,
+                  const Color(0xFF0EA5E9),
+                  '${controller.globalProgress}%',
+                  'Progresso Global',
+                ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 12),
         SectionCard(
