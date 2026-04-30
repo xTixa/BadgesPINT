@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
@@ -40,41 +39,6 @@ class UploadPage extends StatelessWidget {
     );
   }
 
-  // 🔵 HEADER
-  Widget _buildHeader(BuildContext context, ColorScheme scheme) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: scheme.primary,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.cloud_upload, color: Colors.white),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Text(
-              "Submeter Evidências",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 🔵 INFO CARD
   Widget _buildInfoCard(BuildContext context, ColorScheme scheme) {
     return Container(
       padding: const EdgeInsets.all(16),

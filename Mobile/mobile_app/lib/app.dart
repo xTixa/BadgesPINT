@@ -70,16 +70,6 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     }
   }
 
-  Future<void> _handleThemeChange(ThemeMode mode) async {
-    if (_themeMode == mode) return;
-    setState(() {
-      _themeMode = mode;
-    });
-    await SessionStorage.instance.setThemeMode(
-      mode == ThemeMode.dark ? 'dark' : 'light',
-    );
-  }
-
   Future<bool> _openDashboard() async {
     final controller = ConsultorController(repository: _repository);
     await controller.initialize();

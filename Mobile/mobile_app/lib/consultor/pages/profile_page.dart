@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../consultor_controller.dart';
-import '../consultor_models.dart';
 import '../widgets/section_card.dart';
 
 import '../widgets/app_header.dart';
@@ -56,7 +55,6 @@ class _ProfilePageState extends State<ProfilePage>
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         children: [
-          // 🔹 HEADER
           const AppHeader(
             title: "Perfil",
             subtitle: "Informações do utilizador",

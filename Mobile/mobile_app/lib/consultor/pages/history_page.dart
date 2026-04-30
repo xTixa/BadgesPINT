@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../consultor_models.dart';
 import '../consultor_controller.dart';
 
 class HistoryPage extends StatelessWidget {
