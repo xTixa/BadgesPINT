@@ -30,6 +30,8 @@ class ConsultorController extends ChangeNotifier {
   List<EvidenceItem> evidences = <EvidenceItem>[];
   bool uploadLoading = false;
 
+  int rankingPosition = 1; // valor default
+
   Timer? _pollingTimer;
 
   Future<void> initialize() async {

@@ -6,310 +6,225 @@ import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import '../widgets/section_card.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({required this.controller, super.key});
 
   final ConsultorController controller;
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _anim;
+  late Animation<double> _fade;
+
+  @override
+  void initState() {
+    super.initState();
+    _anim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _fade = CurvedAnimation(parent: _anim, curve: Curves.easeIn);
+    _anim.forward();
+  }
+
+  @override
+  void dispose() {
+    _anim.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final controller = widget.controller;
     final profile = controller.profile;
-    final fullName = profile?.name ?? 'Consultant';
-    final obtained =
-        controller.badges.where((BadgeItem b) => b.isObtained).toList();
-    final latestBadge = obtained.isNotEmpty ? obtained.first : null;
-    final badgePublicLink =
-        latestBadge != null
-            ? 'https://badges.softinsa.pt/badge/${latestBadge.id}'
-            : null;
-    final competencies = <String>['React', 'DevOps', 'Outsystems', 'SQL'];
+    final fullName = profile?.name ?? 'Consultor';
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 90),
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: const <BoxShadow>[
-              BoxShadow(
-                color: Color(0x200A4E7A),
-                blurRadius: 24,
-                offset: Offset(0, 12),
+    final obtained = controller.badges.where((b) => b.isObtained).toList();
+
+    final totalBadges = controller.badges.length;
+    final progress = totalBadges == 0 ? 0.0 : obtained.length / totalBadges;
+
+    return FadeTransition(
+      opacity: _fade,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        children: [
+          // 🔹 HEADER
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0F62FE), Color(0xFF4589FF)],
               ),
-            ],
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[
-                scheme.primary.withValues(alpha: 0.95),
-                scheme.tertiary.withValues(alpha: 0.85),
-              ],
             ),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: <Widget>[
-              const CircleAvatar(
-                radius: 34,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.person, size: 38, color: Color(0xFF0A5D8F)),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      fullName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white,
+                  child: Text(
+                    fullName[0].toUpperCase(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F62FE),
                     ),
-                    Text(
-                      _roleLabel(profile?.role ?? 'consultant'),
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.85),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Edicao de perfil disponivel brevemente.'),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.edit_outlined),
-                label: const Text('Editar Perfil'),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            final int crossAxisCount =
-                constraints.maxWidth >= 700
-                    ? 3
-                    : constraints.maxWidth >= 420
-                    ? 2
-                    : 1;
 
-            return GridView.count(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: crossAxisCount == 1 ? 3.2 : 1.1,
-              children: <Widget>[
-                _kpiCard(
-                  Icons.star,
-                  const Color(0xFFF59E0B),
-                  '${controller.totalPoints}',
-                  'Pontos Acumulados',
-                ),
-                _kpiCard(
-                  Icons.workspace_premium,
-                  const Color(0xFF059669),
-                  '${controller.badgesObtidos}',
-                  'Badges Obtidos',
-                ),
-                _kpiCard(
-                  Icons.trending_up,
-                  const Color(0xFF0EA5E9),
-                  '${controller.globalProgress}%',
-                  'Progresso Global',
-                ),
-              ],
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        SectionCard(
-          title: 'Informacoes Pessoais',
-          child: Column(
-            children: <Widget>[
-              _line('Email', profile?.email ?? 'sem email'),
-              const SizedBox(height: 8),
-              _line('Localizacao', profile?.location ?? 'Nao definida'),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        SectionCard(
-          title: 'Competencias',
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children:
-                competencies
-                    .map(
-                      (String comp) => Chip(
-                        label: Text(comp),
-                        backgroundColor: const Color(0xFF0EA5E9),
-                        labelStyle: const TextStyle(
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        fullName,
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
-                    .toList(),
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (latestBadge != null)
-          SectionCard(
-            title: 'Partilha e verificacao publica',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Text('Badge em destaque: ${latestBadge.name}'),
-                const SizedBox(height: 8),
-                Text(
-                  'Link unico de verificacao:',
-                  style: Theme.of(context).textTheme.bodySmall,
+                      const Text(
+                        "Consultor Softinsa",
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 4),
-                SelectableText(
-                  badgePublicLink!,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: <Widget>[
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        await Clipboard.setData(
-                          ClipboardData(text: badgePublicLink),
-                        );
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Link copiado para a area de transferencia.',
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.link),
-                      label: const Text('Copiar link'),
+
+                Column(
+                  children: [
+                    Text(
+                      "#${controller.rankingPosition}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
-                    FilledButton.icon(
-                      onPressed: () async {
-                        final uri = Uri.parse(
-                          'https://www.linkedin.com/sharing/share-offsite/?url=${Uri.encodeComponent(badgePublicLink)}',
-                        );
-                        await launchUrl(
-                          uri,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      },
-                      icon: const Icon(Icons.share_outlined),
-                      label: const Text('Partilhar no LinkedIn'),
+                    const Text(
+                      "Ranking",
+                      style: TextStyle(color: Colors.white70),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-        if (latestBadge != null) const SizedBox(height: 12),
-        SectionCard(
-          title: 'Atividade recente',
-          child: Column(
-            children: const <Widget>[
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(
-                  Icons.check_circle_outline,
-                  color: Color(0xFF059669),
-                ),
-                title: Text('Conquistou o badge DevOps Intermedio'),
-                subtitle: Text('Ha 2 dias'),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.upload_file, color: Color(0xFF0284C7)),
-                title: Text('Submeteu evidencias para Outsystems'),
-                subtitle: Text('Ha 5 dias'),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.edit_note, color: Color(0xFF7C3AED)),
-                title: Text('Atualizou perfil profissional'),
-                subtitle: Text('Ha 1 semana'),
-              ),
-            ],
+
+          const SizedBox(height: 20),
+
+          // 🔹 PROGRESSO GLOBAL
+          const Text(
+            "Progresso geral",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-        ),
-      ],
-    );
-  }
 
-  Widget _kpiCard(IconData icon, Color color, String value, String label) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.16),
-                borderRadius: BorderRadius.circular(10),
+          const SizedBox(height: 8),
+
+          LinearProgressIndicator(
+            value: progress,
+            minHeight: 8,
+            color: scheme.primary,
+            backgroundColor: Colors.grey.shade300,
+          ),
+
+          const SizedBox(height: 20),
+
+          // 🔹 BADGES
+          const Text(
+            "Badges conquistados",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 10),
+
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children:
+                controller.badges.map((badge) {
+                  final badgeProgress = badge.isObtained ? 1.0 : 0.5;
+
+                  return Container(
+                    width: 70,
+                    height: 90,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: scheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(Icons.workspace_premium, color: scheme.primary),
+
+                        const SizedBox(height: 6),
+
+                        LinearProgressIndicator(
+                          value: badgeProgress,
+                          minHeight: 4,
+                          color: scheme.primary,
+                          backgroundColor: Colors.grey.shade300,
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+          ),
+
+          const SizedBox(height: 20),
+
+          // 🔹 PARTILHA
+          if (obtained.isNotEmpty)
+            SectionCard(
+              title: 'Partilha',
+              child: Column(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final link =
+                          'https://badges.softinsa.pt/badge/${obtained.first.id}';
+
+                      await Clipboard.setData(ClipboardData(text: link));
+
+                      if (!mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Link copiado")),
+                      );
+                    },
+                    icon: const Icon(Icons.link),
+                    label: const Text("Copiar link"),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final link =
+                          'https://badges.softinsa.pt/badge/${obtained.first.id}';
+
+                      final uri = Uri.parse(
+                        'https://www.linkedin.com/sharing/share-offsite/?url=${Uri.encodeComponent(link)}',
+                      );
+
+                      await launchUrl(uri);
+                    },
+                    icon: const Icon(Icons.share),
+                    label: const Text("LinkedIn"),
+                  ),
+                ],
               ),
-              child: Icon(icon, color: color, size: 20),
             ),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
-            ),
-          ],
-        ),
+        ],
       ),
-    );
-  }
-
-  String _roleLabel(String role) {
-    switch (role) {
-      case 'consultant':
-        return 'Consultor';
-      case 'talent_manager':
-        return 'Talent Manager';
-      case 'service_line_leader':
-        return 'Service Line Leader';
-      case 'admin':
-        return 'Administrador';
-      default:
-        return role;
-    }
-  }
-
-  Widget _line(String label, String value) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(label, style: const TextStyle(color: Color(0xFF475569))),
-        ),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
-      ],
     );
   }
 }

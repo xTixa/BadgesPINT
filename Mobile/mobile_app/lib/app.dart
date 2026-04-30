@@ -209,8 +209,6 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       home = ConsultorShellPage(
         controller: _controller!,
         onLogout: _handleLogout,
-        currentThemeMode: _themeMode,
-        onThemeModeChanged: _handleThemeChange,
       );
     } else if (_authStage == AuthStage.firstLogin) {
       home = FirstLoginPage(onSubmit: _handleFirstLogin);
