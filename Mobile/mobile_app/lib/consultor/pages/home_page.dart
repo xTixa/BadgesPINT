@@ -3,6 +3,8 @@ import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import 'badge_detail_page.dart';
 
+import '../widgets/app_header.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.controller});
 
@@ -20,7 +22,11 @@ class HomePage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // 🔹 HEADER PREMIUM
+            const AppHeader(
+              title: "Explorar Formações",
+              subtitle: "Escolhe um badge",
+              icon: Icons.school,
+            ),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(

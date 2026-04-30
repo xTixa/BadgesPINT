@@ -6,6 +6,8 @@ import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import '../widgets/section_card.dart';
 
+import '../widgets/app_header.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({required this.controller, super.key});
 
@@ -55,6 +57,11 @@ class _ProfilePageState extends State<ProfilePage>
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         children: [
           // 🔹 HEADER
+          const AppHeader(
+            title: "Perfil",
+            subtitle: "Informações do utilizador",
+            icon: Icons.person,
+          ),
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
