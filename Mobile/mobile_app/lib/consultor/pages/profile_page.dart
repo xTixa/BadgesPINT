@@ -5,8 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../consultor_controller.dart';
 import '../widgets/section_card.dart';
 
-import '../widgets/app_header.dart';
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({required this.controller, super.key});
 
@@ -66,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 30,
+                  radius: 36,
                   backgroundColor: Colors.white,
                   child: Text(
                     fullName[0].toUpperCase(),
@@ -85,6 +83,8 @@ class _ProfilePageState extends State<ProfilePage>
                     children: [
                       Text(
                         fullName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -99,28 +99,71 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                 ),
 
-                Column(
-                  children: [
-                    Text(
-                      "#${controller.rankingPosition}",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "#${controller.rankingPosition}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                    const Text(
-                      "Ranking",
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ],
+                      const Text(
+                        "Ranking",
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
 
           const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: _statCard(
+                  "Pontos",
+                  controller.totalPoints.toString(),
+                  Icons.stars,
+                ),
+              ),
 
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: _statCard(
+                  "Badges",
+                  obtained.length.toString(),
+                  Icons.workspace_premium,
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: _statCard(
+                  "Ranking",
+                  controller.rankingPosition.toString(),
+                  Icons.leaderboard,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
           // 🔹 PROGRESSO GLOBAL
           const Text(
             "Progresso geral",
@@ -137,11 +180,25 @@ class _ProfilePageState extends State<ProfilePage>
           ),
 
           const SizedBox(height: 20),
+          SectionCard(
+            title: "Informações",
+            child: Column(
+              children: [
+                _infoRow(Icons.email, "Email", profile?.email ?? "-"),
 
-          // 🔹 BADGES
-          const Text(
-            "Badges conquistados",
-            style: TextStyle(fontWeight: FontWeight.bold),
+                _infoRow(
+                  Icons.location_on,
+                  "Localização",
+                  profile?.location ?? "Não definida",
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+          Text(
+            "Badges Obtidos (${obtained.length})",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
 
           const SizedBox(height: 10),
@@ -207,6 +264,55 @@ class _ProfilePageState extends State<ProfilePage>
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: const Color(0xFF0F62FE)),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Text(title, style: const TextStyle(fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF0F62FE)),
+
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
