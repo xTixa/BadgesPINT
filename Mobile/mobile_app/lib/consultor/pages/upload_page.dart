@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:file_picker/file_picker.dart';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
-
 import '../widgets/app_header.dart';
 
 class UploadPage extends StatelessWidget {
@@ -28,10 +27,6 @@ class UploadPage extends StatelessWidget {
         const SizedBox(height: 20),
 
         _buildBadgeSelector(context),
-        const SizedBox(height: 20),
-
-        if (controller.selectedBadgeId != null) _buildSubmitButton(context),
-
         const SizedBox(height: 20),
 
         _buildRequirements(context),
@@ -61,67 +56,87 @@ class UploadPage extends StatelessWidget {
     );
   }
 
-  // 🔵 DROPDOWN
   Widget _buildBadgeSelector(BuildContext context) {
-    return DropdownButtonFormField<int>(
-      value: controller.selectedBadgeId,
-      hint: const Text('Selecionar badge...'),
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        prefixIcon: const Icon(Icons.workspace_premium),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Badge",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
-      ),
-      items:
-          controller.badges
-              .map((b) => DropdownMenuItem(value: b.id, child: Text(b.name)))
-              .toList(),
-      onChanged: (id) {
-        if (id != null) controller.selectBadge(id);
-      },
-    );
-  }
 
-  // 🔵 BOTÃO
-  Widget _buildSubmitButton(BuildContext context) {
-    return FilledButton(
-      style: FilledButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        backgroundColor: const Color(0xFF0F62FE),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      onPressed: () async {
-        final success = await controller.submitPedido();
+        const SizedBox(height: 8),
 
-        if (!context.mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              success ? 'Pedido submetido com sucesso' : 'Erro ao submeter',
-            ),
+        DropdownButtonFormField<int>(
+          value: controller.selectedBadgeId,
+          hint: const Text('Seleciona um badge em progresso'),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.grey.shade100,
+            prefixIcon: const Icon(Icons.workspace_premium),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
-        );
-      },
-      child: const Text("Submeter candidatura"),
+          items:
+              controller.badges
+                  .map(
+                    (b) => DropdownMenuItem(value: b.id, child: Text(b.name)),
+                  )
+                  .toList(),
+          onChanged: (id) {
+            if (id != null) {
+              controller.selectBadge(id);
+            }
+          },
+        ),
+      ],
     );
   }
 
-  // 🔵 LISTA DE REQUISITOS
   Widget _buildRequirements(BuildContext context) {
     if (controller.uploadLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (controller.selectedBadgeId == null) {
-      return const SizedBox();
+      return Container(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          children: [
+            Icon(
+              Icons.workspace_premium_outlined,
+              size: 80,
+              color: Colors.grey.shade400,
+            ),
+
+            const SizedBox(height: 16),
+
+            const Text(
+              "Seleciona um badge",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              "Escolhe um badge para veres os requisitos e submeter evidências.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      );
     }
 
     if (controller.requirements.isEmpty) {
-      return const Text("Sem requisitos.");
+      return Center(
+        child: Column(
+          children: [
+            Icon(Icons.assignment_outlined, size: 80),
+            SizedBox(height: 12),
+            Text("Este badge não possui requisitos."),
+          ],
+        ),
+      );
     }
 
     return Column(
@@ -146,10 +161,6 @@ class UploadPage extends StatelessWidget {
   }
 }
 
-// ============================================================
-// 🔥 TILE PROFISSIONAL
-// ============================================================
-
 class RequirementTile extends StatefulWidget {
   const RequirementTile({
     required this.requirement,
@@ -171,12 +182,23 @@ class _RequirementTileState extends State<RequirementTile>
   bool expanded = false;
   bool loading = false;
 
-  final urlCtrl = TextEditingController();
   final notesCtrl = TextEditingController();
 
   late AnimationController _controller;
   late Animation<double> _fade;
   late Animation<Offset> _slide;
+
+  String? selectedFileName;
+
+  Future<void> pickFile() async {
+    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+    if (result != null) {
+      setState(() {
+        selectedFileName = result.files.single.name;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -198,7 +220,6 @@ class _RequirementTileState extends State<RequirementTile>
   @override
   void dispose() {
     _controller.dispose();
-    urlCtrl.dispose();
     notesCtrl.dispose();
     super.dispose();
   }
@@ -243,7 +264,6 @@ class _RequirementTileState extends State<RequirementTile>
       ),
       child: Column(
         children: [
-          // 🔹 HEADER
           InkWell(
             onTap: toggle,
             borderRadius: BorderRadius.circular(14),
@@ -251,7 +271,6 @@ class _RequirementTileState extends State<RequirementTile>
               padding: const EdgeInsets.all(14),
               child: Row(
                 children: [
-                  // código
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -273,7 +292,6 @@ class _RequirementTileState extends State<RequirementTile>
 
                   const SizedBox(width: 10),
 
-                  // título
                   Expanded(
                     child: Text(
                       widget.requirement.title,
@@ -292,7 +310,6 @@ class _RequirementTileState extends State<RequirementTile>
             ),
           ),
 
-          // 🔹 CONTEÚDO ANIMADO
           SizeTransition(
             sizeFactor: _fade,
             child: FadeTransition(
@@ -315,100 +332,182 @@ class _RequirementTileState extends State<RequirementTile>
 
                               const SizedBox(height: 12),
 
-                              TextField(
-                                controller: urlCtrl,
-                                decoration: InputDecoration(
-                                  labelText: "URL da evidência",
-                                  filled: true,
-                                  fillColor: Colors.grey.shade100,
-                                  border: OutlineInputBorder(
+                              if (widget.latestEvidence != null)
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade50,
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              TextField(
-                                controller: notesCtrl,
-                                decoration: InputDecoration(
-                                  labelText: "Notas",
-                                  filled: true,
-                                  fillColor: Colors.grey.shade100,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 12),
-
-                              // 🔥 BOTÃO COM LOADING
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0F62FE),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Colors.green.shade200,
                                     ),
                                   ),
-                                  onPressed:
-                                      loading
-                                          ? null
-                                          : () async {
-                                            if (urlCtrl.text.isEmpty) return;
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          "Evidência já submetida",
+                                          style: TextStyle(
+                                            color: Colors.green.shade800,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    OutlinedButton.icon(
+                                      onPressed: pickFile,
+                                      icon: const Icon(Icons.attach_file),
+                                      label: const Text("Selecionar ficheiro"),
+                                    ),
 
-                                            setState(() => loading = true);
+                                    if (selectedFileName != null) ...[
+                                      const SizedBox(height: 8),
 
-                                            final ok = await widget.onSubmit(
-                                              urlCtrl.text,
-                                              notesCtrl.text,
-                                            );
-
-                                            if (!mounted) return;
-
-                                            setState(() => loading = false);
-
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  ok
-                                                      ? "✔ Enviado com sucesso"
-                                                      : "❌ Erro ao enviar",
-                                                ),
-                                                backgroundColor:
-                                                    ok
-                                                        ? Colors.green
-                                                        : Colors.red,
-                                              ),
-                                            );
-
-                                            if (ok) {
-                                              urlCtrl.clear();
-                                              notesCtrl.clear();
-                                              toggle();
-                                            }
-                                          },
-                                  child:
-                                      loading
-                                          ? const SizedBox(
-                                            height: 18,
-                                            width: 18,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.shade50,
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.description,
+                                              color: Colors.green,
                                             ),
-                                          )
-                                          : const Text("Enviar evidência"),
+
+                                            const SizedBox(width: 8),
+
+                                            Expanded(
+                                              child: Text(
+                                                selectedFileName!,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+
+                                    const SizedBox(height: 10),
+
+                                    TextField(
+                                      controller: notesCtrl,
+                                      maxLines: 3,
+                                      decoration: InputDecoration(
+                                        labelText: "Notas",
+                                        filled: true,
+                                        fillColor: Colors.grey.shade100,
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 12),
+
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(
+                                            0xFF0F62FE,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 14,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                        ),
+                                        onPressed:
+                                            loading
+                                                ? null
+                                                : () async {
+                                                  if (selectedFileName ==
+                                                      null) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          "Seleciona um ficheiro primeiro",
+                                                        ),
+                                                      ),
+                                                    );
+                                                    return;
+                                                  }
+
+                                                  setState(
+                                                    () => loading = true,
+                                                  );
+
+                                                  final ok = await widget
+                                                      .onSubmit(
+                                                        "",
+                                                        notesCtrl.text,
+                                                      );
+
+                                                  if (!mounted) return;
+
+                                                  setState(
+                                                    () => loading = false,
+                                                  );
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        ok
+                                                            ? "✔ Enviado com sucesso"
+                                                            : "❌ Erro ao enviar",
+                                                      ),
+                                                      backgroundColor:
+                                                          ok
+                                                              ? Colors.green
+                                                              : Colors.red,
+                                                    ),
+                                                  );
+
+                                                  if (ok) {
+                                                    notesCtrl.clear();
+                                                  }
+                                                },
+                                        child:
+                                            loading
+                                                ? const SizedBox(
+                                                  height: 18,
+                                                  width: 18,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                      ),
+                                                )
+                                                : const Text(
+                                                  "Enviar evidência",
+                                                ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
                             ],
                           ),
                         )

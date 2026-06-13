@@ -55,11 +55,6 @@ class _ProfilePageState extends State<ProfilePage>
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         children: [
-          const AppHeader(
-            title: "Perfil",
-            subtitle: "Informações do utilizador",
-            icon: Icons.person,
-          ),
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
@@ -96,8 +91,8 @@ class _ProfilePageState extends State<ProfilePage>
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Text(
-                        "Consultor Softinsa",
+                      Text(
+                        profile?.email ?? "",
                         style: TextStyle(color: Colors.white70),
                       ),
                     ],
@@ -151,39 +146,23 @@ class _ProfilePageState extends State<ProfilePage>
 
           const SizedBox(height: 10),
 
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children:
-                controller.badges.map((badge) {
-                  final badgeProgress = badge.isObtained ? 1.0 : 0.5;
-
-                  return Container(
-                    width: 70,
-                    height: 90,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: scheme.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(Icons.workspace_premium, color: scheme.primary),
-
-                        const SizedBox(height: 6),
-
-                        LinearProgressIndicator(
-                          value: badgeProgress,
-                          minHeight: 4,
-                          color: scheme.primary,
-                          backgroundColor: Colors.grey.shade300,
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+          SectionCard(
+            title: "Badges Obtidos",
+            child: Column(
+              children:
+                  obtained.take(5).map((badge) {
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(
+                        Icons.workspace_premium,
+                        color: Color(0xFF0F62FE),
+                      ),
+                      title: Text(badge.name),
+                      subtitle: Text("${badge.points} pontos"),
+                    );
+                  }).toList(),
+            ),
           ),
-
           const SizedBox(height: 20),
 
           // 🔹 PARTILHA
