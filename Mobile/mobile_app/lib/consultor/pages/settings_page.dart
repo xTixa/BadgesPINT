@@ -22,7 +22,6 @@ class _SettingsPageState extends State<SettingsPage> {
   bool partilhaLinkedin = true;
   bool assinaturaEmail = false;
 
-  String idioma = 'Português';
   String areaPrincipal = 'Selecione...';
 
   @override
@@ -37,316 +36,283 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
-      children: <Widget>[
-        // Header
-        _buildHeader(context, scheme),
-        const SizedBox(height: 20),
+    return Scaffold(
+      appBar: AppBar(title: const Text("Definições"), centerTitle: false),
 
-        // Profile
-        _buildSectionLabel(context, 'Perfil Pessoal', Icons.person_outline),
-        const SizedBox(height: 8),
-        _buildCard(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+        children: <Widget>[
+          // Header
+          _buildHeader(context, scheme),
+          const SizedBox(height: 20),
+
+          // Profile
+          _buildSectionLabel(context, 'Conta', Icons.person_outline),
+          const SizedBox(height: 8),
+          _buildCard(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: <Widget>[
+                  TextField(
+                    controller: _nomeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nome',
+                      prefixIcon: Icon(Icons.person_outline, size: 20),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    initialValue: "consultor@softinsa.pt",
+                    enabled: false,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: areaPrincipal,
+                    decoration: const InputDecoration(
+                      labelText: 'Área principal',
+                      prefixIcon: Icon(Icons.hub_outlined, size: 20),
+                    ),
+                    items:
+                        const <String>[
+                              'Selecione...',
+                              'Data',
+                              'DevOps',
+                              'Outsystems',
+                              'Cloud',
+                            ]
+                            .map(
+                              (String area) => DropdownMenuItem<String>(
+                                value: area,
+                                child: Text(area),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (String? value) {
+                      if (value == null) return;
+                      setState(() => areaPrincipal = value);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          _buildSectionLabel(
+            context,
+            'Notificações',
+            Icons.notifications_outlined,
+          ),
+          const SizedBox(height: 8),
+          _buildCard(
             child: Column(
               children: <Widget>[
-                TextField(
-                  controller: _nomeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome',
-                    prefixIcon: Icon(Icons.person_outline, size: 20),
-                  ),
+                _buildSwitchTile(
+                  value: emailConfirmacao,
+                  onChanged: (v) => setState(() => emailConfirmacao = v),
+                  title: 'Email de confirmação',
+                  subtitle: 'Recebe confirmação ao submeter um pedido.',
+                  icon: Icons.email_outlined,
+                  scheme: scheme,
+                  isFirst: true,
                 ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: areaPrincipal,
-                  decoration: const InputDecoration(
-                    labelText: 'Área principal',
-                    prefixIcon: Icon(Icons.hub_outlined, size: 20),
-                  ),
-                  items:
-                      const <String>[
-                            'Selecione...',
-                            'Data',
-                            'DevOps',
-                            'Outsystems',
-                            'Cloud',
-                          ]
-                          .map(
-                            (String area) => DropdownMenuItem<String>(
-                              value: area,
-                              child: Text(area),
-                            ),
-                          )
-                          .toList(),
-                  onChanged: (String? value) {
-                    if (value == null) return;
-                    setState(() => areaPrincipal = value);
-                  },
+                _buildSwitchTile(
+                  value: notificacoesAprovacao,
+                  onChanged: (v) => setState(() => notificacoesAprovacao = v),
+                  title: 'Aprovação / Rejeição',
+                  subtitle: 'Notificação ao ser aprovado ou rejeitado.',
+                  icon: Icons.check_circle_outline,
+                  scheme: scheme,
+                ),
+                _buildSwitchTile(
+                  value: alertasExpiracao,
+                  onChanged: (v) => setState(() => alertasExpiracao = v),
+                  title: 'Alertas de expiração',
+                  subtitle: 'Aviso antecipado de badges a expirar.',
+                  icon: Icons.timer_outlined,
+                  scheme: scheme,
+                ),
+                _buildSwitchTile(
+                  value: lembretesTimeline,
+                  onChanged: (v) => setState(() => lembretesTimeline = v),
+                  title: 'Lembretes da timeline',
+                  subtitle: 'Lembretes das tuas metas e objetivos.',
+                  icon: Icons.calendar_today_outlined,
+                  scheme: scheme,
+                  isLast: true,
                 ),
               ],
             ),
           ),
-        ),
 
-        const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-        // Goals
-        _buildSectionLabel(
-          context,
-          'Objetivos & Aprendizagem',
-          Icons.flag_outlined,
-        ),
-        const SizedBox(height: 8),
-        _buildCard(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
+          // Privacy
+          _buildSectionLabel(
+            context,
+            'Showcase de Badges',
+            Icons.lock_outline_rounded,
+          ),
+          const SizedBox(height: 8),
+          _buildCard(
             child: Column(
               children: <Widget>[
-                TextField(
-                  controller: _objetivoController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Objetivo (n.º de badges)',
-                    prefixIcon: Icon(Icons.flag_outlined, size: 20),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _dataLimiteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Data limite (AAAA-MM-DD)',
-                    prefixIcon: Icon(Icons.date_range_outlined, size: 20),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                _buildSwitch(
+                _buildSwitchTile(
                   value: recomendacoesBadges,
                   onChanged: (v) => setState(() => recomendacoesBadges = v),
-                  title: 'Recomendações de próximos badges',
+                  title: 'Sugestões de novos badges',
+                  subtitle: 'Receber recomendações baseadas no teu perfil.',
+                  icon: Icons.auto_awesome_outlined,
+                  scheme: scheme,
+                  isFirst: true,
+                ),
+                _buildSwitchTile(
+                  value: permitirGaleriaPublica,
+                  onChanged: (v) => setState(() => permitirGaleriaPublica = v),
+                  title: 'Galeria pública de badges',
+                  subtitle: 'Torna o teu perfil de badges visível.',
+                  icon: Icons.photo_library_outlined,
+                  scheme: scheme,
+                ),
+                _buildSwitchTile(
+                  value: partilhaLinkedin,
+                  onChanged: (v) => setState(() => partilhaLinkedin = v),
+                  title: 'Partilha no LinkedIn',
+                  subtitle: 'Ação rápida de partilha nos badges obtidos.',
+                  icon: Icons.share_outlined,
+                  scheme: scheme,
+                ),
+                _buildSwitchTile(
+                  value: assinaturaEmail,
+                  onChanged: (v) => setState(() => assinaturaEmail = v),
+                  title: 'Badges na assinatura de email',
+                  subtitle: 'Exibe badges na tua assinatura.',
+                  icon: Icons.alternate_email_rounded,
+                  scheme: scheme,
+                  isLast: true,
                 ),
               ],
             ),
           ),
-        ),
 
-        const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-        // Notifications
-        _buildSectionLabel(
-          context,
-          'Notificações',
-          Icons.notifications_outlined,
-        ),
-        const SizedBox(height: 8),
-        _buildCard(
-          child: Column(
-            children: <Widget>[
-              _buildSwitchTile(
-                value: emailConfirmacao,
-                onChanged: (v) => setState(() => emailConfirmacao = v),
-                title: 'Email de confirmação',
-                subtitle: 'Recebe confirmação ao submeter um pedido.',
-                icon: Icons.email_outlined,
-                scheme: scheme,
-                isFirst: true,
-              ),
-              _buildSwitchTile(
-                value: notificacoesAprovacao,
-                onChanged: (v) => setState(() => notificacoesAprovacao = v),
-                title: 'Aprovação / Rejeição',
-                subtitle: 'Notificação ao ser aprovado ou rejeitado.',
-                icon: Icons.check_circle_outline,
-                scheme: scheme,
-              ),
-              _buildSwitchTile(
-                value: alertasExpiracao,
-                onChanged: (v) => setState(() => alertasExpiracao = v),
-                title: 'Alertas de expiração',
-                subtitle: 'Aviso antecipado de badges a expirar.',
-                icon: Icons.timer_outlined,
-                scheme: scheme,
-              ),
-              _buildSwitchTile(
-                value: lembretesTimeline,
-                onChanged: (v) => setState(() => lembretesTimeline = v),
-                title: 'Lembretes da timeline',
-                subtitle: 'Lembretes das tuas metas e objetivos.',
-                icon: Icons.calendar_today_outlined,
-                scheme: scheme,
-                isLast: true,
-              ),
-            ],
+          _buildSectionLabel(
+            context,
+            'Privacidade',
+            Icons.privacy_tip_outlined,
           ),
-        ),
-
-        const SizedBox(height: 20),
-
-        // Privacy
-        _buildSectionLabel(
-          context,
-          'Privacidade & Partilha',
-          Icons.lock_outline_rounded,
-        ),
-        const SizedBox(height: 8),
-        _buildCard(
-          child: Column(
-            children: <Widget>[
-              _buildSwitchTile(
-                value: rgpdPublicacao,
-                onChanged: (v) => setState(() => rgpdPublicacao = v),
-                title: 'Aceito os termos RGPD',
-                subtitle: 'Permite publicação de badges no exterior.',
-                icon: Icons.gavel_rounded,
-                scheme: scheme,
-                isFirst: true,
-              ),
-              _buildSwitchTile(
-                value: permitirGaleriaPublica,
-                onChanged: (v) => setState(() => permitirGaleriaPublica = v),
-                title: 'Galeria pública de badges',
-                subtitle: 'Torna o teu perfil de badges visível.',
-                icon: Icons.photo_library_outlined,
-                scheme: scheme,
-              ),
-              _buildSwitchTile(
-                value: partilhaLinkedin,
-                onChanged: (v) => setState(() => partilhaLinkedin = v),
-                title: 'Partilha no LinkedIn',
-                subtitle: 'Ação rápida de partilha nos badges obtidos.',
-                icon: Icons.share_outlined,
-                scheme: scheme,
-              ),
-              _buildSwitchTile(
-                value: assinaturaEmail,
-                onChanged: (v) => setState(() => assinaturaEmail = v),
-                title: 'Badges na assinatura de email',
-                subtitle: 'Exibe badges na tua assinatura.',
-                icon: Icons.alternate_email_rounded,
-                scheme: scheme,
-                isLast: true,
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 20),
-
-        // Interface
-        _buildSectionLabel(context, 'Interface', Icons.language_outlined),
-        const SizedBox(height: 8),
-        _buildCard(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: DropdownButtonFormField<String>(
-              value: idioma,
-              decoration: const InputDecoration(
-                labelText: 'Idioma da aplicação',
-                prefixIcon: Icon(Icons.language_outlined, size: 20),
-              ),
-              items:
-                  const <String>['Português', 'Inglês', 'Espanhol']
-                      .map(
-                        (String item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(item),
-                        ),
-                      )
-                      .toList(),
-              onChanged: (String? value) {
-                if (value == null) return;
-                setState(() => idioma = value);
-              },
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 24),
-
-        // Save button
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Definições guardadas com sucesso.'),
-                  backgroundColor: Color(0xFF065F46),
+          _buildCard(
+            child: Column(
+              children: [
+                _buildSwitchTile(
+                  value: rgpdPublicacao,
+                  onChanged: (v) => setState(() => rgpdPublicacao = v),
+                  title: 'Aceito os termos RGPD',
+                  subtitle: 'Permite publicação de badges no exterior.',
+                  icon: Icons.gavel_rounded,
+                  scheme: scheme,
+                  isFirst: true,
+                  isLast: true,
                 ),
-              );
-            },
-            icon: const Icon(Icons.save_rounded, size: 18),
-            label: const Text('Guardar alterações'),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15),
+              ],
             ),
           ),
-        ),
-      ],
+          _buildCard(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.password),
+                  title: const Text("Alterar Password"),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Save button
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Definições guardadas com sucesso.'),
+                    backgroundColor: Color(0xFF065F46),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.save_rounded, size: 18),
+              label: const Text('Guardar alterações'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildHeader(BuildContext context, ColorScheme scheme) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: <Color>[
-            scheme.primary.withOpacity(0.92),
-            scheme.tertiary.withOpacity(0.85),
-          ],
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0F62FE), Color(0xFF4589FF)],
         ),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: scheme.primary.withOpacity(0.25),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Row(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.settings_rounded,
-              color: Colors.white,
-              size: 26,
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: Colors.white,
+            child: Text(
+              "",
+              style: TextStyle(
+                color: scheme.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
           ),
+
           const SizedBox(width: 14),
-          Expanded(
+
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Text(
-                  'Definições',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  "Definições",
+                  style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.3,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
                   ),
                 ),
+
+                SizedBox(height: 2),
+
                 Text(
-                  'Personaliza a tua experiência na app',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  "Conta, notificações e privacidade",
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
             ),
           ),
+
+          const Icon(Icons.settings, color: Colors.white),
         ],
       ),
     );
