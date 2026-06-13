@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../consultor_controller.dart';
 
 class HistoryPage extends StatelessWidget {
@@ -9,30 +8,42 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 90),
       children: <Widget>[
-        // 🔹 HEADER
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: scheme.primary,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF0F62FE), Color(0xFF4589FF)],
+            ),
           ),
           child: Row(
             children: [
               const Icon(Icons.history, color: Colors.white),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  'Histórico de Badges',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Histórico de Badges',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+
+                    Text(
+                      'Acompanha a tua evolução',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               IconButton(
@@ -45,7 +56,29 @@ class HistoryPage extends StatelessWidget {
 
         const SizedBox(height: 12),
 
-        // 🔹 HISTÓRICO
+        Row(
+          children: [
+            Expanded(
+              child: _statCard(
+                "Obtidos",
+                controller.badges.where((b) => b.isObtained).length.toString(),
+                Icons.workspace_premium,
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: _statCard(
+                "Em Curso",
+                controller.badges.where((b) => !b.isObtained).length.toString(),
+                Icons.pending_actions,
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 20),
         Text('Os teus badges', style: Theme.of(context).textTheme.titleMedium),
 
         const SizedBox(height: 8),
@@ -54,7 +87,19 @@ class HistoryPage extends StatelessWidget {
           const Card(
             child: Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Ainda não tens badges.'),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.workspace_premium_outlined,
+                    size: 60,
+                    color: Colors.grey,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  const Text("Ainda não tens badges obtidos"),
+                ],
+              ),
             ),
           )
         else
@@ -62,7 +107,16 @@ class HistoryPage extends StatelessWidget {
             return Card(
               margin: const EdgeInsets.only(bottom: 10),
               child: ListTile(
-                leading: Icon(Icons.workspace_premium, color: scheme.primary),
+                leading: CircleAvatar(
+                  backgroundColor:
+                      badge.isObtained
+                          ? Colors.green.shade100
+                          : Colors.orange.shade100,
+                  child: Icon(
+                    badge.isObtained ? Icons.check : Icons.pending,
+                    color: badge.isObtained ? Colors.green : Colors.orange,
+                  ),
+                ),
                 title: Text(
                   badge.name,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -77,17 +131,18 @@ class HistoryPage extends StatelessWidget {
                 trailing: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      badge.isObtained ? 'Concluído' : 'Em progresso',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: badge.isObtained ? Colors.green : Colors.orange,
+                    Chip(
+                      label: Text(
+                        badge.isObtained ? "Concluído" : "Em progresso",
                       ),
+                      backgroundColor:
+                          badge.isObtained
+                              ? Colors.green.shade100
+                              : Colors.orange.shade100,
                     ),
 
                     if (badge.isObtained)
-                      IconButton(
-                        icon: const Icon(Icons.picture_as_pdf),
+                      FilledButton.icon(
                         onPressed: () async {
                           final messenger = ScaffoldMessenger.of(context);
                           final ok = await controller.downloadCertificate(
@@ -106,6 +161,9 @@ class HistoryPage extends StatelessWidget {
                             ),
                           );
                         },
+
+                        icon: const Icon(Icons.download),
+                        label: const Text("Certificado"),
                       ),
                   ],
                 ),
@@ -115,7 +173,6 @@ class HistoryPage extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // 🔹 PEDIDOS
         Text(
           'Pedidos em curso',
           style: Theme.of(context).textTheme.titleMedium,
@@ -127,7 +184,15 @@ class HistoryPage extends StatelessWidget {
           const Card(
             child: Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Sem pedidos ativos.'),
+              child: Column(
+                children: [
+                  Icon(Icons.assignment_outlined, size: 60, color: Colors.grey),
+
+                  const SizedBox(height: 12),
+
+                  const Text("Não existem pedidos ativos"),
+                ],
+              ),
             ),
           )
         else
@@ -137,12 +202,46 @@ class HistoryPage extends StatelessWidget {
               child: ListTile(
                 leading: const Icon(Icons.track_changes),
                 title: Text(pedido.badgeName),
-                subtitle: Text('Workflow: ${pedido.workflowStatus}'),
-                trailing: Chip(label: Text(pedido.status)),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(pedido.workflowStatus),
+
+                    const SizedBox(height: 4),
+
+                    LinearProgressIndicator(
+                      value: pedido.status == "Aprovado" ? 1 : 0.5,
+                    ),
+                  ],
+                ),
               ),
             );
           }),
       ],
+    );
+  }
+
+  Widget _statCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: const Color(0xFF0F62FE)),
+
+          const SizedBox(height: 8),
+
+          Text(
+            value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+
+          Text(title),
+        ],
+      ),
     );
   }
 }

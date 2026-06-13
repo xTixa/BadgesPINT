@@ -18,7 +18,30 @@ class RankingPage extends StatelessWidget {
       children: <Widget>[
         // Header gradient
         _buildHeader(context, scheme),
+
         const SizedBox(height: 14),
+
+        Row(
+          children: [
+            Expanded(
+              child: _statCard(
+                "Posição",
+                "#${controller.rankingPosition}",
+                Icons.leaderboard,
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: _statCard(
+                "Pontos",
+                "${controller.totalPoints}",
+                Icons.stars,
+              ),
+            ),
+          ],
+        ),
 
         // Podium for top 3 (if available)
         if (rows.length >= 3) ...<Widget>[
@@ -61,8 +84,11 @@ class RankingPage extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.emoji_events_rounded,
-                color: Colors.white, size: 28),
+            child: const Icon(
+              Icons.emoji_events_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -72,13 +98,13 @@ class RankingPage extends StatelessWidget {
                 Text(
                   'Ranking',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.3,
-                      ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.3,
+                  ),
                 ),
                 Text(
-                  'Os melhores consultores da Softinsa',
+                  'Compara a tua evolução com os restantes consultores',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 12,
@@ -94,7 +120,10 @@ class RankingPage extends StatelessWidget {
   }
 
   Widget _buildPodium(
-      BuildContext context, ColorScheme scheme, List<RankingItem> rows) {
+    BuildContext context,
+    ColorScheme scheme,
+    List<RankingItem> rows,
+  ) {
     final top3 = rows.take(3).toList();
 
     return Container(
@@ -133,16 +162,22 @@ class RankingPage extends StatelessWidget {
   }
 
   Widget _buildPodiumItem(
-      BuildContext context, RankingItem item, int pos, double barHeight) {
+    BuildContext context,
+    RankingItem item,
+    int pos,
+    double barHeight,
+  ) {
     final scheme = Theme.of(context).colorScheme;
-    final medal = pos == 1
-        ? '🥇'
-        : pos == 2
+    final medal =
+        pos == 1
+            ? '🥇'
+            : pos == 2
             ? '🥈'
             : '🥉';
-    final podiumColor = pos == 1
-        ? const Color(0xFFFFD700)
-        : pos == 2
+    final podiumColor =
+        pos == 1
+            ? const Color(0xFFFFD700)
+            : pos == 2
             ? const Color(0xFFC0C0C0)
             : const Color(0xFFCD7F32);
 
@@ -194,7 +229,10 @@ class RankingPage extends StatelessWidget {
   }
 
   Widget _buildRankingList(
-      BuildContext context, ColorScheme scheme, List<RankingItem> rows) {
+    BuildContext context,
+    ColorScheme scheme,
+    List<RankingItem> rows,
+  ) {
     if (rows.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(24),
@@ -220,9 +258,9 @@ class RankingPage extends StatelessWidget {
           child: Text(
             'Classificação completa',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: scheme.onSurfaceVariant,
-                ),
+              fontWeight: FontWeight.w800,
+              color: scheme.onSurfaceVariant,
+            ),
           ),
         ),
         // Table header
@@ -230,15 +268,36 @@ class RankingPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: scheme.primaryContainer.withOpacity(0.5),
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(16)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
           child: Row(
             children: <Widget>[
-              const SizedBox(width: 36, child: Text('#', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12))),
+              const SizedBox(
+                width: 36,
+                child: Text(
+                  '#',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                ),
+              ),
               const SizedBox(width: 10),
-              Expanded(child: Text('Nome', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: scheme.onSurface))),
-              Text('Pontos', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: scheme.onSurface)),
+              Expanded(
+                child: Text(
+                  'Nome',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: scheme.onSurface,
+                  ),
+                ),
+              ),
+              Text(
+                'Pontos',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                  color: scheme.onSurface,
+                ),
+              ),
             ],
           ),
         ),
@@ -246,94 +305,157 @@ class RankingPage extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: scheme.outlineVariant),
-            borderRadius:
-                const BorderRadius.vertical(bottom: Radius.circular(16)),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(16),
+            ),
             color: scheme.surface,
           ),
           child: Column(
-            children: rows.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              final medal = item.position == 1
-                  ? '🥇'
-                  : item.position == 2
-                      ? '🥈'
-                      : item.position == 3
+            children:
+                rows.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  final isMe = item.name == controller.profile?.name;
+                  final medal =
+                      item.position == 1
+                          ? '🥇'
+                          : item.position == 2
+                          ? '🥈'
+                          : item.position == 3
                           ? '🥉'
                           : '${item.position}';
-              final isLast = index == rows.length - 1;
+                  final isLast = index == rows.length - 1;
 
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  border: isLast
-                      ? null
-                      : Border(
-                          bottom: BorderSide(
-                            color: scheme.outlineVariant.withOpacity(0.5),
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      border:
+                          isLast
+                              ? null
+                              : Border(
+                                bottom: BorderSide(
+                                  color: scheme.outlineVariant.withOpacity(0.5),
+                                ),
+                              ),
+                      borderRadius:
+                          isLast
+                              ? const BorderRadius.vertical(
+                                bottom: Radius.circular(16),
+                              )
+                              : null,
+                      color:
+                          isMe
+                              ? const Color(0xFF0F62FE).withOpacity(0.08)
+                              : item.position <= 3
+                              ? scheme.primaryContainer.withOpacity(0.12)
+                              : null,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 36,
+                          child:
+                              item.position <= 3
+                                  ? Text(
+                                    medal,
+                                    style: const TextStyle(fontSize: 18),
+                                    textAlign: TextAlign.center,
+                                  )
+                                  : Text(
+                                    medal,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: scheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+
+                              if (isMe)
+                                Container(
+                                  margin: const EdgeInsets.only(left: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0F62FE),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text(
+                                    "TU",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                  borderRadius: isLast
-                      ? const BorderRadius.vertical(
-                          bottom: Radius.circular(16))
-                      : null,
-                  color: item.position <= 3
-                      ? scheme.primaryContainer.withOpacity(0.12)
-                      : null,
-                ),
-                child: Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 36,
-                      child: item.position <= 3
-                          ? Text(medal,
-                              style: const TextStyle(fontSize: 18),
-                              textAlign: TextAlign.center)
-                          : Text(
-                              medal,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: scheme.onSurfaceVariant,
-                              ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.primaryContainer.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            '${item.points}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 12,
+                              color: scheme.primary,
                             ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        item.name,
-                        style: TextStyle(
-                          fontWeight: item.position <= 3
-                              ? FontWeight.w700
-                              : FontWeight.w500,
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: scheme.primaryContainer.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        '${item.points}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12,
-                          color: scheme.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _statCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: const Color(0xFF0F62FE)),
+
+          const SizedBox(height: 8),
+
+          Text(
+            value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+
+          Text(title),
+        ],
+      ),
     );
   }
 }
