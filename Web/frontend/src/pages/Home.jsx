@@ -11,7 +11,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [stats, setStats] = useState({
     totalBadges: 0,
-    totalPaths: 0
+    totalPaths: 0,
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function Home() {
 
         setStats({
           totalBadges: allBadges.length,
-          totalPaths: allLearningPaths.length
+          totalPaths: allLearningPaths.length,
         });
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -51,28 +51,33 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 sm:space-y-12">
-      <section className="relative overflow-hidden rounded-3xl border border-[#16558C]/25 bg-gradient-to-br from-white via-[#F8FBFF] to-[#EDF4FB] p-6 shadow-sm sm:p-10">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#16558C]/10 blur-3xl"></div>
-        <div className="pointer-events-none absolute -bottom-14 -left-10 h-48 w-48 rounded-full bg-[#04C4D9]/15 blur-3xl"></div>
+    <div className="mx-auto max-w-7xl space-y-8">
+      {/* HERO */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 md:p-12 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+        <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-white/10 blur-3xl"></div>
+        <div className="absolute left-0 bottom-0 h-56 w-56 rounded-full bg-white/10 blur-3xl"></div>
 
-        <div className="relative">
-          <h1 className="text-center text-3xl font-extrabold tracking-tight text-slate-800 sm:text-4xl md:text-5xl">
+        <div className="relative z-10 text-center">
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
             Conquista o teu Futuro com Badges
           </h1>
-          <p className="mx-auto mb-8 mt-4 max-w-2xl text-center text-base text-slate-600 sm:text-lg">
-            Explora percursos de aprendizagem, ganha reconhecimento e evolui na tua carreira.
+
+          <p className="mx-auto max-w-3xl text-lg text-white/85">
+            Explora percursos de aprendizagem, desenvolve competências,
+            conquista badges e acelera o teu crescimento profissional.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
+
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               to="/learning-paths"
-              className="rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#16558C]/35 sm:text-base"
+              className="rounded-2xl bg-white px-6 py-3 font-semibold text-[#0F62FE] shadow-lg transition hover:scale-105"
             >
               Explorar Percursos
             </Link>
+
             <Link
               to="/badges"
-              className="rounded-xl border border-[#16558C]/30 bg-white px-6 py-3 text-sm font-semibold text-[#16558C] transition hover:bg-[#16558C]/10 focus-visible:ring-2 focus-visible:ring-[#16558C]/30 sm:text-base"
+              className="rounded-2xl border border-white/30 bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
             >
               Ver Badges
             </Link>
@@ -80,69 +85,140 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ERRO */}
       {error && (
-        <section role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
-          <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="mt-3 rounded-lg border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 focus-visible:ring-2 focus-visible:ring-rose-300"
-          >
-            Tentar novamente
-          </button>
-        </section>
+        <div className="rounded-3xl border border-rose-200 bg-rose-50 p-5">
+          <p className="font-medium text-rose-700">{error}</p>
+        </div>
       )}
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 text-center shadow-sm">
-          <div className="mb-1 text-3xl font-extrabold text-slate-800 sm:text-4xl">Comunidade</div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 sm:text-sm">Em Evolução</p>
+      {/* KPI */}
+      <section className="grid gap-6 md:grid-cols-3">
+        <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition hover:-translate-y-1">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
+            <i className="bi bi-award-fill text-2xl text-[#0F62FE]"></i>
+          </div>
+
+          <h3 className="text-3xl font-bold text-slate-900">
+            {stats.totalBadges}
+          </h3>
+
+          <p className="mt-1 text-slate-500">Badges Disponíveis</p>
         </div>
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 text-center shadow-sm">
-          <div className="mb-1 text-3xl font-extrabold text-slate-800 sm:text-4xl">{stats.totalBadges}</div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 sm:text-sm">Badges Disponíveis</p>
+
+        <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition hover:-translate-y-1">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100">
+            <i className="bi bi-signpost-split-fill text-2xl text-cyan-600"></i>
+          </div>
+
+          <h3 className="text-3xl font-bold text-slate-900">
+            {stats.totalPaths}
+          </h3>
+
+          <p className="mt-1 text-slate-500">Learning Paths</p>
         </div>
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 text-center shadow-sm">
-          <div className="mb-1 text-3xl font-extrabold text-slate-800 sm:text-4xl">{stats.totalPaths}</div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 sm:text-sm">Percursos de Aprendizagem</p>
+
+        <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition hover:-translate-y-1">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100">
+            <i className="bi bi-graph-up-arrow text-2xl text-emerald-600"></i>
+          </div>
+
+          <h3 className="text-3xl font-bold text-slate-900">Crescimento</h3>
+
+          <p className="mt-1 text-slate-500">Competências em evolução</p>
         </div>
       </section>
 
+      {/* BENEFÍCIOS */}
+      <section className="grid gap-6 md:grid-cols-3">
+        <div className="rounded-3xl bg-white p-6 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="mb-4 text-4xl">🎯</div>
+
+          <h3 className="mb-2 text-lg font-bold">Evolui Competências</h3>
+
+          <p>
+            Desenvolve capacidades alinhadas com as necessidades da organização.
+          </p>
+        </div>
+
+        <div className="rounded-3xl bg-white p-6 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="mb-4 text-4xl">🏆</div>
+
+          <h3 className="mb-2 text-lg font-bold">Ganha Reconhecimento</h3>
+
+          <p>Obtém badges que demonstram o teu conhecimento e experiência.</p>
+        </div>
+
+        <div className="rounded-3xl bg-white p-6 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="mb-4 text-4xl">📈</div>
+
+          <h3 className="mb-2 text-lg font-bold">Acompanha o Progresso</h3>
+
+          <p>
+            Monitoriza a tua evolução e define novos objetivos profissionais.
+          </p>
+        </div>
+      </section>
+
+      {/* LEARNING PATHS */}
       <section>
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <h2 className="text-2xl font-bold text-slate-800 sm:text-3xl">Percursos em Destaque</h2>
-          <Link to="/learning-paths" className="flex items-center text-sm font-semibold text-[#16558C] hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#16558C]/30 sm:text-base">
-            Ver Todos
-            <span className="ml-1 inline-block">→</span>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase text-[#0F62FE]">
+              Learning Paths
+            </p>
+
+            <h2 className="text-3xl font-bold text-slate-900">
+              Percursos em Destaque
+            </h2>
+          </div>
+
+          <Link to="/learning-paths" className="font-semibold text-[#0F62FE]">
+            Ver Todos →
           </Link>
         </div>
+
         {loading ? (
-          <div role="status" aria-live="polite" className="rounded-2xl border border-slate-200 bg-white py-8 text-center text-slate-500 shadow-sm">A carregar percursos...</div>
-        ) : learningPaths.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {learningPaths.map((path) => <LearningPathCard key={path.id} path={path} />)}
+          <div className="rounded-3xl bg-white p-8 text-center">
+            A carregar percursos...
           </div>
         ) : (
-          <div className="rounded-2xl border border-slate-200 bg-white py-8 text-center text-slate-500 shadow-sm">Nenhum percurso disponível</div>
+          <div className="grid gap-6 md:grid-cols-2">
+            {learningPaths.map((path) => (
+              <LearningPathCard key={path.id} path={path} />
+            ))}
+          </div>
         )}
       </section>
 
+      {/* BADGES */}
       <section>
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <h2 className="text-2xl font-bold text-slate-800 sm:text-3xl">Badges Populares</h2>
-          <Link to="/badges" className="flex items-center text-sm font-semibold text-[#16558C] hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#16558C]/30 sm:text-base">
-            Ver Todos
-            <span className="ml-1 inline-block">→</span>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase text-[#0F62FE]">
+              Badges
+            </p>
+
+            <h2 className="text-3xl font-bold text-slate-900">
+              Badges Populares
+            </h2>
+          </div>
+
+          <Link to="/badges" className="font-semibold text-[#0F62FE]">
+            Ver Todos →
           </Link>
         </div>
+
         {loading ? (
-          <div role="status" aria-live="polite" className="rounded-2xl border border-slate-200 bg-white py-8 text-center text-slate-500 shadow-sm">A carregar badges...</div>
-        ) : badges.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {badges.map((badge) => <BadgeCard key={badge.id} badge={badge} />)}
+          <div className="rounded-3xl bg-white p-8 text-center">
+            A carregar badges...
           </div>
         ) : (
-          <div className="rounded-2xl border border-slate-200 bg-white py-8 text-center text-slate-500 shadow-sm">Nenhum badge disponível</div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {badges.map((badge) => (
+              <BadgeCard key={badge.id} badge={badge} />
+            ))}
+          </div>
         )}
       </section>
     </div>

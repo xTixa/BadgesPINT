@@ -95,9 +95,9 @@ export default function Navbar() {
   const navLinkClass = ({ isActive }) =>
     `rounded-full px-3.5 py-2 text-sm font-semibold transition-all duration-200
     ${
-    isActive
-    ? "bg-[#16558C]/12 text-[#16558C] ring-1 ring-[#16558C]/20"
-    : "text-slate-600 hover:bg-[#16558C]/10 hover:text-[#16558C]"
+      isActive
+        ? "bg-[#0F62FE]/10 text-[#0F62FE] ring-1 ring-[#0F62FE]/20"
+        : "text-slate-600 hover:bg-[#0F62FE]/10 hover:text-[#0F62FE]"
     }`;
 
   const mobileLinkClass = ({ isActive }) =>
@@ -108,150 +108,158 @@ export default function Navbar() {
     }`;
 
   return (
-    <header className="sticky top-0 z-[1000] border-b border-[#16558C]/15 bg-white/90 shadow-sm backdrop-blur-md">
-      <nav className="mx-auto max-w-[1320px] px-4">
+    <header className="sticky top-0 z-[1000] border-b border-[#0F62FE]/15 bg-white/95 shadow-sm backdrop-blur-md">
+      <nav className="mx-full px-6">
         <div className="flex h-[72px] items-center justify-between">
+          {/* LOGO */}
+          <Link
+            to="/"
+            className="flex items-center gap-3 rounded-xl px-1 py-1 no-underline text-slate-800"
+          >
+            <img src={logo} alt="Softinsa" className="h-9 w-auto" />
+            <div className="leading-tight">
+              <span className="block text-lg font-bold tracking-tight text-[#0F62FE]">
+                Badges
+              </span>
+              <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-[#00AEEF] sm:block">
+                {" "}
+                Plataforma de evolução
+              </span>
+            </div>
+          </Link>
 
-            {/* LOGO */}
-            <Link
-              to="/"
-              className="flex items-center gap-3 rounded-xl px-1 py-1 no-underline text-slate-800"
-            >
-              <img src={logo} alt="Softinsa" className="h-9 w-auto" />
-              <div className="leading-tight">
-                <span className="block text-lg font-bold tracking-tight text-slate-800">Badges</span>
-                <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:block">
-                  Plataforma de evolução
-                </span>
-              </div>
-            </Link>
-
-            {/* LINKS DESKTOP */}
-            {!user && (
+          {/* LINKS DESKTOP */}
+          {!user && (
             <div className="hidden md:flex items-center gap-1.5 rounded-full border border-[#16558C]/20 bg-white/80 p-1 shadow-sm">
               {publicLinks.map(({ to, label }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  className={navLinkClass}
-                >
+                <NavLink key={to} to={to} className={navLinkClass}>
                   {label}
                 </NavLink>
               ))}
             </div>
-            )}
+          )}
 
-            {/* USER / LOGIN */}
-            <div className="hidden md:flex items-center gap-4">
-              {!user ? (
-                <Link
-                  to="/login"
-                  className="rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] px-5 py-2 text-sm font-semibold text-white no-underline shadow-sm transition hover:shadow-md"
+          {/* USER / LOGIN */}
+          <div className="hidden md:flex items-center gap-4">
+            {!user ? (
+              <Link
+                to="/login"
+                className="rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF]px-5 py-2 text-sm font-semibold text-white no-underline shadow-sm transition hover:shadow-md"
+              >
+                Entrar
+              </Link>
+            ) : (
+              <>
+                <NotificationCenter />
+
+                <div
+                  className="relative"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDropdownOpen(!dropdownOpen);
+                  }}
                 >
-                  Entrar
-                </Link>
-              ) : (
-                <>
-                  <NotificationCenter />
-
-                  <div
-                    className="relative"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDropdownOpen(!dropdownOpen);
-                    }}
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={dropdownOpen}
+                    aria-controls="account-menu"
+                    aria-label="Abrir menu da conta"
+                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#0F62FE]/20 bg-white px-3 py-2 font-semibold text-slate-800 shadow-sm transition hover:border-[#0F62FE] focus-visible:ring-2 focus-visible:ring-[#16558C]/30"
                   >
-                    <button
-                      type="button"
-                      aria-haspopup="menu"
-                      aria-expanded={dropdownOpen}
-                      aria-controls="account-menu"
-                      aria-label="Abrir menu da conta"
-                      className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#16558C]/25 bg-white px-3 py-2 font-semibold text-slate-800 shadow-sm transition hover:border-[#16558C] focus-visible:ring-2 focus-visible:ring-[#16558C]/30"
+                    <i className="bi bi-person-circle text-lg text-[#0F62FE]"></i>
+                    {firstName}
+                    <i
+                      className={`bi ${dropdownOpen ? "bi-chevron-up" : "bi-chevron-down"} text-xs text-slate-500`}
+                    ></i>
+                  </button>
+
+                  {dropdownOpen && (
+                    <div
+                      id="account-menu"
+                      role="menu"
+                      aria-label="Menu da conta"
+                      className="absolute right-0 z-[1000] mt-2 w-52 rounded-xl border border-[#0F62FE]/15 bg-white p-1.5 text-slate-800 shadow-lg"
                     >
-                      <i className="bi bi-person-circle text-lg text-[#16558C]"></i>
-                      {firstName}
-                      <i className={`bi ${dropdownOpen ? "bi-chevron-up" : "bi-chevron-down"} text-xs text-slate-500`}></i>
-                    </button>
-
-                    {dropdownOpen && (
-                      <div
-                        id="account-menu"
-                        role="menu"
-                        aria-label="Menu da conta"
-                        className="absolute right-0 z-[1000] mt-2 w-52 rounded-xl border border-[#16558C]/20 bg-white p-1.5 text-slate-800 shadow-lg"
-                      >
-                        {[
-                          {
-                            to: dashboardPath,
-                            label: "Dashboard",
-                            icon: "bi-speedometer2",
-                          },
-                          { to: "/notificacoes", label: "Notificações", icon: "bi-bell" },
-                          {
-                            to: settingsPath,
-                            label: "Configurações",
-                            icon: "bi-gear",
-                          },
-                        ].map(({ to, label, icon }) => (
-                          <Link
-                            key={`${to}-${label}`}
-                            to={to}
-                            role="menuitem"
-                            className="mb-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm no-underline text-slate-700 transition hover:bg-[#16558C]/10 hover:text-[#16558C]"
-                          >
-                            <i className={`bi ${icon}`}></i>
-                            {label}
-                          </Link>
-                        ))}
-
-                        <button
-                          onClick={handleLogout}
+                      {[
+                        {
+                          to: dashboardPath,
+                          label: "Dashboard",
+                          icon: "bi-speedometer2",
+                        },
+                        {
+                          to: "/notificacoes",
+                          label: "Notificações",
+                          icon: "bi-bell",
+                        },
+                        {
+                          to: settingsPath,
+                          label: "Configurações",
+                          icon: "bi-gear",
+                        },
+                      ].map(({ to, label, icon }) => (
+                        <Link
+                          key={`${to}-${label}`}
+                          to={to}
                           role="menuitem"
-                          className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg border-0 border-t border-[#16558C]/20 bg-transparent px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+                          className="mb-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm no-underline text-slate-700 transition hover:bg-[#0F62FE]/10 hover:text-[#0F62FE]"
                         >
-                          <i className="bi bi-box-arrow-right"></i>
-                          Logout
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
+                          <i className={`bi ${icon}`}></i>
+                          {label}
+                        </Link>
+                      ))}
 
-            {/* MOBILE BUTTON */}
-            <button
-              type="button"
-              aria-label={open ? "Fechar menu" : "Abrir menu"}
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-              className="cursor-pointer rounded-lg border border-[#16558C]/30 bg-white p-2 text-slate-800 transition hover:border-[#16558C] focus-visible:ring-2 focus-visible:ring-[#16558C]/30 md:hidden"
-              onClick={() => setOpen(!open)}
-            >
-              <i className={`bi ${open ? "bi-x-lg" : "bi-list"} text-xl`}></i>
-            </button>
+                      <button
+                        onClick={handleLogout}
+                        role="menuitem"
+                        className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg border-0 border-t border-[#16558C]/20 bg-transparent px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+                      >
+                        <i className="bi bi-box-arrow-right"></i>
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
+
+          {/* MOBILE BUTTON */}
+          <button
+            type="button"
+            aria-label={open ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="cursor-pointer rounded-lg border border-[#0F62FE]/20 bg-white p-2 text-slate-800 transition hover:border-[#16558C] focus-visible:ring-2 focus-visible:ring-[#16558C]/30 md:hidden"
+            onClick={() => setOpen(!open)}
+          >
+            <i className={`bi ${open ? "bi-x-lg" : "bi-list"} text-xl`}></i>
+          </button>
+        </div>
 
         {/* MOBILE MENU */}
         {open && (
-          <div id="mobile-menu" className="border-t border-[#16558C]/20 bg-white px-4 py-3 md:hidden">
-            {!user && publicLinks.map(({ to, label }) => (
-              <NavLink
-                key={to}
-                to={to}
-                onClick={() => setOpen(false)}
-                className={mobileLinkClass}
-              >
-                {label}
-              </NavLink>
-            ))}
+          <div
+            id="mobile-menu"
+            className="border-t border-[#0F62FE]/15 bg-white px-4 py-3 md:hidden"
+          >
+            {!user &&
+              publicLinks.map(({ to, label }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setOpen(false)}
+                  className={mobileLinkClass}
+                >
+                  {label}
+                </NavLink>
+              ))}
 
             {!user ? (
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="mt-2 block rounded-md bg-gradient-to-r from-[#16558C] to-[#2B6EA8] px-3 py-2 text-center text-sm font-semibold text-white no-underline shadow-sm"
+                className="mt-2 block rounded-md bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-3 py-2 text-center text-sm font-semibold text-white no-underline shadow-sm"
               >
                 Entrar
               </Link>

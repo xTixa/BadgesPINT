@@ -8,7 +8,7 @@ export default function EditarPerfil() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,7 +31,7 @@ export default function EditarPerfil() {
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email) {
       alert("Nome e email são obrigatórios.");
       return;
@@ -40,13 +40,9 @@ export default function EditarPerfil() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      await api.put(
-        `/api/users/${user.id}`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await api.put(`/api/users/${user.id}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       // Atualizar localStorage
       const updatedUser = { ...user, ...formData };
@@ -57,7 +53,10 @@ export default function EditarPerfil() {
       navigate("/perfil");
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      alert("Erro ao atualizar perfil: " + (error.response?.data?.message || error.message));
+      alert(
+        "Erro ao atualizar perfil: " +
+          (error.response?.data?.message || error.message),
+      );
     } finally {
       setLoading(false);
     }
@@ -92,7 +91,7 @@ export default function EditarPerfil() {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       alert("Password alterada com sucesso!");
@@ -104,7 +103,10 @@ export default function EditarPerfil() {
       setShowPasswordChange(false);
     } catch (error) {
       console.error("Erro ao alterar password:", error);
-      alert("Erro ao alterar password: " + (error.response?.data?.message || error.message));
+      alert(
+        "Erro ao alterar password: " +
+          (error.response?.data?.message || error.message),
+      );
     } finally {
       setLoading(false);
     }
@@ -122,198 +124,210 @@ export default function EditarPerfil() {
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: user.name }} />
 
-      <main className="admin-main">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="mb-0 text-xl font-bold text-slate-900 sm:text-2xl">
-              <i className="bi bi-pencil-square mr-2 text-sky-600"></i>
-              Editar Perfil
-            </h3>
-            <p className="mt-1 text-sm text-slate-500">Atualize as suas informacoes pessoais</p>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        {/* HERO */}
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+
+          <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Editar Perfil</h1>
+
+              <p className="mt-2 text-white/80">
+                Atualiza os teus dados pessoais e definições de segurança.
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate("/perfil")}
+              className="rounded-2xl bg-white px-5 py-3 font-semibold text-[#0F62FE] transition hover:scale-105"
+            >
+              <i className="bi bi-arrow-left mr-2"></i>
+              Voltar ao Perfil
+            </button>
           </div>
-          <button
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-            onClick={() => navigate("/perfil")}
-          >
-            <i className="bi bi-arrow-left mr-2"></i>
-            Voltar
-          </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <div className="lg:col-span-8">
-            <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h5 className="mb-4 text-base font-bold text-slate-900">
-                <i className="bi bi-person-fill mr-2 text-sky-600"></i>
-                  Informações Pessoais
-                </h5>
-                <form onSubmit={handleUpdateProfile}>
-                  <div className="mb-3">
-                    <label className="mb-1 block text-sm font-semibold text-slate-700">Nome Completo *</label>
-                    <input
-                      type="text"
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 focus:border-sky-500"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                    />
-                  </div>
+        <div className="grid gap-6 xl:grid-cols-3">
+          {/* PERFIL */}
+          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div className="text-center">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                alt="Perfil"
+                className="mx-auto mb-4 h-24 w-24 rounded-3xl border-4 border-[#0F62FE]/10"
+              />
 
-                  <div className="mb-3">
-                    <label className="mb-1 block text-sm font-semibold text-slate-700">Email *</label>
-                    <input
-                      type="email"
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 focus:border-sky-500"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                    />
-                  </div>
+              <h3 className="text-xl font-bold text-slate-900">{user.name}</h3>
 
-                  <button
-                    type="submit"
-                    className="inline-flex items-center rounded-lg bg-[#16558C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#16558C] disabled:cursor-not-allowed disabled:opacity-60"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
-                        A guardar...
-                      </>
-                    ) : (
-                      <>
-                        <i className="bi bi-check-circle mr-2"></i>
-                        Guardar Alterações
-                      </>
-                    )}
-                  </button>
-                </form>
-            </div>
+              <p className="text-slate-500">{user.email}</p>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h5 className="mb-0 text-base font-bold text-slate-900">
-                    <i className="bi bi-shield-lock-fill mr-2 text-amber-500"></i>
-                    Segurança
-                  </h5>
-                  {!showPasswordChange && (
-                    <button
-                      className="rounded-lg border border-amber-500 px-3 py-1 text-xs font-semibold text-amber-600 hover:bg-amber-50 sm:text-sm"
-                      onClick={() => setShowPasswordChange(true)}
-                    >
-                      <i className="bi bi-key mr-2"></i>
-                      Alterar Password
-                    </button>
-                  )}
-                </div>
-
-                {showPasswordChange && (
-                  <form onSubmit={handleChangePassword}>
-                    <div className="mb-3">
-                      <label className="mb-1 block text-sm font-semibold text-slate-700">Password Atual *</label>
-                      <input
-                        type="password"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 focus:border-sky-500"
-                        value={passwordData.currentPassword}
-                        onChange={(e) =>
-                          setPasswordData({ ...passwordData, currentPassword: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      <label className="mb-1 block text-sm font-semibold text-slate-700">Nova Password *</label>
-                      <input
-                        type="password"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 focus:border-sky-500"
-                        value={passwordData.newPassword}
-                        onChange={(e) =>
-                          setPasswordData({ ...passwordData, newPassword: e.target.value })
-                        }
-                        required
-                      />
-                      <small className="text-xs text-slate-500">Minimo 6 caracteres</small>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="mb-1 block text-sm font-semibold text-slate-700">Confirmar Nova Password *</label>
-                      <input
-                        type="password"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 focus:border-sky-500"
-                        value={passwordData.confirmPassword}
-                        onChange={(e) =>
-                          setPasswordData({ ...passwordData, confirmPassword: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="submit"
-                        className="inline-flex items-center rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-60"
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          <>
-                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
-                            A alterar...
-                          </>
-                        ) : (
-                          <>
-                            <i className="bi bi-check-circle mr-2"></i>
-                            Confirmar
-                          </>
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-                        onClick={() => {
-                          setShowPasswordChange(false);
-                          setPasswordData({
-                            currentPassword: "",
-                            newPassword: "",
-                            confirmPassword: "",
-                          });
-                        }}
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                {!showPasswordChange && (
-                  <p className="mb-0 text-sm text-slate-500">
-                    <i className="bi bi-info-circle mr-2"></i>
-                    Mantenha a sua conta segura alterando a password regularmente.
-                  </p>
-                )}
+              <div className="mt-6 rounded-2xl bg-[#0F62FE]/5 p-4">
+                <p className="text-sm font-medium text-[#0F62FE]">
+                  Perfil Profissional
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-4">
-            <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h6 className="mb-3 text-sm font-bold text-slate-900">
-                  <i className="bi bi-info-circle-fill mr-2 text-cyan-600"></i>
-                  Dicas
-                </h6>
-                <ul className="mb-0 list-disc space-y-2 pl-5 text-xs text-slate-500 sm:text-sm">
-                  <li>Use um email valido para recuperacao de conta</li>
-                  <li>Mantenha as suas informacoes atualizadas</li>
-                  <li>A password deve ter pelo menos 6 caracteres</li>
-                  <li>Não partilhe a sua password com terceiros</li>
-                </ul>
+          {/* DADOS */}
+          <div className="xl:col-span-2">
+            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+              <h2 className="mb-6 text-xl font-semibold">
+                Informações Pessoais
+              </h2>
+
+              <form onSubmit={handleUpdateProfile}>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                      Nome Completo
+                    </label>
+
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          name: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                      Email
+                    </label>
+
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          email: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="mt-6 rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02]"
+                >
+                  {loading ? "A guardar..." : "Guardar Alterações"}
+                </button>
+              </form>
             </div>
 
-            <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-center shadow-sm">
-              <i className="bi bi-shield-check mb-3 block text-4xl text-sky-600"></i>
-              <h6 className="mb-2 text-sm font-bold text-slate-900">Dados Protegidos</h6>
-              <p className="mb-0 text-xs text-slate-500 sm:text-sm">
-                  As suas informações estão seguras e protegidas.
-                </p>
+            {/* SEGURANÇA */}
+            <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Segurança</h2>
+
+                {!showPasswordChange && (
+                  <button
+                    onClick={() => setShowPasswordChange(true)}
+                    className="rounded-2xl border border-amber-500 px-4 py-2 font-medium text-amber-600 transition hover:bg-amber-50"
+                  >
+                    Alterar Password
+                  </button>
+                )}
+              </div>
+
+              {!showPasswordChange ? (
+                <div className="rounded-2xl bg-amber-50 p-4 text-amber-700">
+                  <i className="bi bi-shield-lock mr-2"></i>
+                  Mantenha a sua conta segura alterando a password regularmente.
+                </div>
+              ) : (
+                <form onSubmit={handleChangePassword}>
+                  <div className="space-y-4">
+                    <input
+                      type="password"
+                      placeholder="Password Atual"
+                      value={passwordData.currentPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                    />
+
+                    <input
+                      type="password"
+                      placeholder="Nova Password"
+                      value={passwordData.newPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                    />
+
+                    <input
+                      type="password"
+                      placeholder="Confirmar Nova Password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                    />
+                  </div>
+
+                  <div className="mt-6 flex gap-3">
+                    <button
+                      type="submit"
+                      className="rounded-2xl bg-amber-500 px-5 py-3 font-semibold text-white"
+                    >
+                      Confirmar
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordChange(false)}
+                      className="rounded-2xl border border-slate-300 px-5 py-3 font-semibold text-slate-700"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* DICAS */}
+        <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <h2 className="mb-4 text-xl font-semibold">Dicas de Segurança</h2>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl bg-[#0F62FE]/5 p-4">
+              <i className="bi bi-envelope-check text-[#0F62FE]"></i>
+              <p className="mt-2 text-sm">
+                Usa um email válido para recuperação de conta.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-emerald-50 p-4">
+              <i className="bi bi-shield-check text-emerald-600"></i>
+              <p className="mt-2 text-sm">
+                Mantém a password privada e segura.
+              </p>
             </div>
           </div>
         </div>
@@ -321,4 +335,3 @@ export default function EditarPerfil() {
     </div>
   );
 }
-

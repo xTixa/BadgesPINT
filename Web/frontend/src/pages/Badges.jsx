@@ -1,181 +1,269 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import api from "../api";
 import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
 import PublicJourneyStepper from "../components/PublicJourneyStepper";
+import BadgeCard from "../components/BadgeCard";
+
+const getBadgeLevel = (badge) =>
+  badge?.level || badge?.nivel || badge?.level_name || "Sem nivel";
+
+const getBadgePoints = (badge) =>
+  Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
+
+const getBadgeAreaName = (badge) =>
+  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "";
+
+const normalizeText = (value) =>
+  String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 
 export default function Badges() {
-  const { id } = useParams(); // area id (opcional)
+  const { id } = useParams();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [areaName, setAreaName] = useState("");
+  const [search, setSearch] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState("todos");
 
   useEffect(() => {
-    setLoading(true);
-    setError("");
-    
-    // Se há um ID de área, procura badges dessa área
-    // Senão, procura todos os badges
-    const endpoint = id ? `/areas/${id}/badges` : `/badges`;
-    
-    api.get(endpoint)
-      .then(res => {
-        setBadges(res.data);
-        // Se tiver área específica, pode procurar o nome da área
-        if (id && res.data.length > 0 && res.data[0].area) {
-          setAreaName(res.data[0].area.name);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
+    let active = true;
+
+    const loadBadges = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const endpoint = id ? `/areas/${id}/badges` : "/badges";
+        const response = await api.get(endpoint);
+        const data = Array.isArray(response.data) ? response.data : [];
+
+        if (!active) return;
+
+        setBadges(data);
+        setAreaName(id ? getBadgeAreaName(data[0]) : "");
+      } catch (err) {
+        console.error("Erro ao carregar badges:", err);
+        if (!active) return;
+        setBadges([]);
+        setAreaName("");
         setError("Não foi possível carregar os badges neste momento.");
-        setLoading(false);
-      });
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadBadges();
+
+    return () => {
+      active = false;
+    };
   }, [id]);
 
-  // Função para determinar a cor do badge baseado no nível
-  const getLevelColor = (level) => {
-    const colors = {
-      Junior: "bg-[#16558C]",
-      Intermedio: "bg-[#2B6EA8]",
-      Senior: "bg-[#16558C]",
-      Especialista: "bg-[#16558C]",
-      Lider: "bg-[#16558C]",
-    };
-    return colors[level] || "bg-[#16558C]";
-  };
+  const levels = useMemo(() => {
+    const uniqueLevels = new Set(
+      badges.map(getBadgeLevel).filter((level) => level && level !== "Sem nivel")
+    );
 
-  const getLevelBadgeColor = (level) => {
-    const colors = {
-      'Junior': 'bg-[#16558C]/10 text-[#16558C]',
-      'Intermedio': 'bg-[#16558C]/10 text-[#16558C]',
-      'Senior': 'bg-[#16558C]/10 text-[#16558C]',
-      'Especialista': 'bg-[#16558C]/10 text-[#16558C]',
-      'Lider': 'bg-[#16558C]/10 text-[#16558C]'
-    };
-    return colors[level] || 'bg-slate-100 text-slate-700';
-  };
+    return Array.from(uniqueLevels).sort((a, b) => a.localeCompare(b, "pt"));
+  }, [badges]);
+
+  const filteredBadges = useMemo(() => {
+    const query = normalizeText(search);
+
+    return badges.filter((badge) => {
+      const level = getBadgeLevel(badge);
+      const area = getBadgeAreaName(badge);
+      const searchable = normalizeText(
+        [
+          badge?.name,
+          badge?.nome,
+          badge?.title,
+          badge?.description,
+          badge?.descricao,
+          level,
+          area,
+        ].join(" ")
+      );
+
+      const matchesSearch = !query || searchable.includes(query);
+      const matchesLevel = selectedLevel === "todos" || level === selectedLevel;
+
+      return matchesSearch && matchesLevel;
+    });
+  }, [badges, search, selectedLevel]);
+
+  const totalPoints = useMemo(
+    () => badges.reduce((sum, badge) => sum + getBadgePoints(badge), 0),
+    [badges]
+  );
+
+  const hasFilters = search.trim() || selectedLevel !== "todos";
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <div className="bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center mb-4">
-            <Link 
-              to={id ? `/areas` : "/"} 
-              className="text-[#04C4D9] hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
+      <section className="bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] px-6 py-16 text-[#F2F2F2]">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-4 flex items-center">
+            <Link
+              to={id ? "/areas" : "/"}
+              className="flex items-center gap-2 text-sm font-medium text-[#04C4D9] transition hover:text-white focus-visible:ring-2 focus-visible:ring-white/60"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Voltar
+              {id ? "Voltar às Áreas" : "Voltar ao Início"}
             </Link>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-            {id && areaName ? `Badges - ${areaName}` : 'Todos os Badges'}
-          </h1>
-          <p className="text-lg md:text-xl text-[#04C4D9] max-w-3xl">
-            Conquista badges de diferentes níveis e evolui na tua carreira profissional.
-          </p>
-        </div>
-      </div>
 
-      {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="max-w-3xl">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#04C4D9]">
+              Catálogo de competências
+            </p>
+            <h1 className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+              {areaName ? `Badges de ${areaName}` : "Catálogo de Badges"}
+            </h1>
+            <p className="mt-4 text-lg text-[#DCEAF6] md:text-xl">
+              Explora competências, compara níveis e consulta os requisitos para
+              conquistares cada badge.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-7xl px-6 py-12">
         <PublicBreadcrumbs
-          items={id
-            ? [
-                { label: "Início", to: "/" },
-                { label: "Áreas", to: "/areas" },
-                { label: "Badges" },
-              ]
-            : [{ label: "Início", to: "/" }, { label: "Badges" }]}
+          items={
+            id
+              ? [
+                  { label: "Início", to: "/" },
+                  { label: "Áreas", to: "/areas" },
+                  { label: "Badges" },
+                ]
+              : [{ label: "Início", to: "/" }, { label: "Badges" }]
+          }
         />
         <PublicJourneyStepper currentStep="badges" />
 
         <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
-          Passo 4: Abre um badge para veres os requisitos necessários para o concluir.
+          Passo 4: escolhe um badge para veres os requisitos necessários.
         </div>
 
         {error && (
-          <div role="alert" className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
-            <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
+          <div
+            role="alert"
+            className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center"
+          >
+            <p className="text-sm font-semibold text-rose-700 sm:text-base">
+              {error}
+            </p>
           </div>
         )}
 
         {loading ? (
-          <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
-            <p className="text-gray-600 text-lg">A carregar badges...</p>
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex flex-col items-center justify-center py-20"
+          >
+            <div className="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-[#16558C]"></div>
+            <p className="text-lg text-slate-600">A carregar badges...</p>
           </div>
         ) : badges.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {badges.map(b => (
-              <div 
-                key={b.id} 
-                className="group bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-              >
-                {/* Badge Icon Header */}
-                <div className={`h-40 ${getLevelColor(b.level)} flex items-center justify-center relative overflow-hidden`}>
-                  <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
-                  <svg
-                    className="h-20 w-20 text-white relative z-10"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.8}
-                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 .806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                    />
-                  </svg>
-                  {/* Level Badge no canto */}
-                  <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold ${getLevelBadgeColor(b.level)}`}>
-                    {b.level}
-                  </div>
-                </div>
-
-                {/* Card Body */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">
-                    {b.area?.name || "Badge"}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4 min-h-[60px]">
-                    {b.description || "Badge de competência técnica"}
-                  </p>
-
-                  {/* Points */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span className="text-lg font-bold text-gray-800">{b.points} pontos</span>
-                  </div>
-
-                  {/* Action Button */}
-                  <Link
-                    to={`/badges/${b.id}/requirements`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] text-white font-semibold shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#16558C]/35"
-                  >
-                    Ver Requisitos →
-                  </Link>
-                </div>
+          <>
+            <section className="mb-8 grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-medium text-slate-500">Badges disponíveis</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900">{badges.length}</p>
               </div>
-            ))}
-          </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-medium text-slate-500">Níveis distintos</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900">{levels.length || 1}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-medium text-slate-500">Pontos totais</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900">{totalPoints}</p>
+              </div>
+            </section>
+
+            <section className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="grid gap-4 lg:grid-cols-[1fr_220px_auto]">
+                <label className="relative block">
+                  <span className="sr-only">Pesquisar badge</span>
+                  <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Pesquisar por nome, descrição ou área..."
+                    className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#16558C] focus:ring-2 focus:ring-[#16558C]/20"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="sr-only">Filtrar por nível</span>
+                  <select
+                    value={selectedLevel}
+                    onChange={(event) => setSelectedLevel(event.target.value)}
+                    className="h-full min-h-[46px] w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#16558C] focus:ring-2 focus:ring-[#16558C]/20"
+                  >
+                    <option value="todos">Todos os níveis</option>
+                    {levels.map((level) => (
+                      <option key={level} value={level}>
+                        {level}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setSelectedLevel("todos");
+                  }}
+                  disabled={!hasFilters}
+                  className="inline-flex min-h-[46px] items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Limpar
+                </button>
+              </div>
+            </section>
+
+            {filteredBadges.length > 0 ? (
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {filteredBadges.map((badge) => (
+                  <BadgeCard key={badge.id} badge={badge} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+                <i className="bi bi-search mb-4 block text-5xl text-slate-300"></i>
+                <h2 className="text-xl font-bold text-slate-900">
+                  Nenhum badge encontrado
+                </h2>
+                <p className="mx-auto mt-2 max-w-xl text-slate-500">
+                  Ajusta a pesquisa ou limpa os filtros para voltares a ver todos
+                  os badges disponíveis.
+                </p>
+              </div>
+            )}
+          </>
         ) : (
-          <div className="text-center py-20">
-            <svg className="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 .806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
-            <p className="text-gray-500 text-lg">Nenhum badge disponível no momento</p>
+          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
+            <i className="bi bi-award mb-4 block text-6xl text-slate-300"></i>
+            <h2 className="text-xl font-bold text-slate-900">
+              Nenhum badge disponível
+            </h2>
+            <p className="mt-2 text-slate-500">
+              Não existem badges para apresentar neste momento.
+            </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

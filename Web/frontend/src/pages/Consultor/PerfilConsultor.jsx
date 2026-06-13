@@ -6,8 +6,16 @@ export default function PerfilConsultor() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [atividade] = useState([
-    { id: 1, acao: "Conquistou o badge 'DevOps Intermédio'", data: "Há 2 dias" },
-    { id: 2, acao: "Submeteu evidências para 'Outsystems Avançado'", data: "Há 5 dias" },
+    {
+      id: 1,
+      acao: "Conquistou o badge 'DevOps Intermédio'",
+      data: "Há 2 dias",
+    },
+    {
+      id: 2,
+      acao: "Submeteu evidências para 'Outsystems Avançado'",
+      data: "Há 5 dias",
+    },
     { id: 3, acao: "Atualizou perfil profissional", data: "Há 1 semana" },
   ]);
 
@@ -54,7 +62,7 @@ export default function PerfilConsultor() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#16558C]"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#0F62FE]"></div>
       </div>
     );
   }
@@ -62,7 +70,9 @@ export default function PerfilConsultor() {
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">Erro ao carregar perfil</div>
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          Erro ao carregar perfil
+        </div>
       </div>
     );
   }
@@ -71,88 +81,126 @@ export default function PerfilConsultor() {
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: user.nome }} />
 
-      <main className="admin-main">
-        <div className="mb-5 flex flex-col gap-4 rounded-2xl bg-[#16558C] p-5 text-white shadow-sm md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <img
-              src={user.imagem}
-              alt="Foto de perfil"
-              className="h-20 w-20 rounded-full border border-white object-cover sm:h-24 sm:w-24"
-            />
-            <div>
-              <h3 className="mb-1 text-xl font-bold sm:text-2xl">{user.nome}</h3>
-              <p className="m-0 text-sm text-white/80 sm:text-base">{user.cargo}</p>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-5">
+              <img
+                src={user.imagem}
+                alt="Foto de perfil"
+                className="h-24 w-24 rounded-3xl border-4 border-white/20 object-cover"
+              />
+
+              <div>
+                <h1 className="text-3xl font-bold">{user.nome}</h1>
+
+                <p className="mt-1 text-white/80">{user.cargo}</p>
+
+                <p className="mt-2 text-sm text-white/70">{user.email}</p>
+              </div>
             </div>
-          </div>
-          <div className="md:text-right">
-            <button 
-              className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100"
-              onClick={() => window.location.href = "/editar-perfil"}
+
+            <button
+              className=" rounded-2xl bg-white px-5 py-3 font-semibold text-[#0F62FE] transition hover:scale-105 "
+              onClick={() => (window.location.href = "/editar-perfil")}
             >
-              <i className="bi bi-pencil-square mr-2"></i>Editar Perfil
+              <i className="bi bi-pencil-square mr-2"></i>
+              Editar Perfil
             </button>
           </div>
         </div>
+        <div className="mb-8 grid gap-4 md:grid-cols-3">
+          {[
+            {
+              icon: "bi-star-fill",
+              label: "Pontos Acumulados",
+              valor: user.pontos,
+            },
+            {
+              icon: "bi-award-fill",
+              label: "Badges Obtidos",
+              valor: user.badges,
+            },
+            {
+              icon: "bi-graph-up-arrow",
+              label: "Progresso Global",
+              valor: `${user.progresso}%`,
+            },
+          ].map((card, idx) => (
+            <div
+              key={idx}
+              className=" rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]"
+            >
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
+                <i className={`bi ${card.icon} text-xl text-[#0F62FE]`} />
+              </div>
 
-        <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white py-4 text-center shadow-sm">
-            <i className="bi bi-star-fill mb-2 block text-2xl text-amber-500"></i>
-            <h5 className="mb-1 text-xl font-semibold text-slate-900">{user.pontos}</h5>
-            <p className="m-0 text-xs text-slate-500">Pontos Acumulados</p>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white py-4 text-center shadow-sm">
-            <i className="bi bi-award-fill mb-2 block text-2xl text-emerald-600"></i>
-            <h5 className="mb-1 text-xl font-semibold text-slate-900">{user.badges}</h5>
-            <p className="m-0 text-xs text-slate-500">Badges Obtidos</p>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white py-4 text-center shadow-sm sm:col-span-2 lg:col-span-1">
-            <i className="bi bi-graph-up-arrow mb-2 block text-2xl text-sky-600"></i>
-            <h5 className="mb-1 text-xl font-semibold text-slate-900">{user.progresso}%</h5>
-            <p className="m-0 text-xs text-slate-500">Progresso Global</p>
-          </div>
-        </div>
+              <h3 className="text-3xl font-bold text-slate-900">
+                {card.valor}
+              </h3>
 
-        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h5 className="mb-3 text-base font-bold text-slate-900">
-            <i className="bi bi-person-lines-fill mr-2 text-sky-600"></i>
-            Informacoes Pessoais
-          </h5>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <p className="mb-1 text-xs text-slate-500">Email</p>
-              <p className="text-sm font-semibold text-slate-900">{user.email}</p>
+              <p className="mt-1 text-sm text-slate-500">{card.label}</p>
             </div>
-            <div>
-              <p className="mb-1 text-xs text-slate-500">Localizacao</p>
-              <p className="text-sm font-semibold text-slate-900">{user.localizacao}</p>
+          ))}
+        </div>
+        <div className="mb-6 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <h2 className="mb-4 text-lg font-bold text-slate-900">
+              Informações Pessoais
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs text-slate-500">Email</p>
+                <p className="font-medium text-slate-900">{user.email}</p>
+              </div>
+
+              <div>
+                <p className="text-xs text-slate-500">Localização</p>
+                <p className="font-medium text-slate-900">{user.localizacao}</p>
+              </div>
+
+              <div>
+                <p className="text-xs text-slate-500">Cargo</p>
+                <p className="font-medium text-slate-900">{user.cargo}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <h2 className="mb-4 text-lg font-bold text-slate-900">
+              Competências
+            </h2>
+
+            <div className="flex flex-wrap gap-2">
+              {user.competencias.map((comp, i) => (
+                <span
+                  key={i}
+                  className=" rounded-full bg-[#0F62FE]/10 px-4 py-2 text-sm font-medium text-[#0F62FE]"
+                >
+                  {comp}
+                </span>
+              ))}
             </div>
           </div>
         </div>
-
-        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h5 className="mb-3 text-base font-bold text-slate-900">
-            <i className="bi bi-lightbulb-fill mr-2 text-amber-500"></i>
-            Competencias
-          </h5>
-          <div className="flex flex-wrap gap-2">
-            {user.competencias.map((comp, i) => (
-              <span key={i} className="rounded-full bg-sky-700 px-3 py-1 text-xs font-semibold text-white">
-                {comp}
-              </span>
-            ))}
-          </div>
-        </div>
-
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <h5 className="mb-3 text-base font-bold text-slate-900">
             <i className="bi bi-clock-history mr-2 text-emerald-600"></i>
             Atividade Recente
           </h5>
-          <ul className="m-0 list-none divide-y divide-slate-100 p-0">
+          <ul className="space-y-4">
             {atividade.map((a) => (
-              <li key={a.id} className="flex items-center justify-between gap-3 py-3">
-                <span className="text-sm text-slate-800">{a.acao}</span>
-                <small className="text-xs text-slate-500">{a.data}</small>
+              <li key={a.id} className="flex gap-4">
+                <div className="mt-1 h-3 w-3 rounded-full bg-[#0F62FE]"></div>
+
+                <div className="flex-1">
+                  <p className="font-medium text-slate-900">{a.acao}</p>
+
+                  <p className="text-sm text-slate-500">{a.data}</p>
+                </div>
               </li>
             ))}
           </ul>
@@ -161,4 +209,3 @@ export default function PerfilConsultor() {
     </div>
   );
 }
-

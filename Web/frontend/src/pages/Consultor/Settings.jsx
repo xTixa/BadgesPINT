@@ -3,173 +3,186 @@ import React from "react";
 
 export default function ConsultorSettingsPage() {
   return (
-    <div className="bg-gray-100 min-h-screen pt-16">
-      
-      {/* Sidebar verdadeira */}
+    <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
-      <div className="flex">
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <div className="space-y-6">
+          {/* HERO */}
+          <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+            <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
-        {/* CONTEÚDO — agora empurrado automaticamente porque a sidebar tem largura fixa */}
-        <div className="flex-1 ml-[250px] p-8">
-          <h1 className="text-3xl font-bold mb-8 text-gray-800">
-            Definições do Consultor
-          </h1>
+            <div className="relative z-10">
+              <h1 className="text-3xl font-bold">Definições</h1>
 
-          <div className="space-y-8 max-w-4xl">
+              <p className="mt-2 text-white/80">
+                Personaliza a tua experiência, notificações e partilha de
+                badges.
+              </p>
+            </div>
+          </div>
 
-            {/* CARD - Perfil */}
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Perfil pessoal</h2>
+          {/* PERFIL + OBJETIVOS */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+              <h2 className="mb-4 text-xl font-semibold">Perfil Pessoal</h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
                     Nome
                   </label>
+
                   <input
                     type="text"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Nome"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Área principal
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Área Principal
                   </label>
-                  <select className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+                  <select className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10">
                     <option>Selecione...</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            {/* CARD - Objetivos */}
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Objetivos e Aprendizagem</h2>
+            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+              <h2 className="mb-4 text-xl font-semibold">
+                Objetivos e Aprendizagem
+              </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Objetivo (ex.: nº de badges)
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Objetivo de Badges
                   </label>
+
                   <input
                     type="number"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Ex: 10"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Data limite
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Data Limite
                   </label>
+
                   <input
                     type="date"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
                   />
+                </div>
+
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span className="text-sm text-slate-700">
+                    Recomendar próximos badges
+                  </span>
+
+                  <input type="checkbox" className="h-5 w-5 accent-[#0F62FE]" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* NOTIFICAÇÕES + PRIVACIDADE */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+              <h2 className="mb-4 text-xl font-semibold">Notificações</h2>
+
+              <div className="space-y-3">
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span>Email de confirmação</span>
+                  <input type="checkbox" className="accent-[#0F62FE]" />
+                </label>
+
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span>Aprovação / Rejeição</span>
+                  <input type="checkbox" className="accent-[#0F62FE]" />
+                </label>
+
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span>Alertas de expiração</span>
+                  <input type="checkbox" className="accent-[#0F62FE]" />
+                </label>
+
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span>Lembretes de objetivos</span>
+                  <input type="checkbox" className="accent-[#0F62FE]" />
+                </label>
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+              <h2 className="mb-4 text-xl font-semibold">
+                Privacidade e Partilha
+              </h2>
+
+              <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                <div className="flex items-center gap-2">
+                  <i className="bi bi-shield-check text-emerald-600"></i>
+
+                  <span className="font-medium text-emerald-700">
+                    Consentimento RGPD ativo
+                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2 mt-4">
-                <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                <span className="text-gray-700">
-                  Ativar recomendações de próximos badges
+              <div className="space-y-3">
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span>Galeria Pública de Badges</span>
+                  <input type="checkbox" className="accent-[#0F62FE]" />
+                </label>
+
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span>Partilhar no LinkedIn</span>
+                  <input type="checkbox" className="accent-[#0F62FE]" />
+                </label>
+
+                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                  <span>Assinatura de Email</span>
+                  <input type="checkbox" className="accent-[#0F62FE]" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* INTEGRAÇÕES */}
+          <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+            <h2 className="mb-4 text-xl font-semibold">Integrações</h2>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                <span>LinkedIn</span>
+
+                <span className="font-medium text-emerald-600">Ligado</span>
+              </div>
+
+              <div className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+                <span>Assinatura de Email</span>
+
+                <span className="font-medium text-slate-500">
+                  Não configurada
                 </span>
               </div>
             </div>
+          </div>
 
-            {/* CARD - Notificações */}
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Notificações</h2>
-
-              <div className="space-y-3">
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Email de confirmação de candidatura</span>
-                </label>
-
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Notificações de aprovação/rejeição</span>
-                </label>
-
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Alertas de expiração de badges</span>
-                </label>
-
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Lembretes da timeline/objetivos</span>
-                </label>
-              </div>
-            </div>
-
-            {/* CARD - Privacidade */}
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Privacidade e Partilha</h2>
-
-              <div className="space-y-3">
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Aceito os termos RGPD para publicação de badges</span>
-                </label>
-
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Permitir galeria pública de badges</span>
-                </label>
-
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Ativar partilha no LinkedIn</span>
-                </label>
-
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-5 w-5 text-blue-600" />
-                  <span>Usar badges na assinatura de email</span>
-                </label>
-              </div>
-            </div>
-
-            {/* CARD - Interface */}
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Interface</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Idioma
-                  </label>
-                  <select className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="pt">Português</option>
-                    <option value="en">Inglês</option>
-                    <option value="es">Espanhol</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tema
-                  </label>
-                  <select className="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="light">Claro</option>
-                    <option value="dark">Escuro</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Botão */}
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
-              Guardar alterações
+          {/* BOTÃO */}
+          <div className="sticky bottom-4 mt-6 flex justify-end">
+            <button className=" rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] ">
+              Guardar Alterações
             </button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
-

@@ -29,7 +29,7 @@ export default function UploadEvidencias() {
     const loadBadges = async () => {
       try {
         const res = await api.get(`/api/consultor/${user.id}/badges`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setBadges(res.data || []);
       } catch (err) {
@@ -51,8 +51,8 @@ export default function UploadEvidencias() {
         const [reqRes, evRes] = await Promise.all([
           api.get(`/badges/${selectedBadgeId}/requirements`),
           api.get(`/api/consultor/badges/${selectedBadgeId}/evidencias`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
         setRequirements(reqRes.data || []);
         setEvidences(evRes.data || []);
@@ -75,7 +75,7 @@ export default function UploadEvidencias() {
       const res = await api.post(
         `/api/consultor/requirements/${requirementId}/evidencias`,
         { evidence_url: evidenceUrl, notes },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       setEvidences((prev) => [res.data, ...prev]);
@@ -95,19 +95,21 @@ export default function UploadEvidencias() {
       const createRes = await api.post(
         "/api/admin/pedidos",
         { badge_id: Number(selectedBadgeId) },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       await api.post(
         `/api/admin/pedidos/${createRes.data.id}/submeter`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       setPedidoStatus("Pedido submetido com sucesso.");
     } catch (err) {
       console.error("Erro ao submeter pedido:", err);
-      setPedidoStatus(err.response?.data?.message || "Erro ao submeter pedido.");
+      setPedidoStatus(
+        err.response?.data?.message || "Erro ao submeter pedido.",
+      );
     }
   };
 
@@ -115,34 +117,78 @@ export default function UploadEvidencias() {
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
-      <main className="admin-main">
-        <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
-          <i className="bi bi-cloud-upload-fill text-sky-600"></i>
-          Upload de Evidências
-        </h3>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold">Upload de Evidências</h1>
+
+            <p className="mt-2 text-white/80">
+              Submete documentação e comprovativos para validação dos teus
+              badges.
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-6 grid gap-4 md:grid-cols-3">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
+              <i className="bi bi-award-fill text-xl text-[#0F62FE]"></i>
+            </div>
+
+            <h3 className="text-3xl font-bold">{badges.length}</h3>
+
+            <p className="text-slate-500">Badges Disponíveis</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100">
+              <i className="bi bi-list-check text-xl text-amber-600"></i>
+            </div>
+
+            <h3 className="text-3xl font-bold">{requirements.length}</h3>
+
+            <p className="text-slate-500">Requisitos</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+              <i className="bi bi-cloud-upload-fill text-xl text-emerald-600"></i>
+            </div>
+
+            <h3 className="text-3xl font-bold">{evidences.length}</h3>
+
+            <p className="text-slate-500">Evidências</p>
+          </div>
+        </div>
+
+        <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <p className="mb-3 text-sm text-slate-500 sm:text-base">
             Seleciona um badge e submete evidências para cada requisito.
           </p>
 
           <div className="mb-3">
-            <label className="mb-1 block text-sm font-semibold text-slate-700">Selecionar Badge</label>
+            <label className="mb-1 block text-sm font-semibold text-slate-700">
+              Selecionar Badge
+            </label>
             <select
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10 "
               value={selectedBadgeId}
               onChange={(e) => setSelectedBadgeId(e.target.value)}
             >
               <option value="">Escolher...</option>
               {badges.map((b) => (
-                <option key={b.id} value={b.id}>{b.description || b.name || `Badge #${b.id}`}</option>
+                <option key={b.id} value={b.id}>
+                  {b.description || b.name || `Badge #${b.id}`}
+                </option>
               ))}
             </select>
           </div>
 
           <div className="mb-3 flex justify-end">
             <button
-              className="rounded-xl border border-sky-600 bg-white px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-3 font-semibold text-white shadow-md"
               onClick={handleSubmitPedido}
               disabled={!selectedBadgeId}
             >
@@ -151,11 +197,15 @@ export default function UploadEvidencias() {
           </div>
 
           {pedidoStatus && (
-            <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">{pedidoStatus}</div>
+            <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
+              {pedidoStatus}
+            </div>
           )}
 
           {error && (
-            <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
+            <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              {error}
+            </div>
           )}
 
           {loading ? (
@@ -177,7 +227,9 @@ export default function UploadEvidencias() {
               })}
 
               {!requirements.length && selectedBadgeId && (
-                <div className="text-sm text-slate-500">Este badge não tem requisitos definidos.</div>
+                <div className="text-sm text-slate-500">
+                  Este badge não tem requisitos definidos.
+                </div>
               )}
             </div>
           )}
@@ -202,17 +254,29 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div>
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-sm font-semibold text-slate-900">
-              {requirement.title} <span className="text-slate-500">({requirement.code})</span>
+              {requirement.title}{" "}
+              <span className="text-slate-500">({requirement.code})</span>
             </div>
-            <div className="text-xs text-slate-500 sm:text-sm">{requirement.description}</div>
+            <div className="text-xs text-slate-500 sm:text-sm">
+              {requirement.description}
+            </div>
           </div>
           {requirement.image_url && (
-            <img src={requirement.image_url} alt={requirement.title} style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover" }} />
+            <img
+              src={requirement.image_url}
+              alt={requirement.title}
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 8,
+                objectFit: "cover",
+              }}
+            />
           )}
         </div>
 
@@ -230,7 +294,17 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
             >
               {latestEvidence.status}
             </span>
-            <span className="ml-2 text-slate-600">Última evidência: <a className="text-sky-700 underline" href={latestEvidence.evidence_url} target="_blank" rel="noreferrer">ver</a></span>
+            <span className="ml-2 text-slate-600">
+              Última evidência:{" "}
+              <a
+                className="text-sky-700 underline"
+                href={latestEvidence.evidence_url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                ver
+              </a>
+            </span>
           </div>
         )}
 
@@ -268,4 +342,3 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
     </div>
   );
 }
-
