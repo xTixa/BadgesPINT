@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'badge_detail_page.dart';
 import '../consultor_controller.dart';
+import '../consultor_models.dart';
 
 class BadgesPage extends StatelessWidget {
   final ConsultorController controller;
@@ -44,7 +45,7 @@ class BadgesPage extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  "Escolhe um badge e começa a tua jornada 🚀",
+                  "Escolhe um badge e começa a tua jornada",
                   style: TextStyle(color: Colors.white70),
                 ),
               ],
@@ -57,9 +58,9 @@ class BadgesPage extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
-              itemCount: 6,
+              itemCount: controller.catalogBadges.length,
               itemBuilder: (context, index) {
-                return _badgeCard(context, index);
+                return _badgeCard(context, controller.catalogBadges[index]);
               },
             ),
           ),
@@ -68,17 +69,14 @@ class BadgesPage extends StatelessWidget {
     );
   }
 
-  Widget _badgeCard(BuildContext context, int index) {
+  Widget _badgeCard(BuildContext context, CatalogBadgeItem badge) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder:
-                (_) => BadgeDetailPage(
-                  badgeName: "Outsystems Junior",
-                  controller: controller,
-                ),
+                (_) => BadgeDetailPage(badge: badge, controller: controller),
           ),
         );
       },
@@ -122,16 +120,18 @@ class BadgesPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Outsystems Junior",
+                    badge.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    "Completa os requisitos A1, A2 e A3",
-                    style: TextStyle(color: Colors.grey),
+                  Text(
+                    badge.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
 

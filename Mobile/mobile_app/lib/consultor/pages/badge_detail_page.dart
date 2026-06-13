@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'upload_page.dart';
 import '../consultor_controller.dart';
+import '../consultor_models.dart';
 
 class BadgeDetailPage extends StatelessWidget {
-  final String badgeName;
+  final CatalogBadgeItem badge;
   final ConsultorController controller;
 
   const BadgeDetailPage({
     super.key,
-    required this.badgeName,
+    required this.badge,
     required this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
+    final requisitos = controller.requirements;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
 
       appBar: AppBar(
-        title: Text(badgeName),
+        title: Text(badge.name),
         backgroundColor: const Color(0xFF0F62FE),
       ),
 
@@ -37,9 +40,9 @@ class BadgeDetailPage extends StatelessWidget {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  "Outsystems Junior",
+                  badge.name,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,
@@ -48,7 +51,7 @@ class BadgeDetailPage extends StatelessWidget {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  "Completa todos os requisitos para obter este badge.",
+                  badge.description,
                   style: TextStyle(color: Colors.white70),
                 ),
               ],
@@ -62,9 +65,12 @@ class BadgeDetailPage extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(12),
               children: [
-                _requirementCard("A1 - Curso Udemy", false),
-                _requirementCard("A2 - Certificação", true),
-                _requirementCard("A3 - Projeto prático", false),
+                ...requisitos.map(
+                  (req) => _requirementCard(
+                    req.title,
+                    controller.latestEvidenceForRequirement(req.id) != null,
+                  ),
+                ),
               ],
             ),
           ),
@@ -108,8 +114,20 @@ class BadgeDetailPage extends StatelessWidget {
                       backgroundColor: const Color(0xFF0F62FE),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    onPressed: () {
-                      // 👉 candidatura
+                    onPressed: () async {
+                      final ok = await controller.submitPedido();
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              ok
+                                  ? "Pedido submetido com sucesso"
+                                  : "Erro ao submeter pedido",
+                            ),
+                          ),
+                        );
+                      }
                     },
                     child: const Text("Candidatar-me"),
                   ),
