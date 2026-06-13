@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../consultor_controller.dart';
 import 'home_page.dart';
@@ -80,58 +79,74 @@ class _SidebarModernState extends State<SidebarModern> {
     final scheme = Theme.of(context).colorScheme;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-      width: collapsed ? 72 : 240,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+      width: collapsed ? 90 : 200,
       decoration: BoxDecoration(
         color: scheme.surface,
         border: Border(right: BorderSide(color: scheme.outlineVariant)),
       ),
       child: Column(
         children: [
-          // 🔹 HEADER
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-            child: Row(
+            child: Column(
               children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: scheme.primary,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "S",
-                      style: TextStyle(
+                Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.business_rounded,
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        size: 20,
                       ),
                     ),
-                  ),
+
+                    const SizedBox(width: 10),
+
+                    Expanded(
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: collapsed ? 0 : 1,
+                        child: const Text(
+                          "Softinsa",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
-                if (!collapsed) ...[
-                  const SizedBox(width: 10),
-                  const Text(
-                    "Softinsa",
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                  ),
-                ],
+                const SizedBox(height: 12),
 
-                const Spacer(),
-
-                IconButton(
-                  icon: Icon(
-                    collapsed
-                        ? Icons.arrow_forward_ios_rounded
-                        : Icons.arrow_back_ios_rounded,
-                    size: 16,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    tooltip: collapsed ? "Expandir menu" : "Recolher menu",
+                    icon: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: Icon(
+                        collapsed
+                            ? Icons.menu_open_rounded
+                            : Icons.menu_rounded,
+                        key: ValueKey(collapsed),
+                        size: 22,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() => collapsed = !collapsed);
+                    },
                   ),
-                  onPressed: () {
-                    setState(() => collapsed = !collapsed);
-                  },
                 ),
               ],
             ),
@@ -141,7 +156,6 @@ class _SidebarModernState extends State<SidebarModern> {
 
           const SizedBox(height: 8),
 
-          // 🔹 MENU
           _navItem(Icons.home_rounded, "Home", 0),
           _navItem(Icons.history_rounded, "Histórico", 1),
           _navItem(Icons.upload_rounded, "Upload", 2),
@@ -152,7 +166,6 @@ class _SidebarModernState extends State<SidebarModern> {
 
           const Divider(height: 1),
 
-          // 🔹 LOGOUT
           Padding(
             padding: const EdgeInsets.all(8),
             child: _navItem(Icons.logout_rounded, "Sair", -1, isLogout: true),
@@ -173,9 +186,17 @@ class _SidebarModernState extends State<SidebarModern> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Material(
-        color: selected ? scheme.primary.withOpacity(0.12) : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color:
+              selected ? scheme.primary.withOpacity(0.12) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border:
+              selected
+                  ? Border.all(color: scheme.primary.withOpacity(0.3))
+                  : null,
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () async {
@@ -189,15 +210,32 @@ class _SidebarModernState extends State<SidebarModern> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
               children: [
-                Icon(icon),
+                Icon(
+                  icon,
+                  color: selected ? scheme.primary : scheme.onSurfaceVariant,
+                ),
 
-                if (!collapsed) ...[
-                  const SizedBox(width: 12),
+                const SizedBox(width: 12),
 
-                  Expanded(
-                    child: Text("Softinsa", overflow: TextOverflow.ellipsis),
+                Expanded(
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: collapsed ? 0 : 1,
+                    child: IgnorePointer(
+                      ignoring: collapsed,
+                      child: Text(
+                        label,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight:
+                              selected ? FontWeight.w700 : FontWeight.w500,
+                          color: selected ? scheme.primary : scheme.onSurface,
+                        ),
+                      ),
+                    ),
                   ),
-                ],
+                ),
               ],
             ),
           ),
@@ -211,6 +249,23 @@ class TopBarModern extends StatelessWidget {
   const TopBarModern({required this.controller, super.key});
 
   final ConsultorController controller;
+
+  String getPageTitle() {
+    switch (controller.selectedTab) {
+      case 0:
+        return "Home";
+      case 1:
+        return "Histórico";
+      case 2:
+        return "Upload de Evidências";
+      case 3:
+        return "Ranking";
+      case 4:
+        return "Perfil";
+      default:
+        return "Dashboard";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +283,7 @@ class TopBarModern extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              "Dashboard",
+              getPageTitle(),
               style: Theme.of(context).textTheme.titleMedium,
               overflow: TextOverflow.ellipsis,
             ),
@@ -241,7 +296,10 @@ class TopBarModern extends StatelessWidget {
 
           const SizedBox(width: 8),
 
-          CircleAvatar(radius: 16, child: Text(name[0])),
+          CircleAvatar(
+            radius: 16,
+            child: Text(name.isNotEmpty ? name[0] : "?"),
+          ),
         ],
       ),
     );

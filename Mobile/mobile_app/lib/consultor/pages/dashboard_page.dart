@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
+import '../../shared/app_theme.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({required this.controller, super.key});
@@ -44,6 +45,52 @@ class _DashboardPageState extends State<DashboardPage>
     );
   }
 
+  Widget _buildHeader(BuildContext context) {
+    final obtained = widget.controller.badges.where((b) => b.isObtained).length;
+
+    final total = widget.controller.badges.length;
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Os Meus Badges',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              '$obtained de $total badges obtidos',
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+
+            const SizedBox(height: 16),
+
+            LinearProgressIndicator(
+              value: obtained / total,
+              backgroundColor: Colors.white24,
+              valueColor: const AlwaysStoppedAnimation(AppColors.accent),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSearchBar(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
@@ -55,8 +102,8 @@ class _DashboardPageState extends State<DashboardPage>
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Pesquisar cursos...',
-                prefixIcon: const Icon(Icons.search, size: 20),
+                hintText: 'Pesquisar badges...',
+                prefixIcon: Icon(Icons.search, color: AppColors.primary),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -222,7 +269,7 @@ class _DashboardPageState extends State<DashboardPage>
 
   /// Mobile: horizontal card with icon on the left
   Widget _buildBadgeListCard(BuildContext context, BadgeItem badge) {
-    final colors = _getBadgeCardColor(badge.id);
+    final colors = _getBadgeCardColor(badge);
     final scheme = Theme.of(context).colorScheme;
 
     return Material(
@@ -357,7 +404,7 @@ class _DashboardPageState extends State<DashboardPage>
 
   /// Tablet/desktop: vertical grid card
   Widget _buildBadgeGridCard(BuildContext context, BadgeItem badge) {
-    final colors = _getBadgeCardColor(badge.id);
+    final colors = _getBadgeCardColor(badge);
     final scheme = Theme.of(context).colorScheme;
 
     return Material(
@@ -470,39 +517,19 @@ class _DashboardPageState extends State<DashboardPage>
     );
   }
 
-  Map<String, dynamic> _getBadgeCardColor(int badgeId) {
-    final colors = <Map<String, dynamic>>[
-      {
-        'background': const Color(0xFFFFF8ED),
-        'icon': const Color(0xFFF59E0B),
-        'iconBackground': const Color(0xFFF59E0B),
-      },
-      {
-        'background': const Color(0xFFEFF6FF),
-        'icon': const Color(0xFF3B82F6),
-        'iconBackground': const Color(0xFF3B82F6),
-      },
-      {
-        'background': const Color(0xFFF0FDFB),
-        'icon': const Color(0xFF14B8A6),
-        'iconBackground': const Color(0xFF14B8A6),
-      },
-      {
-        'background': const Color(0xFFFFF0F5),
-        'icon': const Color(0xFFEC4899),
-        'iconBackground': const Color(0xFFEC4899),
-      },
-      {
-        'background': const Color(0xFFF5F0FF),
-        'icon': const Color(0xFF8B5CF6),
-        'iconBackground': const Color(0xFF8B5CF6),
-      },
-      {
-        'background': const Color(0xFFEFF8FF),
-        'icon': const Color(0xFF0EA5E9),
-        'iconBackground': const Color(0xFF0EA5E9),
-      },
-    ];
-    return colors[badgeId % colors.length];
+  Map<String, dynamic> _getBadgeCardColor(BadgeItem badge) {
+    if (badge.isObtained) {
+      return {
+        'background': const Color(0xFFEAF6FF),
+        'icon': AppColors.accent,
+        'iconBackground': AppColors.accent,
+      };
+    }
+
+    return {
+      'background': Colors.white,
+      'icon': AppColors.primary,
+      'iconBackground': AppColors.primary,
+    };
   }
 }
