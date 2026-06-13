@@ -24,7 +24,6 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
 
   ConsultorController? _controller;
   bool _booting = true;
-  ThemeMode _themeMode = ThemeMode.light;
   AuthStage _authStage = AuthStage.login;
   List<AreaItem> _areas = <AreaItem>[];
 
@@ -43,7 +42,6 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   Future<void> _bootstrap() async {
     await SessionStorage.instance.load();
     _areas = await _repository.getAreas();
-    _themeMode = _parseThemeMode(SessionStorage.instance.themeMode);
 
     if (SessionStorage.instance.hasSession) {
       final ok = await _openDashboard();
@@ -58,16 +56,6 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     setState(() {
       _booting = false;
     });
-  }
-
-  ThemeMode _parseThemeMode(String? value) {
-    switch (value) {
-      case 'dark':
-        return ThemeMode.dark;
-      case 'light':
-      default:
-        return ThemeMode.light;
-    }
   }
 
   Future<bool> _openDashboard() async {
@@ -218,10 +206,8 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Badges PINT',
+      title: 'Badges Softinsa',
       theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: _themeMode,
       builder: (BuildContext context, Widget? child) {
         return child ?? const SizedBox.shrink();
       },

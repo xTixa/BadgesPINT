@@ -3,7 +3,7 @@ import 'upload_page.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 
-class BadgeDetailPage extends StatelessWidget {
+class BadgeDetailPage extends StatefulWidget {
   final CatalogBadgeItem badge;
   final ConsultorController controller;
 
@@ -14,20 +14,50 @@ class BadgeDetailPage extends StatelessWidget {
   });
 
   @override
+  State<BadgeDetailPage> createState() => _BadgeDetailPageState();
+}
+
+class _BadgeDetailPageState extends State<BadgeDetailPage> {
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBadge();
+  }
+
+  Future<void> _loadBadge() async {
+    await widget.controller.selectBadge(widget.badge.id);
+
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final controller = widget.controller;
+    final badge = widget.badge;
     final requisitos = controller.requirements;
+
+    if (loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
 
       appBar: AppBar(
-        title: Text(badge.name),
+        elevation: 0,
         backgroundColor: const Color(0xFF0F62FE),
+        foregroundColor: Colors.white,
+        title: const Text("Detalhes do Badge"),
       ),
 
       body: Column(
         children: [
-          // 🔹 HEADER
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -52,7 +82,42 @@ class BadgeDetailPage extends StatelessWidget {
                 SizedBox(height: 6),
                 Text(
                   badge.description,
-                  style: TextStyle(color: Colors.white70),
+                  style: const TextStyle(color: Colors.white70),
+                ),
+
+                const SizedBox(height: 16),
+
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _infoChip(Icons.star, "${badge.points} pontos"),
+                    _infoChip(Icons.workspace_premium, "Nível ${badge.level}"),
+                    _infoChip(Icons.category, badge.areaName ?? "Geral"),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                LinearProgressIndicator(
+                  value:
+                      requisitos.isEmpty
+                          ? 0
+                          : controller.evidences.length / requisitos.length,
+                  minHeight: 8,
+                  borderRadius: BorderRadius.circular(20),
+                  backgroundColor: Colors.white24,
+                  valueColor: const AlwaysStoppedAnimation(Colors.white),
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  "${controller.evidences.length}/${requisitos.length} requisitos concluídos",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -60,7 +125,6 @@ class BadgeDetailPage extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // 🔹 LISTA DE REQUISITOS
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(12),
@@ -75,7 +139,6 @@ class BadgeDetailPage extends StatelessWidget {
             ),
           ),
 
-          // 🔹 BOTÕES
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -87,32 +150,19 @@ class BadgeDetailPage extends StatelessWidget {
                 ),
               ],
             ),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Upload
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => UploadPage(controller: controller),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.upload_file),
-                    label: const Text("Upload"),
-                  ),
-                ),
-
-                const SizedBox(width: 10),
-
-                // Candidatar
-                Expanded(
-                  child: ElevatedButton(
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0F62FE),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                      ),
                     ),
                     onPressed: () async {
                       final ok = await controller.submitPedido();
@@ -129,7 +179,26 @@ class BadgeDetailPage extends StatelessWidget {
                         );
                       }
                     },
-                    child: const Text("Candidatar-me"),
+                    icon: const Icon(Icons.workspace_premium),
+                    label: const Text("Candidatar-me ao Badge"),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => UploadPage(controller: controller),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text("Fazer Upload"),
                   ),
                 ),
               ],
@@ -141,23 +210,51 @@ class BadgeDetailPage extends StatelessWidget {
   }
 
   Widget _requirementCard(String title, bool completed) {
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor:
+                  completed ? Colors.green.shade100 : Colors.orange.shade100,
+              child: Icon(
+                completed ? Icons.check : Icons.pending,
+                color: completed ? Colors.green : Colors.orange,
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _infoChip(IconData icon, String text) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        color: Colors.white24,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            completed ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: completed ? Colors.green : Colors.grey,
-          ),
-
-          const SizedBox(width: 10),
-
-          Expanded(child: Text(title, style: const TextStyle(fontSize: 14))),
+          Icon(icon, size: 16, color: Colors.white),
+          const SizedBox(width: 6),
+          Text(text, style: const TextStyle(color: Colors.white)),
         ],
       ),
     );
