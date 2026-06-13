@@ -6,6 +6,7 @@ import 'history_page.dart';
 import 'profile_page.dart';
 import 'ranking_page.dart';
 import 'upload_page.dart';
+import 'settings_page.dart';
 
 class ConsultorShellPage extends StatelessWidget {
   const ConsultorShellPage({
@@ -80,8 +81,9 @@ class ConsultorShellPage extends StatelessWidget {
                   color: Colors.white,
                   onSelected: (value) async {
                     if (value == "settings") {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Definições em breve")),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SettingsPage()),
                       );
                     }
 

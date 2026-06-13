@@ -25,6 +25,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   ConsultorController? _controller;
   bool _booting = true;
   AuthStage _authStage = AuthStage.login;
+
   List<AreaItem> _areas = <AreaItem>[];
 
   @override

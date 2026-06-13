@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({
-    required this.currentThemeMode,
-    required this.onThemeModeChanged,
-    super.key,
-  });
-
-  final ThemeMode currentThemeMode;
-  final ValueChanged<ThemeMode> onThemeModeChanged;
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -43,49 +36,12 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isDark = widget.currentThemeMode == ThemeMode.dark;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
       children: <Widget>[
         // Header
         _buildHeader(context, scheme),
-        const SizedBox(height: 20),
-
-        // Appearance
-        _buildSectionLabel(context, 'Aparência', Icons.palette_outlined),
-        const SizedBox(height: 8),
-        _buildCard(
-          child: SwitchListTile(
-            value: isDark,
-            onChanged:
-                (bool value) => widget.onThemeModeChanged(
-                  value ? ThemeMode.dark : ThemeMode.light,
-                ),
-            title: const Text(
-              'Modo escuro',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              isDark ? 'Tema escuro ativo' : 'Tema claro ativo',
-              style: const TextStyle(fontSize: 12),
-            ),
-            secondary: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: scheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                color: scheme.primary,
-                size: 20,
-              ),
-            ),
-          ),
-        ),
-
         const SizedBox(height: 20),
 
         // Profile
