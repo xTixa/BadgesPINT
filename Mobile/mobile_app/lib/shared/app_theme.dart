@@ -46,14 +46,9 @@ class AppTheme {
       /// ---------------- APP BAR ----------------
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
+        foregroundColor: Color(0xFF0F172A),
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w800,
-          color: AppColors.textDark,
-          letterSpacing: -0.3,
-        ),
       ),
 
       /// ---------------- CARDS ----------------

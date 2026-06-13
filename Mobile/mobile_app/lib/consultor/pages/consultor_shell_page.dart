@@ -17,6 +17,23 @@ class ConsultorShellPage extends StatelessWidget {
   final ConsultorController controller;
   final Future<void> Function() onLogout;
 
+  String _getPageTitle() {
+    switch (controller.selectedTab) {
+      case 0:
+        return "Home";
+      case 1:
+        return "Histórico";
+      case 2:
+        return "Upload";
+      case 3:
+        return "Ranking";
+      case 4:
+        return "Perfil";
+      default:
+        return "Softinsa Badges";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -37,6 +54,88 @@ class ConsultorShellPage extends StatelessWidget {
         ];
 
         return Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            title: Text(_getPageTitle()),
+
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Notificações em breve")),
+                  );
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: PopupMenuButton<String>(
+                  offset: const Offset(0, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 8,
+                  color: Colors.white,
+                  onSelected: (value) async {
+                    if (value == "settings") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Definições em breve")),
+                      );
+                    }
+
+                    if (value == "logout") {
+                      await onLogout();
+                    }
+                  },
+
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: const Color(0xFF0F62FE),
+                    child: Text(
+                      controller.profile?.name[0].toUpperCase() ?? "?",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  itemBuilder:
+                      (context) => [
+                        const PopupMenuItem(
+                          value: "settings",
+                          child: Row(
+                            children: [
+                              Icon(Icons.settings_outlined),
+                              SizedBox(width: 12),
+                              Text("Definições"),
+                            ],
+                          ),
+                        ),
+
+                        const PopupMenuDivider(),
+
+                        const PopupMenuItem(
+                          value: "logout",
+                          child: Row(
+                            children: [
+                              Icon(Icons.logout_rounded, color: Colors.red),
+                              SizedBox(width: 12),
+                              Text(
+                                "Terminar Sessão",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                ),
+              ),
+            ],
+          ),
+
           body: pages[controller.selectedTab],
 
           bottomNavigationBar: NavigationBar(
