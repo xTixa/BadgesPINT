@@ -46,12 +46,9 @@ export default function GestaoTickets() {
         ...(filtroPrioridade && { prioridade: filtroPrioridade }),
       });
 
-      const response = await api.get(
-        `/api/tickets?${query}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await api.get(`/api/tickets?${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setTickets(response.data.data);
       setPagination({
@@ -68,12 +65,9 @@ export default function GestaoTickets() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await api.get(
-        "/api/tickets/stats/estatisticas",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await api.get("/api/tickets/stats/estatisticas", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = response.data?.data || {};
       setStats({
         total: data.total || 0,
@@ -81,9 +75,7 @@ export default function GestaoTickets() {
           abertos: data.abertos || 0,
           resolvidos: data.resolvidos || 0,
         },
-        porPrioridade: [
-          { prioridade: "critica", count: data.criticos || 0 },
-        ],
+        porPrioridade: [{ prioridade: "critica", count: data.criticos || 0 }],
       });
     } catch (error) {
       console.error("Erro ao carregar estatísticas:", error);
@@ -101,7 +93,7 @@ export default function GestaoTickets() {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       setTicketSelecionado(null);
@@ -117,12 +109,30 @@ export default function GestaoTickets() {
   const getStatusBadge = (status) => {
     const statusMap = {
       aberto: { className: "bg-blue-100 text-blue-700", label: "🔵 Aberto" },
-      em_analise: { className: "bg-amber-100 text-amber-700", label: "🟡 Em Análise" },
-      resolvido: { className: "bg-emerald-100 text-emerald-700", label: "🟢 Resolvido" },
-      fechado: { className: "bg-slate-100 text-slate-700", label: "⚪ Fechado" },
+      em_analise: {
+        className: "bg-amber-100 text-amber-700",
+        label: "🟡 Em Análise",
+      },
+      resolvido: {
+        className: "bg-emerald-100 text-emerald-700",
+        label: "🟢 Resolvido",
+      },
+      fechado: {
+        className: "bg-slate-100 text-slate-700",
+        label: "⚪ Fechado",
+      },
     };
-    const s = statusMap[status] || { className: "bg-slate-100 text-slate-700", label: status };
-    return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${s.className}`}>{s.label}</span>;
+    const s = statusMap[status] || {
+      className: "bg-slate-100 text-slate-700",
+      label: status,
+    };
+    return (
+      <span
+        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${s.className}`}
+      >
+        {s.label}
+      </span>
+    );
   };
 
   const getPriorityColor = (priority) => {
@@ -140,192 +150,74 @@ export default function GestaoTickets() {
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
-      <div className="mb-8">
-        <h2 className={`flex items-center gap-2 font-bold text-slate-800 ${isMobile ? "text-2xl" : "text-3xl"}`}>
-          <i className="bi bi-ticket text-indigo-500"></i>
-          Gestão de Tickets
-        </h2>
-      </div>
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
-      {stats && (
-        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total</div>
-            <div className="mt-1 text-3xl font-bold text-slate-800">{stats.total}</div>
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold">Gestão de Tickets</h1>
+
+            <p className="mt-2 text-white/80">
+              Monitoriza pedidos de suporte, acompanha estados e responde aos
+              utilizadores.
+            </p>
           </div>
+        </div>
 
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Abertos</div>
-            <div className="mt-1 text-3xl font-bold text-blue-600">{stats.porStatus?.abertos ?? stats.abertos ?? 0}</div>
-          </div>
+        {stats && (
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Total
+              </div>
+              <div className="mt-1 text-3xl font-bold text-slate-800">
+                {stats.total}
+              </div>
+            </div>
 
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resolvidos</div>
-            <div className="mt-1 text-3xl font-bold text-emerald-600">{stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}</div>
-          </div>
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Abertos
+              </div>
+              <div className="mt-1 text-3xl font-bold text-blue-600">
+                {stats.porStatus?.abertos ?? stats.abertos ?? 0}
+              </div>
+            </div>
 
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Críticos</div>
-            <div className="mt-1 text-3xl font-bold text-rose-600">
-              {stats.porPrioridade?.find((p) => p.prioridade === "critica")?.count ?? stats.criticos ?? 0}
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Resolvidos
+              </div>
+              <div className="mt-1 text-3xl font-bold text-emerald-600">
+                {stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Críticos
+              </div>
+              <div className="mt-1 text-3xl font-bold text-rose-600">
+                {stats.porPrioridade?.find((p) => p.prioridade === "critica")
+                  ?.count ??
+                  stats.criticos ??
+                  0}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-      <div className="mb-8 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-              value={filtroStatus}
-              onChange={(e) => {
-                setFiltroStatus(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Todos os Status</option>
-              {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="md:col-span-5">
-            <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-              value={filtroPrioridade}
-              onChange={(e) => {
-                setFiltroPrioridade(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Todas as Prioridades</option>
-              {prioridadeOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="md:col-span-2">
-            <button
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-              onClick={() => {
-                setFiltroStatus("");
-                setFiltroPrioridade("");
-                setPage(1);
-              }}
-            >
-              <i className="bi bi-arrow-clockwise"></i> Limpar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-        {!isMobile ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-4 py-3">Título</th>
-                  <th className="px-4 py-3">Utilizador</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Prioridade</th>
-                  <th className="px-4 py-3">Data</th>
-                  <th className="px-4 py-3">Ação</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {tickets.map((ticket, idx) => (
-                  <tr key={ticket.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
-                    <td className="px-4 py-3 font-semibold text-slate-800">{ticket.titulo}</td>
-                    <td className="px-4 py-3 text-slate-700">{ticket.utilizador?.name}</td>
-                    <td className="px-4 py-3">{getStatusBadge(ticket.status)}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
-                        style={{
-                          backgroundColor: `${getPriorityColor(ticket.prioridade)}20`,
-                          color: getPriorityColor(ticket.prioridade),
-                        }}
-                      >
-                        {ticket.prioridade}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-500">
-                      {new Date(ticket.createdAt).toLocaleDateString("pt-PT")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        className="inline-flex items-center gap-1 rounded-lg bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-800"
-                        onClick={() => {
-                          setTicketSelecionado(ticket);
-                          setNovoStatus(ticket.status);
-                        }}
-                      >
-                        <i className="bi bi-pencil"></i> Editar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="space-y-3 p-4">
-            {tickets.length === 0 ? (
-              <p className="py-6 text-center text-sm text-slate-500">Sem tickets para mostrar.</p>
-            ) : (
-              tickets.map((ticket) => (
-                <button
-                  key={ticket.id}
-                  type="button"
-                  className="w-full rounded-xl border border-slate-200 p-3 text-left"
-                  onClick={() => {
-                    setTicketSelecionado(ticket);
-                    setNovoStatus(ticket.status);
-                  }}
-                >
-                  <p className="font-semibold text-slate-800">{ticket.titulo}</p>
-                  <p className="mt-1 text-xs text-slate-500">{ticket.utilizador?.name}</p>
-                  <div className="mt-2 flex items-center justify-between">
-                    {getStatusBadge(ticket.status)}
-                    <span className="text-xs text-slate-500">{new Date(ticket.createdAt).toLocaleDateString("pt-PT")}</span>
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
         )}
-      </div>
 
-      {ticketSelecionado && (
-        <div
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4"
-          onClick={() => setTicketSelecionado(null)}
-        >
-          <div
-            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 sm:p-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="mb-6 text-2xl font-bold text-slate-800">
-              {ticketSelecionado.titulo}
-            </h3>
-
-            <div className="mb-5">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">
-                Novo Status
-              </label>
+        <div className="mb-8 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
+            <div className="md:col-span-5">
               <select
-                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                value={novoStatus}
-                onChange={(e) => setNovoStatus(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                value={filtroStatus}
+                onChange={(e) => {
+                  setFiltroStatus(e.target.value);
+                  setPage(1);
+                }}
               >
+                <option value="">Todos os Status</option>
                 {statusOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -334,36 +226,216 @@ export default function GestaoTickets() {
               </select>
             </div>
 
-            <div className="mb-5">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">
-                Resposta/Notas do Administrador
-              </label>
-              <textarea
-                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                value={respostaAdmin}
-                onChange={(e) => setRespostaAdmin(e.target.value)}
-                placeholder="Escreva sua resposta aqui..."
-                rows={6}
-              />
+            <div className="md:col-span-5">
+              <select
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                value={filtroPrioridade}
+                onChange={(e) => {
+                  setFiltroPrioridade(e.target.value);
+                  setPage(1);
+                }}
+              >
+                <option value="">Todas as Prioridades</option>
+                {prioridadeOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="flex gap-2">
+            <div className="md:col-span-2">
               <button
-                className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
-                onClick={handleAtualizarTicket}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                onClick={() => {
+                  setFiltroStatus("");
+                  setFiltroPrioridade("");
+                  setPage(1);
+                }}
               >
-                <i className="bi bi-check"></i> Atualizar
-              </button>
-              <button
-                className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                onClick={() => setTicketSelecionado(null)}
-              >
-                Cancelar
+                <i className="bi bi-arrow-clockwise"></i> Limpar
               </button>
             </div>
           </div>
         </div>
-      )}
+
+        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+          {!isMobile ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200 text-sm">
+                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3">Título</th>
+                    <th className="px-4 py-3">Utilizador</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Prioridade</th>
+                    <th className="px-4 py-3">Data</th>
+                    <th className="px-4 py-3">Ação</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {tickets.map((ticket, idx) => (
+                    <tr
+                      key={ticket.id}
+                      className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}
+                    >
+                      <td className="px-4 py-3 font-semibold text-slate-800">
+                        {ticket.titulo}
+                      </td>
+                      <td className="px-4 py-3 text-slate-700">
+                        {ticket.utilizador?.name}
+                      </td>
+                      <td className="px-4 py-3">
+                        {getStatusBadge(ticket.status)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                          style={{
+                            backgroundColor: `${getPriorityColor(ticket.prioridade)}20`,
+                            color: getPriorityColor(ticket.prioridade),
+                          }}
+                        >
+                          {ticket.prioridade}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-slate-500">
+                        {new Date(ticket.createdAt).toLocaleDateString("pt-PT")}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          className="inline-flex items-center gap-1 rounded-lg bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-800"
+                          onClick={() => {
+                            setTicketSelecionado(ticket);
+                            setNovoStatus(ticket.status);
+                          }}
+                        >
+                          <i className="bi bi-pencil"></i> Editar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="space-y-3 p-4">
+              {tickets.length === 0 ? (
+                <p className="py-6 text-center text-sm text-slate-500">
+                  Sem tickets para mostrar.
+                </p>
+              ) : (
+                tickets.map((ticket) => (
+                  <button
+                    key={ticket.id}
+                    type="button"
+                    className="w-full rounded-xl border border-slate-200 p-3 text-left"
+                    onClick={() => {
+                      setTicketSelecionado(ticket);
+                      setNovoStatus(ticket.status);
+                    }}
+                  >
+                    <p className="font-semibold text-slate-800">
+                      {ticket.titulo}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {ticket.utilizador?.name}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between">
+                      {getStatusBadge(ticket.status)}
+                      <span className="text-xs text-slate-500">
+                        {new Date(ticket.createdAt).toLocaleDateString("pt-PT")}
+                      </span>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+
+          <div className="mt-6 flex justify-center gap-2">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+              className="rounded-xl border border-slate-200 px-4 py-2 disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <span className="px-4 py-2 font-medium">
+              {page} / {pagination.pages}
+            </span>
+
+            <button
+              disabled={page >= pagination.pages}
+              onClick={() => setPage(page + 1)}
+              className="rounded-xl border border-slate-200 px-4 py-2 disabled:opacity-50"
+            >
+              Seguinte
+            </button>
+          </div>
+        </div>
+
+        {ticketSelecionado && (
+          <div
+            className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4"
+            onClick={() => setTicketSelecionado(null)}
+          >
+            <div
+              className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 sm:p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="mb-6 text-2xl font-bold text-slate-800">
+                {ticketSelecionado.titulo}
+              </h3>
+
+              <div className="mb-5">
+                <label className="mb-1 block text-sm font-semibold text-slate-700">
+                  Novo Status
+                </label>
+                <select
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  value={novoStatus}
+                  onChange={(e) => setNovoStatus(e.target.value)}
+                >
+                  {statusOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-5">
+                <label className="mb-1 block text-sm font-semibold text-slate-700">
+                  Resposta/Notas do Administrador
+                </label>
+                <textarea
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  value={respostaAdmin}
+                  onChange={(e) => setRespostaAdmin(e.target.value)}
+                  placeholder="Escreva sua resposta aqui..."
+                  rows={6}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
+                  onClick={handleAtualizarTicket}
+                >
+                  <i className="bi bi-check"></i> Atualizar
+                </button>
+                <button
+                  className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                  onClick={() => setTicketSelecionado(null)}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

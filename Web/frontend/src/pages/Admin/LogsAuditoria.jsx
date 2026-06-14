@@ -80,7 +80,7 @@ export default function LogsAuditoria() {
     try {
       const token = localStorage.getItem("token");
       const query = new URLSearchParams(filters);
-      
+
       const res = await api.get(`/api/audit-logs/stats?${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -126,9 +126,9 @@ export default function LogsAuditoria() {
       log.ipAddress,
     ]);
 
-    return (
-      [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n")
-    );
+    return [headers, ...rows]
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
   };
 
   const downloadCSV = (csv, filename) => {
@@ -146,7 +146,9 @@ export default function LogsAuditoria() {
       warning: "bg-amber-100 text-amber-700",
     };
     return (
-      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${tone[option?.value] || "bg-slate-100 text-slate-700"}`}>
+      <span
+        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${tone[option?.value] || "bg-slate-100 text-slate-700"}`}
+      >
         {option?.label || status}
       </span>
     );
@@ -167,7 +169,10 @@ export default function LogsAuditoria() {
   if (loading && logs.length === 0) {
     return (
       <div className={`text-center ${isMobile ? "p-4" : "p-8"}`}>
-        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500" role="status">
+        <div
+          className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500"
+          role="status"
+        >
           <span className="sr-only">Carregando...</span>
         </div>
       </div>
@@ -176,53 +181,66 @@ export default function LogsAuditoria() {
 
   return (
     <div className={`${isMobile ? "p-4" : isTablet ? "p-6" : "p-8"}`}>
-      <div className="mb-8">
-        <h3 className={`flex items-center gap-2 font-bold text-slate-800 ${isMobile ? "text-2xl" : "text-3xl"}`}>
-          <i className={`bi bi-clock-history text-slate-500 ${isMobile ? "text-xl" : "text-3xl"}`}></i>
-          {isMobile ? "Logs" : "Logs de Auditoria"}
-        </h3>
-        <p className={`mb-0 text-slate-500 ${isMobile ? "text-sm" : "text-base"}`}>
-          {isMobile ? "Histórico de ações" : "Histórico completo de todas as ações realizadas na plataforma"}
-        </p>
+      <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+        <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold">Logs de Auditoria</h1>
+
+          <p className="mt-2 text-white/80">
+            Monitorização completa das ações realizadas na plataforma.
+          </p>
+        </div>
       </div>
 
       {stats && (
         <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Total de Logs</div>
-            <div className="text-3xl font-bold text-slate-800">{stats.totalLogs}</div>
+          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Total de Logs
+            </div>
+            <div className="text-3xl font-bold text-slate-800">
+              {stats.totalLogs}
+            </div>
           </div>
 
-          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Sucessos</div>
+          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Sucessos
+            </div>
             <div className="text-3xl font-bold text-emerald-600">
-              {stats.logsByStatus?.find((s) => s.status === "success")?.count || 0}
+              {stats.logsByStatus?.find((s) => s.status === "success")?.count ||
+                0}
             </div>
           </div>
 
-          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Falhas</div>
+          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Falhas
+            </div>
             <div className="text-3xl font-bold text-rose-600">
-              {stats.logsByStatus?.find((s) => s.status === "failure")?.count || 0}
+              {stats.logsByStatus?.find((s) => s.status === "failure")?.count ||
+                0}
             </div>
           </div>
 
-          <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Avisos</div>
+          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Avisos
+            </div>
             <div className="text-3xl font-bold text-amber-500">
-              {stats.logsByStatus?.find((s) => s.status === "warning")?.count || 0}
+              {stats.logsByStatus?.find((s) => s.status === "warning")?.count ||
+                0}
             </div>
           </div>
         </div>
       )}
 
-      <div className="mb-8 rounded-xl bg-white p-4 shadow-sm sm:p-6">
+      <div className="mb-8 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] sm:p-6">
         <h5 className="mb-4 text-lg font-semibold text-slate-800">Filtros</h5>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm text-slate-500">
-              Ação
-            </label>
+            <label className="mb-2 block text-sm text-slate-500">Ação</label>
             <select
               name="action"
               value={filters.action}
@@ -258,9 +276,7 @@ export default function LogsAuditoria() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-500">
-              Status
-            </label>
+            <label className="mb-2 block text-sm text-slate-500">Status</label>
             <select
               name="status"
               value={filters.status}
@@ -277,92 +293,102 @@ export default function LogsAuditoria() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-500">
-              Ações
-            </label>
+            <label className="mb-2 block text-sm text-slate-500">Ações</label>
             <div className={`flex gap-2 ${isMobile ? "flex-col" : "flex-row"}`}>
               <button
                 onClick={handleClearFilters}
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-700 hover:bg-slate-100"
               >
-                {isMobile ? "Limpar" : (<><i className="bi bi-arrow-clockwise"></i> Limpar</>)}
+                {isMobile ? (
+                  "Limpar"
+                ) : (
+                  <>
+                    <i className="bi bi-arrow-clockwise"></i> Limpar
+                  </>
+                )}
               </button>
               <button
                 onClick={handleExport}
-                className="flex-1 rounded-lg border border-emerald-300 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                className="rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 font-semibold text-emerald-700 hover:bg-emerald-100"
               >
-                {isMobile ? "CSV" : (<><i className="bi bi-download"></i> Exportar</>)}
+                {isMobile ? (
+                  "CSV"
+                ) : (
+                  <>
+                    <i className="bi bi-download"></i> Exportar
+                  </>
+                )}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
         {!isMobile ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
-              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <th className="px-4 py-3">Data</th>
-                <th className="px-4 py-3">
-                  Utilizador
-                </th>
-                <th className="px-4 py-3">Ação</th>
-                <th className="px-4 py-3">Entidade</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">
-                  Descrição
-                </th>
-                <th className="px-4 py-3">IP</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              {logs.length > 0 ? (
-                logs.map((log, index) => (
-                  <tr
-                    key={log.id}
-                    className={index % 2 === 0 ? "bg-white" : "bg-slate-50/50"}
-                  >
-                    <td className="px-4 py-3 text-sm text-slate-800">
-                      {new Date(log.createdAt).toLocaleString("pt-PT")}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-slate-800">
-                      {log.user?.name || "Desconhecido"}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <span className="mr-2">
-                        <i className={`bi ${getActionIcon(log.action)}`}></i>
-                      </span>
-                      {log.action}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-slate-800">
-                      {log.entity}
-                    </td>
-                    <td className="px-4 py-3">{getStatusBadge(log.status)}</td>
-                    <td
-                      className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap px-4 py-3 text-sm text-slate-500"
-                      title={log.description}
+              <thead className="bg-[#0F62FE]/5">
+                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="px-4 py-3">Data</th>
+                  <th className="px-4 py-3">Utilizador</th>
+                  <th className="px-4 py-3">Ação</th>
+                  <th className="px-4 py-3">Entidade</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Descrição</th>
+                  <th className="px-4 py-3">IP</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {logs.length > 0 ? (
+                  logs.map((log, index) => (
+                    <tr
+                      key={log.id}
+                      className={
+                        index % 2 === 0 ? "bg-white" : "bg-slate-50/50"
+                      }
                     >
-                      {log.description || "-"}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-500">
-                      {log.ipAddress}
+                      <td className="px-4 py-3 text-sm text-slate-800">
+                        {new Date(log.createdAt).toLocaleString("pt-PT")}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-800">
+                        {log.user?.name || "Desconhecido"}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <span className="mr-2">
+                          <i className={`bi ${getActionIcon(log.action)}`}></i>
+                        </span>
+                        {log.action}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-800">
+                        {log.entity}
+                      </td>
+                      <td className="px-4 py-3">
+                        {getStatusBadge(log.status)}
+                      </td>
+                      <td
+                        className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap px-4 py-3 text-sm text-slate-500"
+                        title={log.description}
+                      >
+                        {log.description || "-"}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-slate-500">
+                        {log.ipAddress}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="px-4 py-8 text-center text-sm text-slate-500"
+                    >
+                      Nenhum log encontrado
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="7"
-                    className="px-4 py-8 text-center text-sm text-slate-500"
-                  >
-                    Nenhum log encontrado
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div className="p-8 text-center text-sm text-slate-500">
@@ -393,24 +419,26 @@ export default function LogsAuditoria() {
                   </button>
                 </li>
 
-                {Array.from({ length: Math.min(5, pagination.pages) }).map((_, i) => {
-                  const pageNum = page > 3 ? page - 2 + i : i + 1;
-                  if (pageNum > pagination.pages) return null;
-                  return (
-                    <li key={pageNum}>
-                      <button
-                        className={`rounded-lg border px-3 py-1.5 text-sm transition ${
-                          page === pageNum
-                            ? "border-indigo-700 bg-indigo-700 text-white"
-                            : "border-slate-300 text-slate-700 hover:bg-slate-100"
-                        }`}
-                        onClick={() => setPage(pageNum)}
-                      >
-                        {pageNum}
-                      </button>
-                    </li>
-                  );
-                })}
+                {Array.from({ length: Math.min(5, pagination.pages) }).map(
+                  (_, i) => {
+                    const pageNum = page > 3 ? page - 2 + i : i + 1;
+                    if (pageNum > pagination.pages) return null;
+                    return (
+                      <li key={pageNum}>
+                        <button
+                          className={`rounded-lg border px-3 py-1.5 text-sm transition ${
+                            page === pageNum
+                              ? "border-[#0F62FE] bg-[#0F62FE] text-white"
+                              : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                          }`}
+                          onClick={() => setPage(pageNum)}
+                        >
+                          {pageNum}
+                        </button>
+                      </li>
+                    );
+                  },
+                )}
 
                 <li>
                   <button
@@ -433,7 +461,8 @@ export default function LogsAuditoria() {
               </ul>
             </nav>
             <p className="mt-4 text-center text-sm text-slate-500">
-              Página {page} de {pagination.pages} • Total: {pagination.total} registos
+              Página {page} de {pagination.pages} • Total: {pagination.total}{" "}
+              registos
             </p>
           </div>
         )}

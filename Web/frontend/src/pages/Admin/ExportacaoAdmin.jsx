@@ -11,9 +11,6 @@ export default function ExportacaoAdmin() {
   const [lastExport, setLastExport] = useState(null);
   const [dateRange, setDateRange] = useState("ultimo-mes");
   const [error, setError] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState(null);
 
   const getDateRange = () => {
     const end = new Date();
@@ -82,28 +79,32 @@ export default function ExportacaoAdmin() {
       const token = localStorage.getItem("token");
       const { start, end } = getDateRange();
 
-      const endpoint = format === "excel" 
-        ? "/api/admin/export/excel"
-        : "/api/admin/export/pdf";
+      const endpoint =
+        format === "excel"
+          ? "/api/admin/export/excel"
+          : "/api/admin/export/pdf";
 
       const response = await api.post(
         endpoint,
         {
           scope,
           startDate: start.toISOString(),
-          endDate: end.toISOString()
+          endDate: end.toISOString(),
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob"
-        }
+          responseType: "blob",
+        },
       );
 
       // Criar download
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`);
+      link.setAttribute(
+        "download",
+        `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`,
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -113,263 +114,214 @@ export default function ExportacaoAdmin() {
         formato: format,
         abrangencia: scope,
         data: new Date().toLocaleString("pt-PT"),
-        ficheiro: `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`
+        ficheiro: `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`,
       });
-
     } catch (err) {
       console.error("Erro na exportação:", err);
-      setError(err.response?.data?.message || "Erro ao exportar dados. Tente novamente.");
+      setError(
+        err.response?.data?.message ||
+          "Erro ao exportar dados. Tente novamente.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const cards = [
-    { title: "Tudo", desc: "Todos os dados disponíveis", icon: "bi-database-fill", value: "todos" },
-    { title: "Utilizadores", desc: "Dados completos e perfis", icon: "bi-people-fill", value: "users" },
-    { title: "Badges", desc: "Catálogo e requisitos", icon: "bi-award-fill", value: "badges" },
-    { title: "Pedidos", desc: "Fluxos de aprovação", icon: "bi-hourglass-split", value: "pedidos" },
+    {
+      title: "Tudo",
+      desc: "Todos os dados disponíveis",
+      icon: "bi-database-fill",
+      value: "todos",
+    },
+    {
+      title: "Utilizadores",
+      desc: "Dados completos e perfis",
+      icon: "bi-people-fill",
+      value: "users",
+    },
+    {
+      title: "Badges",
+      desc: "Catálogo e requisitos",
+      icon: "bi-award-fill",
+      value: "badges",
+    },
+    {
+      title: "Pedidos",
+      desc: "Fluxos de aprovação",
+      icon: "bi-hourglass-split",
+      value: "pedidos",
+    },
   ];
 
   const { start: previewStart, end: previewEnd } = getDateRange();
   const previewFile = `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`;
-
-  const fetchPreview = async () => {
-    setPreviewLoading(true);
-    setPreviewError(null);
-    try {
-      const token = localStorage.getItem("token");
-      const { start, end } = getDateRange();
-
-      const response = await api.post(
-        "/api/admin/export/preview",
-        {
-          scope,
-          startDate: start.toISOString(),
-          endDate: end.toISOString()
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setPreview(response.data);
-    } catch (err) {
-      console.error("Erro na pré-visualização:", err);
-      setPreviewError("Não foi possível obter a pré-visualização.");
-    } finally {
-      setPreviewLoading(false);
-    }
-  };
-
-  const renderTable = (columns, rows) => (
-    <div className="overflow-x-auto rounded-xl border border-slate-200">
-      <table className="min-w-full divide-y divide-slate-200 text-sm">
-        <thead className="bg-slate-100 text-slate-700">
-          <tr>
-            {columns.map((c, idx) => (
-              <th key={idx} className="px-3 py-2 text-left font-semibold">{c}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-          {rows.map((r, idx) => (
-            <tr key={idx}>
-              {r.map((cell, i) => (
-                <td key={i} className="px-3 py-2">{cell}</td>
-              ))}
-            </tr>
-          ))}
-          {!rows.length && (
-            <tr>
-              <td colSpan={columns.length} className="px-3 py-4 text-slate-500">
-                Sem dados para este período.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
 
   return (
     <div className="flex min-h-screen bg-slate-100">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main
-        className={`w-full px-4 pb-6 pt-4 transition-all sm:px-5 md:px-6 lg:pt-6 ${collapsed ? "lg:ml-[80px]" : "lg:ml-[250px]"}`}
+        className={`w-full px-4 pb-6 pt-4 transition-all sm:px-5 md:px-6 lg:pt-6 ${
+          collapsed ? "lg:ml-[80px]" : "lg:ml-[250px]"
+        }`}
       >
-        <div className="mb-5">
-          <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
-            <i className="bi bi-file-earmark-arrow-down text-emerald-600" />
-            Exportação de Dados
-          </h3>
-          <p className="mt-1 text-sm text-slate-500">Gerar relatórios para Excel ou PDF com um clique.</p>
+        {/* HERO */}
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold">Exportação de Dados</h1>
+
+            <p className="mt-2 text-white/80">
+              Exporta utilizadores, badges e pedidos em Excel ou PDF.
+            </p>
+          </div>
         </div>
 
-        <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-          <h6 className="mb-1 text-sm font-semibold text-slate-900 sm:text-base">Passo 1 · Escolhe o formato</h6>
-          <p className="mb-3 text-xs text-slate-500 sm:text-sm">Excel para análise, PDF para relatório pronto a partilhar.</p>
+        {/* STATS */}
+        <div className="mb-8 grid gap-4 md:grid-cols-4">
+          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <i className="bi bi-people-fill text-2xl text-[#0F62FE]"></i>
+            <h3 className="mt-2 text-3xl font-bold text-slate-900">248</h3>
+            <p className="text-sm text-slate-500">Utilizadores</p>
+          </div>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:max-w-md">
+          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <i className="bi bi-award-fill text-2xl text-amber-500"></i>
+            <h3 className="mt-2 text-3xl font-bold text-slate-900">87</h3>
+            <p className="text-sm text-slate-500">Badges</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <i className="bi bi-hourglass-split text-2xl text-emerald-600"></i>
+            <h3 className="mt-2 text-3xl font-bold text-slate-900">14</h3>
+            <p className="text-sm text-slate-500">Pedidos</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <i className="bi bi-file-earmark-arrow-down text-2xl text-purple-600"></i>
+            <h3 className="mt-2 text-3xl font-bold text-slate-900">36</h3>
+            <p className="text-sm text-slate-500">Exportações</p>
+          </div>
+        </div>
+
+        {/* FORMATO */}
+        <section className="mb-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <h2 className="mb-4 text-xl font-bold text-slate-900">
+            Formato de Exportação
+          </h2>
+
+          <div className="grid gap-4 md:grid-cols-2">
             <button
               type="button"
               onClick={() => setFormat("excel")}
-              className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+              className={`rounded-2xl border p-5 text-left transition ${
                 format === "excel"
-                  ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                  : "border-slate-300 bg-white text-slate-700 hover:border-emerald-400"
+                  ? "border-[#0F62FE] bg-[#0F62FE]/5 ring-2 ring-[#0F62FE]"
+                  : "border-slate-200 hover:border-[#0F62FE]/40"
               }`}
             >
-              Excel
+              <i className="bi bi-file-earmark-excel text-2xl text-emerald-600"></i>
+
+              <h3 className="mt-3 font-semibold text-slate-900">
+                Excel (.xlsx)
+              </h3>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Ideal para análise e tratamento de dados.
+              </p>
             </button>
+
             <button
               type="button"
               onClick={() => setFormat("pdf")}
-              className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+              className={`rounded-2xl border p-5 text-left transition ${
                 format === "pdf"
-                  ? "border-rose-600 bg-rose-50 text-rose-700"
-                  : "border-slate-300 bg-white text-slate-700 hover:border-rose-400"
+                  ? "border-[#0F62FE] bg-[#0F62FE]/5 ring-2 ring-[#0F62FE]"
+                  : "border-slate-200 hover:border-[#0F62FE]/40"
               }`}
             >
-              PDF
+              <i className="bi bi-file-earmark-pdf text-2xl text-rose-600"></i>
+
+              <h3 className="mt-3 font-semibold text-slate-900">PDF (.pdf)</h3>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Ideal para relatórios e auditorias.
+              </p>
             </button>
           </div>
         </section>
 
-        <section className="mb-4">
-          <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <h6 className="text-sm font-semibold text-slate-900 sm:text-base">Passo 2 · O que queres exportar?</h6>
-            <span className="text-xs text-slate-500 sm:text-sm">Âmbito atual: {getScopeLabel(scope)}</span>
-          </div>
+        {/* ÂMBITO */}
+        <section className="mb-6">
+          <h2 className="mb-4 text-xl font-bold text-slate-900">
+            Dados a Exportar
+          </h2>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {cards.map((card) => (
               <button
                 key={card.value}
                 type="button"
-                className={`rounded-2xl bg-white p-4 text-left shadow-sm transition hover:shadow-md ${
-                  scope === card.value ? "ring-2 ring-emerald-500" : "ring-1 ring-slate-200"
-                }`}
                 onClick={() => setScope(card.value)}
+                className={`rounded-3xl bg-white p-5 text-left transition ${
+                  scope === card.value
+                    ? "ring-2 ring-[#0F62FE] shadow-lg"
+                    : "shadow-[0_8px_30px_rgba(15,98,254,0.08)] hover:shadow-lg"
+                }`}
               >
-                <div className="mb-2 flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                    <i className={`bi ${card.icon}`}></i>
-                  </div>
-                  <h6 className="m-0 text-sm font-semibold text-slate-900">{card.title}</h6>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
+                  <i className={`bi ${card.icon} text-xl text-[#0F62FE]`}></i>
                 </div>
-                <p className="m-0 text-xs text-slate-500 sm:text-sm">{card.desc}</p>
+
+                <h3 className="font-semibold text-slate-900">{card.title}</h3>
+
+                <p className="mt-1 text-sm text-slate-500">{card.desc}</p>
               </button>
             ))}
           </div>
         </section>
 
-        <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-          <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Passo 3 · Intervalo temporal</h6>
+        {/* PERÍODO */}
+        <section className="mb-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <h2 className="mb-4 text-xl font-bold text-slate-900">Período</h2>
 
-          <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm text-slate-700">
-            <div className="mb-1 flex items-center gap-2 font-semibold text-sky-900">
-              <i className="bi bi-info-circle"></i>
-              Resumo
-            </div>
-            <div className="text-xs sm:text-sm">
-              Formato: <strong>{format.toUpperCase()}</strong> · Âmbito: <strong>{getScopeLabel(scope)}</strong> · Período: <strong>{getRangeLabel(dateRange)}</strong>
-            </div>
-            <div className="mt-1 text-xs text-slate-500 sm:text-sm">
-              Datas: {previewStart.toLocaleDateString("pt-PT")} → {previewEnd.toLocaleDateString("pt-PT")}
-            </div>
-            <div className="text-xs text-slate-500 sm:text-sm">Ficheiro: {previewFile}</div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Intervalo temporal</label>
-              <select
-                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none ring-emerald-500 focus:ring-2"
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-              >
-                <option value="ultima-semana">Última semana</option>
-                <option value="ultimo-mes">Último mês</option>
-                <option value="ultimo-trimestre">Último trimestre</option>
-                <option value="ano-atual">Ano atual</option>
-              </select>
-            </div>
-          </div>
+          <select
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
+            value={dateRange}
+            onChange={(e) => setDateRange(e.target.value)}
+          >
+            <option value="ultima-semana">Última semana</option>
+            <option value="ultimo-mes">Último mês</option>
+            <option value="ultimo-trimestre">Último trimestre</option>
+            <option value="ano-atual">Ano atual</option>
+          </select>
 
           {error && (
-            <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
-              <i className="bi bi-exclamation-triangle mr-2"></i>
+            <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-700">
               {error}
             </div>
           )}
 
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+          <div className="mt-6 flex justify-end">
             <button
-              className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              onClick={() => {
-                setLastExport(null);
-                setError(null);
-              }}
-            >
-              Limpar histórico
-            </button>
-
-            <button
-              className="rounded-xl border border-sky-300 px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-60"
-              onClick={fetchPreview}
-              disabled={previewLoading}
-            >
-              {previewLoading ? "A carregar..." : "Ver pré-visualização"}
-            </button>
-
-            <button
-              className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={loading}
               onClick={handleExport}
+              disabled={loading}
+              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] disabled:opacity-50"
             >
-              {loading ? "A gerar..." : "Exportar"}
+              {loading ? "A gerar..." : "Exportar Dados"}
             </button>
           </div>
         </section>
 
         {lastExport && (
-          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-700">
             <i className="bi bi-check-circle-fill mr-2"></i>
-            Exportação pronta ({lastExport.formato.toUpperCase()}) | Âmbito: {lastExport.abrangencia} | Ficheiro: {lastExport.ficheiro} | {lastExport.data}
+            Exportação concluída com sucesso.
           </div>
-        )}
-
-        {previewError && (
-          <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
-            <i className="bi bi-exclamation-triangle mr-2"></i>
-            {previewError}
-          </div>
-        )}
-
-        {preview && (
-          <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-            <h6 className="mb-3 text-sm font-semibold text-slate-900 sm:text-base">Pré-visualização (amostra)</h6>
-
-            {preview.sections ? (
-              <div className="space-y-4">
-                {preview.sections.map((section, idx) => (
-                  <div key={idx}>
-                    <div className="mb-2 text-sm font-semibold text-slate-800">{section.title}</div>
-                    {renderTable(section.columns, section.rows)}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <>
-                <div className="mb-2 text-sm font-semibold text-slate-800">{preview.title || getScopeLabel(scope)}</div>
-                {renderTable(preview.columns || [], preview.rows || [])}
-              </>
-            )}
-          </section>
         )}
       </main>
     </div>
   );
 }
-
-

@@ -1,14 +1,25 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import React, { useState } from "react";
-import { useTheme } from "../../context/ThemeContext";
-import { useLanguage } from "../../context/LanguageContext";
 
 export default function Configuracoes() {
-  const [passwordData, setPasswordData] = useState({ newPassword: "", confirmPassword: "" });
-  const [gamificationData, setGamificationData] = useState({ pointsPerBadge: 100, canExpire: false, defaultSLA: 7 });
-  const [notificationSettings, setNotificationSettings] = useState({ email: true, push: false, teams: false });
-  const [privacySettings, setPrivacySettings] = useState({ publicGallery: true, rgpdText: "" });
-  const [uiSettings, setUISettings] = useState({ language: "pt", theme: "light" });
+  const [passwordData, setPasswordData] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [gamificationData, setGamificationData] = useState({
+    pointsPerBadge: 100,
+    canExpire: false,
+    defaultSLA: 7,
+  });
+  const [notificationSettings, setNotificationSettings] = useState({
+    email: true,
+    push: false,
+    teams: false,
+  });
+  const [privacySettings, setPrivacySettings] = useState({
+    publicGallery: true,
+    rgpdText: "",
+  });
   const [activeTab, setActiveTab] = useState("security");
 
   const handleSave = () => {
@@ -17,368 +28,212 @@ export default function Configuracoes() {
 
   const tabs = [
     { id: "security", label: "Segurança", icon: "bi-shield-lock" },
-    { id: "users", label: "Utilizadores", icon: "bi-people" },
-    { id: "content", label: "Conteúdo", icon: "bi-archive" },
     { id: "gamification", label: "Gamificação", icon: "bi-trophy" },
     { id: "notifications", label: "Notificações", icon: "bi-bell" },
     { id: "privacy", label: "RGPD", icon: "bi-file-lock" },
-    { id: "interface", label: "Interface", icon: "bi-palette" },
   ];
+
+  const inputClass =
+    "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10";
+
+  const cardClass = "rounded-3xl border border-slate-200 bg-slate-50 p-6";
 
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
-      
+
       <main className="admin-main">
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          {/* Header */}
-          <div style={{ marginBottom: "2rem" }}>
-            <h2 style={{ fontWeight: "700", color: "#16558C", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <i className="bi bi-gear-fill" style={{ color: "#16558C" }}></i>
-              Configurações do Sistema
-            </h2>
-            <p style={{ color: "#04C4D9", fontSize: "0.95rem" }}>Gerir preferências e definições da plataforma</p>
+        <div className="mx-auto max-w-7xl">
+          <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+            <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+
+            <div className="relative z-10">
+              <h1 className="text-3xl font-bold">Configurações do Sistema</h1>
+
+              <p className="mt-2 text-white/80">
+                Gere segurança, notificações, gamificação e preferências globais
+                da plataforma.
+              </p>
+            </div>
           </div>
 
           {/* Tabs Navigation */}
-          <div style={{ 
-            backgroundColor: "white", 
-            borderRadius: "12px 12px 0 0", 
-            padding: "1rem 1.5rem",
-            boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-            borderBottom: "2px solid #F2F2F2",
-            display: "flex",
-            gap: "0.5rem",
-            overflowX: "auto"
-          }}>
-            {tabs.map(tab => (
+          <div className="mb-8 flex flex-wrap gap-3">
+            {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                style={{
-                  padding: "0.75rem 1.25rem",
-                  border: "none",
-                  background: activeTab === tab.id ? "#16558C" : "transparent",
-                  color: activeTab === tab.id ? "white" : "#04C4D9",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontWeight: activeTab === tab.id ? "600" : "500",
-                  fontSize: "0.9rem",
-                  transition: "all 0.2s",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  whiteSpace: "nowrap"
-                }}
-                onMouseEnter={(e) => {
-                  if (activeTab !== tab.id) {
-                    e.currentTarget.style.backgroundColor = "#f3f4f6";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeTab !== tab.id) {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }
-                }}
+                className={`flex items-center gap-2 rounded-2xl px-5 py-3 font-medium transition-all duration-300
+        ${
+          activeTab === tab.id
+            ? "bg-[#0F62FE] text-white shadow-lg"
+            : "bg-white text-slate-600 shadow-sm hover:bg-slate-50"
+        }`}
               >
                 <i className={tab.icon}></i>
-                <span>{tab.label}</span>
+                {tab.label}
               </button>
             ))}
           </div>
 
           {/* Content Area */}
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: "0 0 12px 12px",
-            padding: "2rem",
-            boxShadow: "0 2px 8px rgba(44, 62, 90, 0.08)",
-            minHeight: "500px"
-          }}>
-            
+          <div className="rounded-3xl bg-white p-8 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             {/* Conta e Segurança */}
             {activeTab === "security" && (
-              <div>
-                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-shield-lock mr-2" style={{ color: "#16558C" }}></i>
-                  Conta e Segurança
-                </h4>
-                
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <div>
-                    <label style={{ display: "block", color: "#16558C", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
-                      Nova Password
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="Digite a nova password"
-                      value={passwordData.newPassword}
-                      onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        border: "1px solid #d4dfe9",
-                        borderRadius: "8px",
-                        fontSize: "0.9rem",
-                        outline: "none"
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = "#16558C"}
-                      onBlur={(e) => e.target.style.borderColor = "#d4dfe9"}
-                    />
+              <div className="space-y-6">
+                <div>
+                  <h3 className="mb-6 flex items-center gap-3 text-xl font-bold text-slate-800">
+                    <i className="bi bi-shield-lock text-[#0F62FE]"></i>
+                    Segurança da Conta
+                  </h3>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-700">
+                        Nova Password
+                      </label>
+
+                      <input
+                        type="password"
+                        placeholder="Digite a nova password"
+                        value={passwordData.newPassword}
+                        onChange={(e) =>
+                          setPasswordData({
+                            ...passwordData,
+                            newPassword: e.target.value,
+                          })
+                        }
+                        className={inputClass}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-700">
+                        Confirmar Password
+                      </label>
+
+                      <input
+                        type="password"
+                        placeholder="Confirme a password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) =>
+                          setPasswordData({
+                            ...passwordData,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                        className={inputClass}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ display: "block", color: "#16558C", fontWeight: "500", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
-                      Confirmar Password
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="Confirme a password"
-                      value={passwordData.confirmPassword}
-                      onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        border: "1px solid #d4dfe9",
-                        borderRadius: "8px",
-                        fontSize: "0.9rem",
-                        outline: "none"
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = "#16558C"}
-                      onBlur={(e) => e.target.style.borderColor = "#d4dfe9"}
-                    />
+
+                  <div className="mt-6">
+                    <button className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-md transition hover:scale-[1.02]">
+                      <i className="bi bi-check-circle me-2"></i>
+                      Alterar Password
+                    </button>
                   </div>
                 </div>
-
-                <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                  <button style={{
-                    padding: "0.75rem 1.5rem",
-                    backgroundColor: "#16558C",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    transition: "all 0.2s"
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#16558C"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#16558C"}>
-                    <i className="bi bi-check-circle mr-2"></i>
-                    Alterar Password
-                  </button>
-                  
-                  <button style={{
-                    padding: "0.75rem 1.5rem",
-                    backgroundColor: "transparent",
-                    color: "#ef4444",
-                    border: "1px solid #ef4444",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    transition: "all 0.2s"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#ef4444";
-                    e.currentTarget.style.color = "white";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "#ef4444";
-                  }}>
-                    <i className="bi bi-box-arrow-right mr-2"></i>
-                    Terminar Todas as Sessões
-                  </button>
-                </div>
               </div>
             )}
-
-            {/* Utilizadores */}
-            {activeTab === "users" && (
-              <div>
-                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-people mr-2" style={{ color: "#16558C" }}></i>
-                  Gestão de Utilizadores
-                </h4>
-                
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-                  {[
-                    { icon: "bi-person-plus", label: "Criar Utilizador", color: "#04C4D9" },
-                    { icon: "bi-person-gear", label: "Gerir Perfis", color: "#16558C" },
-                    { icon: "bi-diagram-3", label: "Service Lines", color: "#04C4D9" },
-                    { icon: "bi-building", label: "Áreas", color: "#16558C" }
-                  ].map((action, idx) => (
-                    <button key={idx} style={{
-                      padding: "1.5rem",
-                      backgroundColor: "white",
-                      border: `2px solid ${action.color}`,
-                      borderRadius: "12px",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "0.75rem"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = action.color;
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.querySelector('i').style.color = "white";
-                      e.currentTarget.querySelector('span').style.color = "white";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "white";
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.querySelector('i').style.color = action.color;
-                      e.currentTarget.querySelector('span').style.color = "#16558C";
-                    }}>
-                      <i className={action.icon} style={{ fontSize: "2rem", color: action.color, transition: "color 0.2s" }}></i>
-                      <span style={{ fontWeight: "600", color: "#16558C", fontSize: "0.9rem", transition: "color 0.2s" }}>{action.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <div style={{ 
-                  marginTop: "2rem", 
-                  padding: "1.5rem", 
-                  backgroundColor: "#F2F2F2", 
-                  borderRadius: "8px",
-                  border: "1px solid #d4dfe9"
-                }}>
-                  <p style={{ color: "#04C4D9", margin: 0, fontSize: "0.9rem" }}>
-                    <i className="bi bi-info-circle mr-2"></i>
-                    Aceda à secção <strong>Gestão de Utilizadores</strong> no menu lateral para operações detalhadas.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Conteúdo (Learning Paths e Badges) */}
-            {activeTab === "content" && (
-              <div>
-                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-archive mr-2" style={{ color: "#16558C" }}></i>
-                  Gestão de Conteúdo
-                </h4>
-                
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
-                  {[
-                    { icon: "bi-diagram-3-fill", label: "Learning Path", color: "#04C4D9" },
-                    { icon: "bi-award-fill", label: "Badge", color: "#16558C" },
-                    { icon: "bi-building", label: "Service Line", color: "#04C4D9" },
-                    { icon: "bi-geo-alt", label: "Área", color: "#16558C" },
-                    { icon: "bi-bar-chart-steps", label: "Nível", color: "#7b9ab4" },
-                    { icon: "bi-list-check", label: "Requisito", color: "#6b8ca0" }
-                  ].map((item, idx) => (
-                    <button key={idx} style={{
-                      padding: "1.25rem",
-                      backgroundColor: "white",
-                      border: `2px solid ${item.color}20`,
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      transition: "all 0.2s"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = item.color;
-                      e.currentTarget.style.borderColor = item.color;
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.querySelector('i').style.color = "white";
-                      e.currentTarget.querySelector('span').style.color = "white";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "white";
-                      e.currentTarget.style.borderColor = `${item.color}20`;
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.querySelector('i').style.color = item.color;
-                      e.currentTarget.querySelector('span').style.color = "#16558C";
-                    }}>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-                        <i className={item.icon} style={{ fontSize: "1.75rem", color: item.color, transition: "color 0.2s" }}></i>
-                        <span style={{ fontWeight: "600", color: "#16558C", fontSize: "0.85rem", transition: "color 0.2s", textAlign: "center" }}>
-                          Novo {item.label}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Gamificação */}
             {activeTab === "gamification" && (
-              <div>
-                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-trophy mr-2" style={{ color: "#16558C" }}></i>
+              <div className="space-y-6">
+                <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
+                  <i className="bi bi-trophy text-[#0F62FE]"></i>
                   Gamificação e Validação
-                </h4>
-                
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-star-fill mr-2" style={{ color: "#fbbf24" }}></i>
-                        Pontos por Badge (padrão)
-                      </label>
-                      <input
-                        type="number"
-                        value={gamificationData.pointsPerBadge}
-                        onChange={(e) => setGamificationData({...gamificationData, pointsPerBadge: e.target.value})}
-                        style={{
-                          width: "100%",
-                          padding: "0.75rem",
-                          border: "1px solid #d4dfe9",
-                          borderRadius: "8px",
-                          fontSize: "0.95rem",
-                          backgroundColor: "white"
-                        }}
-                      />
+                </h3>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <div className="mb-3 flex items-center gap-2">
+                      <i className="bi bi-star-fill text-amber-500"></i>
+
+                      <span className="font-semibold text-slate-800">
+                        Pontos por Badge
+                      </span>
                     </div>
+
+                    <input
+                      type="number"
+                      value={gamificationData.pointsPerBadge}
+                      onChange={(e) =>
+                        setGamificationData({
+                          ...gamificationData,
+                          pointsPerBadge: e.target.value,
+                        })
+                      }
+                      className={inputClass}
+                    />
                   </div>
 
-                  <div>
-                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-clock-history mr-2" style={{ color: "#04C4D9" }}></i>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <div className="mb-3 flex items-center gap-2">
+                      <i className="bi bi-clock-history text-cyan-500"></i>
+
+                      <span className="font-semibold text-slate-800">
                         SLA Padrão (dias)
-                      </label>
-                      <input
-                        type="number"
-                        value={gamificationData.defaultSLA}
-                        onChange={(e) => setGamificationData({...gamificationData, defaultSLA: e.target.value})}
-                        style={{
-                          width: "100%",
-                          padding: "0.75rem",
-                          border: "1px solid #d4dfe9",
-                          borderRadius: "8px",
-                          fontSize: "0.95rem",
-                          backgroundColor: "white"
-                        }}
-                      />
+                      </span>
                     </div>
-                  </div>
 
-                  <div className="md:col-span-2">
-                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "0.75rem",
-                        cursor: "pointer",
-                        color: "#16558C",
-                        fontWeight: "600",
-                        fontSize: "0.95rem"
-                      }}>
-                        <input
-                          type="checkbox"
-                          checked={gamificationData.canExpire}
-                          onChange={(e) => setGamificationData({...gamificationData, canExpire: e.target.checked})}
-                          style={{ width: "1.25rem", height: "1.25rem", cursor: "pointer" }}
-                        />
-                        <i className="bi bi-hourglass-split" style={{ color: "#ef4444" }}></i>
-                        <span>Badges podem expirar</span>
-                      </label>
-                      <p style={{ color: "#04C4D9", fontSize: "0.85rem", margin: "0.5rem 0 0 2.5rem" }}>
-                        Ativar período de validade para badges
+                    <input
+                      type="number"
+                      value={gamificationData.defaultSLA}
+                      onChange={(e) =>
+                        setGamificationData({
+                          ...gamificationData,
+                          defaultSLA: e.target.value,
+                        })
+                      }
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <i className="bi bi-hourglass-split text-rose-500"></i>
+
+                        <span className="font-semibold text-slate-800">
+                          Expiração de Badges
+                        </span>
+                      </div>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Permitir que determinados badges tenham validade
+                        limitada.
+                      </p>
+                    </div>
+
+                    <input
+                      type="checkbox"
+                      checked={gamificationData.canExpire}
+                      onChange={(e) =>
+                        setGamificationData({
+                          ...gamificationData,
+                          canExpire: e.target.checked,
+                        })
+                      }
+                      className="h-5 w-5 accent-[#0F62FE]"
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-[#0F62FE]/15 bg-[#0F62FE]/5 p-5">
+                  <div className="flex items-start gap-3">
+                    <i className="bi bi-info-circle-fill mt-1 text-[#0F62FE]"></i>
+
+                    <div>
+                      <h4 className="font-semibold text-slate-800">
+                        Configuração Global
+                      </h4>
+
+                      <p className="mt-1 text-sm text-slate-600">
+                        Estas definições serão aplicadas por defeito a novos
+                        badges e novos pedidos de validação criados na
+                        plataforma.
                       </p>
                     </div>
                   </div>
@@ -388,268 +243,196 @@ export default function Configuracoes() {
 
             {/* Notificações */}
             {activeTab === "notifications" && (
-              <div>
-                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-bell mr-2" style={{ color: "#16558C" }}></i>
+              <div className="space-y-6">
+                <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
+                  <i className="bi bi-bell text-[#0F62FE]"></i>
                   Notificações e Integrações
-                </h4>
-                
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                </h3>
+
+                <div className="space-y-4">
                   {[
-                    { key: "email", icon: "bi-envelope", label: "Notificações por Email", desc: "Enviar emails para eventos importantes" },
-                    { key: "push", icon: "bi-phone", label: "Notificações Push", desc: "Alertas mobile e desktop" },
-                    { key: "teams", icon: "bi-microsoft-teams", label: "Integração Teams/Slack", desc: "Conectar com ferramentas de comunicação" }
-                  ].map(notif => (
-                    <div key={notif.key} style={{ 
-                      padding: "1.5rem", 
-                      backgroundColor: notificationSettings[notif.key] ? "#16558C15" : "#F2F2F2",
-                      borderRadius: "10px", 
-                      border: `2px solid ${notificationSettings[notif.key] ? "#16558C" : "#d4dfe9"}`,
-                      transition: "all 0.2s"
-                    }}>
-                      <label style={{ 
-                        display: "flex", 
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        cursor: "pointer"
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                          <i className={notif.icon} style={{ fontSize: "1.5rem", color: "#16558C" }}></i>
+                    {
+                      key: "email",
+                      icon: "bi-envelope-fill",
+                      label: "Notificações por Email",
+                      desc: "Enviar emails para eventos importantes",
+                    },
+                    {
+                      key: "push",
+                      icon: "bi-phone-fill",
+                      label: "Notificações Push",
+                      desc: "Alertas em dispositivos móveis",
+                    },
+                    {
+                      key: "teams",
+                      icon: "bi-microsoft-teams",
+                      label: "Integração Teams / Slack",
+                      desc: "Enviar alertas para ferramentas colaborativas",
+                    },
+                  ].map((notif) => (
+                    <div
+                      key={notif.key}
+                      className={`rounded-2xl border p-5 transition-all ${
+                        notificationSettings[notif.key]
+                          ? "border-[#0F62FE]/30 bg-[#0F62FE]/5"
+                          : "border-slate-200 bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm">
+                            <i
+                              className={`${notif.icon} text-lg text-[#0F62FE]`}
+                            ></i>
+                          </div>
+
                           <div>
-                            <div style={{ color: "#16558C", fontWeight: "600", marginBottom: "0.25rem" }}>
+                            <h4 className="font-semibold text-slate-800">
                               {notif.label}
-                            </div>
-                            <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
+                            </h4>
+
+                            <p className="text-sm text-slate-500">
                               {notif.desc}
-                            </div>
+                            </p>
                           </div>
                         </div>
+
                         <input
                           type="checkbox"
                           checked={notificationSettings[notif.key]}
-                          onChange={(e) => setNotificationSettings({...notificationSettings, [notif.key]: e.target.checked})}
-                          style={{ 
-                            width: "3rem", 
-                            height: "1.5rem", 
-                            cursor: "pointer",
-                            accentColor: "#16558C"
-                          }}
+                          onChange={(e) =>
+                            setNotificationSettings({
+                              ...notificationSettings,
+                              [notif.key]: e.target.checked,
+                            })
+                          }
+                          className="h-5 w-5 accent-[#0F62FE]"
                         />
-                      </label>
+                      </div>
                     </div>
                   ))}
                 </div>
 
-                <button style={{
-                  marginTop: "1.5rem",
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "white",
-                  color: "#16558C",
-                  border: "2px solid #16558C",
-                  borderRadius: "8px",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  fontSize: "0.9rem",
-                  transition: "all 0.2s",
-                  width: "100%"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#16558C";
-                  e.currentTarget.style.color = "white";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "white";
-                  e.currentTarget.style.color = "#16558C";
-                }}>
-                  <i className="bi bi-envelope-paper mr-2"></i>
-                  Configurar Templates de Email
-                </button>
+                <div className="rounded-2xl border border-[#0F62FE]/15 bg-[#0F62FE]/5 p-5">
+                  <div className="flex items-start gap-3">
+                    <i className="bi bi-envelope-paper-fill mt-1 text-[#0F62FE]"></i>
+
+                    <div>
+                      <h4 className="font-semibold text-slate-800">
+                        Templates de Email
+                      </h4>
+
+                      <p className="mt-1 text-sm text-slate-600">
+                        Personaliza as mensagens automáticas enviadas pela
+                        plataforma.
+                      </p>
+
+                      <button className="mt-4 rounded-xl border border-[#0F62FE] px-4 py-2 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE] hover:text-white">
+                        Configurar Templates
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
-
             {/* RGPD */}
             {activeTab === "privacy" && (
-              <div>
-                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-file-lock mr-2" style={{ color: "#16558C" }}></i>
+              <div className="space-y-6">
+                <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
+                  <i className="bi bi-file-lock text-[#0F62FE]"></i>
                   RGPD e Privacidade
-                </h4>
-                
-                <div style={{ marginBottom: "1.5rem" }}>
-                  <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                    <i className="bi bi-file-text mr-2" style={{ color: "#04C4D9" }}></i>
-                    Termos RGPD
+                </h3>
+
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+                  <div className="flex items-start gap-3">
+                    <i className="bi bi-shield-check text-xl text-emerald-600"></i>
+
+                    <div>
+                      <h4 className="font-semibold text-emerald-700">
+                        Conformidade RGPD
+                      </h4>
+
+                      <p className="mt-1 text-sm text-emerald-600">
+                        Configurações relacionadas com privacidade,
+                        consentimento e publicação de informação dos
+                        colaboradores.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block font-medium text-slate-700">
+                    Texto de Consentimento RGPD
                   </label>
+
                   <textarea
-                    rows={6}
-                    placeholder="Insira os termos e condições de privacidade..."
+                    rows={8}
                     value={privacySettings.rgpdText}
-                    onChange={(e) => setPrivacySettings({...privacySettings, rgpdText: e.target.value})}
-                    style={{
-                      width: "100%",
-                      padding: "1rem",
-                      border: "1px solid #d4dfe9",
-                      borderRadius: "8px",
-                      fontSize: "0.9rem",
-                      fontFamily: "inherit",
-                      resize: "vertical"
-                    }}
+                    onChange={(e) =>
+                      setPrivacySettings({
+                        ...privacySettings,
+                        rgpdText: e.target.value,
+                      })
+                    }
+                    placeholder="Insira os termos de consentimento..."
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
                   />
                 </div>
 
-                <div style={{ 
-                  padding: "1.5rem", 
-                  backgroundColor: privacySettings.publicGallery ? "#16558C15" : "#F2F2F2",
-                  borderRadius: "10px", 
-                  border: `2px solid ${privacySettings.publicGallery ? "#16558C" : "#d4dfe9"}`
-                }}>
-                  <label style={{ 
-                    display: "flex", 
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    cursor: "pointer"
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                      <i className="bi bi-images" style={{ fontSize: "1.5rem", color: "#16558C" }}></i>
-                      <div>
-                        <div style={{ color: "#16558C", fontWeight: "600", marginBottom: "0.25rem" }}>
-                          Galeria Pública de Badges
-                        </div>
-                        <div style={{ color: "#04C4D9", fontSize: "0.85rem" }}>
-                          Permitir visualização pública dos badges conquistados
-                        </div>
-                      </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-slate-800">
+                        Galeria Pública de Badges
+                      </h4>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Permitir que os badges conquistados possam ser
+                        apresentados publicamente.
+                      </p>
                     </div>
+
                     <input
                       type="checkbox"
                       checked={privacySettings.publicGallery}
-                      onChange={(e) => setPrivacySettings({...privacySettings, publicGallery: e.target.checked})}
-                      style={{ 
-                        width: "3rem", 
-                        height: "1.5rem", 
-                        cursor: "pointer",
-                        accentColor: "#16558C"
-                      }}
+                      onChange={(e) =>
+                        setPrivacySettings({
+                          ...privacySettings,
+                          publicGallery: e.target.checked,
+                        })
+                      }
+                      className="h-5 w-5 accent-[#0F62FE]"
                     />
-                  </label>
-                </div>
-              </div>
-            )}
-
-            {/* Interface */}
-            {activeTab === "interface" && (
-              <div>
-                <h4 style={{ color: "#16558C", marginBottom: "1.5rem", fontWeight: "600" }}>
-                  <i className="bi bi-palette mr-2" style={{ color: "#16558C" }}></i>
-                  Interface e Preferências
-                </h4>
-                
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-translate mr-2" style={{ color: "#04C4D9" }}></i>
-                        Idioma Padrão
-                      </label>
-                      <select
-                        value={uiSettings.language}
-                        onChange={(e) => setUISettings({...uiSettings, language: e.target.value})}
-                        style={{
-                          width: "100%",
-                          padding: "0.75rem",
-                          border: "1px solid #d4dfe9",
-                          borderRadius: "8px",
-                          fontSize: "0.95rem",
-                          backgroundColor: "white",
-                          cursor: "pointer"
-                        }}
-                      >
-                        <option value="pt"> Português</option>
-                        <option value="en"> English</option>
-                        <option value="es"> Español</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div style={{ padding: "1.5rem", backgroundColor: "#F2F2F2", borderRadius: "10px", border: "1px solid #d4dfe9" }}>
-                      <label style={{ display: "block", color: "#16558C", fontWeight: "600", marginBottom: "0.75rem", fontSize: "0.95rem" }}>
-                        <i className="bi bi-palette-fill mr-2" style={{ color: "#04C4D9" }}></i>
-                        Tema
-                      </label>
-                      <select
-                        value={uiSettings.theme}
-                        onChange={(e) => setUISettings({...uiSettings, theme: e.target.value})}
-                        style={{
-                          width: "100%",
-                          padding: "0.75rem",
-                          border: "1px solid #d4dfe9",
-                          borderRadius: "8px",
-                          fontSize: "0.95rem",
-                          backgroundColor: "white",
-                          cursor: "pointer"
-                        }}
-                      >
-                        <option value="light"> Claro</option>
-                        <option value="dark"> Escuro</option>
-                        <option value="auto"> Automático</option>
-                      </select>
-                    </div>
                   </div>
                 </div>
 
-                <div style={{ 
-                  marginTop: "1.5rem", 
-                  padding: "1.5rem", 
-                  backgroundColor: "#16558C15", 
-                  borderRadius: "10px",
-                  border: "1px solid #16558C30"
-                }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-                    <i className="bi bi-lightbulb-fill" style={{ fontSize: "1.5rem", color: "#fbbf24" }}></i>
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                  <div className="flex items-start gap-3">
+                    <i className="bi bi-exclamation-triangle-fill text-amber-500"></i>
+
                     <div>
-                      <div style={{ color: "#16558C", fontWeight: "600", marginBottom: "0.5rem" }}>
-                        Dica de Interface
-                      </div>
-                      <p style={{ color: "#04C4D9", margin: 0, fontSize: "0.9rem" }}>
-                        As preferências de idioma e tema são aplicadas globalmente para todos os utilizadores. 
-                        Cada utilizador pode personalizar suas preferências no seu perfil.
+                      <h4 className="font-semibold text-amber-700">Atenção</h4>
+
+                      <p className="mt-1 text-sm text-amber-600">
+                        Alterações às definições de privacidade podem afetar
+                        todos os utilizadores da plataforma e futuras
+                        publicações de badges.
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-
           </div>
 
-          {/* Save Button */}
-          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
-            <button style={{
-              padding: "1rem 2.5rem",
-              backgroundColor: "#16558C",
-              color: "white",
-              border: "none",
-              borderRadius: "10px",
-              fontWeight: "600",
-              cursor: "pointer",
-              fontSize: "1rem",
-              transition: "all 0.2s",
-              boxShadow: "0 2px 8px rgba(90, 122, 154, 0.3)"
-            }}
-            onClick={handleSave}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#16558C";
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(90, 122, 154, 0.4)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#16558C";
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 2px 8px rgba(90, 122, 154, 0.3)";
-            }}>
-              <i className="bi bi-check-circle mr-2"></i>
-              Guardar Todas as Alterações
+          <div className="mt-8 flex justify-end">
+            <button
+              onClick={handleSave}
+              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02]"
+            >
+              <i className="bi bi-check-circle me-2"></i>
+              Guardar Alterações
             </button>
           </div>
         </div>
@@ -657,5 +440,3 @@ export default function Configuracoes() {
     </div>
   );
 }
-
-
