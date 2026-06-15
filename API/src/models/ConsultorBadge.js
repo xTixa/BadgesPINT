@@ -61,6 +61,12 @@ const ConsultorBadge = database.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     tableName: "consultor_badges",

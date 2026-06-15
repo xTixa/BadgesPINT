@@ -21,7 +21,7 @@ export const sidebarMenus = {
     icon: "bi-people-fill",
     items: [
       { to: "/tm/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
-      { to: "/admin/gestao-pedidos-badges", label: "Pedidos de Badges", icon: "bi-inbox" },
+      { to: "/tm/pedidos", label: "Pedidos de Badges", icon: "bi-inbox" },
       { to: "/tm/equipa", label: "Equipa", icon: "bi-person-lines-fill" },
       { to: "/tm/evidencias", label: "Evidências", icon: "bi-folder-check" },
       { to: "/tm/relatorios", label: "Relatórios", icon: "bi-bar-chart-line-fill" },

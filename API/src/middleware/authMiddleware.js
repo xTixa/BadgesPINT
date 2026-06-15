@@ -11,6 +11,8 @@ export const protect = (roles = []) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = decoded;
+      req.userId = decoded.id;
+      req.userRole = decoded.role;
 
       if (roles.length > 0 && !roles.includes(decoded.role)) {
         return res.status(403).json({ message: "Acesso negado" });

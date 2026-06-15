@@ -1,54 +1,77 @@
-import { useMemo, useState } from "react";
-import Sidebar from "../../layout/Sidebar";
-import PageHeader from "/src/components/ui/PageHeader";
-import StatCard from "/src/components/ui/StatCard";
+import { useEffect, useMemo, useState } from "react";
+import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
+import TalentManagerLayout, { TalentStatCard } from "./TalentManagerLayout";
 
-const mockHistorico = [
-  { id: 1, consultor: "Patricia Almeida", badge: "Outsystems Avancado", requisito: "Projeto final", estado: "Aprovado", data: "2026-03-11", validador: "Carla Mendes", observacoes: "Boa qualidade da evidencia." },
-  { id: 2, consultor: "Joao Silva", badge: "DevOps Intermedio", requisito: "Pipeline CI/CD", estado: "Rejeitado", data: "2026-03-10", validador: "Carla Mendes", observacoes: "Falta prova de monitorizacao." },
-  { id: 3, consultor: "Ana Costa", badge: "Azure Fundamentals", requisito: "Certificacao", estado: "Aprovado", data: "2026-03-09", validador: "Carla Mendes", observacoes: "Documentacao completa." },
-  { id: 4, consultor: "Miguel Santos", badge: "React Advanced", requisito: "Portfolio", estado: "Pendente", data: "2026-03-08", validador: "Carla Mendes", observacoes: "A aguardar validacao final." },
-];
+const normalizeEstado = (estado) => {
+  if (estado === "aprovado") return "Aprovado";
+  if (estado === "rejeitado") return "Rejeitado";
+  return "Pendente";
+};
 
 export default function HistoricoValidacoes() {
   const [filtroEstado, setFiltroEstado] = useState("todos");
   const [filtroTexto, setFiltroTexto] = useState("");
+  const [historico, setHistorico] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await api.get("/api/tm/historico", {
+          params: { status: filtroEstado },
+        });
+        if (mounted) setHistorico(res.data || []);
+      } catch (err) {
+        console.error("Erro ao carregar historico TM:", err);
+        if (mounted) setError("Nao foi possivel carregar o historico.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [filtroEstado]);
 
   const resultados = useMemo(() => {
-    return mockHistorico.filter((item) => {
-      const estadoOk = filtroEstado === "todos" ? true : item.estado.toLowerCase() === filtroEstado;
+    return historico.filter((item) => {
       const texto = `${item.consultor} ${item.badge} ${item.requisito}`.toLowerCase();
-      const textoOk = texto.includes(filtroTexto.toLowerCase());
-      return estadoOk && textoOk;
+      return texto.includes(filtroTexto.toLowerCase());
     });
-  }, [filtroEstado, filtroTexto]);
+  }, [historico, filtroTexto]);
 
   const totals = {
-    todos: mockHistorico.length,
-    aprovado: mockHistorico.filter((i) => i.estado === "Aprovado").length,
-    rejeitado: mockHistorico.filter((i) => i.estado === "Rejeitado").length,
-    pendente: mockHistorico.filter((i) => i.estado === "Pendente").length,
+    todos: historico.length,
+    aprovado: historico.filter((i) => i.estado === "aprovado").length,
+    rejeitado: historico.filter((i) => i.estado === "rejeitado").length,
+    pendente: historico.filter((i) => i.estado === "pendente").length,
   };
 
   const badgeClass = (estado) => {
-    if (estado === "Aprovado") return "bg-emerald-100 text-emerald-700";
-    if (estado === "Rejeitado") return "bg-rose-100 text-rose-700";
+    if (estado === "aprovado") return "bg-emerald-100 text-emerald-700";
+    if (estado === "rejeitado") return "bg-rose-100 text-rose-700";
     return "bg-amber-100 text-amber-700";
   };
 
   return (
-    <div className="admin-shell">
-      <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
-
-      <main className="admin-main">
-        <PageHeader
-          title="Historico de Validacoes"
-          subtitle="Consulta decisoes anteriores para auditoria e acompanhamento."
-          icon="bi-clock-history"
-        />
-
+    <TalentManagerLayout
+      title="Histórico de Validações"
+      subtitle="Consulta decisões anteriores e o histórico associado a cada candidatura."
+      heroStats={[
+        { label: "Total", value: totals.todos },
+        { label: "Aprovadas", value: totals.aprovado },
+        { label: "Rejeitadas", value: totals.rejeitado },
+      ]}
+    >
         <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: "Total", value: totals.todos, icon: "bi-clock-history", tone: "slate" },
@@ -56,7 +79,7 @@ export default function HistoricoValidacoes() {
             { label: "Rejeitadas", value: totals.rejeitado, icon: "bi-x-circle-fill", tone: "rose" },
             { label: "Pendentes", value: totals.pendente, icon: "bi-hourglass-split", tone: "amber" },
           ].map((card) => (
-            <StatCard key={card.label} label={card.label} value={card.value} icon={card.icon} tone={card.tone} />
+            <TalentStatCard key={card.label} label={card.label} value={card.value} icon={card.icon} />
           ))}
         </div>
 
@@ -89,47 +112,52 @@ export default function HistoricoValidacoes() {
         </SectionCard>
 
         <SectionCard title="Registos" icon="bi-list-check">
-          <div className="overflow-x-auto rounded-xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-100 text-slate-700">
-                <tr>
-                  <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                  <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                  <th className="px-3 py-2 text-left font-semibold">Requisito</th>
-                  <th className="px-3 py-2 text-left font-semibold">Estado</th>
-                  <th className="px-3 py-2 text-left font-semibold">Data</th>
-                  <th className="px-3 py-2 text-left font-semibold">Validador</th>
-                  <th className="px-3 py-2 text-left font-semibold">Observacoes</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                {resultados.map((item) => (
-                  <tr key={item.id}>
-                    <td className="px-3 py-2 font-semibold text-slate-900">{item.consultor}</td>
-                    <td className="px-3 py-2">{item.badge}</td>
-                    <td className="px-3 py-2">{item.requisito}</td>
-                    <td className="px-3 py-2">
-                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${badgeClass(item.estado)}`}>
-                        {item.estado}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">{item.data}</td>
-                    <td className="px-3 py-2">{item.validador}</td>
-                    <td className="px-3 py-2 text-xs text-slate-500 sm:text-sm">{item.observacoes}</td>
-                  </tr>
-                ))}
-                {!resultados.length && (
+          {loading ? (
+            <EmptyState message="A carregar histórico..." icon="bi-hourglass-split" />
+          ) : error ? (
+            <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
+          ) : (
+            <div className="overflow-x-auto rounded-xl border border-slate-200">
+              <table className="min-w-full divide-y divide-slate-200 text-sm">
+                <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <td colSpan="7" className="px-3 py-4">
-                      <EmptyState message="Nenhum registo encontrado para os filtros selecionados." icon="bi-search" />
-                    </td>
+                    <th className="px-3 py-2 text-left font-semibold">Consultor</th>
+                    <th className="px-3 py-2 text-left font-semibold">Badge</th>
+                    <th className="px-3 py-2 text-left font-semibold">Requisito</th>
+                    <th className="px-3 py-2 text-left font-semibold">Estado</th>
+                    <th className="px-3 py-2 text-left font-semibold">Data</th>
+                    <th className="px-3 py-2 text-left font-semibold">Validador</th>
+                    <th className="px-3 py-2 text-left font-semibold">Observações</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
+                  {resultados.map((item) => (
+                    <tr key={item.id}>
+                      <td className="px-3 py-2 font-semibold text-slate-900">{item.consultor}</td>
+                      <td className="px-3 py-2">{item.badge}</td>
+                      <td className="px-3 py-2">{item.requisito}</td>
+                      <td className="px-3 py-2">
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${badgeClass(item.estado)}`}>
+                          {normalizeEstado(item.estado)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">{item.data ? new Date(item.data).toLocaleDateString("pt-PT") : "-"}</td>
+                      <td className="px-3 py-2">{item.validador || "-"}</td>
+                      <td className="px-3 py-2 text-xs text-slate-500 sm:text-sm">{item.observacoes || "-"}</td>
+                    </tr>
+                  ))}
+                  {!resultados.length && (
+                    <tr>
+                      <td colSpan="7" className="px-3 py-4">
+                        <EmptyState message="Nenhum registo encontrado para os filtros selecionados." icon="bi-search" />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </SectionCard>
-      </main>
-    </div>
+    </TalentManagerLayout>
   );
 }

@@ -12,6 +12,7 @@ export default function GestaoPedidosBadges() {
   const token = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user");
   const currentRole = storedUser ? JSON.parse(storedUser).role : "admin";
+  const pedidosBaseUrl = currentRole === "admin" ? "/api/admin/pedidos" : "/api/admin/pedidos";
 
   // Carregar pedidos do backend
   useEffect(() => {
@@ -21,8 +22,8 @@ export default function GestaoPedidosBadges() {
         setError(null);
 
         const url = filtro === "all" 
-          ? "/api/admin/pedidos"
-          : `/api/admin/pedidos?status=${filtro === "pending" ? "pendente" : filtro === "approved" ? "obtido" : "rejeitado"}`;
+          ? pedidosBaseUrl
+          : `${pedidosBaseUrl}?status=${filtro === "pending" ? "pendente" : filtro === "approved" ? "obtido" : "rejeitado"}`;
 
         const response = await api.get(url, {
           headers: { Authorization: `Bearer ${token}` }
@@ -54,7 +55,10 @@ export default function GestaoPedidosBadges() {
     };
 
     fetchPedidos();
-  }, [filtro, token]);
+    const intervalId = window.setInterval(fetchPedidos, 15000);
+
+    return () => window.clearInterval(intervalId);
+  }, [filtro, token, pedidosBaseUrl]);
 
   // Filtrar pedidos
   const pedidosFiltrados = pedidos.filter(p => {
@@ -208,7 +212,7 @@ export default function GestaoPedidosBadges() {
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#F2F2F2" }}>
-      <Sidebar user={{ role: "admin", name: "Admin" }} />
+      <Sidebar user={{ role: currentRole, name: currentRole === "talent_manager" ? "Talent Manager" : currentRole === "service_line_leader" ? "Service Line" : "Admin" }} />
 
       <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
         {/* Header */}
