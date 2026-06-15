@@ -4,6 +4,43 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import Badge from "../models/Badge.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
+
+export async function uploadEvidenceFile(req, res) {
+  try {
+    const { file, fileName } = req.body;
+
+    if (!file || typeof file !== "string") {
+      return res.status(400).json({ error: "Ficheiro e obrigatorio" });
+    }
+
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return res.status(500).json({ error: "Credenciais Cloudinary nao definidas" });
+    }
+
+    const uploadResult = await cloudinary.uploader.upload(file, {
+      folder: "evidencias",
+      resource_type: "auto",
+      public_id: fileName ? fileName.replace(/\.[^/.]+$/, "") : undefined,
+    });
+
+    return res.json({
+      url: uploadResult.secure_url,
+      public_id: uploadResult.public_id,
+      resource_type: uploadResult.resource_type,
+    });
+  } catch (err) {
+    console.error("Erro ao enviar ficheiro de evidencia:", err);
+    res.status(500).json({ error: "Erro ao enviar ficheiro" });
+  }
+}
 
 export async function submitEvidence(req, res) {
   try {

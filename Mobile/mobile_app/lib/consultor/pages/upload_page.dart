@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
 import '../widgets/app_header.dart';
@@ -149,11 +150,19 @@ class UploadPage extends StatelessWidget {
                     req.id,
                   ),
                   onSubmit:
-                      (url, notes) => controller.submitEvidence(
-                        requirementId: req.id,
-                        evidenceUrl: url,
-                        notes: notes,
-                      ),
+                      (fileName, bytes, notes) async {
+                        final url = await controller.uploadEvidenceFile(
+                          fileName: fileName,
+                          bytes: bytes,
+                        );
+                        if (url == null) return false;
+
+                        return controller.submitEvidence(
+                          requirementId: req.id,
+                          evidenceUrl: url,
+                          notes: notes,
+                        );
+                      },
                 ),
               )
               .toList(),
@@ -171,7 +180,8 @@ class RequirementTile extends StatefulWidget {
 
   final RequirementItem requirement;
   final EvidenceItem? latestEvidence;
-  final Future<bool> Function(String url, String notes) onSubmit;
+  final Future<bool> Function(String fileName, Uint8List bytes, String notes)
+  onSubmit;
 
   @override
   State<RequirementTile> createState() => _RequirementTileState();
@@ -189,16 +199,21 @@ class _RequirementTileState extends State<RequirementTile>
   late Animation<Offset> _slide;
 
   String? selectedFileName;
-  String? selectedFileReference;
+  Uint8List? selectedFileBytes;
 
   Future<void> pickFile() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      withData: true,
+      type: FileType.custom,
+      allowedExtensions: const <String>['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
+    );
 
     if (result != null) {
       final file = result.files.single;
       setState(() {
         selectedFileName = file.name;
-        selectedFileReference = file.path ?? file.name;
+        selectedFileBytes = file.bytes;
       });
     }
   }
@@ -445,7 +460,9 @@ class _RequirementTileState extends State<RequirementTile>
                                                 ? null
                                                 : () async {
                                                   if (selectedFileName ==
-                                                      null) {
+                                                          null ||
+                                                      selectedFileBytes ==
+                                                          null) {
                                                     ScaffoldMessenger.of(
                                                       context,
                                                     ).showSnackBar(
@@ -462,10 +479,14 @@ class _RequirementTileState extends State<RequirementTile>
                                                     () => loading = true,
                                                   );
 
+                                                  final messenger =
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      );
                                                   final ok = await widget
                                                       .onSubmit(
-                                                        selectedFileReference ??
-                                                            selectedFileName!,
+                                                        selectedFileName!,
+                                                        selectedFileBytes!,
                                                         notesCtrl.text,
                                                       );
 
@@ -475,9 +496,7 @@ class _RequirementTileState extends State<RequirementTile>
                                                     () => loading = false,
                                                   );
 
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
+                                                  messenger.showSnackBar(
                                                     SnackBar(
                                                       content: Text(
                                                         ok
@@ -495,8 +514,7 @@ class _RequirementTileState extends State<RequirementTile>
                                                     notesCtrl.clear();
                                                     setState(() {
                                                       selectedFileName = null;
-                                                      selectedFileReference =
-                                                          null;
+                                                      selectedFileBytes = null;
                                                     });
                                                   }
                                                 },

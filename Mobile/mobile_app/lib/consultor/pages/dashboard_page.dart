@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
 import '../../shared/app_theme.dart';
+import 'pedidos_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({required this.controller, super.key});
@@ -16,17 +18,30 @@ class _DashboardPageState extends State<DashboardPage>
     with SingleTickerProviderStateMixin {
   late TextEditingController _searchController;
   int _selectedTab = 0; // 0: All, 1: Mine
+  String _personalGoal = '';
+  String _goalDeadline = '';
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _loadGoal();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadGoal() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+
+    setState(() {
+      _personalGoal = prefs.getString('settings_objetivo') ?? '';
+      _goalDeadline = prefs.getString('settings_data_limite') ?? '';
+    });
   }
 
   @override
@@ -37,11 +52,50 @@ class _DashboardPageState extends State<DashboardPage>
         child: Column(
           children: <Widget>[
             _buildHeader(context),
+            _buildGoalCard(context),
             _buildLearningPaths(context),
             _buildRecommendationsAndAlerts(context),
             _buildSearchBar(context),
             _buildTabBar(context),
             Expanded(child: _buildBadgeGrid(context)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoalCard(BuildContext context) {
+    if (_personalGoal.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFBEB),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFFDE68A)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.flag, color: Color(0xFFD97706)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Objetivo ativo',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  Text(
+                    _goalDeadline.isEmpty
+                        ? _personalGoal
+                        : '$_personalGoal - ate $_goalDeadline',
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -111,6 +165,25 @@ class _DashboardPageState extends State<DashboardPage>
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                side: const BorderSide(color: Colors.white70),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PedidosPage(controller: widget.controller),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.assignment_outlined),
+              label: Text(
+                '${widget.controller.pedidosStatus.length} pedidos em curso',
+              ),
             ),
           ],
         ),

@@ -185,6 +185,62 @@ class ConsultorRepository {
     }
   }
 
+  Future<ConsultantUser?> updateProfile({
+    required String name,
+    required String email,
+    int? areaId,
+  }) async {
+    if ((_token ?? '').isEmpty || _userId == null) return null;
+
+    try {
+      final payload = await _apiClient.put(
+        '/api/users/${_userId!}',
+        token: _token,
+        body: <String, dynamic>{
+          'name': name,
+          'email': email,
+          'area_id': areaId,
+        },
+      );
+
+      if (payload is Map<String, dynamic>) {
+        final user = payload['user'];
+        if (user is Map<String, dynamic>) {
+          return ConsultantUser.fromJson(user);
+        }
+      }
+
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<String?> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    if ((_token ?? '').isEmpty || _userId == null) {
+      return 'Sessao invalida.';
+    }
+
+    try {
+      await _apiClient.put(
+        '/api/users/${_userId!}/password',
+        token: _token,
+        body: <String, dynamic>{
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+      );
+      return null;
+    } on ApiException catch (error) {
+      return _extractApiMessage(error.message);
+    } catch (_) {
+      return 'Nao foi possivel alterar a password.';
+    }
+  }
+
   Future<List<BadgeItem>> getMyBadges() async {
     if ((_token ?? '').isEmpty || _userId == null) {
       return _mockBadges;
@@ -351,6 +407,32 @@ class ConsultorRepository {
       return true;
     } catch (_) {
       return false;
+    }
+  }
+
+  Future<String?> uploadEvidenceFile({
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    if ((_token ?? '').isEmpty) return null;
+
+    try {
+      final payload = await _apiClient.post(
+        '/api/consultor/evidencias/upload',
+        token: _token,
+        body: <String, dynamic>{
+          'fileName': fileName,
+          'file': 'data:application/octet-stream;base64,${base64Encode(bytes)}',
+        },
+      );
+
+      if (payload is Map<String, dynamic>) {
+        return payload['url']?.toString();
+      }
+
+      return null;
+    } catch (_) {
+      return null;
     }
   }
 

@@ -222,14 +222,26 @@ class PedidoBadgeStatus {
     required this.status,
     required this.workflowStatus,
     required this.badgeName,
+    this.createdAt,
     this.submittedAt,
+    this.tmValidatedAt,
+    this.tmComment,
+    this.slValidatedAt,
+    this.slComment,
+    this.awardedAt,
   });
 
   final int id;
   final String status;
   final String workflowStatus;
   final String badgeName;
+  final String? createdAt;
   final String? submittedAt;
+  final String? tmValidatedAt;
+  final String? tmComment;
+  final String? slValidatedAt;
+  final String? slComment;
+  final String? awardedAt;
 
   factory PedidoBadgeStatus.fromJson(Map<String, dynamic> json) {
     final badge = json['badge'];
@@ -239,7 +251,13 @@ class PedidoBadgeStatus {
       status: (json['status'] ?? '').toString(),
       workflowStatus: (json['workflow_status'] ?? '').toString(),
       badgeName: badge is Map<String, dynamic> ? (badge['name'] ?? 'Badge').toString() : 'Badge',
+      createdAt: (json['created_at'] ?? json['createdAt'])?.toString(),
       submittedAt: json['submitted_at']?.toString(),
+      tmValidatedAt: json['tm_validated_at']?.toString(),
+      tmComment: json['tm_comment']?.toString(),
+      slValidatedAt: json['sl_validated_at']?.toString(),
+      slComment: json['sl_comment']?.toString(),
+      awardedAt: json['data_atribuicao']?.toString(),
     );
   }
 }

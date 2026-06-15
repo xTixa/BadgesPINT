@@ -20,6 +20,7 @@ class ConsultorController extends ChangeNotifier {
   List<RecommendationItem> recommendations = <RecommendationItem>[];
   List<ExpiryAlert> expiryAlerts = <ExpiryAlert>[];
   List<RankingItem> ranking = <RankingItem>[];
+  List<AreaItem> areas = <AreaItem>[];
   List<CatalogBadgeItem> catalogBadges = <CatalogBadgeItem>[];
   List<CatalogBadgeItem> preferredAreaBadges = <CatalogBadgeItem>[];
   List<PedidoBadgeStatus> pedidosStatus = <PedidoBadgeStatus>[];
@@ -45,6 +46,7 @@ class ConsultorController extends ChangeNotifier {
       _repository.getCatalogBadges(),
       _repository.getMyPedidosStatus(),
       _repository.getMyNotifications(),
+      _repository.getAreas(),
     ]);
 
     profile = results[0] as ConsultantUser?;
@@ -53,6 +55,7 @@ class ConsultorController extends ChangeNotifier {
     catalogBadges = results[3] as List<CatalogBadgeItem>;
     pedidosStatus = results[4] as List<PedidoBadgeStatus>;
     notifications = results[5] as List<UserNotificationItem>;
+    areas = results[6] as List<AreaItem>;
 
     ranking = _repository.getRankingMock();
 
@@ -97,6 +100,40 @@ class ConsultorController extends ChangeNotifier {
     pedidosStatus = results[0] as List<PedidoBadgeStatus>;
     notifications = results[1] as List<UserNotificationItem>;
     notifyListeners();
+  }
+
+  Future<bool> updateProfile({
+    required String name,
+    required String email,
+    int? areaId,
+  }) async {
+    final updated = await _repository.updateProfile(
+      name: name,
+      email: email,
+      areaId: areaId,
+    );
+
+    if (updated == null) return false;
+
+    profile = updated;
+    final selectedAreaId = profile?.areaId;
+    preferredAreaBadges =
+        selectedAreaId == null
+            ? <CatalogBadgeItem>[]
+            : await _repository.getBadgesByArea(selectedAreaId);
+    recommendations = _buildRecommendations();
+    notifyListeners();
+    return true;
+  }
+
+  Future<String?> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) {
+    return _repository.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
   }
 
   int get badgesObtidos => badges.where((BadgeItem b) => b.isObtained).length;
@@ -195,6 +232,13 @@ class ConsultorController extends ChangeNotifier {
     }
 
     return success;
+  }
+
+  Future<String?> uploadEvidenceFile({
+    required String fileName,
+    required Uint8List bytes,
+  }) {
+    return _repository.uploadEvidenceFile(fileName: fileName, bytes: bytes);
   }
 
   Future<bool> submitPedido() async {

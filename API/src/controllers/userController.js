@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 export const registerConsultant = async (req, res) => {
   try {
-    const { nome, email } = req.body;
+    const { nome, email, area_id } = req.body;
 
     // Verifica duplicado
     const existing = await User.findOne({ where: { email } });
@@ -18,7 +18,7 @@ export const registerConsultant = async (req, res) => {
       email,
       password_hash: hash,
       role: "consultant",
-      area_id: null,
+      area_id: area_id || null,
       points_total: 0,
     });
 
@@ -52,7 +52,7 @@ export async function getAllUsers(req, res) {
 export const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email } = req.body;
+    const { name, email, area_id } = req.body;
     const requestingUserId = req.userId;
 
     // Verificar se o utilizador está a editar o próprio perfil
@@ -76,6 +76,7 @@ export const updateProfile = async (req, res) => {
     // Atualizar campos
     if (name) user.name = name;
     if (email) user.email = email;
+    if (area_id !== undefined) user.area_id = area_id || null;
 
     await user.save();
 
@@ -87,6 +88,8 @@ export const updateProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        area_id: user.area_id,
+        points_total: user.points_total || 0,
       },
     });
   } catch (err) {

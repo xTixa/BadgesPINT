@@ -10,6 +10,7 @@ import 'consultor/consultor_repository.dart';
 import 'consultor/consultor_controller.dart';
 import 'consultor/consultor_models.dart';
 import 'consultor/pages/consultor_shell_page.dart';
+import 'consultor/pages/notifications_page.dart';
 
 enum AuthStage { login, register, firstLogin, authenticated }
 
@@ -77,6 +78,18 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     _controller?.dispose();
     _controller = controller;
     await NotificationService.registerDeviceForUser(_repository);
+    NotificationService.onOpenNotifications = () {
+      final context = NotificationService.navigatorKey.currentContext;
+      final activeController = _controller;
+      if (context == null || activeController == null) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => NotificationsPage(controller: activeController),
+        ),
+      );
+    };
 
     if (mounted) {
       setState(() {
@@ -111,6 +124,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
 
   Future<void> _handleLogout() async {
     await NotificationService.unregisterDeviceForUser(_repository);
+    NotificationService.onOpenNotifications = null;
     await _repository.logout();
     _controller?.dispose();
     _controller = null;
@@ -209,6 +223,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     }
 
     return MaterialApp(
+      navigatorKey: NotificationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Badges Softinsa',
       theme: AppTheme.light(),

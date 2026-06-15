@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../consultor/consultor_repository.dart';
@@ -22,6 +23,9 @@ class NotificationService {
   static bool _firebaseReady = false;
   static bool _localReady = false;
   static StreamSubscription<String>? _tokenRefreshSubscription;
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+  static VoidCallback? onOpenNotifications;
 
   static Future<void> initialize() async {
     final firebaseReady = await ensureFirebaseInitialized();
@@ -44,6 +48,12 @@ class NotificationService {
         );
 
     FirebaseMessaging.onMessage.listen(_showForegroundNotification);
+    FirebaseMessaging.onMessageOpenedApp.listen((_) => _openNotifications());
+
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _openNotifications());
+    }
   }
 
   static Future<bool> ensureFirebaseInitialized() async {
@@ -114,6 +124,7 @@ class NotificationService {
         iOS: darwinSettings,
         macOS: darwinSettings,
       ),
+      onDidReceiveNotificationResponse: (_) => _openNotifications(),
     );
 
     const channel = AndroidNotificationChannel(
@@ -156,6 +167,11 @@ class NotificationService {
         iOS: DarwinNotificationDetails(),
         macOS: DarwinNotificationDetails(),
       ),
+      payload: message.data['notificationId']?.toString(),
     );
+  }
+
+  static void _openNotifications() {
+    onOpenNotifications?.call();
   }
 }

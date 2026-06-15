@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -23,6 +24,61 @@ class _SettingsPageState extends State<SettingsPage> {
   bool assinaturaEmail = false;
 
   String areaPrincipal = 'Selecione...';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+
+    setState(() {
+      emailConfirmacao = prefs.getBool('settings_email_confirmacao') ?? true;
+      notificacoesAprovacao =
+          prefs.getBool('settings_notificacoes_aprovacao') ?? true;
+      alertasExpiracao = prefs.getBool('settings_alertas_expiracao') ?? true;
+      lembretesTimeline =
+          prefs.getBool('settings_lembretes_timeline') ?? false;
+      recomendacoesBadges =
+          prefs.getBool('settings_recomendacoes_badges') ?? true;
+      rgpdPublicacao = prefs.getBool('settings_rgpd_publicacao') ?? false;
+      permitirGaleriaPublica =
+          prefs.getBool('settings_galeria_publica') ?? false;
+      partilhaLinkedin = prefs.getBool('settings_partilha_linkedin') ?? true;
+      assinaturaEmail = prefs.getBool('settings_assinatura_email') ?? false;
+      areaPrincipal = prefs.getString('settings_area_principal') ?? areaPrincipal;
+      _nomeController.text = prefs.getString('settings_nome') ?? '';
+      _objetivoController.text = prefs.getString('settings_objetivo') ?? '';
+      _dataLimiteController.text =
+          prefs.getString('settings_data_limite') ?? '';
+    });
+  }
+
+  Future<void> _saveSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('settings_email_confirmacao', emailConfirmacao);
+    await prefs.setBool(
+      'settings_notificacoes_aprovacao',
+      notificacoesAprovacao,
+    );
+    await prefs.setBool('settings_alertas_expiracao', alertasExpiracao);
+    await prefs.setBool('settings_lembretes_timeline', lembretesTimeline);
+    await prefs.setBool('settings_recomendacoes_badges', recomendacoesBadges);
+    await prefs.setBool('settings_rgpd_publicacao', rgpdPublicacao);
+    await prefs.setBool('settings_galeria_publica', permitirGaleriaPublica);
+    await prefs.setBool('settings_partilha_linkedin', partilhaLinkedin);
+    await prefs.setBool('settings_assinatura_email', assinaturaEmail);
+    await prefs.setString('settings_area_principal', areaPrincipal);
+    await prefs.setString('settings_nome', _nomeController.text.trim());
+    await prefs.setString('settings_objetivo', _objetivoController.text.trim());
+    await prefs.setString(
+      'settings_data_limite',
+      _dataLimiteController.text.trim(),
+    );
+  }
 
   @override
   void dispose() {
@@ -96,6 +152,37 @@ class _SettingsPageState extends State<SettingsPage> {
                       if (value == null) return;
                       setState(() => areaPrincipal = value);
                     },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          _buildSectionLabel(context, 'Objetivos', Icons.flag_outlined),
+          const SizedBox(height: 8),
+          _buildCard(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _objetivoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Objetivo pessoal',
+                      hintText: 'Ex: obter 3 badges ate dezembro',
+                      prefixIcon: Icon(Icons.flag_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _dataLimiteController,
+                    decoration: const InputDecoration(
+                      labelText: 'Data limite',
+                      hintText: 'Ex: 31/12/2026',
+                      prefixIcon: Icon(Icons.event_outlined),
+                    ),
                   ),
                 ],
               ),
@@ -243,7 +330,9 @@ class _SettingsPageState extends State<SettingsPage> {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: () {
+              onPressed: () async {
+                await _saveSettings();
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Definições guardadas com sucesso.'),
@@ -338,20 +427,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildCard({required Widget child}) {
     return Card(child: child);
-  }
-
-  Widget _buildSwitch({
-    required bool value,
-    required ValueChanged<bool> onChanged,
-    required String title,
-  }) {
-    return SwitchListTile(
-      value: value,
-      onChanged: onChanged,
-      title: Text(title, style: const TextStyle(fontSize: 13)),
-      dense: true,
-      contentPadding: EdgeInsets.zero,
-    );
   }
 
   Widget _buildSwitchTile({
