@@ -4,17 +4,16 @@ import { authMiddleware, adminMiddleware } from "../middleware/authMiddleware.js
 
 const router = express.Router();
 
-// Todas as rotas requerem autenticação
 router.use(authMiddleware);
 
-// Rotas de notificações
-router.get("/", notificationController.obterNotificacoes); // Obter notificações
-router.get("/unread/count", notificationController.obterContagemNaoLidas); // Contagem não lidas
-router.put("/:id/read", notificationController.marcarComoLida); // Marcar uma como lida
-router.put("/mark/all-read", notificationController.marcarTodasComoLidas); // Marcar todas como lidas
-router.delete("/:id", notificationController.apagarNotificacao); // Apagar notificação
+router.get("/", notificationController.obterNotificacoes);
+router.get("/unread/count", notificationController.obterContagemNaoLidas);
+router.post("/device-token", notificationController.registarDeviceToken);
+router.post("/device-token/remove", notificationController.removerDeviceToken);
+router.put("/:id/read", notificationController.marcarComoLida);
+router.put("/mark/all-read", notificationController.marcarTodasComoLidas);
+router.delete("/:id", notificationController.apagarNotificacao);
 
-// Rota de broadcast (apenas admin)
 router.post("/broadcast", adminMiddleware, notificationController.enviarBroadcast);
 
 export default router;

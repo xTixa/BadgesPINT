@@ -36,6 +36,9 @@ class _DashboardPageState extends State<DashboardPage>
         constraints: const BoxConstraints(maxWidth: 1100),
         child: Column(
           children: <Widget>[
+            _buildHeader(context),
+            _buildLearningPaths(context),
+            _buildRecommendationsAndAlerts(context),
             _buildSearchBar(context),
             _buildTabBar(context),
             Expanded(child: _buildBadgeGrid(context)),
@@ -47,8 +50,12 @@ class _DashboardPageState extends State<DashboardPage>
 
   Widget _buildHeader(BuildContext context) {
     final obtained = widget.controller.badges.where((b) => b.isObtained).length;
-
     final total = widget.controller.badges.length;
+    final progress = total == 0 ? 0.0 : obtained / total;
+    final milestoneText =
+        obtained >= 3
+            ? 'Marco alcancado: ja concluiste pelo menos 3 badges.'
+            : 'Proximo marco: conclui 3 badges para desbloquear celebracao.';
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -74,16 +81,162 @@ class _DashboardPageState extends State<DashboardPage>
             const SizedBox(height: 8),
 
             Text(
-              '$obtained de $total badges obtidos',
+              '$obtained de $total badges obtidos - ${widget.controller.totalPoints} pontos',
               style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
 
             const SizedBox(height: 16),
 
             LinearProgressIndicator(
-              value: obtained / total,
+              value: progress,
               backgroundColor: Colors.white24,
               valueColor: const AlwaysStoppedAnimation(AppColors.accent),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  obtained >= 3 ? Icons.celebration : Icons.flag_outlined,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    milestoneText,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLearningPaths(BuildContext context) {
+    final controller = widget.controller;
+    final items = controller.badges.take(3).toList();
+    if (items.isEmpty) return const SizedBox.shrink();
+
+    return SizedBox(
+      height: 132,
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final badge = items[index];
+          final progress = controller.progressForBadge(badge.id);
+          final value =
+              progress == null || progress.total == 0
+                  ? (badge.isObtained ? 1.0 : 0.35)
+                  : progress.approved / progress.total;
+
+          return SizedBox(
+            width: 250,
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.route, color: AppColors.primary),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            badge.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    LinearProgressIndicator(
+                      value: value.clamp(0.0, 1.0).toDouble(),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${(value * 100).round()}% do learning path',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildRecommendationsAndAlerts(BuildContext context) {
+    final recommendations = widget.controller.recommendations.take(2).toList();
+    final alerts = widget.controller.expiryAlerts.take(2).toList();
+
+    if (recommendations.isEmpty && alerts.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Column(
+        children: [
+          ...recommendations.map(
+            (item) => _dashboardNotice(
+              Icons.auto_awesome,
+              'Proximo badge recomendado',
+              '${item.name} - ${item.reason}',
+            ),
+          ),
+          ...alerts.map(
+            (item) => _dashboardNotice(
+              Icons.schedule,
+              'Alerta de expiracao',
+              '${item.name} expira em ${item.expireInDays} dias',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _dashboardNotice(IconData icon, String title, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.borderLight),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  Text(text, maxLines: 2, overflow: TextOverflow.ellipsis),
+                ],
+              ),
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import database from "../config/database.js";
 import User from "./User.js";
+import { sendPushToUser, sendPushToUsers } from "../services/firebaseService.js";
 
 const Notification = database.define(
   "Notification",
@@ -60,5 +61,29 @@ const Notification = database.define(
     timestamps: true,
   }
 );
+
+Notification.afterCreate(async (notification) => {
+  try {
+    await sendPushToUser(notification.utilizador_id, notification);
+  } catch (error) {
+    console.error("Erro ao enviar push Firebase:", error.message);
+  }
+});
+
+Notification.afterBulkCreate(async (notifications) => {
+  try {
+    await sendPushToUsers(
+      notifications.map((notification) => notification.utilizador_id),
+      {
+        id: notifications[0]?.id ?? "",
+        tipo: notifications[0]?.tipo ?? "geral",
+        titulo: notifications[0]?.titulo ?? "Softinsa Badges",
+        mensagem: notifications[0]?.mensagem ?? "",
+      }
+    );
+  } catch (error) {
+    console.error("Erro ao enviar push Firebase em lote:", error.message);
+  }
+});
 
 export default Notification;

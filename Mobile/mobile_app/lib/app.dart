@@ -4,6 +4,7 @@ import 'auth/first_login_page.dart';
 import 'auth/login_page.dart';
 import 'auth/register_page.dart';
 import 'shared/app_theme.dart';
+import 'shared/notification_service.dart';
 import 'shared/session_storage.dart';
 import 'consultor/consultor_repository.dart';
 import 'consultor/consultor_controller.dart';
@@ -75,6 +76,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
 
     _controller?.dispose();
     _controller = controller;
+    await NotificationService.registerDeviceForUser(_repository);
 
     if (mounted) {
       setState(() {
@@ -108,6 +110,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   }
 
   Future<void> _handleLogout() async {
+    await NotificationService.unregisterDeviceForUser(_repository);
     await _repository.logout();
     _controller?.dispose();
     _controller = null;

@@ -54,8 +54,6 @@ class ConsultorController extends ChangeNotifier {
     pedidosStatus = results[4] as List<PedidoBadgeStatus>;
     notifications = results[5] as List<UserNotificationItem>;
 
-    recommendations = _repository.getRecommendationsMock();
-    expiryAlerts = _repository.getExpiryAlertsMock();
     ranking = _repository.getRankingMock();
 
     final areaId = profile?.areaId;
@@ -64,6 +62,9 @@ class ConsultorController extends ChangeNotifier {
     } else {
       preferredAreaBadges = <CatalogBadgeItem>[];
     }
+
+    recommendations = _buildRecommendations();
+    expiryAlerts = _buildExpiryAlerts();
 
     if (badges.isNotEmpty) {
       await selectBadge(badges.first.id);
@@ -110,6 +111,40 @@ class ConsultorController extends ChangeNotifier {
   int get globalProgress {
     if (badges.isEmpty) return 0;
     return ((badgesObtidos / badges.length) * 100).round();
+  }
+
+  List<RecommendationItem> _buildRecommendations() {
+    final obtainedIds = badges.where((badge) => badge.isObtained).map((badge) => badge.id).toSet();
+    final source = preferredAreaBadges.isNotEmpty ? preferredAreaBadges : catalogBadges;
+
+    return source
+        .where((badge) => !obtainedIds.contains(badge.id))
+        .take(4)
+        .map(
+          (badge) => RecommendationItem(
+            id: badge.id,
+            name: badge.name,
+            reason:
+                badge.areaName == null
+                    ? 'Proximo nivel recomendado no catalogo'
+                    : 'Recomendado para a tua area: ${badge.areaName}',
+            points: badge.points,
+          ),
+        )
+        .toList();
+  }
+
+  List<ExpiryAlert> _buildExpiryAlerts() {
+    return badges
+        .where((badge) => badge.expireInDays != null && badge.expireInDays! <= 30)
+        .map(
+          (badge) => ExpiryAlert(
+            id: badge.id,
+            name: badge.name,
+            expireInDays: badge.expireInDays!,
+          ),
+        )
+        .toList();
   }
 
   BadgeProgress? progressForBadge(int badgeId) {
@@ -175,7 +210,7 @@ class ConsultorController extends ChangeNotifier {
     if (bytes == null) return false;
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return DownloadHelper.savePdf(bytes, 'certificado_badge_${badgeId}_$timestamp.pdf');
+    return await DownloadHelper.savePdf(bytes, 'certificado_badge_${badgeId}_$timestamp.pdf');
   }
 
   Future<bool> markNotificationAsRead(int notificationId) async {

@@ -1,5 +1,6 @@
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
+import FcmToken from "../models/FcmToken.js";
 
 // Obter notificações do utilizador
 export const obterNotificacoes = async (req, res) => {
@@ -31,6 +32,83 @@ export const obterNotificacoes = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Erro ao obter notificações",
+      error: error.message,
+    });
+  }
+};
+
+export const registarDeviceToken = async (req, res) => {
+  try {
+    const utilizador_id = req.userId;
+    const { token, platform } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Token FCM obrigatorio",
+      });
+    }
+
+    const [deviceToken] = await FcmToken.findOrCreate({
+      where: { token },
+      defaults: {
+        utilizador_id,
+        token,
+        platform: platform ?? "mobile",
+        ativo: true,
+        ultimo_uso: new Date(),
+      },
+    });
+
+    if (deviceToken.utilizador_id !== utilizador_id || !deviceToken.ativo) {
+      deviceToken.utilizador_id = utilizador_id;
+      deviceToken.ativo = true;
+    }
+
+    deviceToken.platform = platform ?? deviceToken.platform;
+    deviceToken.ultimo_uso = new Date();
+    await deviceToken.save();
+
+    res.json({
+      success: true,
+      message: "Dispositivo registado para notificacoes push",
+    });
+  } catch (error) {
+    console.error("Erro ao registar token FCM:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao registar dispositivo",
+      error: error.message,
+    });
+  }
+};
+
+export const removerDeviceToken = async (req, res) => {
+  try {
+    const utilizador_id = req.userId;
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Token FCM obrigatorio",
+      });
+    }
+
+    await FcmToken.update(
+      { ativo: false },
+      { where: { utilizador_id, token } }
+    );
+
+    res.json({
+      success: true,
+      message: "Dispositivo removido das notificacoes push",
+    });
+  } catch (error) {
+    console.error("Erro ao remover token FCM:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao remover dispositivo",
       error: error.message,
     });
   }

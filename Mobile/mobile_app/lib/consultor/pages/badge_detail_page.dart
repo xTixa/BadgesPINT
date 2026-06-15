@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'upload_page.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
@@ -46,6 +49,30 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     }
 
     return pedido.first.workflowStatus;
+  }
+
+  String get _publicBadgeUrl =>
+      'https://badges.softinsa.pt/badge/${widget.badge.id}';
+
+  bool get _isObtained {
+    return widget.controller.badges.any(
+      (badge) => badge.id == widget.badge.id && badge.isObtained,
+    );
+  }
+
+  Future<void> _copyPublicLink(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: _publicBadgeUrl));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Link publico copiado')),
+    );
+  }
+
+  Future<void> _shareOnLinkedIn() async {
+    final uri = Uri.parse(
+      'https://www.linkedin.com/sharing/share-offsite/?url=${Uri.encodeComponent(_publicBadgeUrl)}',
+    );
+    await launchUrl(uri);
   }
 
   @override
@@ -114,6 +141,11 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                 const SizedBox(height: 12),
 
                 _infoChip(Icons.flag, estado),
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: () => _copyPublicLink(context),
+                  child: _infoChip(Icons.link, "Link publico"),
+                ),
 
                 const SizedBox(height: 20),
 
@@ -190,7 +222,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                 children: [
                   ...requisitos.map(
                     (req) => _requirementCard(
-                      req.title,
+                      req,
                       controller.latestEvidenceForRequirement(req.id) != null,
                     ),
                   ),
@@ -257,6 +289,28 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                 ),
 
                 const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _copyPublicLink(context),
+                        icon: const Icon(Icons.verified_outlined),
+                        label: const Text("Link publico"),
+                      ),
+                    ),
+                    if (_isObtained) ...[
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _shareOnLinkedIn,
+                          icon: const Icon(Icons.share),
+                          label: const Text("LinkedIn"),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 12),
                 if (candidaturaAtiva)
                   SizedBox(
                     width: double.infinity,
@@ -281,7 +335,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     );
   }
 
-  Widget _requirementCard(String title, bool completed) {
+  Widget _requirementCard(RequirementItem requirement, bool completed) {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 12),
@@ -303,9 +357,32 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
             const SizedBox(width: 12),
 
             Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    requirement.title,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  if (requirement.description.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      requirement.description,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+                  Text(
+                    requirement.code,
+                    style: const TextStyle(
+                      color: Color(0xFF0F62FE),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

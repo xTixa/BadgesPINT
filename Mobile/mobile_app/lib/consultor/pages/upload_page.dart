@@ -189,13 +189,16 @@ class _RequirementTileState extends State<RequirementTile>
   late Animation<Offset> _slide;
 
   String? selectedFileName;
+  String? selectedFileReference;
 
   Future<void> pickFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
 
     if (result != null) {
+      final file = result.files.single;
       setState(() {
-        selectedFileName = result.files.single.name;
+        selectedFileName = file.name;
+        selectedFileReference = file.path ?? file.name;
       });
     }
   }
@@ -461,7 +464,8 @@ class _RequirementTileState extends State<RequirementTile>
 
                                                   final ok = await widget
                                                       .onSubmit(
-                                                        "",
+                                                        selectedFileReference ??
+                                                            selectedFileName!,
                                                         notesCtrl.text,
                                                       );
 
@@ -489,6 +493,11 @@ class _RequirementTileState extends State<RequirementTile>
 
                                                   if (ok) {
                                                     notesCtrl.clear();
+                                                    setState(() {
+                                                      selectedFileName = null;
+                                                      selectedFileReference =
+                                                          null;
+                                                    });
                                                   }
                                                 },
                                         child:

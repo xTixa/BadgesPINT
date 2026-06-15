@@ -79,6 +79,39 @@ class ConsultorRepository {
     await _sessionStorage.clear();
   }
 
+  Future<bool> registerDeviceToken(String fcmToken) async {
+    if ((_token ?? '').isEmpty || fcmToken.isEmpty) return false;
+
+    try {
+      await _apiClient.post(
+        '/api/notifications/device-token',
+        token: _token,
+        body: <String, dynamic>{
+          'token': fcmToken,
+          'platform': 'mobile',
+        },
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> unregisterDeviceToken(String fcmToken) async {
+    if ((_token ?? '').isEmpty || fcmToken.isEmpty) return false;
+
+    try {
+      await _apiClient.post(
+        '/api/notifications/device-token/remove',
+        token: _token,
+        body: <String, dynamic>{'token': fcmToken},
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<bool> completeFirstLogin({required String newPassword}) async {
     if ((_token ?? '').isEmpty) return false;
 

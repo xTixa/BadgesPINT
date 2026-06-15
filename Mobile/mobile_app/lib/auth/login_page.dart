@@ -254,6 +254,7 @@ class _LoginPageState extends State<LoginPage> {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           final bool isWide = constraints.maxWidth >= 1000;
+          final bool isMobile = !isWide;
 
           final Widget heroPanel = Container(
             width: isWide ? constraints.maxWidth * 0.43 : double.infinity,
@@ -317,42 +318,44 @@ class _LoginPageState extends State<LoginPage> {
                                   : CrossAxisAlignment.center,
                           children: <Widget>[
                             _buildLogoSlot(compact: !isWide),
-                            const SizedBox(height: 26),
-                            Text(
-                              'Bem-vindo ao ecossistema de badges da Softinsa.',
-                              textAlign:
-                                  isWide ? TextAlign.left : TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 38,
-                                fontWeight: FontWeight.w900,
-                                height: 1.06,
-                                letterSpacing: -1.0,
+                            if (!isMobile) ...<Widget>[
+                              const SizedBox(height: 26),
+                              Text(
+                                'Bem-vindo ao ecossistema de badges da Softinsa.',
+                                textAlign:
+                                    isWide ? TextAlign.left : TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 38,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.06,
+                                  letterSpacing: -1.0,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 14),
-                            Text(
-                              'Entra para consultar competencias, submeter evidencias e acompanhar o teu progresso num ambiente moderno e consistente com a marca.',
-                              textAlign:
-                                  isWide ? TextAlign.left : TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.86),
-                                fontSize: 16,
-                                height: 1.5,
+                              const SizedBox(height: 14),
+                              Text(
+                                'Entra para consultar competencias, submeter evidencias e acompanhar o teu progresso num ambiente moderno e consistente com a marca.',
+                                textAlign:
+                                    isWide ? TextAlign.left : TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.86),
+                                  fontSize: 16,
+                                  height: 1.5,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 26),
-                            _buildFeatureCard(
-                              'Acesso rapido',
-                              'Mantem o email guardado neste dispositivo para um inicio de sessao mais rapido.',
-                              Icons.speed_rounded,
-                            ),
-                            const SizedBox(height: 12),
-                            _buildFeatureCard(
-                              'Interface limpa',
-                              'Tons azuis e brancos, com foco nas tarefas principais e leitura facil.',
-                              Icons.layers_rounded,
-                            ),
+                              const SizedBox(height: 26),
+                              _buildFeatureCard(
+                                'Acesso rapido',
+                                'Mantem o email guardado neste dispositivo para um inicio de sessao mais rapido.',
+                                Icons.speed_rounded,
+                              ),
+                              const SizedBox(height: 12),
+                              _buildFeatureCard(
+                                'Interface limpa',
+                                'Tons azuis e brancos, com foco nas tarefas principais e leitura facil.',
+                                Icons.layers_rounded,
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -700,7 +703,7 @@ class _LoginPageState extends State<LoginPage> {
           return SafeArea(
             child: Column(
               children: <Widget>[
-                SizedBox(height: 330, child: heroPanel),
+                SizedBox(height: 220, child: heroPanel),
                 Expanded(child: formPanel),
               ],
             ),

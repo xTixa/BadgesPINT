@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../consultor_controller.dart';
+import 'dashboard_page.dart';
 import 'home_page.dart';
 import 'history_page.dart';
+import 'notifications_page.dart';
 import 'profile_page.dart';
-import 'ranking_page.dart';
-import 'upload_page.dart';
 import 'settings_page.dart';
+import 'upload_page.dart';
 
 class ConsultorShellPage extends StatelessWidget {
   const ConsultorShellPage({
@@ -21,17 +22,17 @@ class ConsultorShellPage extends StatelessWidget {
   String _getPageTitle() {
     switch (controller.selectedTab) {
       case 0:
-        return "Home";
+        return 'Dashboard';
       case 1:
-        return "Histórico";
+        return 'Catalogo';
       case 2:
-        return "Upload";
+        return 'Upload';
       case 3:
-        return "Ranking";
+        return 'Historico';
       case 4:
-        return "Perfil";
+        return 'Perfil';
       default:
-        return "Softinsa Badges";
+        return 'Softinsa Badges';
     }
   }
 
@@ -47,10 +48,10 @@ class ConsultorShellPage extends StatelessWidget {
         }
 
         final pages = [
+          DashboardPage(controller: controller),
           HomePage(controller: controller),
-          HistoryPage(controller: controller),
           UploadPage(controller: controller),
-          RankingPage(controller: controller),
+          HistoryPage(controller: controller),
           ProfilePage(controller: controller),
         ];
 
@@ -60,13 +61,15 @@ class ConsultorShellPage extends StatelessWidget {
             backgroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
             title: Text(_getPageTitle()),
-
             actions: [
               IconButton(
                 icon: const Icon(Icons.notifications_outlined),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Notificações em breve")),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => NotificationsPage(controller: controller),
+                    ),
                   );
                 },
               ),
@@ -80,53 +83,49 @@ class ConsultorShellPage extends StatelessWidget {
                   elevation: 8,
                   color: Colors.white,
                   onSelected: (value) async {
-                    if (value == "settings") {
+                    if (value == 'settings') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const SettingsPage()),
                       );
                     }
 
-                    if (value == "logout") {
+                    if (value == 'logout') {
                       await onLogout();
                     }
                   },
-
                   child: CircleAvatar(
                     radius: 18,
                     backgroundColor: const Color(0xFF0F62FE),
                     child: Text(
-                      controller.profile?.name[0].toUpperCase() ?? "?",
+                      controller.profile?.name[0].toUpperCase() ?? '?',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-
                   itemBuilder:
-                      (context) => [
-                        const PopupMenuItem(
-                          value: "settings",
+                      (context) => const [
+                        PopupMenuItem(
+                          value: 'settings',
                           child: Row(
                             children: [
                               Icon(Icons.settings_outlined),
                               SizedBox(width: 12),
-                              Text("Definições"),
+                              Text('Definicoes'),
                             ],
                           ),
                         ),
-
-                        const PopupMenuDivider(),
-
-                        const PopupMenuItem(
-                          value: "logout",
+                        PopupMenuDivider(),
+                        PopupMenuItem(
+                          value: 'logout',
                           child: Row(
                             children: [
                               Icon(Icons.logout_rounded, color: Colors.red),
                               SizedBox(width: 12),
                               Text(
-                                "Terminar Sessão",
+                                'Terminar Sessao',
                                 style: TextStyle(color: Colors.red),
                               ),
                             ],
@@ -137,40 +136,30 @@ class ConsultorShellPage extends StatelessWidget {
               ),
             ],
           ),
-
           body: pages[controller.selectedTab],
-
           bottomNavigationBar: NavigationBar(
             selectedIndex: controller.selectedTab,
-
-            onDestinationSelected: (index) {
-              controller.changeTab(index);
-            },
-
+            onDestinationSelected: controller.changeTab,
             destinations: const [
               NavigationDestination(
-                icon: Icon(Icons.home_rounded),
-                label: "Home",
+                icon: Icon(Icons.dashboard_rounded),
+                label: 'Dashboard',
               ),
-
               NavigationDestination(
-                icon: Icon(Icons.history_rounded),
-                label: "Histórico",
+                icon: Icon(Icons.workspace_premium_rounded),
+                label: 'Catalogo',
               ),
-
               NavigationDestination(
                 icon: Icon(Icons.upload_rounded),
-                label: "Upload",
+                label: 'Upload',
               ),
-
               NavigationDestination(
-                icon: Icon(Icons.leaderboard_rounded),
-                label: "Ranking",
+                icon: Icon(Icons.history_rounded),
+                label: 'Historico',
               ),
-
               NavigationDestination(
                 icon: Icon(Icons.person_rounded),
-                label: "Perfil",
+                label: 'Perfil',
               ),
             ],
           ),

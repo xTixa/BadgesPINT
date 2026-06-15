@@ -1,9 +1,19 @@
 import 'package:flutter/foundation.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:universal_html/html.dart' as html;
 
 class DownloadHelper {
-  static bool savePdf(Uint8List bytes, String fileName) {
-    if (!kIsWeb) return false;
+  static Future<bool> savePdf(Uint8List bytes, String fileName) async {
+    if (!kIsWeb) {
+      final path = await FilePicker.platform.saveFile(
+        dialogTitle: 'Guardar certificado',
+        fileName: fileName,
+        type: FileType.custom,
+        allowedExtensions: <String>['pdf'],
+        bytes: bytes,
+      );
+      return path != null;
+    }
 
     final blob = html.Blob(<dynamic>[bytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);

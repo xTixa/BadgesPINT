@@ -12,6 +12,7 @@ import Notification from "./Notification.js";
 import AuditLog from "./AuditLog.js";
 import PasswordReset from "./PasswordReset.js";
 import SLA from "./SLA.js";
+import FcmToken from "./FcmToken.js";
 
 // Associations
 User.belongsTo(Area, { foreignKey: "area_id", as: "area" });
@@ -42,5 +43,6 @@ export {
   Notification,
   AuditLog,
   PasswordReset,
-  SLA
+  SLA,
+  FcmToken
 };

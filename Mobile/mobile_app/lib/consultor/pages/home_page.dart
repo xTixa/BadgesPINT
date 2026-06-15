@@ -119,7 +119,7 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             SizedBox(
-              height: 180,
+              height: 210,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
 
@@ -147,7 +147,7 @@ class HomePage extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.85,
+                childAspectRatio: 0.75,
               ),
               itemBuilder: (context, index) {
                 return _smallBadgeCard(

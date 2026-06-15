@@ -41,6 +41,28 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _submit() async {
+    if (_nameController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty) {
+      setState(() {
+        _message = 'Preenche nome e email.';
+      });
+      return;
+    }
+
+    if (_selectedAreaId == null) {
+      setState(() {
+        _message = 'Escolhe a tua area principal.';
+      });
+      return;
+    }
+
+    if (!_acceptedRgpd) {
+      setState(() {
+        _message = 'Tens de aceitar os termos RGPD.';
+      });
+      return;
+    }
+
     setState(() {
       _submitting = true;
       _message = null;
