@@ -25,6 +25,8 @@ export default function BadgeFormAdmin() {
 
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   // Simulação de carga de dados quando é edição
   useEffect(() => {
@@ -121,6 +123,46 @@ export default function BadgeFormAdmin() {
       console.log("Atualizar badge:", id, form);
     }
 
+  };
+
+  const readFileAsDataUrl = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const handleBadgeImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setImageError("Seleciona um ficheiro de imagem.");
+      return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+      setImageError("A imagem deve ter no maximo 3 MB.");
+      return;
+    }
+
+    try {
+      setImageUploading(true);
+      setImageError("");
+      const image = await readFileAsDataUrl(file);
+      const res = await api.post("/api/admin/badges/upload-image", {
+        image,
+        folder: "badges",
+      });
+      setForm((prev) => ({ ...prev, image_url: res.data.url }));
+    } catch (err) {
+      console.error("Erro ao enviar imagem:", err);
+      setImageError(err.response?.data?.error || "Erro ao enviar imagem.");
+    } finally {
+      setImageUploading(false);
+      event.target.value = "";
+    }
   };
 
   const updateRequirement = (index, field, value) => {
@@ -232,6 +274,35 @@ export default function BadgeFormAdmin() {
                   onChange={handleChange}
                   placeholder="https://..."
                 />
+              </div>
+            </div>
+
+            <div className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-[96px_minmax(0,1fr)]">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                  {form.image_url ? (
+                    <img src={form.image_url} alt="Preview do badge" className="h-full w-full object-cover" />
+                  ) : (
+                    <i className="bi bi-image text-3xl text-slate-300"></i>
+                  )}
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">
+                    Upload da imagem do badge
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBadgeImageUpload}
+                    disabled={imageUploading}
+                    className="block w-full text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-sky-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-sky-700 disabled:opacity-60"
+                  />
+                  <p className="mt-2 text-xs text-slate-500">
+                    PNG/JPG/WebP ate 3 MB. O URL fica guardado no campo acima.
+                  </p>
+                  {imageUploading && <p className="mt-2 text-sm text-sky-700">A enviar imagem...</p>}
+                  {imageError && <p className="mt-2 text-sm text-rose-600">{imageError}</p>}
+                </div>
               </div>
             </div>
 

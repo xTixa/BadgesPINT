@@ -4,7 +4,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "audit:db": "node scripts/audit-db.js",
+    "seed:badge-images": "node scripts/backfill-badge-images.js",
+    "cleanup:db": "node scripts/cleanup-db.js",
+    "schema:ensure": "node scripts/ensure-schema.js"
   },
   "keywords": [],
   "author": "",

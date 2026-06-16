@@ -204,15 +204,18 @@ export async function criarPedido(req, res) {
       consultor_id,
       badge_id,
       status: "pendente",
-      workflow_status: "open",
-      created_at: new Date()
+      workflow_status: "submitted",
+      submitted_at: new Date()
     });
 
     res.status(201).json(pedido);
 
   } catch (err) {
     console.error("Erro ao criar pedido:", err);
-    res.status(500).json({ message: "Erro ao criar pedido de badge" });
+    res.status(500).json({
+      message: "Erro ao criar pedido de badge",
+      detail: process.env.NODE_ENV === "production" ? undefined : err.message,
+    });
   }
 }
 

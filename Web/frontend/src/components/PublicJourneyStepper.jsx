@@ -25,7 +25,7 @@ export default function PublicJourneyStepper({ currentStep }) {
               key={step.key}
               className={`rounded-lg border px-3 py-2 text-center text-xs font-semibold sm:text-sm ${
                 isCurrent
-                  ? "border-[#16558C]/35 bg-[#16558C]/10 text-[#16558C]"
+                  ? "border-[#0F62FE]/35 bg-[#0F62FE]/10 text-[#0F62FE]"
                   : isDone
                     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                     : "border-slate-200 bg-slate-50 text-slate-500"

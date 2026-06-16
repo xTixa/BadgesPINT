@@ -1,11 +1,11 @@
 const toneClass = {
-  sky: "text-[#16558C]",
-  blue: "text-[#3F76A6]",
-  cyan: "text-[#04C4D9]",
-  soft: "text-[#7A98BF]",
+  sky: "text-[#0F62FE]",
+  blue: "text-[#0F62FE]",
+  cyan: "text-[#00AEEF]",
+  soft: "text-[#16558C]",
   amber: "text-amber-500",
   emerald: "text-emerald-600",
-  indigo: "text-[#3F76A6]",
+  indigo: "text-[#0F62FE]",
   rose: "text-rose-600",
   slate: "text-slate-700",
 };

@@ -14,17 +14,17 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: "#EEF6FC",
-          100: "#D8EAF8",
-          200: "#B6D7EE",
-          300: "#8BBEDD",
-          400: "#5FA4CC",
-          500: "#3F76A6",
-          600: "#16558C",
-          700: "#124878",
-          800: "#0F3A62",
+          50: "#EEF6FF",
+          100: "#D9EAFE",
+          200: "#B7D6FE",
+          300: "#8ABAFE",
+          400: "#5C9AFD",
+          500: "#0F62FE",
+          600: "#0B55DD",
+          700: "#16558C",
+          800: "#124878",
           900: "#0B2D4D",
-          accent: "#04C4D9",
+          accent: "#00AEEF",
         },
         primary: "#0F62FE", // Azul escuro
         accent: "#00AEEF", // Azul claro

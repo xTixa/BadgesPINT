@@ -25,9 +25,20 @@ export default function Badges() {
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [areaName, setAreaName] = useState("");
   const [search, setSearch] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("todos");
+  const [applyingId, setApplyingId] = useState(null);
+  const [appliedBadges, setAppliedBadges] = useState(new Set());
+  const user = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
+  }, []);
+  const canApply = user?.role === "consultant";
 
   useEffect(() => {
     let active = true;
@@ -103,14 +114,40 @@ export default function Badges() {
 
   const hasFilters = search.trim() || selectedLevel !== "todos";
 
+  const handleApply = async (badge) => {
+    if (!user) {
+      setError("Inicia sessao como consultor para te candidatares a um badge.");
+      return;
+    }
+
+    if (user.role !== "consultant") {
+      setError("Apenas consultores podem candidatar-se a badges.");
+      return;
+    }
+
+    try {
+      setApplyingId(badge.id);
+      setError("");
+      setSuccess("");
+      await api.post("/api/pedidos", { badge_id: badge.id });
+      setAppliedBadges((current) => new Set([...current, badge.id]));
+      setSuccess("Candidatura criada e enviada para validacao.");
+    } catch (err) {
+      console.error("Erro ao candidatar:", err);
+      setError(err.response?.data?.message || "Nao foi possivel criar a candidatura.");
+    } finally {
+      setApplyingId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <section className="bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] px-6 py-16 text-[#F2F2F2]">
+      <section className="bg-gradient-to-br from-[#0F62FE] via-[#0F62FE] to-[#00AEEF] px-6 py-16 text-[#F2F2F2]">
         <div className="mx-auto max-w-7xl">
           <div className="mb-4 flex items-center">
             <Link
               to={id ? "/areas" : "/"}
-              className="flex items-center gap-2 text-sm font-medium text-[#04C4D9] transition hover:text-white focus-visible:ring-2 focus-visible:ring-white/60"
+              className="flex items-center gap-2 text-sm font-medium text-[#BFEFFF] transition hover:text-white focus-visible:ring-2 focus-visible:ring-white/60"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -120,7 +157,7 @@ export default function Badges() {
           </div>
 
           <div className="max-w-3xl">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#04C4D9]">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#BFEFFF]">
               Catálogo de competências
             </p>
             <h1 className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
@@ -148,7 +185,7 @@ export default function Badges() {
         />
         <PublicJourneyStepper currentStep="badges" />
 
-        <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
+        <div className="mb-6 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/5 px-4 py-3 text-sm text-slate-700">
           Passo 4: escolhe um badge para veres os requisitos necessários.
         </div>
 
@@ -163,13 +200,24 @@ export default function Badges() {
           </div>
         )}
 
+        {success && (
+          <div
+            role="status"
+            className="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center"
+          >
+            <p className="text-sm font-semibold text-emerald-700 sm:text-base">
+              {success}
+            </p>
+          </div>
+        )}
+
         {loading ? (
           <div
             role="status"
             aria-live="polite"
             className="flex flex-col items-center justify-center py-20"
           >
-            <div className="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-[#16558C]"></div>
+            <div className="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
             <p className="text-lg text-slate-600">A carregar badges...</p>
           </div>
         ) : badges.length > 0 ? (
@@ -199,7 +247,7 @@ export default function Badges() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Pesquisar por nome, descrição ou área..."
-                    className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#16558C] focus:ring-2 focus:ring-[#16558C]/20"
+                    className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                   />
                 </label>
 
@@ -208,7 +256,7 @@ export default function Badges() {
                   <select
                     value={selectedLevel}
                     onChange={(event) => setSelectedLevel(event.target.value)}
-                    className="h-full min-h-[46px] w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#16558C] focus:ring-2 focus:ring-[#16558C]/20"
+                    className="h-full min-h-[46px] w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                   >
                     <option value="todos">Todos os níveis</option>
                     {levels.map((level) => (
@@ -236,7 +284,14 @@ export default function Badges() {
             {filteredBadges.length > 0 ? (
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {filteredBadges.map((badge) => (
-                  <BadgeCard key={badge.id} badge={badge} />
+                  <BadgeCard
+                    key={badge.id}
+                    badge={badge}
+                    canApply={canApply}
+                    onApply={handleApply}
+                    applying={applyingId === badge.id}
+                    applied={appliedBadges.has(badge.id)}
+                  />
                 ))}
               </div>
             ) : (

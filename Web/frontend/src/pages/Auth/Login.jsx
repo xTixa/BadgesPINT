@@ -113,7 +113,7 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-white via-[#F8FBFF] to-[#EEF6FF]">
         <form
           onSubmit={handleLogin}
-          className="w-full max-w-sm rounded-3xl bg-white px-10 py-10 md:py-12 mx-6 border border-[#16558C]/30 shadow-[0_20px_50px_rgba(15,98,254,0.12)]"
+          className="w-full max-w-sm rounded-3xl bg-white px-10 py-10 md:py-12 mx-6 border border-[#0F62FE]/30 shadow-[0_20px_50px_rgba(15,98,254,0.12)]"
         >
           <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
             Iniciar Sessão
@@ -151,7 +151,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-slate-800 hover:text-[#04C4D9]"
+                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-slate-800 hover:text-[#00AEEF]"
                 aria-label={
                   showPassword ? "Ocultar password" : "Mostrar password"
                 }
@@ -167,7 +167,7 @@ export default function Login() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#16558C]"
+                className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#0F62FE]"
               />
               Guardar email neste dispositivo
             </label>

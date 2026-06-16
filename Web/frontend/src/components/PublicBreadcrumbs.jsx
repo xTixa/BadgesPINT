@@ -12,7 +12,7 @@ export default function PublicBreadcrumbs({ items = [] }) {
           return (
             <li key={`${item.label}-${index}`} className="flex items-center gap-2">
               {item.to && !isLast ? (
-                <Link to={item.to} className="font-medium text-[#16558C] transition hover:opacity-80">
+                <Link to={item.to} className="font-medium text-[#0F62FE] transition hover:opacity-80">
                   {item.label}
                 </Link>
               ) : (

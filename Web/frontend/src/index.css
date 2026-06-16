@@ -3,10 +3,11 @@
 @tailwind utilities;
 
 :root {
-	--color-primary: #16558C;
-	--color-secondary: #3F76A6;
-	--color-soft: #7A98BF;
-	--color-accent: #04C4D9;
+	--color-primary: #0F62FE;
+	--color-primary-dark: #16558C;
+	--color-secondary: #00AEEF;
+	--color-soft: #BFEFFF;
+	--color-accent: #00AEEF;
 	--color-surface: #F2F2F2;
 	--color-text: #1f2937;
 	--radius-xl: 1rem;
@@ -76,7 +77,7 @@ textarea:focus-visible,
 
 	.ui-page-header {
 		@apply mb-4 rounded-2xl p-4 text-white;
-		background: linear-gradient(135deg, #16558C 0%, #3F76A6 60%, #7A98BF 100%);
+		background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 58%, var(--color-secondary) 100%);
 		box-shadow: var(--shadow-soft);
 	}
 
@@ -111,19 +112,21 @@ textarea:focus-visible,
 
 	.ui-btn-primary {
 		@apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold text-white transition;
-		background: linear-gradient(90deg, #16558C 0%, #2B6EA8 100%);
+		background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
 	}
 
 	.ui-btn-primary:hover {
-		box-shadow: 0 6px 14px rgba(22, 85, 140, 0.25);
+		box-shadow: 0 6px 14px rgba(15, 98, 254, 0.25);
 	}
 
 	.ui-btn-secondary {
-		@apply inline-flex items-center justify-center rounded-xl border border-[#16558C]/30 bg-white px-4 py-2 text-sm font-semibold text-[#16558C] transition;
+		@apply inline-flex items-center justify-center rounded-xl border bg-white px-4 py-2 text-sm font-semibold transition;
+		border-color: color-mix(in srgb, var(--color-primary) 30%, white);
+		color: var(--color-primary);
 	}
 
 	.ui-btn-secondary:hover {
-		@apply bg-[#16558C]/10;
+		background-color: color-mix(in srgb, var(--color-primary) 10%, white);
 	}
 
 	.ui-input {
@@ -132,8 +135,8 @@ textarea:focus-visible,
 
 	.ui-input:focus {
 		@apply ring-2;
-		border-color: #16558C;
-		ring-color: color-mix(in srgb, #16558C 20%, white);
+		border-color: var(--color-primary);
+		ring-color: color-mix(in srgb, var(--color-primary) 20%, white);
 	}
 
 	@media (min-width: 1024px) {

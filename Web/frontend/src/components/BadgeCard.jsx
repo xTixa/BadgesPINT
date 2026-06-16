@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function BadgeCard({ badge }) {
+export default function BadgeCard({ badge, onApply, applying = false, applied = false, canApply = false }) {
   const level = badge?.level || badge?.nivel || badge?.level_name || "Junior";
   const areaName =
     badge?.area?.name || badge?.area?.nome || badge?.area_name || "Badge";
@@ -10,37 +10,22 @@ export default function BadgeCard({ badge }) {
     badge?.descricao ||
     "Este badge representa a conquista de uma competência específica.";
   const points = badge?.points ?? badge?.pontos ?? badge?.score ?? 0;
+  const imageUrl = badge?.image_url || badge?.imageUrl || "";
 
   return (
     <article className="group overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(15,98,254,0.15)]">
       <div className="relative flex h-40 items-center justify-center bg-gradient-to-r from-[#0F62FE] to-[#00AEEF]">
         <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
 
-        <svg
-          className="h-20 w-20 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.8}
-            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806
-          3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806
-          3.42 3.42 0 013.138 3.138 3.42 3.42 0
-          .806 1.946 3.42 3.42 0 010 4.438
-          3.42 3.42 0 00-.806 1.946 3.42 3.42
-          0 01-3.138 3.138 3.42 3.42 0 00-1.946.806
-          3.42 3.42 0 01-4.438 0 3.42 3.42 0
-          00-1.946-.806 3.42 3.42 0
-          01-3.138-3.138 3.42 3.42 0
-          00-.806-1.946 3.42 3.42 0
-          010-4.438 3.42 3.42 0
-          00.806-1.946 3.42 3.42 0
-          013.138-3.138z"
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={description}
+            className="relative z-10 h-24 w-24 rounded-3xl object-cover shadow-lg ring-4 ring-white/30"
           />
-        </svg>
+        ) : (
+          <i className="bi bi-award relative z-10 text-7xl text-white"></i>
+        )}
 
         <div className="absolute right-4 top-4 rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">
           {level}
@@ -70,12 +55,25 @@ export default function BadgeCard({ badge }) {
           </span>
         </div>
 
-        <Link
-          to={`/badges/${badge?.id}/requirements`}
-          className="block w-full rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-3 text-center font-semibold text-white shadow-md transition hover:scale-[1.02]"
-        >
-          Ver Requisitos
-        </Link>
+        <div className="grid grid-cols-1 gap-2">
+          <Link
+            to={`/badges/${badge?.id}/requirements`}
+            className="block w-full rounded-2xl border border-[#0F62FE]/20 px-5 py-3 text-center font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+          >
+            Ver Requisitos
+          </Link>
+
+          {canApply && (
+            <button
+              type="button"
+              onClick={() => onApply?.(badge)}
+              disabled={applying || applied}
+              className="block w-full rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-3 text-center font-semibold text-white shadow-md transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+            >
+              {applied ? "Candidatura criada" : applying ? "A candidatar..." : "Candidatar-me"}
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );

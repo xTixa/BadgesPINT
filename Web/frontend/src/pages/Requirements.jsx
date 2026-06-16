@@ -10,6 +10,15 @@ export default function Requirements() {
   const [badge, setBadge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [applying, setApplying] = useState(false);
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
+  })();
 
   useEffect(() => {
     if (!id) return;
@@ -40,19 +49,44 @@ export default function Requirements() {
 
   const getLevelColor = (level) => {
     const colors = {
-      Junior: "bg-[#16558C]",
-      Intermedio: "bg-[#2B6EA8]",
-      Senior: "bg-[#16558C]",
-      Especialista: "bg-[#16558C]",
-      Lider: "bg-[#16558C]",
+      Junior: "bg-[#0F62FE]",
+      Intermedio: "bg-[#00AEEF]",
+      Senior: "bg-[#0F62FE]",
+      Especialista: "bg-[#0F62FE]",
+      Lider: "bg-[#0F62FE]",
     };
-    return colors[level] || "bg-[#16558C]";
+    return colors[level] || "bg-[#0F62FE]";
+  };
+
+  const handleApply = async () => {
+    if (!user) {
+      setError("Inicia sessao como consultor para te candidatares a este badge.");
+      return;
+    }
+
+    if (user.role !== "consultant") {
+      setError("Apenas consultores podem candidatar-se a badges.");
+      return;
+    }
+
+    try {
+      setApplying(true);
+      setError("");
+      setSuccess("");
+      await api.post("/api/pedidos", { badge_id: Number(id) });
+      setSuccess("Candidatura criada e enviada para validacao.");
+    } catch (err) {
+      console.error("Erro ao candidatar:", err);
+      setError(err.response?.data?.message || "Nao foi possivel criar a candidatura.");
+    } finally {
+      setApplying(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       {/* Header Section */}
-      <div className={`${badge ? getLevelColor(badge.level) : "bg-[#16558C]"} text-white py-16 px-6 border-b border-[#16558C]`}>
+      <div className={`${badge ? getLevelColor(badge.level) : "bg-[#0F62FE]"} text-white py-16 px-6 border-b border-[#0F62FE]`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
@@ -69,7 +103,7 @@ export default function Requirements() {
           <div className="flex items-center gap-6">
             {/* Badge Icon */}
             <div className="hidden md:block">
-              <div className="w-24 h-24 bg-[#16558C] rounded-2xl flex items-center justify-center border border-[#F2F2F2]">
+              <div className="w-24 h-24 bg-[#0F62FE] rounded-2xl flex items-center justify-center border border-[#F2F2F2]">
                 <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 .806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
@@ -82,7 +116,7 @@ export default function Requirements() {
               </h1>
               {badge && (
                 <div className="flex flex-wrap items-center gap-3 mt-4">
-                  <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#16558C] text-white">
+                  <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#0F62FE] text-white">
                     {badge.area?.name}
                   </span>
                   <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#F2F2F2] text-slate-800">
@@ -112,7 +146,7 @@ export default function Requirements() {
         />
         <PublicJourneyStepper currentStep="requirements" />
 
-        <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
+        <div className="mb-6 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/5 px-4 py-3 text-sm text-slate-700">
           Passo final: completa os requisitos e submete evidências para validação.
         </div>
 
@@ -122,9 +156,15 @@ export default function Requirements() {
           </div>
         )}
 
+        {success && (
+          <div role="status" className="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center">
+            <p className="text-sm font-semibold text-emerald-700 sm:text-base">{success}</p>
+          </div>
+        )}
+
         {loading ? (
           <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0F62FE] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar requisitos...</p>
           </div>
         ) : reqs.length > 0 ? (
@@ -154,7 +194,7 @@ export default function Requirements() {
                   <div className="flex items-start gap-4 p-6">
                     {/* Number Badge */}
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-[#16558C] text-white flex items-center justify-center font-bold text-lg">
+                      <div className="w-12 h-12 rounded-full bg-[#0F62FE] text-white flex items-center justify-center font-bold text-lg">
                         {index + 1}
                       </div>
                     </div>
@@ -162,7 +202,7 @@ export default function Requirements() {
                     {/* Content */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#16558C] text-white">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#0F62FE] text-white">
                           {r.code}
                         </span>
                       </div>
@@ -173,7 +213,7 @@ export default function Requirements() {
 
                     {/* Checkbox (decorativo) */}
                     <div className="flex-shrink-0">
-                      <div className="w-6 h-6 border-2 border-[#16558C] rounded"></div>
+                      <div className="w-6 h-6 border-2 border-[#0F62FE] rounded"></div>
                     </div>
                   </div>
                 </div>
@@ -181,14 +221,25 @@ export default function Requirements() {
             </div>
 
             {/* Action Card */}
-            <div className="bg-gradient-to-r from-[#16558C] to-[#2B6EA8] rounded-2xl p-8 mt-8 text-white text-center border border-[#16558C] shadow-sm">
+            <div className="bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] rounded-2xl p-8 mt-8 text-white text-center border border-[#0F62FE] shadow-sm">
               <h3 className="text-2xl font-bold mb-3">Pronto para conquistares este badge?</h3>
-              <p className="text-[#04C4D9] mb-6 max-w-2xl mx-auto">
+              <p className="text-[#BFEFFF] mb-6 max-w-2xl mx-auto">
                 Completa todos os requisitos e submete as tuas evidências para validação.
               </p>
-              <Link to="/consultor/upload" className="inline-block px-8 py-3 bg-white text-slate-800 rounded-xl font-semibold border border-[#16558C] shadow-sm transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-white/70">
-                Submeter Evidências
-              </Link>
+              {user?.role === "consultant" ? (
+                <button
+                  type="button"
+                  onClick={handleApply}
+                  disabled={applying}
+                  className="inline-block rounded-xl border border-[#0F62FE] bg-white px-8 py-3 font-semibold text-slate-800 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {applying ? "A criar candidatura..." : "Candidatar-me a este badge"}
+                </button>
+              ) : (
+                <Link to="/login" className="inline-block px-8 py-3 bg-white text-slate-800 rounded-xl font-semibold border border-[#0F62FE] shadow-sm transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-white/70">
+                  Entrar para candidatar
+                </Link>
+              )}
             </div>
           </div>
         ) : (

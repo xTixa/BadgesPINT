@@ -41,6 +41,7 @@ router.use("/api/audit-logs", auditLogRoutes);
 router.use("/api/tickets", ticketRoutes);
 router.use("/api/notifications", notificationRoutes);
 router.use("/api/admin/pedidos", pedidosRoutes);
+router.use("/api/pedidos", pedidosRoutes);
 router.use("/api/admin/slas", slaRoutes);
 
 

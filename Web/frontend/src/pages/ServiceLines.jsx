@@ -51,18 +51,18 @@ export default function ServiceLines() {
   };
 
   const getCardColor = (index) => {
-    const colors = ["bg-[#16558C]", "bg-[#2B6EA8]", "bg-[#16558C]", "bg-[#1D6AA8]"];
+    const colors = ["bg-[#0F62FE]", "bg-[#00AEEF]", "bg-[#0F62FE]", "bg-[#00AEEF]"];
     return colors[index % colors.length];
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <div className="bg-gradient-to-br from-[#124878] via-[#16558C] to-[#1D6AA8] text-[#F2F2F2] py-16 px-6 border-b border-[#16558C]">
+      <div className="bg-gradient-to-br from-[#0F62FE] via-[#0F62FE] to-[#00AEEF] text-[#F2F2F2] py-16 px-6 border-b border-[#0F62FE]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-4">
             <Link 
               to="/learning-paths" 
-              className="text-[#04C4D9] hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
+              className="text-[#BFEFFF] hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -73,7 +73,7 @@ export default function ServiceLines() {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
             Linhas de Serviço
           </h1>
-          <p className="text-lg md:text-xl text-[#04C4D9] max-w-3xl">
+          <p className="text-lg md:text-xl text-[#BFEFFF] max-w-3xl">
             {pathName && `Percurso: ${pathName} - `}
             Escolhe a linha de serviço que melhor se adequa aos teus objetivos profissionais.
           </p>
@@ -91,7 +91,7 @@ export default function ServiceLines() {
         />
         <PublicJourneyStepper currentStep="service-lines" />
 
-        <div className="mb-6 rounded-xl border border-[#16558C]/20 bg-[#16558C]/5 px-4 py-3 text-sm text-slate-700">
+        <div className="mb-6 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/5 px-4 py-3 text-sm text-slate-700">
           Passo 2: Escolhe uma linha de serviço para veres as áreas de competência.
         </div>
 
@@ -103,7 +103,7 @@ export default function ServiceLines() {
 
         {loading ? (
           <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#16558C] mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0F62FE] mb-4"></div>
             <p className="text-gray-600 text-lg">A carregar linhas de serviço...</p>
           </div>
         ) : sls.length > 0 ? (
@@ -124,7 +124,7 @@ export default function ServiceLines() {
                   </div>
                   
                   {/* Badge com número */}
-                  <div className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#16558C]">
+                  <div className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#0F62FE]">
                     <span className="text-lg font-bold text-slate-800">{index + 1}</span>
                   </div>
                 </div>
@@ -141,7 +141,7 @@ export default function ServiceLines() {
                   {/* Action Button */}
                   <Link
                     to={`/service-lines/${sl.id}/areas`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-gradient-to-r from-[#16558C] to-[#2B6EA8] text-white font-semibold shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#16558C]/35"
+                    className="block w-full text-center px-6 py-3 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] text-white font-semibold shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#0F62FE]/35"
                   >
                     Ver Áreas →
                   </Link>

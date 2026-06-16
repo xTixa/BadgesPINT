@@ -153,7 +153,7 @@ export default function Sidebar({ user }) {
 
         {/* Footer items */}
         {menu.footer.length > 0 && (
-          <div className="border-t border-[#16558C]/15 p-2">
+          <div className="border-t border-[#0F62FE]/15 p-2">
             {(!collapsed || isMobile) && (
               <p className="px-2 pb-1 text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">
                 Sistema

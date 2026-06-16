@@ -103,8 +103,8 @@ export default function Navbar() {
   const mobileLinkClass = ({ isActive }) =>
     `mb-1 block rounded-md px-3 py-2 no-underline text-sm font-semibold transition ${
       isActive
-        ? "bg-[#16558C]/12 text-[#16558C]"
-        : "text-slate-700 hover:bg-[#16558C]/10 hover:text-[#16558C]"
+        ? "bg-[#0F62FE]/10 text-[#0F62FE]"
+        : "text-slate-700 hover:bg-[#0F62FE]/10 hover:text-[#0F62FE]"
     }`;
 
   return (
@@ -130,7 +130,7 @@ export default function Navbar() {
 
           {/* LINKS DESKTOP */}
           {!user && (
-            <div className="hidden md:flex items-center gap-1.5 rounded-full border border-[#16558C]/20 bg-white/80 p-1 shadow-sm">
+            <div className="hidden md:flex items-center gap-1.5 rounded-full border border-[#0F62FE]/20 bg-white/80 p-1 shadow-sm">
               {publicLinks.map(({ to, label }) => (
                 <NavLink key={to} to={to} className={navLinkClass}>
                   {label}
@@ -144,7 +144,7 @@ export default function Navbar() {
             {!user ? (
               <Link
                 to="/login"
-                className="rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF]px-5 py-2 text-sm font-semibold text-white no-underline shadow-sm transition hover:shadow-md"
+                className="rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-2 text-sm font-semibold text-white no-underline shadow-sm transition hover:shadow-md"
               >
                 Entrar
               </Link>
@@ -165,7 +165,7 @@ export default function Navbar() {
                     aria-expanded={dropdownOpen}
                     aria-controls="account-menu"
                     aria-label="Abrir menu da conta"
-                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#0F62FE]/20 bg-white px-3 py-2 font-semibold text-slate-800 shadow-sm transition hover:border-[#0F62FE] focus-visible:ring-2 focus-visible:ring-[#16558C]/30"
+                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#0F62FE]/20 bg-white px-3 py-2 font-semibold text-slate-800 shadow-sm transition hover:border-[#0F62FE] focus-visible:ring-2 focus-visible:ring-[#0F62FE]/30"
                   >
                     <i className="bi bi-person-circle text-lg text-[#0F62FE]"></i>
                     {firstName}
@@ -212,7 +212,7 @@ export default function Navbar() {
                       <button
                         onClick={handleLogout}
                         role="menuitem"
-                        className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg border-0 border-t border-[#16558C]/20 bg-transparent px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+                        className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg border-0 border-t border-[#0F62FE]/20 bg-transparent px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50"
                       >
                         <i className="bi bi-box-arrow-right"></i>
                         Logout
@@ -230,7 +230,7 @@ export default function Navbar() {
             aria-label={open ? "Fechar menu" : "Abrir menu"}
             aria-expanded={open}
             aria-controls="mobile-menu"
-            className="cursor-pointer rounded-lg border border-[#0F62FE]/20 bg-white p-2 text-slate-800 transition hover:border-[#16558C] focus-visible:ring-2 focus-visible:ring-[#16558C]/30 md:hidden"
+            className="cursor-pointer rounded-lg border border-[#0F62FE]/20 bg-white p-2 text-slate-800 transition hover:border-[#0F62FE] focus-visible:ring-2 focus-visible:ring-[#0F62FE]/30 md:hidden"
             onClick={() => setOpen(!open)}
           >
             <i className={`bi ${open ? "bi-x-lg" : "bi-list"} text-xl`}></i>
@@ -288,7 +288,7 @@ export default function Navbar() {
                 </NavLink>
                 <button
                   onClick={handleLogout}
-                  className="mt-2 block w-full cursor-pointer rounded-md border-0 bg-gradient-to-r from-[#16558C] to-[#2B6EA8] px-3 py-2 text-sm font-semibold text-white shadow-sm"
+                  className="mt-2 block w-full cursor-pointer rounded-md border-0 bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-3 py-2 text-sm font-semibold text-white shadow-sm"
                 >
                   Terminar Sessão
                 </button>

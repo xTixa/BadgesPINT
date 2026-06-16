@@ -9,8 +9,11 @@ import {
   adminUploadBadgeImage,
   adminGenerateBadgeCertificate
 } from "../controllers/adminBadgeController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = Router();
+
+router.use(protect(["admin"]));
 
 router.get("/", adminGetAllBadges);
 router.get("/:id", adminGetBadge);
