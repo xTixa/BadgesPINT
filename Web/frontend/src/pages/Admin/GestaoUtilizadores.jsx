@@ -40,10 +40,17 @@ export default function GestaoUtilizadores() {
   const [success, setSuccess] = useState("");
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
-  const [form, setForm] = useState({ nome: "", email: "" });
+  const [areas, setAreas] = useState([]);
+  const [form, setForm] = useState({
+    nome: "",
+    email: "",
+    role: "consultant",
+    area_id: "",
+  });
 
   useEffect(() => {
     fetchUsers();
+    fetchAreas();
   }, []);
 
   async function fetchUsers() {
@@ -70,29 +77,49 @@ export default function GestaoUtilizadores() {
     }
   }
 
+  async function fetchAreas() {
+    try {
+      const response = await api.get("/api/areas");
+      setAreas(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      console.error("Erro ao carregar areas:", err);
+    }
+  }
+
   async function handleCreateUser(event) {
     event.preventDefault();
     setError("");
     setSuccess("");
 
     if (!form.nome.trim() || !form.email.trim()) {
-      setError("Preenche o nome e o email do novo consultor.");
+      setError("Preenche o nome e o email do novo utilizador.");
+      return;
+    }
+
+    if (form.role === "service_line_leader" && !form.area_id) {
+      setError("Seleciona uma area para o Service Line Leader.");
       return;
     }
 
     try {
       setSaving(true);
-      const response = await api.post("/api/users/register", {
-        nome: form.nome.trim(),
+      const response = await api.post("/api/admin/users", {
+        name: form.nome.trim(),
         email: form.email.trim(),
+        role: form.role,
+        area_id: form.area_id ? Number(form.area_id) : null,
       });
 
-      setForm({ nome: "", email: "" });
-      setSuccess(
-        `Consultor criado com sucesso. Password temporaria: ${
-          response.data?.temporaryPassword || "123456"
-        }`,
-      );
+      setForm({ nome: "", email: "", role: "consultant", area_id: "" });
+      const emailNote = response.data?.emailSent
+        ? " Email enviado com a password temporaria."
+        : response.data?.emailError
+          ? ` ${response.data.emailError}`
+          : "";
+      const passwordNote = response.data?.temporaryPassword
+        ? ` Password temporaria: ${response.data.temporaryPassword}`
+        : "";
+      setSuccess(`${getRoleLabel(response.data?.role)} criado com sucesso.${emailNote}${passwordNote}`);
       fetchUsers();
     } catch (err) {
       console.error("Erro ao criar utilizador:", err);
@@ -150,7 +177,7 @@ export default function GestaoUtilizadores() {
             <h1 className="text-3xl font-bold">Gestao de Utilizadores</h1>
             <p className="mt-2 max-w-2xl text-white/80">
               Consulta perfis registados, filtra por funcao e cria novos
-              consultores para a plataforma.
+              utilizadores para a plataforma.
             </p>
           </div>
         </div>
@@ -232,7 +259,7 @@ export default function GestaoUtilizadores() {
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <h2 className="mb-3 text-base font-bold text-slate-900">
-              Novo consultor
+              Novo utilizador
             </h2>
             <form className="space-y-3" onSubmit={handleCreateUser}>
               <div>
@@ -264,13 +291,61 @@ export default function GestaoUtilizadores() {
                 />
               </div>
 
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">
+                  Perfil
+                </label>
+                <select
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  value={form.role}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      role: event.target.value,
+                      area_id:
+                        event.target.value === "service_line_leader"
+                          ? current.area_id
+                          : "",
+                    }))
+                  }
+                >
+                  {roleOptions.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {form.role === "service_line_leader" && (
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">
+                    Area
+                  </label>
+                  <select
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                    value={form.area_id}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, area_id: event.target.value }))
+                    }
+                  >
+                    <option value="">Selecionar area</option>
+                    {areas.map((area) => (
+                      <option key={area.id} value={area.id}>
+                        {area.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <button
                 type="submit"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={saving}
               >
                 <i className="bi bi-person-plus"></i>
-                {saving ? "A criar..." : "Criar consultor"}
+                {saving ? "A criar..." : "Criar utilizador"}
               </button>
             </form>
           </section>

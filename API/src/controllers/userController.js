@@ -1,5 +1,13 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import {
+  buildEmailStatus,
+  sendTemporaryPasswordEmail,
+  shouldExposeEmailSecretsForDev,
+} from "../services/mailService.js";
+
+const generateTemporaryPassword = () => crypto.randomBytes(6).toString("base64url");
 
 export const registerConsultant = async (req, res) => {
   try {
@@ -9,8 +17,8 @@ export const registerConsultant = async (req, res) => {
     const existing = await User.findOne({ where: { email } });
     if (existing) return res.status(400).json({ message: "Email já existe." });
 
-    // Password automática
-    const generatedPassword = "123456";
+    // Password automatica
+    const generatedPassword = generateTemporaryPassword();
     const hash = await bcrypt.hash(generatedPassword, 10);
 
     const newUser = await User.create({
@@ -22,9 +30,29 @@ export const registerConsultant = async (req, res) => {
       points_total: 0,
     });
 
+    let emailStatus = { emailSent: false };
+    try {
+      await sendTemporaryPasswordEmail({
+        to: newUser.email,
+        name: newUser.name,
+        temporaryPassword: generatedPassword,
+      });
+      emailStatus = buildEmailStatus();
+    } catch (mailError) {
+      console.error("Erro ao enviar email de convite:", mailError);
+      emailStatus = buildEmailStatus(mailError);
+      if (process.env.NODE_ENV === "production") {
+        return res.status(500).json({
+          message: "Utilizador criado, mas nao foi possivel enviar o email com a password temporaria.",
+          ...emailStatus,
+        });
+      }
+    }
+
     res.status(201).json({
       message: "Utilizador criado com sucesso.",
-      temporaryPassword: generatedPassword,
+      ...emailStatus,
+      ...(shouldExposeEmailSecretsForDev() ? { temporaryPassword: generatedPassword } : {}),
       user: newUser,
     });
 

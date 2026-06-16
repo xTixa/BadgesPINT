@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "/src/api";
 import logo from "/src/assets/logo.png";
@@ -15,6 +15,16 @@ export default function RecoverPassword() {
   const [confirm, setConfirm] = useState("");
   const [resetting, setResetting] = useState(false);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (!token) return;
+
+    setSent(true);
+    setTokenInput(token);
+    setInfo("Define a tua nova password para concluir a recuperacao.");
+  }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -35,6 +45,10 @@ export default function RecoverPassword() {
       if (res.data?.resetToken) {
         setResetToken(res.data.resetToken);
         setTokenInput(res.data.resetToken);
+      }
+
+      if (res.data?.emailSent === false && res.data?.emailError) {
+        setInfo(`${res.data.message} ${res.data.emailError}`);
       }
 
     } catch (err) {

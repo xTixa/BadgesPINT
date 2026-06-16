@@ -1,86 +1,99 @@
-﻿import Sidebar from "../../layout/Sidebar";
-import React from "react";
+import ServiceLineLayout, { slPanelClass, slPrimaryActionClass } from "./ServiceLineLayout";
 
 export default function ServiceLineSettingsPage() {
   return (
-    <div className="settings-page">
-        <Sidebar user={{ role: "service_line", name: "Service Line" }} />
-      <h1>Definições do Service Line</h1>
+    <ServiceLineLayout
+      title="Configuracoes"
+      subtitle="Define preferencias operacionais da tua area de Service Line."
+    >
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <section className={slPanelClass}>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">Notificacoes</h2>
 
-      {/* Service Line e áreas */}
-      <section>
-        <h2>Service Line</h2>
-        <label>
-          Service Line
-          <select>{/* options */}</select>
-        </label>
-        <label>
-          Áreas visíveis por defeito
-          <select multiple>{/* options */}</select>
-        </label>
-      </section>
+          <div className="space-y-4">
+            <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
+              <span className="text-sm font-medium text-slate-700">
+                Candidaturas em validacao da Service Line
+              </span>
+              <input type="checkbox" defaultChecked className="h-4 w-4" />
+            </label>
 
-      {/* Notificações */}
-      <section>
-        <h2>Notificações</h2>
-        <label>
-          Candidaturas em validação da Service Line
-          <input type="checkbox" />
-        </label>
-        <label>
-          SLA ultrapassado na minha Service Line
-          <input type="checkbox" />
-        </label>
-      </section>
+            <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
+              <span className="text-sm font-medium text-slate-700">
+                SLA ultrapassado na minha Service Line
+              </span>
+              <input type="checkbox" defaultChecked className="h-4 w-4" />
+            </label>
+          </div>
+        </section>
 
-      {/* Relatórios e ranking */}
-      <section>
-        <h2>Relatórios e ranking</h2>
-        <label>
-          Formato padrão de exportação
-          <select>
-            <option value="excel">Excel</option>
-            <option value="pdf">PDF</option>
-          </select>
-        </label>
-        <label>
-          Mostrar ranking Top N consultores
-          <input type="number" placeholder="Ex.: 10" />
-        </label>
-      </section>
+        <section className={slPanelClass}>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">Relatorios</h2>
 
-      {/* Métricas comparativas */}
-      <section>
-        <h2>Métricas comparativas</h2>
-        <label>
-          Ativar comparação entre consultores da mesma experiência/área
-          <input type="checkbox" />
-        </label>
-      </section>
+          <div className="space-y-4">
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-slate-700">
+                Formato padrao de exportacao
+              </span>
+              <select className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100">
+                <option value="excel">Excel</option>
+                <option value="pdf">PDF</option>
+              </select>
+            </label>
 
-      {/* Interface */}
-      <section>
-        <h2>Interface</h2>
-        <label>
-          Idioma
-          <select>
-            <option value="pt">Português</option>
-            <option value="en">Inglês</option>
-            <option value="es">Espanhol</option>
-          </select>
-        </label>
-        <label>
-          Tema
-          <select>
-            <option value="light">Claro</option>
-            <option value="dark">Escuro</option>
-          </select>
-        </label>
-      </section>
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-slate-700">
+                Mostrar ranking Top N consultores
+              </span>
+              <input
+                type="number"
+                min="1"
+                defaultValue="10"
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              />
+            </label>
+          </div>
+        </section>
 
-      <button>Guardar alterações</button>
-    </div>
+        <section className={slPanelClass}>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">Interface</h2>
+
+          <div className="space-y-4">
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-slate-700">Idioma</span>
+              <select className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100">
+                <option value="pt">Portugues</option>
+                <option value="en">Ingles</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-slate-700">Tema</span>
+              <select className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100">
+                <option value="light">Claro</option>
+                <option value="dark">Escuro</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section className={slPanelClass}>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">Metricas</h2>
+
+          <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
+            <span className="text-sm font-medium text-slate-700">
+              Comparar consultores da mesma area
+            </span>
+            <input type="checkbox" defaultChecked className="h-4 w-4" />
+          </label>
+
+          <div className="mt-6 flex justify-end">
+            <button type="button" className={slPrimaryActionClass}>
+              Guardar alteracoes
+            </button>
+          </div>
+        </section>
+      </div>
+    </ServiceLineLayout>
   );
 }
-
-

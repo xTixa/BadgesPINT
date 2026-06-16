@@ -6,6 +6,11 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import Badge from "../models/Badge.js";
 import PasswordReset from "../models/PasswordReset.js";
 import { createAuditLog } from "./auditLogController.js";
+import {
+  buildEmailStatus,
+  sendPasswordResetEmail,
+  shouldExposeEmailSecretsForDev,
+} from "../services/mailService.js";
 
 export const login = async (req, res) => {
   try {
@@ -230,9 +235,32 @@ export const recoverPassword = async (req, res) => {
       expires_at: expiresAt,
     });
 
-    // TODO: Enviar email com link/token de reset. Para ambiente dev, devolvemos token.
-    const payload = { message: "Se o email existir, enviámos instruções." };
-    if (process.env.NODE_ENV !== "production") {
+    let emailStatus = { emailSent: false };
+    try {
+      await sendPasswordResetEmail({
+        to: user.email,
+        name: user.name,
+        token: rawToken,
+      });
+      emailStatus = buildEmailStatus();
+    } catch (mailError) {
+      console.error("Erro ao enviar email de reset:", mailError);
+      emailStatus = buildEmailStatus(mailError);
+      if (process.env.NODE_ENV === "production") {
+        return res.status(500).json({
+          message: "Nao foi possivel enviar o email de recuperacao.",
+          ...emailStatus,
+        });
+      }
+    }
+
+    const payload = {
+      message: emailStatus.emailSent
+        ? "Se o email existir, enviamos instrucoes."
+        : "Token de recuperacao criado, mas o email nao foi enviado.",
+      ...emailStatus,
+    };
+    if (shouldExposeEmailSecretsForDev()) {
       payload.resetToken = rawToken;
     }
 

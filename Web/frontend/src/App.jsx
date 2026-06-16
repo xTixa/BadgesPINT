@@ -42,6 +42,10 @@ import PedidosTalentManager from "./pages/TalentManager/PedidosTalentManager";
 // Service Line
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
 import ServiceLineSettingsPage from "./pages/ServiceLine/SettingsSL";
+import PedidosServiceLine from "./pages/ServiceLine/PedidosServiceLine";
+import ConsultoresServiceLine from "./pages/ServiceLine/ConsultoresServiceLine";
+import BadgesServiceLine from "./pages/ServiceLine/BadgesServiceLine";
+import RelatoriosServiceLine from "./pages/ServiceLine/RelatoriosServiceLine";
 
 // Admin
 import DashboardAdmin from "./pages/Admin/DashboardAdmin";
@@ -113,6 +117,10 @@ function AppContent() {
 
           {/* Service Line */}
           <Route path="/sl/dashboard" element={<ProtectedRoute role="service_line_leader"><DashboardServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/pedidos" element={<ProtectedRoute role="service_line_leader"><PedidosServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/consultores" element={<ProtectedRoute role="service_line_leader"><ConsultoresServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/badges" element={<ProtectedRoute role="service_line_leader"><BadgesServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/estatisticas" element={<ProtectedRoute role="service_line_leader"><RelatoriosServiceLine /></ProtectedRoute>} />
           <Route path="/sl/settings" element={<ProtectedRoute role="service_line_leader"><ServiceLineSettingsPage /></ProtectedRoute>} />
 
           {/* Admin */}

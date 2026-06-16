@@ -3,8 +3,16 @@ import Badge from "../models/Badge.js";
 import LearningPath from "../models/LearningPath.js";
 import ConsultorBadge from "../models/ConsultorBadge.js";
 import bcryptjs from "bcryptjs";
+import crypto from "crypto";
 import database from "../config/database.js";
 import { QueryTypes, Op, fn, col } from "sequelize";
+import {
+  buildEmailStatus,
+  sendTemporaryPasswordEmail,
+  shouldExposeEmailSecretsForDev,
+} from "../services/mailService.js";
+
+const generateTemporaryPassword = () => crypto.randomBytes(6).toString("base64url");
 
 const buildMonthlySeries = (rows, start, end) => {
   const result = [];
@@ -164,7 +172,7 @@ export async function createUser(req, res) {
   try {
     const { name, email, role, password, area_id } = req.body;
 
-    if (!name || !email || !role || !password) {
+    if (!name || !email || !role) {
       return res.status(400).json({ message: "Dados incompletos." });
     }
 
@@ -176,7 +184,8 @@ export async function createUser(req, res) {
     if (exists)
       return res.status(400).json({ message: "Email já existe." });
 
-    const hash = await bcryptjs.hash(password, 10);
+    const temporaryPassword = password || generateTemporaryPassword();
+    const hash = await bcryptjs.hash(temporaryPassword, 10);
 
     const newUser = await User.create({
       name,
@@ -186,12 +195,33 @@ export async function createUser(req, res) {
       area_id: area_id || null
     });
 
+    let emailStatus = { emailSent: false };
+    try {
+      await sendTemporaryPasswordEmail({
+        to: newUser.email,
+        name: newUser.name,
+        temporaryPassword,
+      });
+      emailStatus = buildEmailStatus();
+    } catch (mailError) {
+      console.error("Erro ao enviar email de convite:", mailError);
+      emailStatus = buildEmailStatus(mailError);
+      if (process.env.NODE_ENV === "production" && !password) {
+        return res.status(500).json({
+          message: "Utilizador criado, mas nao foi possivel enviar o email com a password temporaria.",
+          ...emailStatus,
+        });
+      }
+    }
+
     res.status(201).json({
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
-      area_id: newUser.area_id
+      area_id: newUser.area_id,
+      ...emailStatus,
+      ...(shouldExposeEmailSecretsForDev() ? { temporaryPassword } : {})
     });
 
   } catch (err) {
