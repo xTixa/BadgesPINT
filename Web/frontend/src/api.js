@@ -29,8 +29,7 @@ api.interceptors.response.use(
     const isAuthEndpoint =
       requestUrl.includes("/api/auth/login") ||
       requestUrl.includes("/api/auth/recover-password") ||
-      requestUrl.includes("/api/auth/reset-password") ||
-      requestUrl.includes("/api/users/register");
+      requestUrl.includes("/api/auth/reset-password");
 
     if (status === 401 && !isAuthEndpoint && localStorage.getItem("token")) {
       localStorage.removeItem("token");
