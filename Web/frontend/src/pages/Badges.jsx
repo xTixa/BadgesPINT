@@ -1,18 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import api from "../api";
 import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
 import PublicJourneyStepper from "../components/PublicJourneyStepper";
 import BadgeCard from "../components/BadgeCard";
 
-const getBadgeLevel = (badge) =>
-  badge?.level || badge?.nivel || badge?.level_name || "Sem nivel";
-
-const getBadgePoints = (badge) =>
-  Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
-
+const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
+const getBadgeLevel = (badge) => badge?.level || badge?.nivel || badge?.level_name || "Sem nivel";
+const getBadgePoints = (badge) => Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
 const getBadgeAreaName = (badge) =>
-  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "";
+  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "Sem area";
+const getBadgeDescription = (badge) => badge?.description || badge?.descricao || "";
 
 const normalizeText = (value) =>
   String(value || "")
@@ -20,17 +18,46 @@ const normalizeText = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
+const getApplicationCacheKey = (user) => `badge_applications_${user?.id || user?.email || "anon"}`;
+
+const readCachedApplications = (user) => {
+  if (!user) return new Map();
+  try {
+    const ids = JSON.parse(localStorage.getItem(getApplicationCacheKey(user)) || "[]");
+    return new Map(
+      ids.map((badgeId) => [
+        Number(badgeId),
+        { badge_id: Number(badgeId), status: "pendente", workflow_status: "submitted" },
+      ])
+    );
+  } catch {
+    return new Map();
+  }
+};
+
+const writeCachedApplications = (user, applications) => {
+  if (!user) return;
+  localStorage.setItem(
+    getApplicationCacheKey(user),
+    JSON.stringify(Array.from(applications.keys()))
+  );
+};
+
 export default function Badges() {
   const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [areaName, setAreaName] = useState("");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("q") || "");
   const [selectedLevel, setSelectedLevel] = useState("todos");
+  const [selectedArea, setSelectedArea] = useState("todas");
+  const [sortBy, setSortBy] = useState("recommended");
   const [applyingId, setApplyingId] = useState(null);
-  const [appliedBadges, setAppliedBadges] = useState(new Set());
+  const [applicationsByBadge, setApplicationsByBadge] = useState(new Map());
+
   const user = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem("user"));
@@ -39,6 +66,16 @@ export default function Badges() {
     }
   }, []);
   const canApply = user?.role === "consultant";
+
+  useEffect(() => {
+    if (canApply) {
+      setApplicationsByBadge(readCachedApplications(user));
+    }
+  }, [canApply, user]);
+
+  useEffect(() => {
+    setSearch(searchParams.get("q") || "");
+  }, [searchParams]);
 
   useEffect(() => {
     let active = true;
@@ -53,7 +90,6 @@ export default function Badges() {
         const data = Array.isArray(response.data) ? response.data : [];
 
         if (!active) return;
-
         setBadges(data);
         setAreaName(id ? getBadgeAreaName(data[0]) : "");
       } catch (err) {
@@ -61,7 +97,7 @@ export default function Badges() {
         if (!active) return;
         setBadges([]);
         setAreaName("");
-        setError("Não foi possível carregar os badges neste momento.");
+        setError("Nao foi possivel carregar os badges neste momento.");
       } finally {
         if (active) setLoading(false);
       }
@@ -74,45 +110,105 @@ export default function Badges() {
     };
   }, [id]);
 
-  const levels = useMemo(() => {
-    const uniqueLevels = new Set(
-      badges.map(getBadgeLevel).filter((level) => level && level !== "Sem nivel")
-    );
+  useEffect(() => {
+    if (!canApply) {
+      setApplicationsByBadge(new Map());
+      return;
+    }
 
-    return Array.from(uniqueLevels).sort((a, b) => a.localeCompare(b, "pt"));
-  }, [badges]);
+    let active = true;
+
+    const loadApplications = async () => {
+      try {
+        const response = await api.get("/api/pedidos");
+        const pedidos = Array.isArray(response.data) ? response.data : [];
+        if (!active) return;
+
+        const activeApplications = new Map();
+        pedidos.forEach((pedido) => {
+          const badgeId = pedido?.badge?.id || pedido?.badge_id;
+          if (badgeId) {
+            activeApplications.set(Number(badgeId), pedido);
+          }
+        });
+        writeCachedApplications(user, activeApplications);
+        setApplicationsByBadge(activeApplications);
+      } catch (err) {
+        console.error("Erro ao carregar candidaturas:", err);
+      }
+    };
+
+    loadApplications();
+
+    return () => {
+      active = false;
+    };
+  }, [canApply]);
+
+  const levels = useMemo(
+    () =>
+      Array.from(new Set(badges.map(getBadgeLevel).filter(Boolean))).sort((a, b) =>
+        a.localeCompare(b, "pt")
+      ),
+    [badges]
+  );
+
+  const areas = useMemo(
+    () =>
+      Array.from(new Set(badges.map(getBadgeAreaName).filter(Boolean))).sort((a, b) =>
+        a.localeCompare(b, "pt")
+      ),
+    [badges]
+  );
 
   const filteredBadges = useMemo(() => {
     const query = normalizeText(search);
 
-    return badges.filter((badge) => {
+    const filtered = badges.filter((badge) => {
       const level = getBadgeLevel(badge);
       const area = getBadgeAreaName(badge);
       const searchable = normalizeText(
-        [
-          badge?.name,
-          badge?.nome,
-          badge?.title,
-          badge?.description,
-          badge?.descricao,
-          level,
-          area,
-        ].join(" ")
+        [getBadgeName(badge), getBadgeDescription(badge), level, area].join(" ")
       );
 
-      const matchesSearch = !query || searchable.includes(query);
-      const matchesLevel = selectedLevel === "todos" || level === selectedLevel;
-
-      return matchesSearch && matchesLevel;
+      return (
+        (!query || searchable.includes(query)) &&
+        (selectedLevel === "todos" || level === selectedLevel) &&
+        (selectedArea === "todas" || area === selectedArea)
+      );
     });
-  }, [badges, search, selectedLevel]);
+
+    return filtered.sort((a, b) => {
+      if (sortBy === "points") return getBadgePoints(b) - getBadgePoints(a);
+      if (sortBy === "az") return getBadgeName(a).localeCompare(getBadgeName(b), "pt");
+      if (sortBy === "level") return getBadgeLevel(a).localeCompare(getBadgeLevel(b), "pt");
+      return getBadgePoints(b) - getBadgePoints(a) || getBadgeName(a).localeCompare(getBadgeName(b), "pt");
+    });
+  }, [badges, search, selectedArea, selectedLevel, sortBy]);
 
   const totalPoints = useMemo(
     () => badges.reduce((sum, badge) => sum + getBadgePoints(badge), 0),
     [badges]
   );
 
-  const hasFilters = search.trim() || selectedLevel !== "todos";
+  const hasFilters =
+    search.trim() || selectedLevel !== "todos" || selectedArea !== "todas" || sortBy !== "recommended";
+
+  const updateSearch = (value) => {
+    setSearch(value);
+    const next = new URLSearchParams(searchParams);
+    if (value.trim()) next.set("q", value);
+    else next.delete("q");
+    setSearchParams(next, { replace: true });
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setSelectedLevel("todos");
+    setSelectedArea("todas");
+    setSortBy("recommended");
+    setSearchParams({}, { replace: true });
+  };
 
   const handleApply = async (badge) => {
     if (!user) {
@@ -130,7 +226,16 @@ export default function Badges() {
       setError("");
       setSuccess("");
       await api.post("/api/pedidos", { badge_id: badge.id });
-      setAppliedBadges((current) => new Set([...current, badge.id]));
+      setApplicationsByBadge((current) => {
+        const next = new Map(current);
+        next.set(Number(badge.id), {
+          badge_id: badge.id,
+          status: "pendente",
+          workflow_status: "submitted",
+        });
+        writeCachedApplications(user, next);
+        return next;
+      });
       setSuccess("Candidatura criada e enviada para validacao.");
     } catch (err) {
       console.error("Erro ao candidatar:", err);
@@ -142,182 +247,202 @@ export default function Badges() {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <section className="bg-gradient-to-br from-[#0F62FE] via-[#0F62FE] to-[#00AEEF] px-6 py-16 text-[#F2F2F2]">
+      <section className="bg-slate-950 px-6 py-14 text-white">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-4 flex items-center">
-            <Link
-              to={id ? "/areas" : "/"}
-              className="flex items-center gap-2 text-sm font-medium text-[#BFEFFF] transition hover:text-white focus-visible:ring-2 focus-visible:ring-white/60"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              {id ? "Voltar às Áreas" : "Voltar ao Início"}
-            </Link>
-          </div>
+          <Link
+            to={id ? "/areas" : "/"}
+            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-[#BFEFFF] transition hover:text-white"
+          >
+            <i className="bi bi-arrow-left"></i>
+            {id ? "Voltar as areas" : "Voltar ao inicio"}
+          </Link>
 
-          <div className="max-w-3xl">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#BFEFFF]">
-              Catálogo de competências
-            </p>
-            <h1 className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-              {areaName ? `Badges de ${areaName}` : "Catálogo de Badges"}
-            </h1>
-            <p className="mt-4 text-lg text-[#DCEAF6] md:text-xl">
-              Explora competências, compara níveis e consulta os requisitos para
-              conquistares cada badge.
-            </p>
+          <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-end">
+            <div>
+              <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
+                Catalogo de badges
+              </p>
+              <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight md:text-5xl">
+                {areaName ? `Badges de ${areaName}` : "Aprende competencias que contam."}
+              </h1>
+              <p className="mt-4 max-w-2xl text-lg text-white/75">
+                Pesquisa, compara niveis, ve requisitos e candidata-te aos badges que
+                fazem sentido para o teu percurso.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+              <label className="relative block">
+                <span className="sr-only">Pesquisar badge</span>
+                <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(event) => updateSearch(event.target.value)}
+                  placeholder="Pesquisar por tecnologia, area ou nivel"
+                  className="h-12 w-full rounded-xl border-0 bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
+                />
+              </label>
+            </div>
           </div>
         </div>
       </section>
 
-      <main className="mx-auto max-w-7xl px-6 py-12">
+      <main className="mx-auto max-w-7xl px-6 py-10">
         <PublicBreadcrumbs
           items={
             id
               ? [
-                  { label: "Início", to: "/" },
-                  { label: "Áreas", to: "/areas" },
+                  { label: "Inicio", to: "/" },
+                  { label: "Areas", to: "/areas" },
                   { label: "Badges" },
                 ]
-              : [{ label: "Início", to: "/" }, { label: "Badges" }]
+              : [{ label: "Inicio", to: "/" }, { label: "Badges" }]
           }
         />
         <PublicJourneyStepper currentStep="badges" />
 
-        <div className="mb-6 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/5 px-4 py-3 text-sm text-slate-700">
-          Passo 4: escolhe um badge para veres os requisitos necessários.
-        </div>
-
         {error && (
-          <div
-            role="alert"
-            className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center"
-          >
-            <p className="text-sm font-semibold text-rose-700 sm:text-base">
-              {error}
-            </p>
+          <div role="alert" className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+            <p className="text-sm font-semibold text-rose-700">{error}</p>
           </div>
         )}
 
         {success && (
-          <div
-            role="status"
-            className="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center"
-          >
-            <p className="text-sm font-semibold text-emerald-700 sm:text-base">
-              {success}
-            </p>
+          <div role="status" className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+            <p className="text-sm font-semibold text-emerald-700">{success}</p>
           </div>
         )}
 
-        {loading ? (
-          <div
-            role="status"
-            aria-live="polite"
-            className="flex flex-col items-center justify-center py-20"
-          >
-            <div className="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
-            <p className="text-lg text-slate-600">A carregar badges...</p>
-          </div>
-        ) : badges.length > 0 ? (
-          <>
-            <section className="mb-8 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-medium text-slate-500">Badges disponíveis</p>
-                <p className="mt-2 text-3xl font-bold text-slate-900">{badges.length}</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-medium text-slate-500">Níveis distintos</p>
-                <p className="mt-2 text-3xl font-bold text-slate-900">{levels.length || 1}</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-medium text-slate-500">Pontos totais</p>
-                <p className="mt-2 text-3xl font-bold text-slate-900">{totalPoints}</p>
-              </div>
-            </section>
+        <section className="mb-8 grid gap-4 md:grid-cols-4">
+          {[
+            ["Badges", badges.length],
+            ["Resultados", filteredBadges.length],
+            ["Areas", areas.length],
+            ["Pontos", totalPoints],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <p className="text-sm font-semibold text-slate-500">{label}</p>
+              <p className="mt-2 text-3xl font-extrabold text-slate-950">{value}</p>
+            </div>
+          ))}
+        </section>
 
-            <section className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="grid gap-4 lg:grid-cols-[1fr_220px_auto]">
-                <label className="relative block">
-                  <span className="sr-only">Pesquisar badge</span>
-                  <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                  <input
-                    type="search"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Pesquisar por nome, descrição ou área..."
-                    className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-12 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
-                  />
-                </label>
+        <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
+          <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-lg font-extrabold text-slate-950">Filtros</h2>
+              <button
+                type="button"
+                onClick={clearFilters}
+                disabled={!hasFilters}
+                className="text-sm font-bold text-[#0F62FE] disabled:text-slate-300"
+              >
+                Limpar
+              </button>
+            </div>
 
-                <label className="block">
-                  <span className="sr-only">Filtrar por nível</span>
-                  <select
-                    value={selectedLevel}
-                    onChange={(event) => setSelectedLevel(event.target.value)}
-                    className="h-full min-h-[46px] w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
-                  >
-                    <option value="todos">Todos os níveis</option>
-                    {levels.map((level) => (
-                      <option key={level} value={level}>
-                        {level}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearch("");
-                    setSelectedLevel("todos");
-                  }}
-                  disabled={!hasFilters}
-                  className="inline-flex min-h-[46px] items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            <div className="space-y-5">
+              <label className="block">
+                <span className="mb-2 block text-sm font-bold text-slate-700">Area</span>
+                <select
+                  value={selectedArea}
+                  onChange={(event) => setSelectedArea(event.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                 >
-                  Limpar
-                </button>
-              </div>
-            </section>
+                  <option value="todas">Todas as areas</option>
+                  {areas.map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-            {filteredBadges.length > 0 ? (
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {filteredBadges.map((badge) => (
-                  <BadgeCard
-                    key={badge.id}
-                    badge={badge}
-                    canApply={canApply}
-                    onApply={handleApply}
-                    applying={applyingId === badge.id}
-                    applied={appliedBadges.has(badge.id)}
-                  />
-                ))}
+              <label className="block">
+                <span className="mb-2 block text-sm font-bold text-slate-700">Nivel</span>
+                <select
+                  value={selectedLevel}
+                  onChange={(event) => setSelectedLevel(event.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                >
+                  <option value="todos">Todos os niveis</option>
+                  {levels.map((level) => (
+                    <option key={level} value={level}>
+                      {level}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-bold text-slate-700">Ordenar</span>
+                <select
+                  value={sortBy}
+                  onChange={(event) => setSortBy(event.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                >
+                  <option value="recommended">Recomendado</option>
+                  <option value="points">Mais pontos</option>
+                  <option value="az">A-Z</option>
+                  <option value="level">Nivel</option>
+                </select>
+              </label>
+            </div>
+          </aside>
+
+          <section>
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-2xl font-extrabold text-slate-950">
+                  {filteredBadges.length} badges encontrados
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Escolhe um badge para ver requisitos, pontos e candidatura.
+                </p>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
+                <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
+                <p className="text-lg font-semibold text-slate-600">A carregar catalogo...</p>
+              </div>
+            ) : filteredBadges.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {filteredBadges.map((badge) => {
+                  const application = applicationsByBadge.get(Number(badge.id));
+
+                  return (
+                    <BadgeCard
+                      key={badge.id}
+                      badge={badge}
+                      canApply={canApply}
+                      onApply={handleApply}
+                      applying={applyingId === badge.id}
+                      applied={Boolean(application)}
+                      applicationStatus={
+                        application?.status === "obtido"
+                          ? "Badge obtido"
+                          : application
+                            ? "Candidatura ativa"
+                            : ""
+                      }
+                    />
+                  );
+                })}
               </div>
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-                <i className="bi bi-search mb-4 block text-5xl text-slate-300"></i>
-                <h2 className="text-xl font-bold text-slate-900">
-                  Nenhum badge encontrado
-                </h2>
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
+                <i className="bi bi-search mb-4 block text-6xl text-slate-300"></i>
+                <h2 className="text-xl font-extrabold text-slate-950">Sem resultados</h2>
                 <p className="mx-auto mt-2 max-w-xl text-slate-500">
-                  Ajusta a pesquisa ou limpa os filtros para voltares a ver todos
-                  os badges disponíveis.
+                  Ajusta a pesquisa ou limpa os filtros para voltares a ver todos os badges.
                 </p>
               </div>
             )}
-          </>
-        ) : (
-          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
-            <i className="bi bi-award mb-4 block text-6xl text-slate-300"></i>
-            <h2 className="text-xl font-bold text-slate-900">
-              Nenhum badge disponível
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Não existem badges para apresentar neste momento.
-            </p>
-          </div>
-        )}
+          </section>
+        </div>
       </main>
     </div>
   );

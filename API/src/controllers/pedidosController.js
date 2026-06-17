@@ -30,6 +30,10 @@ export async function getAllPedidos(req, res) {
     const { status } = req.query;
     const where = status && status !== "all" ? { status } : {};
 
+    if (req.userRole === "consultant") {
+      where.consultor_id = req.userId;
+    }
+
     let badgeAreaFilter = null;
     if (req.userRole === "service_line_leader") {
       const slServiceLineId = await getServiceLineIdForUser(req.userId);
@@ -42,6 +46,8 @@ export async function getAllPedidos(req, res) {
     const pedidos = await ConsultorBadge.findAll({
       attributes: [
         "id",
+        "consultor_id",
+        "badge_id",
         "status",
         "workflow_status",
         "submitted_at",
@@ -191,8 +197,7 @@ export async function criarPedido(req, res) {
     const existing = await ConsultorBadge.findOne({
       where: {
         consultor_id,
-        badge_id,
-        status: { [Op.in]: ["pendente", "obtido"] }
+        badge_id
       }
     });
 

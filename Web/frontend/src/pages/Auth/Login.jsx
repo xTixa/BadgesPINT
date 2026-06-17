@@ -101,6 +101,8 @@ export default function Login() {
             <br />
             tm: tm@soft.pt / qwerty
             <br />
+            sl: monica@yopmail.com / qwerty123
+            <br />
             consultant: guilherme@softinsa.pt / Password123
           </p>
           <p className="italic text-sm text-white/80">

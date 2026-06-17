@@ -1,62 +1,151 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import api from "../api";
-import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
-import PublicJourneyStepper from "../components/PublicJourneyStepper";
+
+const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
+const getBadgeArea = (badge) =>
+  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "Competencia";
+const getBadgeLevel = (badge) => badge?.level || badge?.nivel || badge?.level_name || "Nivel";
+const getBadgePoints = (badge) => Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
+const getBadgeDescription = (badge) =>
+  badge?.description ||
+  badge?.descricao ||
+  "Valida uma competencia profissional atraves de requisitos, evidencias e revisao.";
+
+const getApplicationCacheKey = (user) => `badge_applications_${user?.id || user?.email || "anon"}`;
+
+const readCachedApplicationIds = (user) => {
+  if (!user) return new Set();
+  try {
+    return new Set(
+      JSON.parse(localStorage.getItem(getApplicationCacheKey(user)) || "[]").map(Number)
+    );
+  } catch {
+    return new Set();
+  }
+};
+
+const writeCachedApplicationId = (user, badgeId) => {
+  if (!user) return;
+  const ids = readCachedApplicationIds(user);
+  ids.add(Number(badgeId));
+  localStorage.setItem(getApplicationCacheKey(user), JSON.stringify(Array.from(ids)));
+};
 
 export default function Requirements() {
-  const { id } = useParams(); // badge id
+  const { id } = useParams();
   const [reqs, setReqs] = useState([]);
   const [badge, setBadge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [applying, setApplying] = useState(false);
-  const user = (() => {
+  const [applied, setApplied] = useState(false);
+  const [application, setApplication] = useState(null);
+
+  const user = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem("user"));
     } catch {
       return null;
     }
-  })();
+  }, []);
 
   useEffect(() => {
     if (!id) return;
-    
-    setLoading(true);
-    setError("");
-    
-    // Buscar requisitos
-    api.get(`/badges/${id}/requirements`)
-      .then(res => {
-        setReqs(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setError("Não foi possível carregar os requisitos deste badge.");
-        setLoading(false);
-      });
 
-    // Buscar info do badge (assumindo que você pode adicionar esta rota)
-    api.get(`/badges`)
-      .then(res => {
-        const foundBadge = res.data.find(b => b.id === parseInt(id));
-        if (foundBadge) setBadge(foundBadge);
-      })
-      .catch(err => console.error(err));
+    let active = true;
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [requirementsResponse, badgesResponse] = await Promise.all([
+          api.get(`/badges/${id}/requirements`),
+          api.get("/badges"),
+        ]);
+
+        if (!active) return;
+
+        setReqs(Array.isArray(requirementsResponse.data) ? requirementsResponse.data : []);
+        const foundBadge = Array.isArray(badgesResponse.data)
+          ? badgesResponse.data.find((item) => Number(item.id) === Number(id))
+          : null;
+        setBadge(foundBadge || null);
+      } catch (err) {
+        console.error(err);
+        if (!active) return;
+        setError("Nao foi possivel carregar os detalhes deste badge.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadData();
+
+    return () => {
+      active = false;
+    };
   }, [id]);
 
-  const getLevelColor = (level) => {
-    const colors = {
-      Junior: "bg-[#0F62FE]",
-      Intermedio: "bg-[#00AEEF]",
-      Senior: "bg-[#0F62FE]",
-      Especialista: "bg-[#0F62FE]",
-      Lider: "bg-[#0F62FE]",
+  useEffect(() => {
+    if (!id || user?.role !== "consultant") {
+      setApplication(null);
+      setApplied(false);
+      return;
+    }
+
+    let active = true;
+
+    const cachedIds = readCachedApplicationIds(user);
+    if (cachedIds.has(Number(id))) {
+      setApplication({
+        badge_id: Number(id),
+        status: "pendente",
+        workflow_status: "submitted",
+      });
+      setApplied(true);
+    }
+
+    const loadApplication = async () => {
+      try {
+        const response = await api.get("/api/pedidos");
+        const pedidos = Array.isArray(response.data) ? response.data : [];
+        const existing = pedidos.find((pedido) => {
+          const badgeId = pedido?.badge?.id || pedido?.badge_id;
+          return Number(badgeId) === Number(id);
+        });
+
+        if (!active) return;
+        if (existing) writeCachedApplicationId(user, id);
+        setApplication(existing || null);
+        setApplied(Boolean(existing) || cachedIds.has(Number(id)));
+      } catch (err) {
+        console.error("Erro ao carregar candidatura:", err);
+      }
     };
-    return colors[level] || "bg-[#0F62FE]";
-  };
+
+    loadApplication();
+
+    return () => {
+      active = false;
+    };
+  }, [id, user?.role]);
+
+  const imageUrl = badge?.image_url || badge?.imageUrl || "";
+  const badgeName = getBadgeName(badge);
+  const areaName = getBadgeArea(badge);
+  const level = getBadgeLevel(badge);
+  const points = getBadgePoints(badge);
+  const description = getBadgeDescription(badge);
+
+  const learningOutcomes = [
+    `Demonstrar competencia em ${areaName}.`,
+    "Perceber os requisitos necessarios antes de submeter evidencias.",
+    "Organizar provas de trabalho para validacao pela equipa responsavel.",
+    "Ganhar pontos e progresso no percurso profissional.",
+  ];
 
   const handleApply = async () => {
     if (!user) {
@@ -74,6 +163,13 @@ export default function Requirements() {
       setError("");
       setSuccess("");
       await api.post("/api/pedidos", { badge_id: Number(id) });
+      setApplied(true);
+      setApplication({
+        badge_id: Number(id),
+        status: "pendente",
+        workflow_status: "submitted",
+      });
+      writeCachedApplicationId(user, id);
       setSuccess("Candidatura criada e enviada para validacao.");
     } catch (err) {
       console.error("Erro ao candidatar:", err);
@@ -84,173 +180,231 @@ export default function Requirements() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2]">
-      {/* Header Section */}
-      <div className={`${badge ? getLevelColor(badge.level) : "bg-[#0F62FE]"} text-white py-16 px-6 border-b border-[#0F62FE]`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center mb-4">
-            <Link 
-              to="/badges" 
-              className="text-white/90 hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Voltar aos Badges
-            </Link>
-          </div>
-          
-          <div className="flex items-center gap-6">
-            {/* Badge Icon */}
-            <div className="hidden md:block">
-              <div className="w-24 h-24 bg-[#0F62FE] rounded-2xl flex items-center justify-center border border-[#F2F2F2]">
-                <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 .806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-              </div>
-            </div>
-            
-            <div>
-              <h1 className="text-4xl md:text-5xl font-extrabold mb-2 tracking-tight">
-                Requisitos do Badge
-              </h1>
-              {badge && (
-                <div className="flex flex-wrap items-center gap-3 mt-4">
-                  <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#0F62FE] text-white">
-                    {badge.area?.name}
-                  </span>
-                  <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#F2F2F2] text-slate-800">
-                    {badge.level}
-                  </span>
-                  <span className="px-4 py-2 rounded-full text-sm font-bold bg-[#F2F2F2] text-slate-800 flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    {badge.points} pontos
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white">
+      <section className="bg-[#1c1d1f] px-6 py-8 text-white">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="max-w-3xl py-4">
+            <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm font-bold text-[#BFEFFF]">
+              <Link to="/" className="hover:text-white">Inicio</Link>
+              <span className="text-white/40">/</span>
+              <Link to="/badges" className="hover:text-white">Badges</Link>
+              <span className="text-white/40">/</span>
+              <span className="text-white/80">{areaName}</span>
+            </nav>
 
-      {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <PublicBreadcrumbs
-          items={[
-            { label: "Início", to: "/" },
-            { label: "Badges", to: "/badges" },
-            { label: "Requisitos" },
-          ]}
-        />
-        <PublicJourneyStepper currentStep="requirements" />
-
-        <div className="mb-6 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/5 px-4 py-3 text-sm text-slate-700">
-          Passo final: completa os requisitos e submete evidências para validação.
-        </div>
-
-        {error && (
-          <div role="alert" className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
-            <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
-          </div>
-        )}
-
-        {success && (
-          <div role="status" className="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center">
-            <p className="text-sm font-semibold text-emerald-700 sm:text-base">{success}</p>
-          </div>
-        )}
-
-        {loading ? (
-          <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0F62FE] mb-4"></div>
-            <p className="text-gray-600 text-lg">A carregar requisitos...</p>
-          </div>
-        ) : reqs.length > 0 ? (
-          <div className="space-y-6">
-            {/* Info Card */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 mb-8 shadow-sm">
-              <div className="flex items-start gap-4">
-                <svg className="w-6 h-6 text-slate-800 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">Como conquistar este badge?</h3>
-                  <p className="text-slate-800 text-sm">
-                    Completa todos os requisitos listados abaixo para conquistares este badge e ganhares <strong>{badge?.points || 0} pontos</strong> na tua jornada profissional.
-                  </p>
-                </div>
-              </div>
+            <div className="mb-4 flex flex-wrap gap-2">
+              <span className="rounded bg-[#BFEFFF] px-2.5 py-1 text-xs font-extrabold text-slate-950">
+                {level}
+              </span>
+              <span className="rounded bg-white/10 px-2.5 py-1 text-xs font-bold text-white">
+                {areaName}
+              </span>
             </div>
 
-            {/* Requirements List */}
-            <div className="grid grid-cols-1 gap-4">
-              {reqs.map((r, index) => (
-                <div 
-                  key={r.id}
-                  className="bg-white rounded-xl border border-slate-200/80 overflow-hidden shadow-sm"
-                >
-                  <div className="flex items-start gap-4 p-6">
-                    {/* Number Badge */}
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-[#0F62FE] text-white flex items-center justify-center font-bold text-lg">
-                        {index + 1}
-                      </div>
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#0F62FE] text-white">
-                          {r.code}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 text-sm leading-relaxed">
-                        {r.description}
-                      </p>
-                    </div>
+            <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
+              {badge ? badgeName : "Detalhe do badge"}
+            </h1>
+            <p className="mt-4 text-xl leading-relaxed text-white/85">
+              {description}
+            </p>
 
-                    {/* Checkbox (decorativo) */}
-                    <div className="flex-shrink-0">
-                      <div className="w-6 h-6 border-2 border-[#0F62FE] rounded"></div>
-                    </div>
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/80">
+              <span className="font-bold text-[#BFEFFF]">
+                <i className="bi bi-star-fill mr-1"></i>
+                Badge verificado
+              </span>
+              <span>{reqs.length} requisitos</span>
+              <span>{points} pontos</span>
+              <span>Atualizado recentemente</span>
+            </div>
+
+            <p className="mt-4 text-sm text-white/70">
+              Criado para consultores que querem validar competencias com evidencias reais.
+            </p>
+          </div>
+
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 overflow-hidden rounded-sm border border-slate-200 bg-white text-slate-950 shadow-2xl">
+              <div className="aspect-video bg-gradient-to-br from-[#0F62FE] to-[#00AEEF]">
+                {imageUrl ? (
+                  <img src={imageUrl} alt={badgeName} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <i className="bi bi-award text-7xl text-white"></i>
                   </div>
+                )}
+              </div>
+              <div className="p-5">
+                <div className="mb-4">
+                  <p className="text-3xl font-extrabold">{points} pontos</p>
+                  <p className="text-sm font-semibold text-slate-500">ao conquistar este badge</p>
+                </div>
+
+                {user?.role === "consultant" ? (
+                  <button
+                    type="button"
+                    onClick={handleApply}
+                    disabled={applying || applied}
+                    className="mb-3 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {applied
+                      ? application?.status === "obtido"
+                        ? "Badge obtido"
+                        : "Candidatura ativa"
+                      : applying
+                        ? "A criar candidatura..."
+                        : "Candidatar-me agora"}
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="mb-3 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD]"
+                  >
+                    Entrar para candidatar
+                  </Link>
+                )}
+
+                <Link
+                  to="/badges"
+                  className="flex h-12 w-full items-center justify-center border border-slate-950 px-4 text-sm font-extrabold text-slate-950 transition hover:bg-slate-50"
+                >
+                  Ver outros badges
+                </Link>
+
+                <div className="mt-5 space-y-3 text-sm">
+                  <p className="font-extrabold">Este badge inclui:</p>
+                  <p><i className="bi bi-list-check mr-2"></i>{reqs.length} requisitos de validacao</p>
+                  <p><i className="bi bi-upload mr-2"></i>Submissao de evidencias</p>
+                  <p><i className="bi bi-shield-check mr-2"></i>Revisao por responsavel</p>
+                  <p><i className="bi bi-award mr-2"></i>Reconhecimento interno</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <main className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="space-y-8">
+          {error && (
+            <div role="alert" className="border border-rose-200 bg-rose-50 p-4">
+              <p className="text-sm font-semibold text-rose-700">{error}</p>
+            </div>
+          )}
+
+          {success && (
+            <div role="status" className="border border-emerald-200 bg-emerald-50 p-4">
+              <p className="text-sm font-semibold text-emerald-700">{success}</p>
+            </div>
+          )}
+
+          <section className="border border-slate-300 bg-white p-6">
+            <h2 className="text-2xl font-extrabold text-slate-950">O que vais aprender</h2>
+            <div className="mt-5 grid gap-x-8 gap-y-3 md:grid-cols-2">
+              {learningOutcomes.map((outcome) => (
+                <div key={outcome} className="flex gap-3 text-sm leading-relaxed text-slate-700">
+                  <i className="bi bi-check2 mt-0.5 text-lg text-slate-950"></i>
+                  <span>{outcome}</span>
                 </div>
               ))}
             </div>
+          </section>
 
-            {/* Action Card */}
-            <div className="bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] rounded-2xl p-8 mt-8 text-white text-center border border-[#0F62FE] shadow-sm">
-              <h3 className="text-2xl font-bold mb-3">Pronto para conquistares este badge?</h3>
-              <p className="text-[#BFEFFF] mb-6 max-w-2xl mx-auto">
-                Completa todos os requisitos e submete as tuas evidências para validação.
+          <section>
+            <div className="mb-4">
+              <h2 className="text-2xl font-extrabold text-slate-950">Conteudo do badge</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                {reqs.length} requisitos • evidencia obrigatoria • validacao pela equipa responsavel
               </p>
-              {user?.role === "consultant" ? (
-                <button
-                  type="button"
-                  onClick={handleApply}
-                  disabled={applying}
-                  className="inline-block rounded-xl border border-[#0F62FE] bg-white px-8 py-3 font-semibold text-slate-800 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {applying ? "A criar candidatura..." : "Candidatar-me a este badge"}
-                </button>
-              ) : (
-                <Link to="/login" className="inline-block px-8 py-3 bg-white text-slate-800 rounded-xl font-semibold border border-[#0F62FE] shadow-sm transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-white/70">
-                  Entrar para candidatar
-                </Link>
-              )}
             </div>
+
+            {loading ? (
+              <div className="border border-slate-200 bg-white px-6 py-16 text-center">
+                <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
+                <p className="font-semibold text-slate-600">A carregar requisitos...</p>
+              </div>
+            ) : reqs.length > 0 ? (
+              <div className="border border-slate-300">
+                {reqs.map((requirement, index) => (
+                  <details
+                    key={requirement.id || index}
+                    className="group border-b border-slate-300 bg-white last:border-b-0"
+                    open={index === 0}
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-slate-50 px-5 py-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
+                        <span className="font-extrabold text-slate-950">
+                          Requisito {index + 1}: {requirement.code || "Evidencia"}
+                        </span>
+                      </div>
+                      <span className="hidden text-sm font-semibold text-slate-500 sm:inline">
+                        Obrigatorio
+                      </span>
+                    </summary>
+                    <div className="px-5 py-5">
+                      <p className="max-w-3xl text-sm leading-relaxed text-slate-700">
+                        {requirement.description || requirement.descricao}
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                          Evidencia pratica
+                        </span>
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                          Validacao manual
+                        </span>
+                      </div>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            ) : (
+              <div className="border border-slate-200 bg-white px-6 py-16 text-center">
+                <i className="bi bi-clipboard2-x mb-4 block text-5xl text-slate-300"></i>
+                <h2 className="text-xl font-extrabold text-slate-950">Nenhum requisito definido</h2>
+                <p className="mt-2 text-slate-500">
+                  Este badge ainda precisa de requisitos para ficar pronto para candidatura.
+                </p>
+              </div>
+            )}
+          </section>
+
+          <section className="border border-slate-300 bg-white p-6">
+            <h2 className="text-2xl font-extrabold text-slate-950">Descricao</h2>
+            <p className="mt-4 max-w-3xl leading-relaxed text-slate-700">{description}</p>
+          </section>
+        </div>
+
+        <aside className="lg:hidden">
+          <div className="border border-slate-200 bg-white p-5 shadow-lg">
+            <p className="text-2xl font-extrabold text-slate-950">{points} pontos</p>
+            <p className="text-sm font-semibold text-slate-500">ao conquistar este badge</p>
+            {user?.role === "consultant" ? (
+              <button
+                type="button"
+                onClick={handleApply}
+                disabled={applying || applied}
+                className="mt-4 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {applied
+                  ? application?.status === "obtido"
+                    ? "Badge obtido"
+                    : "Candidatura ativa"
+                  : applying
+                    ? "A criar candidatura..."
+                    : "Candidatar-me agora"}
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="mt-4 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white"
+              >
+                Entrar para candidatar
+              </Link>
+            )}
           </div>
-        ) : (
-          <div className="text-center py-20">
-            <svg className="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <p className="text-gray-500 text-lg">Nenhum requisito definido para este badge</p>
-          </div>
-        )}
-      </div>
+        </aside>
+      </main>
     </div>
   );
 }

@@ -1,77 +1,117 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function BadgeCard({ badge, onApply, applying = false, applied = false, canApply = false }) {
-  const level = badge?.level || badge?.nivel || badge?.level_name || "Junior";
-  const areaName =
-    badge?.area?.name || badge?.area?.nome || badge?.area_name || "Badge";
-  const description =
-    badge?.description ||
-    badge?.descricao ||
-    "Este badge representa a conquista de uma competência específica.";
-  const points = badge?.points ?? badge?.pontos ?? badge?.score ?? 0;
+const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
+const getBadgeLevel = (badge) => badge?.level || badge?.nivel || badge?.level_name || "Junior";
+const getBadgeArea = (badge) =>
+  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "Competencia";
+const getBadgeDescription = (badge) =>
+  badge?.description ||
+  badge?.descricao ||
+  "Badge focado no desenvolvimento e validacao de uma competencia profissional.";
+const getBadgePoints = (badge) => Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
+
+export default function BadgeCard({
+  badge,
+  onApply,
+  applying = false,
+  applied = false,
+  applicationStatus = "",
+  canApply = false,
+  variant = "catalog",
+}) {
+  const name = getBadgeName(badge);
+  const level = getBadgeLevel(badge);
+  const areaName = getBadgeArea(badge);
+  const description = getBadgeDescription(badge);
+  const points = getBadgePoints(badge);
   const imageUrl = badge?.image_url || badge?.imageUrl || "";
+  const requirementsCount =
+    badge?.requirements_count || badge?.requirementsCount || badge?.requisitos_count || 5;
 
   return (
-    <article className="group overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(15,98,254,0.15)]">
-      <div className="relative flex h-40 items-center justify-center bg-gradient-to-r from-[#0F62FE] to-[#00AEEF]">
-        <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
-
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={description}
-            className="relative z-10 h-24 w-24 rounded-3xl object-cover shadow-lg ring-4 ring-white/30"
-          />
-        ) : (
-          <i className="bi bi-award relative z-10 text-7xl text-white"></i>
-        )}
-
-        <div className="absolute right-4 top-4 rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">
-          {level}
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#0F62FE]/30 hover:shadow-xl">
+      <Link to={`/badges/${badge?.id}/requirements`} className="block">
+        <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-[#0F62FE] to-[#00AEEF]">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={name}
+              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <i className="bi bi-award text-7xl text-white/90"></i>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent"></div>
+          <div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#0F62FE] shadow-sm">
+            {level}
+          </div>
+          <div className="absolute bottom-4 left-4 right-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-[#BFEFFF]">
+              {areaName}
+            </p>
+            <h3 className="mt-1 line-clamp-2 text-xl font-extrabold leading-tight text-white">
+              {name}
+            </h3>
+          </div>
         </div>
-      </div>
+      </Link>
 
-      <div className="p-6">
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-slate-900">
-            {badge?.name || badge?.nome || badge?.title || areaName}
-          </h3>
-
-          <p className="mt-1 text-sm text-slate-500">Badge de Competência</p>
-        </div>
-
-        <p className="mb-5 line-clamp-3 text-sm leading-relaxed text-slate-600">
+      <div className="flex flex-1 flex-col p-5">
+        <p className="line-clamp-3 min-h-[4.5rem] text-sm leading-relaxed text-slate-600">
           {description}
         </p>
 
-        <div className="mb-5 flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#0F62FE]/10 px-3 py-1 text-xs font-semibold text-[#0F62FE]">
-            {level}
-          </span>
-
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-            ⭐ {points} pontos
-          </span>
+        <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-xl bg-slate-50 px-2 py-3">
+            <p className="text-sm font-extrabold text-slate-950">{points}</p>
+            <p className="text-[11px] font-semibold text-slate-500">pontos</p>
+          </div>
+          <div className="rounded-xl bg-slate-50 px-2 py-3">
+            <p className="text-sm font-extrabold text-slate-950">{requirementsCount}</p>
+            <p className="text-[11px] font-semibold text-slate-500">requisitos</p>
+          </div>
+          <div className="rounded-xl bg-slate-50 px-2 py-3">
+            <p className="text-sm font-extrabold text-slate-950">100%</p>
+            <p className="text-[11px] font-semibold text-slate-500">validado</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-2">
+        <div className="mt-5 flex flex-col gap-2">
           <Link
             to={`/badges/${badge?.id}/requirements`}
-            className="block w-full rounded-2xl border border-[#0F62FE]/20 px-5 py-3 text-center font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/20 px-4 py-3 text-sm font-bold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
           >
-            Ver Requisitos
+            <i className="bi bi-list-check"></i>
+            Ver detalhes
           </Link>
 
-          {canApply && (
-            <button
-              type="button"
-              onClick={() => onApply?.(badge)}
-              disabled={applying || applied}
-              className="block w-full rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-3 text-center font-semibold text-white shadow-md transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-            >
-              {applied ? "Candidatura criada" : applying ? "A candidatar..." : "Candidatar-me"}
-            </button>
+          {(canApply || variant === "course") && (
+            canApply ? (
+              <button
+                type="button"
+                onClick={() => onApply?.(badge)}
+                disabled={applying || applied}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <i className="bi bi-send"></i>
+                {applied
+                  ? applicationStatus || "Candidatura ativa"
+                  : applying
+                    ? "A candidatar..."
+                    : "Candidatar-me"}
+              </button>
+            ) : (
+              <Link
+                to={`/badges/${badge?.id}/requirements`}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:shadow-md"
+              >
+                <i className="bi bi-arrow-right"></i>
+                Explorar badge
+              </Link>
+            )
           )}
         </div>
       </div>
