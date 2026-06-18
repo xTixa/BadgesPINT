@@ -22,6 +22,21 @@ async function ensureSLAccess(pedido, slServiceLineId) {
   return badge?.area?.service_line_id === slServiceLineId;
 }
 
+async function notifyBadgeApplication(pedido) {
+  const badge = await Badge.findByPk(pedido.badge_id, {
+    attributes: ["id", "name", "description"],
+  });
+  const badgeName = badge?.name || badge?.description || `#${pedido.badge_id}`;
+
+  await Notification.create({
+    tipo: "geral",
+    titulo: "Candidatura submetida",
+    mensagem: `Candidataste-te ao badge ${badgeName}.`,
+    utilizador_id: pedido.consultor_id,
+    lido: false
+  });
+}
+
 /**
  * Listar todos os pedidos de badges (com filtro opcional por status)
  */
@@ -213,6 +228,8 @@ export async function criarPedido(req, res) {
       submitted_at: new Date()
     });
 
+    await notifyBadgeApplication(pedido);
+
     res.status(201).json(pedido);
 
   } catch (err) {
@@ -272,6 +289,8 @@ export async function submeterPedido(req, res) {
     pedido.workflow_status = "submitted";
     pedido.submitted_at = new Date();
     await pedido.save();
+
+    await notifyBadgeApplication(pedido);
 
     return res.json(pedido);
   } catch (err) {

@@ -10,11 +10,18 @@ class FirstLoginPage extends StatefulWidget {
 }
 
 class _FirstLoginPageState extends State<FirstLoginPage> {
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmController = TextEditingController();
+  late final TextEditingController _passwordController;
+  late final TextEditingController _confirmController;
 
   bool _submitting = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordController = TextEditingController();
+    _confirmController = TextEditingController();
+  }
 
   @override
   void dispose() {

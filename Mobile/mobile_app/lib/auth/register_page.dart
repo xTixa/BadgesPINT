@@ -25,13 +25,20 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
 
   int? _selectedAreaId;
   bool _acceptedRgpd = false;
   bool _submitting = false;
   String? _message;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+  }
 
   @override
   void dispose() {

@@ -1,9 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
-
-import '../shared/app_config.dart';
+import '../core/services/sync_service.dart';
+import '../data/local/application_dao.dart';
+import '../data/local/area_dao.dart';
+import '../data/local/badge_dao.dart';
+import '../data/local/current_user_dao.dart';
+import '../data/local/evidence_dao.dart';
+import '../data/local/notification_dao.dart';
+import '../data/local/requirement_dao.dart';
 import '../shared/api_client.dart';
 import '../shared/session_storage.dart';
 import 'consultor_models.dart';
@@ -21,12 +26,38 @@ class LoginResult {
 }
 
 class ConsultorRepository {
-  ConsultorRepository({ApiClient? apiClient, SessionStorage? sessionStorage})
-      : _apiClient = apiClient ?? const ApiClient(),
-        _sessionStorage = sessionStorage ?? SessionStorage.instance;
+  ConsultorRepository({
+    ApiClient? apiClient,
+    SessionStorage? sessionStorage,
+    SyncService? syncService,
+    AreaDao? areaDao,
+    CurrentUserDao? currentUserDao,
+    BadgeDao? badgeDao,
+    ApplicationDao? applicationDao,
+    NotificationDao? notificationDao,
+    RequirementDao? requirementDao,
+    EvidenceDao? evidenceDao,
+  })  : _apiClient = apiClient ?? ApiClient(),
+        _sessionStorage = sessionStorage ?? SessionStorage.instance,
+        _syncService = syncService ?? SyncService(apiClient: apiClient, sessionStorage: sessionStorage),
+        _areaDao = areaDao ?? AreaDao(),
+        _currentUserDao = currentUserDao ?? CurrentUserDao(),
+        _badgeDao = badgeDao ?? BadgeDao(),
+        _applicationDao = applicationDao ?? ApplicationDao(),
+        _notificationDao = notificationDao ?? NotificationDao(),
+        _requirementDao = requirementDao ?? RequirementDao(),
+        _evidenceDao = evidenceDao ?? EvidenceDao();
 
   final ApiClient _apiClient;
   final SessionStorage _sessionStorage;
+  final SyncService _syncService;
+  final AreaDao _areaDao;
+  final CurrentUserDao _currentUserDao;
+  final BadgeDao _badgeDao;
+  final ApplicationDao _applicationDao;
+  final NotificationDao _notificationDao;
+  final RequirementDao _requirementDao;
+  final EvidenceDao _evidenceDao;
 
   String? get _token => _sessionStorage.token;
   int? get _userId => _sessionStorage.userId;
@@ -76,7 +107,28 @@ class ConsultorRepository {
   }
 
   Future<void> logout() async {
+    await ApiClient.clearCookies();
     await _sessionStorage.clear();
+  }
+
+  Future<void> syncInitialData() async {
+    await _syncService.syncInitialUserData();
+  }
+
+  Future<void> syncRealtimeData() async {
+    await _syncService.syncRealtimeData();
+  }
+
+  Future<void> syncAreas() async {
+    await _syncService.syncBootstrap();
+  }
+
+  Future<void> syncBadgesByArea(int areaId) async {
+    await _syncService.syncBadgesByArea(areaId);
+  }
+
+  Future<void> syncBadgeDetails(int badgeId) async {
+    await _syncService.syncBadgeDetails(badgeId);
   }
 
   Future<bool> registerDeviceToken(String fcmToken) async {
@@ -116,11 +168,24 @@ class ConsultorRepository {
     if ((_token ?? '').isEmpty) return false;
 
     try {
-      await _apiClient.post(
+      final payload = await _apiClient.post(
         '/api/auth/first-login',
         token: _token,
         body: <String, dynamic>{'newPassword': newPassword},
       );
+
+      if (payload is Map<String, dynamic>) {
+        final token = payload['token']?.toString();
+        final user = payload['user'];
+        final userId =
+            user is Map<String, dynamic> ? _toInt(user['id']) : _userId;
+        if (token != null && token.isNotEmpty && userId != null) {
+          await _sessionStorage.setSession(
+            tokenValue: token,
+            userIdValue: userId,
+          );
+        }
+      }
       return true;
     } catch (_) {
       return false;
@@ -128,12 +193,8 @@ class ConsultorRepository {
   }
 
   Future<List<AreaItem>> getAreas() async {
-    try {
-      final payload = await _apiClient.get('/api/areas');
-      return _readList(payload).map(AreaItem.fromJson).toList();
-    } catch (_) {
-      return <AreaItem>[];
-    }
+    final rows = await _areaDao.getAll();
+    return rows.map(AreaItem.fromJson).toList();
   }
 
   Future<LoginResult> registerConsultant({
@@ -172,17 +233,11 @@ class ConsultorRepository {
   }
 
   Future<ConsultantUser?> getMyProfile() async {
-    if ((_token ?? '').isEmpty) return null;
-
-    try {
-      final payload = await _apiClient.get('/api/auth/me', token: _token);
-      if (payload is Map<String, dynamic>) {
-        return ConsultantUser.fromJson(payload);
-      }
-      return null;
-    } catch (_) {
-      return null;
-    }
+    final userId = _userId;
+    if (userId == null) return null;
+    final payload = await _currentUserDao.get(userId);
+    if (payload is Map<String, dynamic>) return ConsultantUser.fromJson(payload);
+    return null;
   }
 
   Future<ConsultantUser?> updateProfile({
@@ -206,6 +261,7 @@ class ConsultorRepository {
       if (payload is Map<String, dynamic>) {
         final user = payload['user'];
         if (user is Map<String, dynamic>) {
+          await _currentUserDao.save(_userId!, user);
           return ConsultantUser.fromJson(user);
         }
       }
@@ -242,100 +298,56 @@ class ConsultorRepository {
   }
 
   Future<List<BadgeItem>> getMyBadges() async {
-    if ((_token ?? '').isEmpty || _userId == null) {
-      return _mockBadges;
-    }
-
-    try {
-      final payload = await _apiClient.get('/api/consultor/${_userId!}/badges', token: _token);
-      return _readList(payload).map(BadgeItem.fromJson).toList();
-    } catch (_) {
-      return _mockBadges;
-    }
+    final userId = _userId;
+    if (userId == null) return <BadgeItem>[];
+    final rows = await _badgeDao.getMyBadges(userId);
+    return rows.map(BadgeItem.fromJson).toList();
   }
 
   Future<List<BadgeProgress>> getBadgesProgress() async {
-    if ((_token ?? '').isEmpty || _userId == null) {
-      return <BadgeProgress>[];
-    }
-
-    try {
-      final payload = await _apiClient.get('/api/consultor/${_userId!}/badges-progress', token: _token);
-      return _readList(payload).map(BadgeProgress.fromJson).toList();
-    } catch (_) {
-      return <BadgeProgress>[];
-    }
+    final userId = _userId;
+    if (userId == null) return <BadgeProgress>[];
+    final rows = await _badgeDao.getProgress(userId);
+    return rows.map(BadgeProgress.fromJson).toList();
   }
 
   Future<List<RequirementItem>> getRequirementsByBadge(int badgeId) async {
-    try {
-      final payload = await _apiClient.get('/badges/$badgeId/requirements', token: _token);
-      return _readList(payload).map(RequirementItem.fromJson).toList();
-    } catch (_) {
-      return <RequirementItem>[];
-    }
+    final rows = await _requirementDao.getForBadge(badgeId);
+    return rows.map(RequirementItem.fromJson).toList();
   }
 
   Future<List<CatalogBadgeItem>> getCatalogBadges() async {
-    try {
-      final payload = await _apiClient.get('/badges');
-      return _readList(payload).map(CatalogBadgeItem.fromJson).toList();
-    } catch (_) {
-      return <CatalogBadgeItem>[];
-    }
+    final userId = _userId;
+    if (userId == null) return <CatalogBadgeItem>[];
+    final rows = await _badgeDao.getCatalog(userId);
+    return rows.map(CatalogBadgeItem.fromJson).toList();
   }
 
   Future<List<CatalogBadgeItem>> getBadgesByArea(int areaId) async {
-    try {
-      final payload = await _apiClient.get('/areas/$areaId/badges');
-      return _readList(payload).map(CatalogBadgeItem.fromJson).toList();
-    } catch (_) {
-      return <CatalogBadgeItem>[];
-    }
+    final rows = await _badgeDao.getByArea(areaId);
+    return rows.map(CatalogBadgeItem.fromJson).toList();
   }
 
   Future<List<PedidoBadgeStatus>> getMyPedidosStatus() async {
-    if ((_token ?? '').isEmpty || _userId == null) {
-      return <PedidoBadgeStatus>[];
-    }
-
-    try {
-      final payload = await _apiClient.get('/api/admin/pedidos', token: _token);
-      final all = _readList(payload);
-      final mine = all.where((Map<String, dynamic> item) {
-        final user = item['user'];
-        if (user is! Map<String, dynamic>) return false;
-        return _toInt(user['id']) == _userId;
-      }).toList();
-
-      return mine.map(PedidoBadgeStatus.fromJson).toList();
-    } catch (_) {
-      return <PedidoBadgeStatus>[];
-    }
+    final userId = _userId;
+    if (userId == null) return <PedidoBadgeStatus>[];
+    final rows = await _applicationDao.getAll(userId);
+    return rows.map(PedidoBadgeStatus.fromJson).toList();
   }
 
   Future<List<UserNotificationItem>> getMyNotifications() async {
-    if ((_token ?? '').isEmpty) return <UserNotificationItem>[];
-
-    try {
-      final payload = await _apiClient.get('/api/notifications', token: _token);
-      if (payload is Map<String, dynamic>) {
-        final data = payload['data'];
-        if (data is List) {
-          return data.whereType<Map<String, dynamic>>().map(UserNotificationItem.fromJson).toList();
-        }
-      }
-      return <UserNotificationItem>[];
-    } catch (_) {
-      return <UserNotificationItem>[];
-    }
+    final userId = _userId;
+    if (userId == null) return <UserNotificationItem>[];
+    final rows = await _notificationDao.getAll(userId);
+    return rows.map(UserNotificationItem.fromJson).toList();
   }
 
   Future<bool> markNotificationAsRead(int notificationId) async {
     if ((_token ?? '').isEmpty) return false;
 
     try {
-      await _apiClient.post('/api/notifications/$notificationId/read', token: _token);
+      await _apiClient.put('/api/notifications/$notificationId/read', token: _token);
+      await syncRealtimeData();
       return true;
     } catch (_) {
       return false;
@@ -347,6 +359,7 @@ class ConsultorRepository {
 
     try {
       await _apiClient.put('/api/notifications/mark/all-read', token: _token);
+      await syncRealtimeData();
       return true;
     } catch (_) {
       return false;
@@ -357,35 +370,20 @@ class ConsultorRepository {
     if ((_token ?? '').isEmpty) return null;
 
     try {
-      final uri = Uri.parse('${AppConfig.apiBaseUrl}/api/consultor/badges/$badgeId/certificado');
-      final response = await http.post(
-        uri,
-        headers: <String, String>{
-          'Authorization': 'Bearer $_token',
-          'Content-Type': 'application/json',
-        },
-        body: '{}',
+      return await _apiClient.postBytes(
+        '/api/consultor/badges/$badgeId/certificado',
+        token: _token,
       );
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        return response.bodyBytes;
-      }
-
-      return null;
     } catch (_) {
       return null;
     }
   }
 
   Future<List<EvidenceItem>> getEvidencesByBadge(int badgeId) async {
-    if ((_token ?? '').isEmpty) return <EvidenceItem>[];
-
-    try {
-      final payload = await _apiClient.get('/api/consultor/badges/$badgeId/evidencias', token: _token);
-      return _readList(payload).map(EvidenceItem.fromJson).toList();
-    } catch (_) {
-      return <EvidenceItem>[];
-    }
+    final userId = _userId;
+    if (userId == null) return <EvidenceItem>[];
+    final rows = await _evidenceDao.getForBadge(userId, badgeId);
+    return rows.map(EvidenceItem.fromJson).toList();
   }
 
   Future<bool> submitEvidence({
@@ -450,7 +448,10 @@ class ConsultorRepository {
       final pedidoId = createPayload['id'];
       if (pedidoId == null) return false;
 
-      await _apiClient.post('/api/admin/pedidos/$pedidoId/submeter', token: _token);
+      if (createPayload['workflow_status'] == 'open') {
+        await _apiClient.post('/api/admin/pedidos/$pedidoId/submeter', token: _token);
+      }
+      await syncRealtimeData();
       return true;
     } catch (_) {
       return false;
@@ -480,13 +481,6 @@ class ConsultorRepository {
     ];
   }
 
-  List<Map<String, dynamic>> _readList(dynamic payload) {
-    if (payload is List) {
-      return payload.whereType<Map<String, dynamic>>().toList();
-    }
-    return <Map<String, dynamic>>[];
-  }
-
   int? _toInt(dynamic value) {
     if (value is int) return value;
     return int.tryParse(value?.toString() ?? '');
@@ -506,9 +500,3 @@ class ConsultorRepository {
     return 'Erro de autenticacao.';
   }
 }
-
-final List<BadgeItem> _mockBadges = <BadgeItem>[
-  BadgeItem(id: 1, name: 'Excel Avancado', status: 'obtido', area: 'Data', points: 120, expireInDays: 45),
-  BadgeItem(id: 2, name: 'Power BI', status: 'pendente', area: 'Data', points: 90, expireInDays: 20),
-  BadgeItem(id: 3, name: 'Gestao de Projeto', status: 'em progresso', area: 'PMO', points: 100),
-];

@@ -9,9 +9,17 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _objetivoController = TextEditingController();
-  final TextEditingController _dataLimiteController = TextEditingController();
+  static const List<String> _areaOptions = <String>[
+    'Selecione...',
+    'Data',
+    'DevOps',
+    'Outsystems',
+    'Cloud',
+  ];
+
+  late final TextEditingController _nomeController;
+  late final TextEditingController _objetivoController;
+  late final TextEditingController _dataLimiteController;
 
   bool emailConfirmacao = true;
   bool notificacoesAprovacao = true;
@@ -28,6 +36,9 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
+    _nomeController = TextEditingController();
+    _objetivoController = TextEditingController();
+    _dataLimiteController = TextEditingController();
     _loadSettings();
   }
 
@@ -49,7 +60,9 @@ class _SettingsPageState extends State<SettingsPage> {
           prefs.getBool('settings_galeria_publica') ?? false;
       partilhaLinkedin = prefs.getBool('settings_partilha_linkedin') ?? true;
       assinaturaEmail = prefs.getBool('settings_assinatura_email') ?? false;
-      areaPrincipal = prefs.getString('settings_area_principal') ?? areaPrincipal;
+      final savedArea = prefs.getString('settings_area_principal');
+      areaPrincipal =
+          _areaOptions.contains(savedArea) ? savedArea! : _areaOptions.first;
       _nomeController.text = prefs.getString('settings_nome') ?? '';
       _objetivoController.text = prefs.getString('settings_objetivo') ?? '';
       _dataLimiteController.text =
@@ -128,19 +141,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: areaPrincipal,
+                    value:
+                        _areaOptions.contains(areaPrincipal)
+                            ? areaPrincipal
+                            : _areaOptions.first,
                     decoration: const InputDecoration(
                       labelText: 'Área principal',
                       prefixIcon: Icon(Icons.hub_outlined, size: 20),
                     ),
                     items:
-                        const <String>[
-                              'Selecione...',
-                              'Data',
-                              'DevOps',
-                              'Outsystems',
-                              'Cloud',
-                            ]
+                        _areaOptions
                             .map(
                               (String area) => DropdownMenuItem<String>(
                                 value: area,

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../consultor_controller.dart';
 import 'dashboard_page.dart';
 import 'home_page.dart';
 import 'history_page.dart';
-import 'notifications_page.dart';
 import 'profile_page.dart';
-import 'settings_page.dart';
 import 'upload_page.dart';
 
 class ConsultorShellPage extends StatelessWidget {
@@ -65,12 +64,7 @@ class ConsultorShellPage extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.notifications_outlined),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => NotificationsPage(controller: controller),
-                    ),
-                  );
+                  context.push('/notifications');
                 },
               ),
               Padding(
@@ -84,10 +78,7 @@ class ConsultorShellPage extends StatelessWidget {
                   color: Colors.white,
                   onSelected: (value) async {
                     if (value == 'settings') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SettingsPage()),
-                      );
+                      context.push('/settings');
                     }
 
                     if (value == 'logout') {

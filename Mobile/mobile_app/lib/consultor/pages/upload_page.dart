@@ -58,6 +58,17 @@ class UploadPage extends StatelessWidget {
   }
 
   Widget _buildBadgeSelector(BuildContext context) {
+    final Map<int, BadgeItem> badgesById = <int, BadgeItem>{};
+    for (final badge in controller.badges) {
+      badgesById[badge.id] = badge;
+    }
+
+    final badges = badgesById.values.toList();
+    final selectedBadgeId =
+        badgesById.containsKey(controller.selectedBadgeId)
+            ? controller.selectedBadgeId
+            : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,7 +80,7 @@ class UploadPage extends StatelessWidget {
         const SizedBox(height: 8),
 
         DropdownButtonFormField<int>(
-          value: controller.selectedBadgeId,
+          value: selectedBadgeId,
           hint: const Text('Seleciona um badge em progresso'),
           decoration: InputDecoration(
             filled: true,
@@ -78,7 +89,7 @@ class UploadPage extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           items:
-              controller.badges
+              badges
                   .map(
                     (b) => DropdownMenuItem(value: b.id, child: Text(b.name)),
                   )
@@ -98,7 +109,11 @@ class UploadPage extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (controller.selectedBadgeId == null) {
+    final selectedBadgeIsAvailable =
+        controller.selectedBadgeId != null &&
+        controller.badges.any((badge) => badge.id == controller.selectedBadgeId);
+
+    if (!selectedBadgeIsAvailable) {
       return Container(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -192,7 +207,7 @@ class _RequirementTileState extends State<RequirementTile>
   bool expanded = false;
   bool loading = false;
 
-  final notesCtrl = TextEditingController();
+  late final TextEditingController notesCtrl;
 
   late AnimationController _controller;
   late Animation<double> _fade;
@@ -221,6 +236,7 @@ class _RequirementTileState extends State<RequirementTile>
   @override
   void initState() {
     super.initState();
+    notesCtrl = TextEditingController();
 
     _controller = AnimationController(
       vsync: this,

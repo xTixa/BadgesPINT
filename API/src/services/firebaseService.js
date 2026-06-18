@@ -122,7 +122,12 @@ async function sendToToken(accessToken, token, notification) {
 }
 
 export async function sendPushToUser(utilizadorId, notification) {
-  if (!hasFirebaseConfig()) return;
+  if (!hasFirebaseConfig()) {
+    console.warn(
+      "Firebase push desativado: faltam FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL ou FIREBASE_PRIVATE_KEY no .env"
+    );
+    return;
+  }
 
   const tokens = await FcmToken.findAll({
     where: {
@@ -131,7 +136,10 @@ export async function sendPushToUser(utilizadorId, notification) {
     },
   });
 
-  if (tokens.length === 0) return;
+  if (tokens.length === 0) {
+    console.warn(`Firebase push nao enviado: utilizador ${utilizadorId} sem token FCM ativo`);
+    return;
+  }
 
   const accessToken = await getAccessToken();
   const invalidTokens = [];

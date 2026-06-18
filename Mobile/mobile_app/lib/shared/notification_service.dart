@@ -26,6 +26,7 @@ class NotificationService {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
   static VoidCallback? onOpenNotifications;
+  static Future<void> Function()? onDataRefresh;
 
   static Future<void> initialize() async {
     final firebaseReady = await ensureFirebaseInitialized();
@@ -47,18 +48,33 @@ class NotificationService {
           sound: true,
         );
 
-    FirebaseMessaging.onMessage.listen(_showForegroundNotification);
-    FirebaseMessaging.onMessageOpenedApp.listen((_) => _openNotifications());
+    FirebaseMessaging.onMessage.listen((message) async {
+      await onDataRefresh?.call();
+      await _showForegroundNotification(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((_) async {
+      await onDataRefresh?.call();
+      _openNotifications();
+    });
 
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _openNotifications());
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await onDataRefresh?.call();
+        _openNotifications();
+      });
     }
   }
 
   static Future<bool> ensureFirebaseInitialized() async {
     if (_firebaseReady) return true;
-    if (!AppConfig.hasFirebaseConfig) return false;
+    if (!AppConfig.hasFirebaseConfig) {
+      debugPrint(
+        'Firebase nao inicializado: faltam FIREBASE_API_KEY, '
+        'FIREBASE_APP_ID, FIREBASE_MESSAGING_SENDER_ID ou FIREBASE_PROJECT_ID.',
+      );
+      return false;
+    }
 
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
@@ -86,7 +102,14 @@ class NotificationService {
 
     final token = await FirebaseMessaging.instance.getToken();
     if (token != null && token.isNotEmpty) {
-      await repository.registerDeviceToken(token);
+      final registered = await repository.registerDeviceToken(token);
+      debugPrint(
+        registered
+            ? 'Token FCM registado na API.'
+            : 'Token FCM obtido, mas a API nao o registou.',
+      );
+    } else {
+      debugPrint('Firebase inicializado, mas nao foi obtido token FCM.');
     }
 
     await _tokenRefreshSubscription?.cancel();

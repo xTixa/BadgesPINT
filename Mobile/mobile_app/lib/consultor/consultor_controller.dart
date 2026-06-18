@@ -39,6 +39,8 @@ class ConsultorController extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+    await _repository.syncInitialData();
+
     final results = await Future.wait<dynamic>(<Future<dynamic>>[
       _repository.getMyProfile(),
       _repository.getMyBadges(),
@@ -61,6 +63,7 @@ class ConsultorController extends ChangeNotifier {
 
     final areaId = profile?.areaId;
     if (areaId != null) {
+      await _repository.syncBadgesByArea(areaId);
       preferredAreaBadges = await _repository.getBadgesByArea(areaId);
     } else {
       preferredAreaBadges = <CatalogBadgeItem>[];
@@ -92,6 +95,8 @@ class ConsultorController extends ChangeNotifier {
   }
 
   Future<void> refreshRealtimeData() async {
+    await _repository.syncRealtimeData();
+
     final results = await Future.wait<dynamic>(<Future<dynamic>>[
       _repository.getMyPedidosStatus(),
       _repository.getMyNotifications(),
@@ -117,6 +122,9 @@ class ConsultorController extends ChangeNotifier {
 
     profile = updated;
     final selectedAreaId = profile?.areaId;
+    if (selectedAreaId != null) {
+      await _repository.syncBadgesByArea(selectedAreaId);
+    }
     preferredAreaBadges =
         selectedAreaId == null
             ? <CatalogBadgeItem>[]
@@ -197,6 +205,8 @@ class ConsultorController extends ChangeNotifier {
     uploadLoading = true;
     notifyListeners();
 
+    await _repository.syncBadgeDetails(badgeId);
+
     final results = await Future.wait<dynamic>(<Future<dynamic>>[
       _repository.getRequirementsByBadge(badgeId),
       _repository.getEvidencesByBadge(badgeId),
@@ -227,6 +237,7 @@ class ConsultorController extends ChangeNotifier {
 
     final badgeId = selectedBadgeId;
     if (success && badgeId != null) {
+      await _repository.syncBadgeDetails(badgeId);
       evidences = await _repository.getEvidencesByBadge(badgeId);
       notifyListeners();
     }

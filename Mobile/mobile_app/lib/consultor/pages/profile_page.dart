@@ -307,7 +307,9 @@ class _ProfilePageState extends State<ProfilePage>
 
     final nameController = TextEditingController(text: profile.name);
     final emailController = TextEditingController(text: profile.email);
-    int? selectedAreaId = profile.areaId;
+    final areaIds = widget.controller.areas.map((area) => area.id).toSet();
+    int? selectedAreaId =
+        areaIds.contains(profile.areaId) ? profile.areaId : null;
 
     final result = await showModalBottomSheet<bool>(
       context: context,

@@ -14,12 +14,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController;
   String _selectedArea = 'Todas';
   int? _selectedLevel;
   bool _preferredOnly = false;
 
   ConsultorController get controller => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
 
   @override
   void dispose() {

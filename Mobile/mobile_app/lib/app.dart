@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'auth/first_login_page.dart';
 import 'auth/login_page.dart';
@@ -11,6 +12,7 @@ import 'consultor/consultor_controller.dart';
 import 'consultor/consultor_models.dart';
 import 'consultor/pages/consultor_shell_page.dart';
 import 'consultor/pages/notifications_page.dart';
+import 'consultor/pages/settings_page.dart';
 
 enum AuthStage { login, register, firstLogin, authenticated }
 
@@ -25,6 +27,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   final ConsultorRepository _repository = ConsultorRepository();
 
   ConsultorController? _controller;
+  late final GoRouter _router;
   bool _booting = true;
   AuthStage _authStage = AuthStage.login;
 
@@ -33,17 +36,117 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   @override
   void initState() {
     super.initState();
+    _router = _createRouter();
     _bootstrap();
   }
 
   @override
   void dispose() {
+    NotificationService.onDataRefresh = null;
+    NotificationService.onOpenNotifications = null;
     _controller?.dispose();
+    _router.dispose();
     super.dispose();
+  }
+
+  GoRouter _createRouter() {
+    return GoRouter(
+      navigatorKey: NotificationService.navigatorKey,
+      initialLocation: '/boot',
+      redirect: (BuildContext context, GoRouterState state) {
+        final location = state.uri.path;
+        if (_booting) return location == '/boot' ? null : '/boot';
+
+        if (_authStage == AuthStage.authenticated) {
+          if (location == '/login' ||
+              location == '/register' ||
+              location == '/first-login' ||
+              location == '/boot') {
+            return '/app';
+          }
+          return null;
+        }
+
+        if (_authStage == AuthStage.firstLogin) {
+          return location == '/first-login' ? null : '/first-login';
+        }
+
+        if (location == '/app' ||
+            location == '/notifications' ||
+            location == '/settings' ||
+            location == '/boot') {
+          return '/login';
+        }
+
+        return null;
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: '/boot',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+                  const Scaffold(body: Center(child: CircularProgressIndicator())),
+        ),
+        GoRoute(
+          path: '/login',
+          builder:
+              (BuildContext context, GoRouterState state) => LoginPage(
+                    onLogin: _handleLogin,
+                    onOpenRegister: _openRegister,
+                    onRecoverPassword: _showRecoverMessage,
+                  ),
+        ),
+        GoRoute(
+          path: '/register',
+          builder:
+              (BuildContext context, GoRouterState state) => RegisterPage(
+                    areas: _areas,
+                    onRegister: _handleRegister,
+                    onBackToLogin: _backToLogin,
+                  ),
+        ),
+        GoRoute(
+          path: '/first-login',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+                  FirstLoginPage(onSubmit: _handleFirstLogin),
+        ),
+        GoRoute(
+          path: '/app',
+          builder: (BuildContext context, GoRouterState state) {
+            final controller = _controller;
+            if (controller == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return ConsultorShellPage(
+              controller: controller,
+              onLogout: _handleLogout,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/notifications',
+          builder: (BuildContext context, GoRouterState state) {
+            final controller = _controller;
+            if (controller == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return NotificationsPage(controller: controller);
+          },
+        ),
+        GoRoute(
+          path: '/settings',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+                  const SettingsPage(),
+        ),
+      ],
+    );
   }
 
   Future<void> _bootstrap() async {
     await SessionStorage.instance.load();
+    await _repository.syncAreas();
     _areas = await _repository.getAreas();
 
     if (SessionStorage.instance.hasSession) {
@@ -59,6 +162,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     setState(() {
       _booting = false;
     });
+    _goToCurrentStage();
   }
 
   Future<bool> _openDashboard() async {
@@ -78,23 +182,19 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     _controller?.dispose();
     _controller = controller;
     await NotificationService.registerDeviceForUser(_repository);
+    NotificationService.onDataRefresh = controller.refreshRealtimeData;
     NotificationService.onOpenNotifications = () {
       final context = NotificationService.navigatorKey.currentContext;
-      final activeController = _controller;
-      if (context == null || activeController == null) return;
+      if (context == null || _controller == null) return;
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => NotificationsPage(controller: activeController),
-        ),
-      );
+      context.push('/notifications');
     };
 
     if (mounted) {
       setState(() {
         _authStage = AuthStage.authenticated;
       });
+      _router.go('/app');
     }
 
     return true;
@@ -109,6 +209,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
         setState(() {
           _authStage = AuthStage.firstLogin;
         });
+        _router.go('/first-login');
       }
       return null;
     }
@@ -125,6 +226,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   Future<void> _handleLogout() async {
     await NotificationService.unregisterDeviceForUser(_repository);
     NotificationService.onOpenNotifications = null;
+    NotificationService.onDataRefresh = null;
     await _repository.logout();
     _controller?.dispose();
     _controller = null;
@@ -133,6 +235,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     setState(() {
       _authStage = AuthStage.login;
     });
+    _router.go('/login');
   }
 
   Future<String?> _handleFirstLogin(String newPassword) async {
@@ -169,6 +272,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       setState(() {
         _authStage = AuthStage.login;
       });
+      _router.go('/login');
     }
 
     return result.message;
@@ -178,12 +282,14 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     setState(() {
       _authStage = AuthStage.register;
     });
+    _router.go('/register');
   }
 
   void _backToLogin() {
     setState(() {
       _authStage = AuthStage.login;
     });
+    _router.go('/login');
   }
 
   void _showRecoverMessage() {
@@ -197,40 +303,32 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
 
   @override
   Widget build(BuildContext context) {
-    Widget home;
-
-    if (_booting) {
-      home = const Scaffold(body: Center(child: CircularProgressIndicator()));
-    } else if (_authStage == AuthStage.authenticated && _controller != null) {
-      home = ConsultorShellPage(
-        controller: _controller!,
-        onLogout: _handleLogout,
-      );
-    } else if (_authStage == AuthStage.firstLogin) {
-      home = FirstLoginPage(onSubmit: _handleFirstLogin);
-    } else if (_authStage == AuthStage.register) {
-      home = RegisterPage(
-        areas: _areas,
-        onRegister: _handleRegister,
-        onBackToLogin: _backToLogin,
-      );
-    } else {
-      home = LoginPage(
-        onLogin: _handleLogin,
-        onOpenRegister: _openRegister,
-        onRecoverPassword: _showRecoverMessage,
-      );
-    }
-
-    return MaterialApp(
-      navigatorKey: NotificationService.navigatorKey,
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Badges Softinsa',
       theme: AppTheme.light(),
+      routerConfig: _router,
       builder: (BuildContext context, Widget? child) {
         return child ?? const SizedBox.shrink();
       },
-      home: home,
     );
+  }
+
+  void _goToCurrentStage() {
+    if (!mounted) return;
+    switch (_authStage) {
+      case AuthStage.authenticated:
+        _router.go('/app');
+        break;
+      case AuthStage.firstLogin:
+        _router.go('/first-login');
+        break;
+      case AuthStage.register:
+        _router.go('/register');
+        break;
+      case AuthStage.login:
+        _router.go('/login');
+        break;
+    }
   }
 }
