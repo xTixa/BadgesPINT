@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../core/services/connectivity_service.dart';
 import '../shared/download_helper.dart';
 import 'consultor_repository.dart';
 import 'consultor_models.dart';
@@ -236,12 +237,14 @@ class ConsultorController extends ChangeNotifier {
     );
 
     final badgeId = selectedBadgeId;
-    if (success && badgeId != null) {
+    if (success && badgeId != null && ConnectivityService.instance.isOnline) {
+      // Only re-sync from API if we're online; if queued offline the sync
+      // will happen automatically when MutationQueueService flushes.
       await _repository.syncBadgeDetails(badgeId);
       evidences = await _repository.getEvidencesByBadge(badgeId);
-      notifyListeners();
     }
 
+    if (success) notifyListeners();
     return success;
   }
 

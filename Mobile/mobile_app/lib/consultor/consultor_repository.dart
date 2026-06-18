@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../core/services/connectivity_service.dart';
 import '../core/services/sync_service.dart';
 import '../data/local/application_dao.dart';
 import '../data/local/area_dao.dart';
@@ -8,6 +9,7 @@ import '../data/local/badge_dao.dart';
 import '../data/local/current_user_dao.dart';
 import '../data/local/evidence_dao.dart';
 import '../data/local/notification_dao.dart';
+import '../data/local/pending_mutation_dao.dart';
 import '../data/local/requirement_dao.dart';
 import '../shared/api_client.dart';
 import '../shared/session_storage.dart';
@@ -37,6 +39,7 @@ class ConsultorRepository {
     NotificationDao? notificationDao,
     RequirementDao? requirementDao,
     EvidenceDao? evidenceDao,
+    PendingMutationDao? pendingMutationDao,
   })  : _apiClient = apiClient ?? ApiClient(),
         _sessionStorage = sessionStorage ?? SessionStorage.instance,
         _syncService = syncService ?? SyncService(apiClient: apiClient, sessionStorage: sessionStorage),
@@ -46,7 +49,8 @@ class ConsultorRepository {
         _applicationDao = applicationDao ?? ApplicationDao(),
         _notificationDao = notificationDao ?? NotificationDao(),
         _requirementDao = requirementDao ?? RequirementDao(),
-        _evidenceDao = evidenceDao ?? EvidenceDao();
+        _evidenceDao = evidenceDao ?? EvidenceDao(),
+        _pendingMutationDao = pendingMutationDao ?? PendingMutationDao();
 
   final ApiClient _apiClient;
   final SessionStorage _sessionStorage;
@@ -58,6 +62,9 @@ class ConsultorRepository {
   final NotificationDao _notificationDao;
   final RequirementDao _requirementDao;
   final EvidenceDao _evidenceDao;
+  final PendingMutationDao _pendingMutationDao;
+
+  bool get _isOnline => ConnectivityService.instance.isOnline;
 
   String? get _token => _sessionStorage.token;
   int? get _userId => _sessionStorage.userId;
@@ -345,6 +352,15 @@ class ConsultorRepository {
   Future<bool> markNotificationAsRead(int notificationId) async {
     if ((_token ?? '').isEmpty) return false;
 
+    if (!_isOnline) {
+      await _pendingMutationDao.enqueue(
+        mutationKey: 'mark_notification_read_$notificationId',
+        endpoint: '/api/notifications/$notificationId/read',
+        method: 'PUT',
+      );
+      return true;
+    }
+
     try {
       await _apiClient.put('/api/notifications/$notificationId/read', token: _token);
       await syncRealtimeData();
@@ -356,6 +372,15 @@ class ConsultorRepository {
 
   Future<bool> markAllNotificationsAsRead() async {
     if ((_token ?? '').isEmpty) return false;
+
+    if (!_isOnline) {
+      await _pendingMutationDao.enqueue(
+        mutationKey: 'mark_all_notifications_read',
+        endpoint: '/api/notifications/mark/all-read',
+        method: 'PUT',
+      );
+      return true;
+    }
 
     try {
       await _apiClient.put('/api/notifications/mark/all-read', token: _token);
@@ -392,6 +417,16 @@ class ConsultorRepository {
     String? notes,
   }) async {
     if ((_token ?? '').isEmpty) return false;
+
+    if (!_isOnline) {
+      await _pendingMutationDao.enqueue(
+        mutationKey: 'submit_evidence_$requirementId',
+        endpoint: '/api/consultor/requirements/$requirementId/evidencias',
+        method: 'POST',
+        body: <String, dynamic>{'evidence_url': evidenceUrl, 'notes': notes ?? ''},
+      );
+      return true;
+    }
 
     try {
       await _apiClient.post(
@@ -436,6 +471,16 @@ class ConsultorRepository {
 
   Future<bool> submitPedido(int badgeId) async {
     if ((_token ?? '').isEmpty) return false;
+
+    if (!_isOnline) {
+      await _pendingMutationDao.enqueue(
+        mutationKey: 'submit_pedido_$badgeId',
+        endpoint: '/api/admin/pedidos',
+        method: 'POST',
+        body: <String, dynamic>{'badge_id': badgeId},
+      );
+      return true;
+    }
 
     try {
       final createPayload = await _apiClient.post(

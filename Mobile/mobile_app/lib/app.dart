@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'auth/first_login_page.dart';
 import 'auth/login_page.dart';
 import 'auth/register_page.dart';
+import 'core/services/mutation_queue_service.dart';
 import 'shared/app_theme.dart';
 import 'shared/notification_service.dart';
 import 'shared/session_storage.dart';
@@ -11,6 +12,11 @@ import 'consultor/consultor_repository.dart';
 import 'consultor/consultor_controller.dart';
 import 'consultor/consultor_models.dart';
 import 'consultor/pages/consultor_shell_page.dart';
+import 'consultor/pages/dashboard_page.dart';
+import 'consultor/pages/home_page.dart';
+import 'consultor/pages/upload_page.dart';
+import 'consultor/pages/history_page.dart';
+import 'consultor/pages/profile_page.dart';
 import 'consultor/pages/notifications_page.dart';
 import 'consultor/pages/settings_page.dart';
 
@@ -25,6 +31,7 @@ class BadgesPintApp extends StatefulWidget {
 
 class _BadgesPintAppState extends State<BadgesPintApp> {
   final ConsultorRepository _repository = ConsultorRepository();
+  final MutationQueueService _mutationQueue = MutationQueueService();
 
   ConsultorController? _controller;
   late final GoRouter _router;
@@ -44,6 +51,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   void dispose() {
     NotificationService.onDataRefresh = null;
     NotificationService.onOpenNotifications = null;
+    _mutationQueue.dispose();
     _controller?.dispose();
     _router.dispose();
     super.dispose();
@@ -62,7 +70,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
               location == '/register' ||
               location == '/first-login' ||
               location == '/boot') {
-            return '/app';
+            return '/app/dashboard';
           }
           return null;
         }
@@ -71,7 +79,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
           return location == '/first-login' ? null : '/first-login';
         }
 
-        if (location == '/app' ||
+        if (location.startsWith('/app') ||
             location == '/notifications' ||
             location == '/settings' ||
             location == '/boot') {
@@ -83,62 +91,111 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       routes: <RouteBase>[
         GoRoute(
           path: '/boot',
-          builder:
-              (BuildContext context, GoRouterState state) =>
-                  const Scaffold(body: Center(child: CircularProgressIndicator())),
+          builder: (BuildContext context, GoRouterState state) =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
         ),
         GoRoute(
           path: '/login',
-          builder:
-              (BuildContext context, GoRouterState state) => LoginPage(
-                    onLogin: _handleLogin,
-                    onOpenRegister: _openRegister,
-                    onRecoverPassword: _showRecoverMessage,
-                  ),
+          builder: (BuildContext context, GoRouterState state) => LoginPage(
+            onLogin: _handleLogin,
+            onOpenRegister: _openRegister,
+            onRecoverPassword: _showRecoverMessage,
+          ),
         ),
         GoRoute(
           path: '/register',
-          builder:
-              (BuildContext context, GoRouterState state) => RegisterPage(
-                    areas: _areas,
-                    onRegister: _handleRegister,
-                    onBackToLogin: _backToLogin,
-                  ),
+          builder: (BuildContext context, GoRouterState state) => RegisterPage(
+            areas: _areas,
+            onRegister: _handleRegister,
+            onBackToLogin: _backToLogin,
+          ),
         ),
         GoRoute(
           path: '/first-login',
-          builder:
-              (BuildContext context, GoRouterState state) =>
-                  FirstLoginPage(onSubmit: _handleFirstLogin),
+          builder: (BuildContext context, GoRouterState state) =>
+              FirstLoginPage(onSubmit: _handleFirstLogin),
         ),
-        GoRoute(
-          path: '/app',
-          builder: (BuildContext context, GoRouterState state) {
-            final controller = _controller;
-            if (controller == null) {
+
+        // Authenticated tab shell — each branch keeps its own nav stack.
+        StatefulShellRoute.indexedStack(
+          builder: (
+            BuildContext context,
+            GoRouterState state,
+            StatefulNavigationShell navigationShell,
+          ) {
+            final ctrl = _controller;
+            if (ctrl == null) {
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             }
             return ConsultorShellPage(
-              controller: controller,
+              controller: ctrl,
+              navigationShell: navigationShell,
               onLogout: _handleLogout,
             );
           },
+          branches: <StatefulShellBranch>[
+            StatefulShellBranch(
+              routes: <RouteBase>[
+                GoRoute(
+                  path: '/app/dashboard',
+                  builder: (BuildContext context, GoRouterState state) =>
+                      DashboardPage(controller: _controller!),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <RouteBase>[
+                GoRoute(
+                  path: '/app/home',
+                  builder: (BuildContext context, GoRouterState state) =>
+                      HomePage(controller: _controller!),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <RouteBase>[
+                GoRoute(
+                  path: '/app/upload',
+                  builder: (BuildContext context, GoRouterState state) =>
+                      UploadPage(controller: _controller!),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <RouteBase>[
+                GoRoute(
+                  path: '/app/history',
+                  builder: (BuildContext context, GoRouterState state) =>
+                      HistoryPage(controller: _controller!),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <RouteBase>[
+                GoRoute(
+                  path: '/app/profile',
+                  builder: (BuildContext context, GoRouterState state) =>
+                      ProfilePage(controller: _controller!),
+                ),
+              ],
+            ),
+          ],
         ),
+
         GoRoute(
           path: '/notifications',
           builder: (BuildContext context, GoRouterState state) {
-            final controller = _controller;
-            if (controller == null) {
+            final ctrl = _controller;
+            if (ctrl == null) {
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             }
-            return NotificationsPage(controller: controller);
+            return NotificationsPage(controller: ctrl);
           },
         ),
         GoRoute(
           path: '/settings',
-          builder:
-              (BuildContext context, GoRouterState state) =>
-                  const SettingsPage(),
+          builder: (BuildContext context, GoRouterState state) =>
+              const SettingsPage(),
         ),
       ],
     );
@@ -148,6 +205,8 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     await SessionStorage.instance.load();
     await _repository.syncAreas();
     _areas = await _repository.getAreas();
+
+    _mutationQueue.initialize();
 
     if (SessionStorage.instance.hasSession) {
       final ok = await _openDashboard();
@@ -181,12 +240,15 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
 
     _controller?.dispose();
     _controller = controller;
+
+    // When the mutation queue flushes after reconnecting, refresh live data.
+    _mutationQueue.onQueueFlushed = controller.refreshRealtimeData;
+
     await NotificationService.registerDeviceForUser(_repository);
     NotificationService.onDataRefresh = controller.refreshRealtimeData;
     NotificationService.onOpenNotifications = () {
       final context = NotificationService.navigatorKey.currentContext;
       if (context == null || _controller == null) return;
-
       context.push('/notifications');
     };
 
@@ -194,7 +256,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       setState(() {
         _authStage = AuthStage.authenticated;
       });
-      _router.go('/app');
+      _router.go('/app/dashboard');
     }
 
     return true;
@@ -227,6 +289,8 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     await NotificationService.unregisterDeviceForUser(_repository);
     NotificationService.onOpenNotifications = null;
     NotificationService.onDataRefresh = null;
+    _mutationQueue.onQueueFlushed = null;
+    await _mutationQueue.clear();
     await _repository.logout();
     _controller?.dispose();
     _controller = null;
@@ -293,8 +357,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
   }
 
   void _showRecoverMessage() {
-    final contextNow = context;
-    ScaffoldMessenger.of(contextNow).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Recuperacao de password disponivel em breve no mobile.'),
       ),
@@ -308,9 +371,8 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       title: 'Badges Softinsa',
       theme: AppTheme.light(),
       routerConfig: _router,
-      builder: (BuildContext context, Widget? child) {
-        return child ?? const SizedBox.shrink();
-      },
+      builder: (BuildContext context, Widget? child) =>
+          child ?? const SizedBox.shrink(),
     );
   }
 
@@ -318,17 +380,13 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     if (!mounted) return;
     switch (_authStage) {
       case AuthStage.authenticated:
-        _router.go('/app');
-        break;
+        _router.go('/app/dashboard');
       case AuthStage.firstLogin:
         _router.go('/first-login');
-        break;
       case AuthStage.register:
         _router.go('/register');
-        break;
       case AuthStage.login:
         _router.go('/login');
-        break;
     }
   }
 }

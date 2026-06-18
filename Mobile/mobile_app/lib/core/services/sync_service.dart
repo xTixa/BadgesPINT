@@ -8,6 +8,7 @@ import '../../data/local/requirement_dao.dart';
 import '../../data/local/sync_metadata_dao.dart';
 import '../../shared/api_client.dart';
 import '../../shared/session_storage.dart';
+import 'connectivity_service.dart';
 
 class SyncService {
   SyncService({
@@ -168,6 +169,7 @@ class SyncService {
   }
 
   Future<void> _sync(String key, Future<void> Function() action) async {
+    if (!ConnectivityService.instance.isOnline) return;
     try {
       await action();
       await _syncMetadataDao.markSuccess(key);
