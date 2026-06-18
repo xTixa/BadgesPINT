@@ -166,6 +166,27 @@ export async function getAllUsers(req, res) {
 }
 
 /**
+ * Gestao de utilizadores - obter ficha
+ */
+export async function getUserById(req, res) {
+  try {
+    const { id } = req.params;
+    const user = await User.findByPk(id, {
+      attributes: ["id", "name", "email", "role", "area_id", "points_total", "createdAt", "updatedAt"],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilizador nao encontrado" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error("Erro ao obter user:", err);
+    res.status(500).json({ message: "Erro ao carregar utilizador" });
+  }
+}
+
+/**
  * Criar utilizador
  */
 export async function createUser(req, res) {

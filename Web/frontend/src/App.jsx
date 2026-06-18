@@ -50,6 +50,7 @@ import RelatoriosServiceLine from "./pages/ServiceLine/RelatoriosServiceLine";
 // Admin
 import DashboardAdmin from "./pages/Admin/DashboardAdmin";
 import GestaoUtilizadores from "./pages/Admin/GestaoUtilizadores";
+import FichaUtilizador from "./pages/Admin/FichaUtilizador";
 import GestaoBadges from "./pages/Admin/GestaoBadges";
 import GestaoLearningPaths from "./pages/Admin/GestaoLearningPaths";
 import GestaoPedidosBadges from "./pages/Admin/GestaoPedidosBadges";
@@ -126,6 +127,7 @@ function AppContent() {
           {/* Admin */}
           <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><DashboardAdmin /></ProtectedRoute>} />
           <Route path="/admin/gestao-utilizadores" element={<ProtectedRoute role="admin"><GestaoUtilizadores /></ProtectedRoute>} />
+          <Route path="/admin/users/:id" element={<ProtectedRoute role="admin"><FichaUtilizador /></ProtectedRoute>} />
           <Route path="/admin/gestao-pedidos-badges" element={<ProtectedRoute role="admin"><GestaoPedidosBadges /></ProtectedRoute>} />
           <Route path="/admin/gestao-badges" element={<ProtectedRoute role="admin"><GestaoBadges /></ProtectedRoute>} />
           <Route path="/admin/gestao-sla" element={<ProtectedRoute role="admin"><GestaoSLA /></ProtectedRoute>} />
