@@ -13,24 +13,33 @@ export async function getConsultantBadges(req, res) {
       return res.status(400).json({ message: "ID do consultor é obrigatório." });
     }
 
-    // Obter badges atribuídos ao consultor através da tabela de junção
     const consultorBadges = await ConsultorBadge.findAll({
       where: { consultor_id: id },
-      attributes: ["badge_id"],
+      attributes: ["badge_id", "status", "workflow_status", "submitted_at", "data_atribuicao"],
     });
 
-    const badgeIds = consultorBadges.map((cb) => cb.badge_id);
-
-    if (!badgeIds.length) {
+    if (!consultorBadges.length) {
       return res.json([]);
     }
 
-    const badges = await Badge.findAll({
-      where: { id: badgeIds },
-    });
+    const badgeIds = consultorBadges.map((cb) => cb.badge_id);
+    const statusMap = new Map(
+      consultorBadges.map((cb) => [cb.badge_id, {
+        status: cb.status,
+        workflow_status: cb.workflow_status,
+        submitted_at: cb.submitted_at,
+        data_atribuicao: cb.data_atribuicao,
+      }])
+    );
 
-    res.json(badges);
+    const badges = await Badge.findAll({ where: { id: badgeIds } });
 
+    const result = badges.map((b) => ({
+      ...b.toJSON(),
+      ...(statusMap.get(b.id) || {}),
+    }));
+
+    res.json(result);
   } catch (err) {
     console.error("Erro ao buscar badges do consultor:", err);
     res.status(500).json({ message: "Erro servidor." });
@@ -70,7 +79,7 @@ export async function generateConsultorBadgeCertificate(req, res) {
     const badgeName = badge.name || badge.title || badge.description || `Badge #${badge.id}`;
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `inline; filename="certificado-badge-${badge.id}.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="certificado-badge-${badge.id}.pdf"`);
 
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     doc.pipe(res);

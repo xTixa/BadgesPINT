@@ -262,7 +262,7 @@ export async function adminGenerateBadgeCertificate(req, res) {
     const badgeName = badge.name || badge.title || badge.description || `Badge #${badge.id}`;
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `inline; filename="certificado-badge-${badge.id}.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="certificado-badge-${badge.id}.pdf"`);
 
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     doc.pipe(res);
