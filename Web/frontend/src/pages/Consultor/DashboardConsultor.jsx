@@ -100,23 +100,6 @@ export default function DashboardConsultor() {
     if (msg) setGreeting(msg);
   }, []);
 
-  const handleDownloadCertificate = async (badgeId) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return alert("Sem token. Faz login novamente.");
-      const response = await api.post(
-        `/api/consultor/badges/${badgeId}/certificado`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" },
-      );
-      const file = new Blob([response.data], { type: "application/pdf" });
-      window.open(URL.createObjectURL(file), "_blank");
-    } catch (err) {
-      console.error("Erro ao gerar certificado:", err);
-      alert("Não foi possível gerar o certificado.");
-    }
-  };
-
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const token = localStorage.getItem("token");
