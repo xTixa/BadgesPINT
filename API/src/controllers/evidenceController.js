@@ -111,7 +111,7 @@ export async function listEvidencesForTM(req, res) {
       where,
       include: [
         { model: User, as: "consultor", attributes: ["id", "name", "email"] },
-        { model: Badge, as: "badge", attributes: ["id", "name", "description", "level"] },
+        { model: Badge, as: "badge", attributes: ["id", "description", "level"] },
         { model: Requirement, as: "requirement", attributes: ["id", "title", "code"] }
       ],
       order: [["created_at", "DESC"]]

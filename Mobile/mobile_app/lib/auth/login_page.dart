@@ -1,9 +1,9 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../shared/app_theme.dart';
+import '../shared/session_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -24,15 +24,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  static const String _savedEmailKey = 'saved_login_email';
-
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _isSubmitting = false;
   bool _obscurePassword = true;
-  bool _rememberEmail = false;
+  bool _rememberCredentials = false;
   String? _error;
 
   @override
@@ -40,17 +38,17 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
-    _loadSavedEmail();
+    _loadSavedCredentials();
   }
 
-  Future<void> _loadSavedEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedEmail = prefs.getString(_savedEmailKey);
-    if (!mounted || savedEmail == null || savedEmail.isEmpty) return;
+  Future<void> _loadSavedCredentials() async {
+    final credentials = await SessionStorage.instance.loadSavedCredentials();
+    if (!mounted || credentials == null) return;
 
     setState(() {
-      _emailController.text = savedEmail;
-      _rememberEmail = true;
+      _emailController.text = credentials.email;
+      _passwordController.text = credentials.password;
+      _rememberCredentials = true;
     });
   }
 
@@ -69,19 +67,23 @@ class _LoginPageState extends State<LoginPage> {
       _error = null;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    if (_rememberEmail) {
-      await prefs.setString(_savedEmailKey, _emailController.text.trim());
-    } else {
-      await prefs.remove(_savedEmailKey);
-    }
-
     final error = await widget.onLogin(
       _emailController.text.trim(),
       _passwordController.text,
     );
 
     if (!mounted) return;
+
+    if (error == null) {
+      if (_rememberCredentials) {
+        await SessionStorage.instance.saveCredentials(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+      } else {
+        await SessionStorage.instance.clearSavedCredentials();
+      }
+    }
 
     setState(() {
       _isSubmitting = false;
@@ -348,7 +350,7 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 26),
                               _buildFeatureCard(
                                 'Acesso rapido',
-                                'Mantem o email guardado neste dispositivo para um inicio de sessao mais rapido.',
+                                'Mantem as credenciais guardadas neste dispositivo para um inicio de sessao mais rapido.',
                                 Icons.speed_rounded,
                               ),
                               const SizedBox(height: 12),
@@ -524,8 +526,8 @@ class _LoginPageState extends State<LoginPage> {
                                                   BorderRadius.circular(12),
                                               onTap: () {
                                                 setState(() {
-                                                  _rememberEmail =
-                                                      !_rememberEmail;
+                                                  _rememberCredentials =
+                                                      !_rememberCredentials;
                                                 });
                                               },
                                               child: Padding(
@@ -537,17 +539,18 @@ class _LoginPageState extends State<LoginPage> {
                                                       CrossAxisAlignment.center,
                                                   children: <Widget>[
                                                     Checkbox(
-                                                      value: _rememberEmail,
+                                                      value:
+                                                          _rememberCredentials,
                                                       onChanged: (bool? value) {
                                                         setState(() {
-                                                          _rememberEmail =
+                                                          _rememberCredentials =
                                                               value ?? false;
                                                         });
                                                       },
                                                     ),
                                                     const Expanded(
                                                       child: Text(
-                                                        'Guardar email neste dispositivo',
+                                                        'Guardar credenciais neste dispositivo',
                                                         style: TextStyle(
                                                           fontSize: 13.5,
                                                           color:

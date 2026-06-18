@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "338436089444",
+    "project_id": "badges-pint",
+    "storage_bucket": "badges-pint.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338436089444:android:92691332810299f0aae171",
+        "android_client_info": {
+          "package_name": "pt.softinsa.badges"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWGlepH_pCtwnj_fRgTlOimTxh99xhlBk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

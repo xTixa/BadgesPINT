@@ -27,6 +27,13 @@ class LoginResult {
   final String? message;
 }
 
+class ActionResult {
+  ActionResult({required this.success, this.message});
+
+  final bool success;
+  final String? message;
+}
+
 class ConsultorRepository {
   ConsultorRepository({
     ApiClient? apiClient,
@@ -469,37 +476,61 @@ class ConsultorRepository {
     }
   }
 
-  Future<bool> submitPedido(int badgeId) async {
-    if ((_token ?? '').isEmpty) return false;
+  Future<ActionResult> submitPedido(int badgeId) async {
+    if ((_token ?? '').isEmpty) {
+      return ActionResult(success: false, message: 'Sessao invalida.');
+    }
 
     if (!_isOnline) {
       await _pendingMutationDao.enqueue(
         mutationKey: 'submit_pedido_$badgeId',
-        endpoint: '/api/admin/pedidos',
+        endpoint: '/api/pedidos',
         method: 'POST',
         body: <String, dynamic>{'badge_id': badgeId},
       );
-      return true;
+      return ActionResult(
+        success: true,
+        message: 'Pedido guardado offline. Sera submetido quando houver ligacao.',
+      );
     }
 
     try {
       final createPayload = await _apiClient.post(
-        '/api/admin/pedidos',
+        '/api/pedidos',
         token: _token,
         body: <String, dynamic>{'badge_id': badgeId},
       );
 
-      if (createPayload is! Map<String, dynamic>) return false;
+      if (createPayload is! Map<String, dynamic>) {
+        return ActionResult(success: false, message: 'Resposta invalida da API.');
+      }
       final pedidoId = createPayload['id'];
-      if (pedidoId == null) return false;
+      if (pedidoId == null) {
+        return ActionResult(success: false, message: 'A API nao devolveu o pedido criado.');
+      }
 
       if (createPayload['workflow_status'] == 'open') {
-        await _apiClient.post('/api/admin/pedidos/$pedidoId/submeter', token: _token);
+        await _apiClient.post('/api/pedidos/$pedidoId/submeter', token: _token);
       }
       await syncRealtimeData();
-      return true;
-    } catch (_) {
-      return false;
+      return ActionResult(success: true, message: 'Pedido submetido com sucesso.');
+    } on ApiException catch (error) {
+      final message = _extractApiMessage(error.message);
+      final normalizedMessage = _normalizeForMatch(message);
+      if (error.statusCode == 400 &&
+          normalizedMessage.contains('ja existe')) {
+        await syncRealtimeData();
+        return ActionResult(
+          success: true,
+          message: 'Ja tinhas uma candidatura ativa para este badge.',
+        );
+      }
+      return ActionResult(success: false, message: message);
+    } catch (error) {
+      return ActionResult(
+        success: false,
+        message: 'Nao foi possivel contactar a API: $error',
+      );
     }
   }
 
@@ -535,7 +566,14 @@ class ConsultorRepository {
     try {
       final dynamic parsed = jsonDecode(rawMessage);
       if (parsed is Map<String, dynamic>) {
-        return (parsed['message'] ?? 'Erro de autenticacao.').toString();
+        final message = (parsed['message'] ?? '').toString();
+        final detail = (parsed['detail'] ?? '').toString();
+        if (message.isNotEmpty && detail.isNotEmpty) {
+          return '$message: $detail';
+        }
+        if (message.isNotEmpty) return message;
+        if (detail.isNotEmpty) return detail;
+        return 'Erro de autenticacao.';
       }
     } catch (_) {
       // Keep raw message if it is not JSON.
@@ -543,5 +581,22 @@ class ConsultorRepository {
 
     if (rawMessage.trim().isNotEmpty) return rawMessage;
     return 'Erro de autenticacao.';
+  }
+
+  String _normalizeForMatch(String value) {
+    return value
+        .toLowerCase()
+        .replaceAll('á', 'a')
+        .replaceAll('à', 'a')
+        .replaceAll('ã', 'a')
+        .replaceAll('â', 'a')
+        .replaceAll('é', 'e')
+        .replaceAll('ê', 'e')
+        .replaceAll('í', 'i')
+        .replaceAll('ó', 'o')
+        .replaceAll('ô', 'o')
+        .replaceAll('õ', 'o')
+        .replaceAll('ú', 'u')
+        .replaceAll('ç', 'c');
   }
 }

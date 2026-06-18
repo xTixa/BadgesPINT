@@ -142,11 +142,14 @@ class SyncService {
 
   Future<void> _syncApplications(int userId, String token) {
     return _sync('user_${userId}_pedidos_status', () async {
-      final payload = await _apiClient.get('/api/admin/pedidos', token: token);
+      final payload = await _apiClient.get('/api/pedidos', token: token);
       final all = _readList(payload);
       final mine = all.where((Map<String, dynamic> item) {
+        final consultorId = _toInt(item['consultor_id']);
+        if (consultorId != null) return consultorId == userId;
+
         final user = item['user'];
-        if (user is! Map<String, dynamic>) return false;
+        if (user is! Map<String, dynamic>) return true;
         return _toInt(user['id']) == userId;
       }).toList();
       await _applicationDao.saveAll(userId, mine);

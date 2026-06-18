@@ -41,7 +41,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
 
   String _estadoBadge() {
     final pedido = widget.controller.pedidosStatus.where(
-      (p) => p.badgeName == widget.badge.name,
+      (p) => p.badgeId == widget.badge.id,
     );
 
     if (pedido.isEmpty) {
@@ -257,9 +257,9 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                         estado != "Nao Candidatado"
                             ? null
                             : () async {
-                              final ok = await controller.submitPedido();
+                              final result = await controller.submitPedido();
 
-                              if (ok) {
+                              if (result.success) {
                                 await controller.selectBadge(badge.id);
 
                                 if (mounted) {
@@ -271,9 +271,10 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      ok
-                                          ? "Pedido submetido com sucesso"
-                                          : "Erro ao submeter pedido",
+                                      result.message ??
+                                          (result.success
+                                              ? "Pedido submetido com sucesso"
+                                              : "Erro ao submeter pedido"),
                                     ),
                                   ),
                                 );

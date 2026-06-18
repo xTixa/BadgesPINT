@@ -24,9 +24,9 @@ async function ensureSLAccess(pedido, slServiceLineId) {
 
 async function notifyBadgeApplication(pedido) {
   const badge = await Badge.findByPk(pedido.badge_id, {
-    attributes: ["id", "name", "description"],
+    attributes: ["id", "description"],
   });
-  const badgeName = badge?.name || badge?.description || `#${pedido.badge_id}`;
+  const badgeName = badge?.description || `#${pedido.badge_id}`;
 
   await Notification.create({
     tipo: "geral",
@@ -85,7 +85,7 @@ export async function getAllPedidos(req, res) {
         { 
           model: Badge, 
           as: "badge",
-          attributes: ["id", "name", "description", "level", "points", "area_id"],
+          attributes: ["id", "description", "level", "points", "area_id"],
           include: badgeAreaFilter ? [{ model: Area, as: "area", where: badgeAreaFilter, attributes: ["id", "service_line_id"] }] : []
         }
       ],
@@ -109,7 +109,7 @@ export async function getPedidoById(req, res) {
     const pedido = await ConsultorBadge.findByPk(id, {
       include: [
         { model: User, as: "user", attributes: ["id", "name", "email"] },
-        { model: Badge, as: "badge", attributes: ["id", "name", "description", "level", "points", "area_id"], include: [{ model: Area, as: "area", attributes: ["id", "service_line_id"] }] }
+        { model: Badge, as: "badge", attributes: ["id", "description", "level", "points", "area_id"], include: [{ model: Area, as: "area", attributes: ["id", "service_line_id"] }] }
       ]
     });
 
@@ -203,16 +203,37 @@ export async function criarPedido(req, res) {
   try {
     const { badge_id } = req.body;
     const consultor_id = req.userId;
+    const badgeId = Number(badge_id);
 
-    if (req.userRole !== "consultant") {
+    if (!Number.isInteger(badgeId) || badgeId <= 0) {
+      return res.status(400).json({ message: "badge_id inválido" });
+    }
+
+    const consultor = await User.findByPk(consultor_id, {
+      attributes: ["id", "role"]
+    });
+
+    if (!consultor) {
+      return res.status(404).json({ message: "Consultor não encontrado" });
+    }
+
+    if (consultor.role !== "consultant") {
       return res.status(403).json({ message: "Apenas consultores podem submeter pedidos" });
+    }
+
+    const badge = await Badge.findByPk(badgeId, {
+      attributes: ["id"]
+    });
+
+    if (!badge) {
+      return res.status(404).json({ message: "Badge não encontrado" });
     }
 
     // Verificar se já existe pedido pendente/obtido para este badge
     const existing = await ConsultorBadge.findOne({
       where: {
         consultor_id,
-        badge_id
+        badge_id: badgeId
       }
     });
 
@@ -222,13 +243,17 @@ export async function criarPedido(req, res) {
 
     const pedido = await ConsultorBadge.create({
       consultor_id,
-      badge_id,
+      badge_id: badgeId,
       status: "pendente",
       workflow_status: "submitted",
       submitted_at: new Date()
     });
 
-    await notifyBadgeApplication(pedido);
+    try {
+      await notifyBadgeApplication(pedido);
+    } catch (notificationError) {
+      console.error("Pedido criado, mas falhou notificação de candidatura:", notificationError);
+    }
 
     res.status(201).json(pedido);
 

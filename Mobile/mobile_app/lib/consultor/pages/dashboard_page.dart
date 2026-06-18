@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
 import '../../shared/app_theme.dart';
+import 'badge_detail_page.dart';
 import 'pedidos_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -501,7 +502,7 @@ class _DashboardPageState extends State<DashboardPage>
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () => _openBadge(context, badge),
         borderRadius: BorderRadius.circular(16),
         child: Ink(
           decoration: BoxDecoration(
@@ -636,7 +637,7 @@ class _DashboardPageState extends State<DashboardPage>
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () => _openBadge(context, badge),
         borderRadius: BorderRadius.circular(16),
         child: Ink(
           decoration: BoxDecoration(
@@ -757,5 +758,36 @@ class _DashboardPageState extends State<DashboardPage>
       'icon': AppColors.primary,
       'iconBackground': AppColors.primary,
     };
+  }
+
+  void _openBadge(BuildContext context, BadgeItem badge) {
+    final catalogBadge = _catalogBadgeFor(badge);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BadgeDetailPage(
+          badge: catalogBadge,
+          controller: widget.controller,
+        ),
+      ),
+    );
+  }
+
+  CatalogBadgeItem _catalogBadgeFor(BadgeItem badge) {
+    final matches = <CatalogBadgeItem>[
+      ...widget.controller.catalogBadges,
+      ...widget.controller.preferredAreaBadges,
+    ].where((item) => item.id == badge.id);
+
+    if (matches.isNotEmpty) return matches.first;
+
+    return CatalogBadgeItem(
+      id: badge.id,
+      name: badge.name,
+      description: '',
+      points: badge.points,
+      level: 1,
+      areaName: badge.area,
+    );
   }
 }

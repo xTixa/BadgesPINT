@@ -219,6 +219,7 @@ class CatalogBadgeItem {
 class PedidoBadgeStatus {
   PedidoBadgeStatus({
     required this.id,
+    required this.badgeId,
     required this.status,
     required this.workflowStatus,
     required this.badgeName,
@@ -232,6 +233,7 @@ class PedidoBadgeStatus {
   });
 
   final int id;
+  final int badgeId;
   final String status;
   final String workflowStatus;
   final String badgeName;
@@ -248,9 +250,14 @@ class PedidoBadgeStatus {
 
     return PedidoBadgeStatus(
       id: _readInt(json['id']) ?? 0,
+      badgeId: _readInt(json['badge_id']) ??
+          (badge is Map<String, dynamic> ? _readInt(badge['id']) : null) ??
+          0,
       status: (json['status'] ?? '').toString(),
       workflowStatus: (json['workflow_status'] ?? '').toString(),
-      badgeName: badge is Map<String, dynamic> ? (badge['name'] ?? 'Badge').toString() : 'Badge',
+      badgeName: badge is Map<String, dynamic>
+          ? (badge['name'] ?? badge['description'] ?? 'Badge').toString()
+          : 'Badge',
       createdAt: (json['created_at'] ?? json['createdAt'])?.toString(),
       submittedAt: json['submitted_at']?.toString(),
       tmValidatedAt: json['tm_validated_at']?.toString(),

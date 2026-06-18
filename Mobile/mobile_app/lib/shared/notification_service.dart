@@ -68,7 +68,7 @@ class NotificationService {
 
   static Future<bool> ensureFirebaseInitialized() async {
     if (_firebaseReady) return true;
-    if (!AppConfig.hasFirebaseConfig) {
+    if (kIsWeb && !AppConfig.hasFirebaseConfig) {
       debugPrint(
         'Firebase nao inicializado: faltam FIREBASE_API_KEY, '
         'FIREBASE_APP_ID, FIREBASE_MESSAGING_SENDER_ID ou FIREBASE_PROJECT_ID.',
@@ -77,18 +77,22 @@ class NotificationService {
     }
 
     if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(
-        options: FirebaseOptions(
-          apiKey: AppConfig.firebaseApiKey,
-          appId: AppConfig.firebaseAppId,
-          messagingSenderId: AppConfig.firebaseMessagingSenderId,
-          projectId: AppConfig.firebaseProjectId,
-          storageBucket:
-              AppConfig.firebaseStorageBucket.isEmpty
-                  ? null
-                  : AppConfig.firebaseStorageBucket,
-        ),
-      );
+      if (AppConfig.hasFirebaseConfig) {
+        await Firebase.initializeApp(
+          options: FirebaseOptions(
+            apiKey: AppConfig.firebaseApiKey,
+            appId: AppConfig.firebaseAppId,
+            messagingSenderId: AppConfig.firebaseMessagingSenderId,
+            projectId: AppConfig.firebaseProjectId,
+            storageBucket:
+                AppConfig.firebaseStorageBucket.isEmpty
+                    ? null
+                    : AppConfig.firebaseStorageBucket,
+          ),
+        );
+      } else {
+        await Firebase.initializeApp();
+      }
     }
 
     _firebaseReady = true;
