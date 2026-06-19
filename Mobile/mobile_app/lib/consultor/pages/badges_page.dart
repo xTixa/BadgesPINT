@@ -24,12 +24,11 @@ class BadgesPage extends StatelessWidget {
           // 🔹 Header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Color(0xFF0F62FE),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                colors: <Color>[Color(0xFF0F62FE), Color(0xFF4589FF)],
               ),
             ),
             child: const Column(
@@ -37,6 +36,8 @@ class BadgesPage extends StatelessWidget {
               children: [
                 Text(
                   "Explorar Badges",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,

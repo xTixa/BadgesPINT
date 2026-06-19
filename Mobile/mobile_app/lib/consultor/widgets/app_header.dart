@@ -14,45 +14,40 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: scheme.primary, // 🔥 COR GLOBAL
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          colors: <Color>[Color(0xFF0F62FE), Color(0xFF4589FF)],
+        ),
       ),
       child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: Colors.white),
-          ),
-
-          const SizedBox(width: 16),
-
+        children: <Widget>[
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
-
-                const SizedBox(height: 4),
-
                 Text(
                   subtitle,
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),

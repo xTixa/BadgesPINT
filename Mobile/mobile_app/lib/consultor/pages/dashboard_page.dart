@@ -50,7 +50,8 @@ class _DashboardPageState extends State<DashboardPage>
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1100),
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 100),
           children: <Widget>[
             _buildHeader(context),
             _buildGoalCard(context),
@@ -58,7 +59,7 @@ class _DashboardPageState extends State<DashboardPage>
             _buildRecommendationsAndAlerts(context),
             _buildSearchBar(context),
             _buildTabBar(context),
-            Expanded(child: _buildBadgeGrid(context)),
+            _buildBadgeGrid(context),
           ],
         ),
       ),
@@ -426,7 +427,9 @@ class _DashboardPageState extends State<DashboardPage>
         if (!isWide) {
           // List style for mobile — more comfortable than a cramped grid
           return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
             itemCount: filtered.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder:
@@ -436,7 +439,9 @@ class _DashboardPageState extends State<DashboardPage>
         }
 
         return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 14,

@@ -35,6 +35,9 @@ class ConsultorShellPage extends StatelessWidget {
         }
 
         final selectedIndex = navigationShell.currentIndex;
+        final hasUnreadNotifications = controller.notifications.any(
+          (notification) => !notification.read,
+        );
 
         return Scaffold(
           appBar: AppBar(
@@ -44,7 +47,7 @@ class ConsultorShellPage extends StatelessWidget {
             title: Text(_titles[selectedIndex]),
             actions: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined),
+                icon: _NotificationBell(hasUnread: hasUnreadNotifications),
                 onPressed: () => context.push('/notifications'),
               ),
               Padding(
@@ -138,6 +141,39 @@ class ConsultorShellPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _NotificationBell extends StatelessWidget {
+  const _NotificationBell({required this.hasUnread});
+
+  final bool hasUnread;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: <Widget>[
+        const Icon(Icons.notifications_outlined),
+        if (hasUnread)
+          Positioned(
+            right: -1,
+            top: -1,
+            child: Container(
+              width: 9,
+              height: 9,
+              decoration: BoxDecoration(
+                color: Colors.red.shade600,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  width: 1.5,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

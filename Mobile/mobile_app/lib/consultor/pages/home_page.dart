@@ -164,14 +164,10 @@ class _HomePageState extends State<HomePage> {
 
   Widget _hero(BuildContext context, ColorScheme scheme, String name) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [scheme.primary, scheme.primary.withValues(alpha: 0.85)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
+        color: scheme.primary,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,9 +180,11 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Text(
                       'Ola, $name!',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -199,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               CircleAvatar(
-                radius: 32,
+                radius: 30,
                 backgroundColor: Colors.white24,
                 child: Text(
                   name.isNotEmpty ? name[0].toUpperCase() : '?',
@@ -215,9 +213,16 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 24),
           Row(
             children: [
-              _heroStat(controller.totalPoints.toString(), 'Pontos'),
-              const SizedBox(width: 32),
-              _heroStat(controller.catalogBadges.length.toString(), 'Badges'),
+              Expanded(
+                child: _heroStat(controller.totalPoints.toString(), 'Pontos'),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _heroStat(
+                  controller.catalogBadges.length.toString(),
+                  'Badges',
+                ),
+              ),
             ],
           ),
         ],
@@ -401,13 +406,20 @@ class _HomePageState extends State<HomePage> {
       children: [
         Text(
           value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(label, style: const TextStyle(color: Colors.white70)),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(color: Colors.white70),
+        ),
       ],
     );
   }

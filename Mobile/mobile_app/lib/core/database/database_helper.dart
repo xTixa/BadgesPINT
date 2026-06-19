@@ -20,7 +20,7 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final db = await openDatabase(
       p.join(dbPath, 'badges_pint.db'),
-      version: 2,
+      version: 3,
       onCreate: (Database db, int version) async {
         await _createTables(db);
       },
@@ -62,6 +62,104 @@ class DatabaseHelper {
         attempts INTEGER NOT NULL DEFAULT 0
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS areas (
+        id INTEGER PRIMARY KEY,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS my_badges (
+        user_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (user_id, row_order)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS badge_progress (
+        user_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (user_id, row_order)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS catalog_badges (
+        user_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (user_id, row_order)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS badges_by_area (
+        area_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (area_id, row_order)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS applications (
+        user_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (user_id, row_order)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS notifications (
+        user_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (user_id, row_order)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS requirements (
+        badge_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (badge_id, row_order)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS evidences (
+        user_id INTEGER NOT NULL,
+        badge_id INTEGER NOT NULL,
+        row_order INTEGER NOT NULL,
+        json_data TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (user_id, badge_id, row_order)
+      )
+    ''');
   }
 
   Future<void> clearUserData() async {
@@ -69,5 +167,15 @@ class DatabaseHelper {
     await db.delete('cache_records');
     await db.delete('sync_metadata');
     await db.delete('pending_mutations');
+    await db.delete('users');
+    await db.delete('areas');
+    await db.delete('my_badges');
+    await db.delete('badge_progress');
+    await db.delete('catalog_badges');
+    await db.delete('badges_by_area');
+    await db.delete('applications');
+    await db.delete('notifications');
+    await db.delete('requirements');
+    await db.delete('evidences');
   }
 }

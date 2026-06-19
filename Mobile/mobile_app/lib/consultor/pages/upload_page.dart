@@ -81,7 +81,12 @@ class UploadPage extends StatelessWidget {
 
         DropdownButtonFormField<int>(
           initialValue: selectedBadgeId,
-          hint: const Text('Seleciona um badge em progresso'),
+          isExpanded: true,
+          hint: const Text(
+            'Seleciona um badge em progresso',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.grey.shade100,
@@ -91,9 +96,30 @@ class UploadPage extends StatelessWidget {
           items:
               badges
                   .map(
-                    (b) => DropdownMenuItem(value: b.id, child: Text(b.name)),
+                    (b) => DropdownMenuItem<int>(
+                      value: b.id,
+                      child: Text(
+                        b.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   )
                   .toList(),
+          selectedItemBuilder:
+              (context) =>
+                  badges
+                      .map(
+                        (b) => Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            b.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      )
+                      .toList(),
           onChanged: (id) {
             if (id != null) {
               controller.selectBadge(id);

@@ -95,33 +95,24 @@ class _LoginPageState extends State<LoginPage> {
     final Widget logo =
         widget.logo ??
         Container(
-          width: compact ? 92 : 104,
-          height: compact ? 92 : 104,
+          width: compact ? 188 : 228,
+          height: compact ? 72 : 86,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[AppColors.primary, AppColors.accent],
-            ),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
             boxShadow: const <BoxShadow>[
               BoxShadow(
                 color: Color(0x33003A70),
-                blurRadius: 26,
-                offset: Offset(0, 12),
+                blurRadius: 16,
+                offset: Offset(0, 8),
               ),
             ],
           ),
-          child: const Center(
-            child: Text(
-              'S',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -1.2,
-              ),
-            ),
+          child: Image.asset(
+            'assets/images/softinsa_logo.png',
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
           ),
         );
 
@@ -129,24 +120,13 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         logo,
-        const SizedBox(height: 16),
-        const Text(
-          'Softinsa',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.8,
-          ),
-        ),
-        const SizedBox(height: 8),
+        SizedBox(height: compact ? 8 : 12),
         Text(
           'Portal de Badges e Competencias',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.82),
-            fontSize: 14,
+            fontSize: compact ? 13 : 14,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -260,103 +240,108 @@ class _LoginPageState extends State<LoginPage> {
           final bool isWide = constraints.maxWidth >= 1000;
           final bool isMobile = !isWide;
 
-          final Widget heroPanel = Container(
-            width: isWide ? constraints.maxWidth * 0.43 : double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: <Color>[Color(0xFF003A70), Color(0xFF0A64A8)],
-              ),
-            ),
-            child: Stack(
-              children: <Widget>[
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.14,
-                    child: CustomPaint(painter: _SoftinsaPatternPainter()),
-                  ),
-                ),
-                Positioned(
-                  top: -40,
-                  right: -60,
-                  child: _buildAccentBlob(
-                    alignment: Alignment.topRight,
-                    size: 180,
-                    colors: <Color>[
-                      Colors.white.withValues(alpha: 0.14),
-                      Colors.white.withValues(alpha: 0.02),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: -80,
-                  left: -70,
-                  child: _buildAccentBlob(
-                    alignment: Alignment.bottomLeft,
-                    size: 220,
-                    colors: <Color>[
-                      const Color(0xFF00AEEF).withValues(alpha: 0.20),
-                      const Color(0xFF00AEEF).withValues(alpha: 0.02),
-                    ],
-                  ),
-                ),
-                SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      isWide ? 40 : 24,
-                      isWide ? 48 : 24,
-                      isWide ? 40 : 24,
-                      isWide ? 48 : 28,
-                    ),
-                    child: Align(
-                      alignment:
-                          isWide ? Alignment.centerLeft : Alignment.center,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 460),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment:
-                              isWide
-                                  ? CrossAxisAlignment.start
-                                  : CrossAxisAlignment.center,
-                          children: <Widget>[
-                            _buildLogoSlot(compact: !isWide),
-                            if (!isMobile) ...<Widget>[
-                              const SizedBox(height: 26),
-                              Text(
-                                'Bem-vindo ao ecossistema de badges da Softinsa.',
-                                textAlign:
-                                    isWide ? TextAlign.left : TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 38,
-                                  fontWeight: FontWeight.w900,
-                                  height: 1.06,
-                                  letterSpacing: -1.0,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Text(
-                                'Entra para consultar competencias, submeter evidencias e acompanhar o teu progresso num ambiente moderno e consistente com a marca.',
-                                textAlign:
-                                    isWide ? TextAlign.left : TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.86),
-                                  fontSize: 16,
-                                  height: 1.5,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
+          final Widget heroPanel =
+              isMobile
+                  ? Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: <Color>[Color(0xFF0F62FE), Color(0xFF4589FF)],
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          );
+                    child: SafeArea(
+                      bottom: false,
+                      child: Center(child: _buildLogoSlot(compact: true)),
+                    ),
+                  )
+                  : Container(
+                    width: constraints.maxWidth * 0.43,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: <Color>[Color(0xFF003A70), Color(0xFF0A64A8)],
+                      ),
+                    ),
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                          child: Opacity(
+                            opacity: 0.14,
+                            child: CustomPaint(
+                              painter: _SoftinsaPatternPainter(),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: -40,
+                          right: -60,
+                          child: _buildAccentBlob(
+                            alignment: Alignment.topRight,
+                            size: 180,
+                            colors: <Color>[
+                              Colors.white.withValues(alpha: 0.14),
+                              Colors.white.withValues(alpha: 0.02),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          bottom: -80,
+                          left: -70,
+                          child: _buildAccentBlob(
+                            alignment: Alignment.bottomLeft,
+                            size: 220,
+                            colors: <Color>[
+                              const Color(0xFF00AEEF).withValues(alpha: 0.20),
+                              const Color(0xFF00AEEF).withValues(alpha: 0.02),
+                            ],
+                          ),
+                        ),
+                        SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(40, 48, 40, 48),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 460,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    _buildLogoSlot(compact: false),
+                                    const SizedBox(height: 26),
+                                    const Text(
+                                      'Bem-vindo ao ecossistema de badges da Softinsa.',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 38,
+                                        fontWeight: FontWeight.w900,
+                                        height: 1.06,
+                                        letterSpacing: -1.0,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    Text(
+                                      'Entra para consultar competencias, submeter evidencias e acompanhar o teu progresso num ambiente moderno e consistente com a marca.',
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.86,
+                                        ),
+                                        fontSize: 16,
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
 
           final Widget formPanel = Container(
             width: isWide ? constraints.maxWidth * 0.57 : double.infinity,
@@ -696,7 +681,7 @@ class _LoginPageState extends State<LoginPage> {
           return SafeArea(
             child: Column(
               children: <Widget>[
-                SizedBox(height: 220, child: heroPanel),
+                SizedBox(height: 196, child: heroPanel),
                 Expanded(child: formPanel),
               ],
             ),
