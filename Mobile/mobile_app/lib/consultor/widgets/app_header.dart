@@ -27,7 +27,7 @@ class AppHeader extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: Colors.white),
@@ -52,7 +52,7 @@ class AppHeader extends StatelessWidget {
 
                 Text(
                   subtitle,
-                  style: TextStyle(color: Colors.white.withOpacity(0.8)),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
                 ),
               ],
             ),

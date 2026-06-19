@@ -229,9 +229,7 @@ class _DashboardPageState extends State<DashboardPage>
                             badge.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w800),
                           ),
                         ),
                       ],
@@ -345,7 +343,7 @@ class _DashboardPageState extends State<DashboardPage>
           const SizedBox(width: 10),
           Container(
             decoration: BoxDecoration(
-              color: scheme.surfaceContainerHighest.withOpacity(0.5),
+              color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
               border: Border.all(color: scheme.outlineVariant),
               borderRadius: BorderRadius.circular(14),
             ),
@@ -386,7 +384,7 @@ class _DashboardPageState extends State<DashboardPage>
           color:
               isSelected
                   ? scheme.primary
-                  : scheme.surfaceContainerHighest.withOpacity(0.4),
+                  : scheme.surfaceContainerHighest.withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: isSelected ? scheme.primary : scheme.outlineVariant,
@@ -462,7 +460,7 @@ class _DashboardPageState extends State<DashboardPage>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: scheme.surfaceContainerHighest.withOpacity(0.5),
+              color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -511,10 +509,12 @@ class _DashboardPageState extends State<DashboardPage>
                 Theme.of(context).brightness == Brightness.dark
                     ? scheme.surfaceContainer
                     : colors['background'] as Color,
-            border: Border.all(color: scheme.outlineVariant.withOpacity(0.6)),
+            border: Border.all(
+              color: scheme.outlineVariant.withValues(alpha: 0.6),
+            ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: (colors['icon'] as Color).withOpacity(0.08),
+                color: (colors['icon'] as Color).withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -529,8 +529,8 @@ class _DashboardPageState extends State<DashboardPage>
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: (colors['iconBackground'] as Color).withOpacity(
-                      0.18,
+                    color: (colors['iconBackground'] as Color).withValues(
+                      alpha: 0.18,
                     ),
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -591,7 +591,7 @@ class _DashboardPageState extends State<DashboardPage>
                             ),
                             decoration: BoxDecoration(
                               color: (colors['iconBackground'] as Color)
-                                  .withOpacity(0.14),
+                                  .withValues(alpha: 0.14),
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
@@ -646,10 +646,12 @@ class _DashboardPageState extends State<DashboardPage>
                 Theme.of(context).brightness == Brightness.dark
                     ? scheme.surfaceContainer
                     : colors['background'] as Color,
-            border: Border.all(color: scheme.outlineVariant.withOpacity(0.6)),
+            border: Border.all(
+              color: scheme.outlineVariant.withValues(alpha: 0.6),
+            ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: (colors['icon'] as Color).withOpacity(0.08),
+                color: (colors['icon'] as Color).withValues(alpha: 0.08),
                 blurRadius: 12,
                 offset: const Offset(0, 5),
               ),
@@ -667,8 +669,8 @@ class _DashboardPageState extends State<DashboardPage>
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: (colors['iconBackground'] as Color).withOpacity(
-                          0.18,
+                        color: (colors['iconBackground'] as Color).withValues(
+                          alpha: 0.18,
                         ),
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -765,10 +767,11 @@ class _DashboardPageState extends State<DashboardPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => BadgeDetailPage(
-          badge: catalogBadge,
-          controller: widget.controller,
-        ),
+        builder:
+            (_) => BadgeDetailPage(
+              badge: catalogBadge,
+              controller: widget.controller,
+            ),
       ),
     );
   }

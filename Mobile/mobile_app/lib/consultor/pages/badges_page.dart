@@ -88,7 +88,7 @@ class BadgesPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -102,7 +102,7 @@ class BadgesPage extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: const Color(0xFF0F62FE).withOpacity(0.1),
+                color: const Color(0xFF0F62FE).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -158,7 +158,7 @@ class BadgesPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F62FE).withOpacity(0.1),
+        color: const Color(0xFF0F62FE).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

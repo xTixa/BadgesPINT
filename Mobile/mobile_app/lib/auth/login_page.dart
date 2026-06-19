@@ -347,18 +347,6 @@ class _LoginPageState extends State<LoginPage> {
                                   height: 1.5,
                                 ),
                               ),
-                              const SizedBox(height: 26),
-                              _buildFeatureCard(
-                                'Acesso rapido',
-                                'Mantem as credenciais guardadas neste dispositivo para um inicio de sessao mais rapido.',
-                                Icons.speed_rounded,
-                              ),
-                              const SizedBox(height: 12),
-                              _buildFeatureCard(
-                                'Interface limpa',
-                                'Tons azuis e brancos, com foco nas tarefas principais e leitura facil.',
-                                Icons.layers_rounded,
-                              ),
                             ],
                           ],
                         ),

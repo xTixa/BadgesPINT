@@ -51,8 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
       notificacoesAprovacao =
           prefs.getBool('settings_notificacoes_aprovacao') ?? true;
       alertasExpiracao = prefs.getBool('settings_alertas_expiracao') ?? true;
-      lembretesTimeline =
-          prefs.getBool('settings_lembretes_timeline') ?? false;
+      lembretesTimeline = prefs.getBool('settings_lembretes_timeline') ?? false;
       recomendacoesBadges =
           prefs.getBool('settings_recomendacoes_badges') ?? true;
       rgpdPublicacao = prefs.getBool('settings_rgpd_publicacao') ?? false;
@@ -141,7 +140,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value:
+                    initialValue:
                         _areaOptions.contains(areaPrincipal)
                             ? areaPrincipal
                             : _areaOptions.first,
@@ -456,7 +455,7 @@ class _SettingsPageState extends State<SettingsPage> {
             height: 1,
             indent: 16,
             endIndent: 16,
-            color: scheme.outlineVariant.withOpacity(0.5),
+            color: scheme.outlineVariant.withValues(alpha: 0.5),
           ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -466,7 +465,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: scheme.primary.withOpacity(0.08),
+                  color: scheme.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, size: 18, color: scheme.primary),

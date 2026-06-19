@@ -39,7 +39,7 @@ class UploadPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: scheme.primary.withOpacity(0.08),
+        color: scheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -80,7 +80,7 @@ class UploadPage extends StatelessWidget {
         const SizedBox(height: 8),
 
         DropdownButtonFormField<int>(
-          value: selectedBadgeId,
+          initialValue: selectedBadgeId,
           hint: const Text('Seleciona um badge em progresso'),
           decoration: InputDecoration(
             filled: true,
@@ -111,7 +111,9 @@ class UploadPage extends StatelessWidget {
 
     final selectedBadgeIsAvailable =
         controller.selectedBadgeId != null &&
-        controller.badges.any((badge) => badge.id == controller.selectedBadgeId);
+        controller.badges.any(
+          (badge) => badge.id == controller.selectedBadgeId,
+        );
 
     if (!selectedBadgeIsAvailable) {
       return Container(
@@ -164,20 +166,19 @@ class UploadPage extends StatelessWidget {
                   latestEvidence: controller.latestEvidenceForRequirement(
                     req.id,
                   ),
-                  onSubmit:
-                      (fileName, bytes, notes) async {
-                        final url = await controller.uploadEvidenceFile(
-                          fileName: fileName,
-                          bytes: bytes,
-                        );
-                        if (url == null) return false;
+                  onSubmit: (fileName, bytes, notes) async {
+                    final url = await controller.uploadEvidenceFile(
+                      fileName: fileName,
+                      bytes: bytes,
+                    );
+                    if (url == null) return false;
 
-                        return controller.submitEvidence(
-                          requirementId: req.id,
-                          evidenceUrl: url,
-                          notes: notes,
-                        );
-                      },
+                    return controller.submitEvidence(
+                      requirementId: req.id,
+                      evidenceUrl: url,
+                      notes: notes,
+                    );
+                  },
                 ),
               )
               .toList(),
@@ -221,7 +222,14 @@ class _RequirementTileState extends State<RequirementTile>
       allowMultiple: false,
       withData: true,
       type: FileType.custom,
-      allowedExtensions: const <String>['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
+      allowedExtensions: const <String>[
+        'pdf',
+        'png',
+        'jpg',
+        'jpeg',
+        'doc',
+        'docx',
+      ],
     );
 
     if (result != null) {
@@ -282,14 +290,14 @@ class _RequirementTileState extends State<RequirementTile>
         border: Border.all(
           color:
               expanded
-                  ? scheme.primary.withOpacity(0.5)
+                  ? scheme.primary.withValues(alpha: 0.5)
                   : scheme.outlineVariant,
         ),
         boxShadow:
             expanded
                 ? [
                   BoxShadow(
-                    color: scheme.primary.withOpacity(0.1),
+                    color: scheme.primary.withValues(alpha: 0.1),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -311,7 +319,7 @@ class _RequirementTileState extends State<RequirementTile>
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: scheme.primary.withOpacity(0.1),
+                      color: scheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(

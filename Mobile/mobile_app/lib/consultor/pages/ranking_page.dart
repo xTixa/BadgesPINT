@@ -64,13 +64,13 @@ class RankingPage extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: <Color>[
-            scheme.primary.withOpacity(0.92),
-            scheme.tertiary.withOpacity(0.85),
+            scheme.primary.withValues(alpha: 0.92),
+            scheme.tertiary.withValues(alpha: 0.85),
           ],
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: scheme.primary.withOpacity(0.25),
+            color: scheme.primary.withValues(alpha: 0.25),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -81,7 +81,7 @@ class RankingPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -106,7 +106,7 @@ class RankingPage extends StatelessWidget {
                 Text(
                   'Compara a tua evolução com os restantes consultores',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -209,9 +209,12 @@ class RankingPage extends StatelessWidget {
         Container(
           height: barHeight,
           decoration: BoxDecoration(
-            color: podiumColor.withOpacity(0.2),
+            color: podiumColor.withValues(alpha: 0.2),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-            border: Border.all(color: podiumColor.withOpacity(0.5), width: 1.5),
+            border: Border.all(
+              color: podiumColor.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
           ),
           child: Center(
             child: Text(
@@ -267,7 +270,7 @@ class RankingPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: scheme.primaryContainer.withOpacity(0.5),
+            color: scheme.primaryContainer.withValues(alpha: 0.5),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
           child: Row(
@@ -337,7 +340,9 @@ class RankingPage extends StatelessWidget {
                               ? null
                               : Border(
                                 bottom: BorderSide(
-                                  color: scheme.outlineVariant.withOpacity(0.5),
+                                  color: scheme.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                               ),
                       borderRadius:
@@ -348,9 +353,9 @@ class RankingPage extends StatelessWidget {
                               : null,
                       color:
                           isMe
-                              ? const Color(0xFF0F62FE).withOpacity(0.08)
+                              ? const Color(0xFF0F62FE).withValues(alpha: 0.08)
                               : item.position <= 3
-                              ? scheme.primaryContainer.withOpacity(0.12)
+                              ? scheme.primaryContainer.withValues(alpha: 0.12)
                               : null,
                     ),
                     child: Row(
@@ -413,7 +418,9 @@ class RankingPage extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: scheme.primaryContainer.withOpacity(0.5),
+                            color: scheme.primaryContainer.withValues(
+                              alpha: 0.5,
+                            ),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(

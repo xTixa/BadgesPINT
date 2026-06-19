@@ -39,7 +39,7 @@ class HistoryPage extends StatelessWidget {
                     Text(
                       'Acompanha a tua evolução',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 12,
                       ),
                     ),
@@ -95,9 +95,9 @@ class HistoryPage extends StatelessWidget {
                     color: Colors.grey,
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
 
-                  const Text("Ainda não tens badges obtidos"),
+                  Text("Ainda não tens badges obtidos"),
                 ],
               ),
             ),
@@ -188,9 +188,9 @@ class HistoryPage extends StatelessWidget {
                 children: [
                   Icon(Icons.assignment_outlined, size: 60, color: Colors.grey),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
 
-                  const Text("Não existem pedidos ativos"),
+                  Text("Não existem pedidos ativos"),
                 ],
               ),
             ),

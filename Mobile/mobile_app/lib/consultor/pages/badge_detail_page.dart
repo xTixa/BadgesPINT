@@ -63,9 +63,9 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
   Future<void> _copyPublicLink(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: _publicBadgeUrl));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link publico copiado')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Link publico copiado')));
   }
 
   Future<void> _shareOnLinkedIn() async {
@@ -236,7 +236,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                 ),
               ],

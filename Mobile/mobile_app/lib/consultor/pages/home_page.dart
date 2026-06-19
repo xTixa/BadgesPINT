@@ -46,7 +46,8 @@ class _HomePageState extends State<HomePage> {
           (badge.areaName?.toLowerCase().contains(query) ?? false);
       final matchesArea =
           _selectedArea == 'Todas' || badge.areaName == _selectedArea;
-      final matchesLevel = _selectedLevel == null || badge.level == _selectedLevel;
+      final matchesLevel =
+          _selectedLevel == null || badge.level == _selectedLevel;
       final matchesPreferred =
           !_preferredOnly || preferredIds.contains(badge.id);
 
@@ -63,13 +64,14 @@ class _HomePageState extends State<HomePage> {
             ? controller.preferredAreaBadges
             : controller.catalogBadges.take(6).toList();
     final filteredCatalog = _filteredCatalog;
-    final areas = <String>{
-      'Todas',
-      ...controller.catalogBadges
-          .map((badge) => badge.areaName)
-          .whereType<String>()
-          .where((area) => area.isNotEmpty),
-    }.toList();
+    final areas =
+        <String>{
+          'Todas',
+          ...controller.catalogBadges
+              .map((badge) => badge.areaName)
+              .whereType<String>()
+              .where((area) => area.isNotEmpty),
+        }.toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
@@ -107,7 +109,11 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.horizontal,
                 itemCount: recommended.length,
                 itemBuilder: (context, index) {
-                  return _featuredBadgeCard(context, recommended[index], scheme);
+                  return _featuredBadgeCard(
+                    context,
+                    recommended[index],
+                    scheme,
+                  );
                 },
               ),
             ),
@@ -143,7 +149,11 @@ class _HomePageState extends State<HomePage> {
                   childAspectRatio: 0.75,
                 ),
                 itemBuilder: (context, index) {
-                  return _smallBadgeCard(context, filteredCatalog[index], scheme);
+                  return _smallBadgeCard(
+                    context,
+                    filteredCatalog[index],
+                    scheme,
+                  );
                 },
               ),
           ],
@@ -157,7 +167,7 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [scheme.primary, scheme.primary.withOpacity(0.85)],
+          colors: [scheme.primary, scheme.primary.withValues(alpha: 0.85)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -268,7 +278,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [scheme.primary, scheme.primary.withOpacity(0.85)],
+            colors: [scheme.primary, scheme.primary.withValues(alpha: 0.85)],
           ),
           borderRadius: BorderRadius.circular(24),
         ),
@@ -279,7 +289,7 @@ class _HomePageState extends State<HomePage> {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(
@@ -332,7 +342,10 @@ class _HomePageState extends State<HomePage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+            ),
           ],
         ),
         child: Column(
@@ -342,7 +355,7 @@ class _HomePageState extends State<HomePage> {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: scheme.primary.withOpacity(0.1),
+                color: scheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(Icons.workspace_premium, color: scheme.primary),

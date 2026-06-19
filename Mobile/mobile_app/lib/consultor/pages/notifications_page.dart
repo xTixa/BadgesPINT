@@ -72,7 +72,7 @@ class NotificationsPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: scheme.surfaceContainerHighest.withOpacity(0.5),
+              color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -117,7 +117,7 @@ class NotificationsPage extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: scheme.primary.withOpacity(0.12),
+              color: scheme.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -200,12 +200,12 @@ class NotificationsPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               color:
                   isRead
-                      ? scheme.surfaceContainer.withOpacity(0.5)
+                      ? scheme.surfaceContainer.withValues(alpha: 0.5)
                       : scheme.surface,
               border: Border.all(
                 color:
                     isRead
-                        ? scheme.outlineVariant.withOpacity(0.5)
+                        ? scheme.outlineVariant.withValues(alpha: 0.5)
                         : scheme.outlineVariant,
               ),
             ),
@@ -220,7 +220,7 @@ class NotificationsPage extends StatelessWidget {
                       width: 5,
                       color:
                           isRead
-                              ? scheme.outlineVariant.withOpacity(0.5)
+                              ? scheme.outlineVariant.withValues(alpha: 0.5)
                               : accentColor,
                     ),
                     // Content
@@ -236,13 +236,13 @@ class NotificationsPage extends StatelessWidget {
                               height: 48,
                               decoration: BoxDecoration(
                                 color: (colors['background'] as Color)
-                                    .withOpacity(isRead ? 0.5 : 1),
+                                    .withValues(alpha: isRead ? 0.5 : 1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
                                 Icons.workspace_premium_rounded,
-                                color: (colors['icon'] as Color).withOpacity(
-                                  isRead ? 0.5 : 1,
+                                color: (colors['icon'] as Color).withValues(
+                                  alpha: isRead ? 0.5 : 1,
                                 ),
                                 size: 24,
                               ),
@@ -312,7 +312,7 @@ class NotificationsPage extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 11,
                                           color: scheme.onSurfaceVariant
-                                              .withOpacity(0.65),
+                                              .withValues(alpha: 0.65),
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),

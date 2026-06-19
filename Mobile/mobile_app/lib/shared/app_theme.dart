@@ -52,7 +52,7 @@ class AppTheme {
       ),
 
       /// ---------------- CARDS ----------------
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.lightCard,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -122,8 +122,8 @@ class AppTheme {
 
       /// ---------------- NAVIGATION BAR ----------------
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Colors.white.withOpacity(0.92),
-        indicatorColor: AppColors.accent.withOpacity(0.20),
+        backgroundColor: Colors.white.withValues(alpha: 0.92),
+        indicatorColor: AppColors.accent.withValues(alpha: 0.20),
         elevation: 0,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -146,7 +146,7 @@ class AppTheme {
       ),
 
       /// ---------------- HOVER EFFECTS (WEB) ----------------
-      hoverColor: AppColors.accent.withOpacity(0.08),
+      hoverColor: AppColors.accent.withValues(alpha: 0.08),
       splashFactory: InkSparkle.splashFactory,
     );
   }

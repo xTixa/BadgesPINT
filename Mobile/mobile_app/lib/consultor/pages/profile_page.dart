@@ -367,7 +367,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int>(
-                    value: selectedAreaId,
+                    initialValue: selectedAreaId,
                     decoration: const InputDecoration(
                       labelText: 'Area principal',
                       prefixIcon: Icon(Icons.hub_outlined),
@@ -391,7 +391,9 @@ class _ProfilePageState extends State<ProfilePage>
                       final name = nameController.text.trim();
                       final email = emailController.text.trim();
 
-                      if (name.isEmpty || email.isEmpty || !email.contains('@')) {
+                      if (name.isEmpty ||
+                          email.isEmpty ||
+                          !email.contains('@')) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Preenche nome e email valido.'),
@@ -430,7 +432,9 @@ class _ProfilePageState extends State<ProfilePage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          result ? 'Perfil atualizado com sucesso.' : 'Erro ao atualizar perfil.',
+          result
+              ? 'Perfil atualizado com sucesso.'
+              : 'Erro ao atualizar perfil.',
         ),
       ),
     );
@@ -560,9 +564,9 @@ class _ProfilePageState extends State<ProfilePage>
         const SnackBar(content: Text('Password alterada com sucesso.')),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result)));
     }
   }
 
