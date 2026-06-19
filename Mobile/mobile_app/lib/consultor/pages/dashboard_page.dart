@@ -795,7 +795,9 @@ class _DashboardPageState extends State<DashboardPage>
       description: '',
       points: badge.points,
       level: 1,
+      levelLabel: 'Nivel 1',
       areaName: badge.area,
+      imageUrl: badge.imageUrl,
     );
   }
 }

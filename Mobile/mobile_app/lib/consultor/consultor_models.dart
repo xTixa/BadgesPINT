@@ -7,6 +7,7 @@ class ConsultantUser {
     required this.pointsTotal,
     this.areaId,
     this.location,
+    this.avatarUrl,
   });
 
   final int id;
@@ -16,6 +17,7 @@ class ConsultantUser {
   final int pointsTotal;
   final int? areaId;
   final String? location;
+  final String? avatarUrl;
 
   factory ConsultantUser.fromJson(Map<String, dynamic> json) {
     return ConsultantUser(
@@ -26,6 +28,7 @@ class ConsultantUser {
       pointsTotal: _readInt(json['points_total']) ?? 0,
       areaId: _readInt(json['area_id']),
       location: json['localizacao']?.toString(),
+      avatarUrl: json['avatar_url']?.toString(),
     );
   }
 }
@@ -52,6 +55,7 @@ class BadgeItem {
     required this.points,
     this.area,
     this.expireInDays,
+    this.imageUrl,
   });
 
   final int id;
@@ -60,6 +64,7 @@ class BadgeItem {
   final int points;
   final String? area;
   final int? expireInDays;
+  final String? imageUrl;
 
   bool get isObtained => status.toLowerCase() == 'obtido';
 
@@ -71,6 +76,7 @@ class BadgeItem {
       points: _readInt(json['pontos']) ?? _readInt(json['points']) ?? 0,
       area: json['area']?.toString(),
       expireInDays: _readInt(json['expiraEmDias']) ?? _readInt(json['expire_in_days']),
+      imageUrl: json['image_url']?.toString(),
     );
   }
 }
@@ -172,14 +178,81 @@ class ExpiryAlert {
 
 class RankingItem {
   RankingItem({
+    required this.consultantId,
     required this.position,
     required this.name,
     required this.points,
+    this.email,
+    this.areaName,
+    this.avatarUrl,
+    this.badgeCount = 0,
   });
 
+  final int consultantId;
   final int position;
   final String name;
   final int points;
+  final String? email;
+  final String? areaName;
+  final String? avatarUrl;
+  final int badgeCount;
+
+  factory RankingItem.fromJson(Map<String, dynamic> json) {
+    return RankingItem(
+      consultantId: _readInt(json['id']) ?? _readInt(json['consultor_id']) ?? 0,
+      position: _readInt(json['ranking']) ?? _readInt(json['position']) ?? 0,
+      name: (json['name'] ?? '').toString(),
+      points: _readInt(json['points_total']) ?? _readInt(json['points']) ?? 0,
+      email: json['email']?.toString(),
+      areaName: json['area_name']?.toString(),
+      avatarUrl: json['avatar_url']?.toString(),
+      badgeCount: _readInt(json['badge_count']) ?? 0,
+    );
+  }
+}
+
+class PublicConsultantProfile {
+  PublicConsultantProfile({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.pointsTotal,
+    required this.ranking,
+    required this.badges,
+    this.areaId,
+    this.areaName,
+    this.avatarUrl,
+  });
+
+  final int id;
+  final String name;
+  final String email;
+  final int pointsTotal;
+  final int ranking;
+  final List<BadgeItem> badges;
+  final int? areaId;
+  final String? areaName;
+  final String? avatarUrl;
+
+  factory PublicConsultantProfile.fromJson(Map<String, dynamic> json) {
+    final rawBadges = json['badges'];
+    return PublicConsultantProfile(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? '').toString(),
+      email: (json['email'] ?? '').toString(),
+      pointsTotal: _readInt(json['points_total']) ?? 0,
+      ranking: _readInt(json['ranking']) ?? 0,
+      areaId: _readInt(json['area_id']),
+      areaName: json['area_name']?.toString(),
+      avatarUrl: json['avatar_url']?.toString(),
+      badges: rawBadges is List
+          ? rawBadges
+              .whereType<Map<String, dynamic>>()
+              .map(BadgeItem.fromJson)
+              .toList()
+          : <BadgeItem>[],
+    );
+  }
 }
 
 class CatalogBadgeItem {
@@ -189,8 +262,10 @@ class CatalogBadgeItem {
     required this.description,
     required this.points,
     required this.level,
+    required this.levelLabel,
     this.areaName,
     this.areaId,
+    this.imageUrl,
   });
 
   final int id;
@@ -198,20 +273,25 @@ class CatalogBadgeItem {
   final String description;
   final int points;
   final int level;
+  final String levelLabel;
   final String? areaName;
   final int? areaId;
+  final String? imageUrl;
 
   factory CatalogBadgeItem.fromJson(Map<String, dynamic> json) {
     final area = json['area'];
+    final rawLevel = json['level'];
 
     return CatalogBadgeItem(
       id: _readInt(json['id']) ?? 0,
-      name: (json['name'] ?? 'Badge').toString(),
+      name: (json['name'] ?? json['title'] ?? json['description'] ?? 'Badge').toString(),
       description: (json['description'] ?? '').toString(),
       points: _readInt(json['points']) ?? 0,
-      level: _readInt(json['level']) ?? 1,
+      level: _readLevel(rawLevel),
+      levelLabel: rawLevel?.toString() ?? 'Nivel 1',
       areaName: area is Map<String, dynamic> ? area['name']?.toString() : null,
       areaId: _readInt(json['area_id']),
+      imageUrl: json['image_url']?.toString(),
     );
   }
 }
@@ -296,4 +376,26 @@ int? _readInt(dynamic value) {
   if (value == null) return null;
   if (value is int) return value;
   return int.tryParse(value.toString());
+}
+
+int _readLevel(dynamic value) {
+  final numeric = _readInt(value);
+  if (numeric != null) return numeric;
+
+  switch ((value ?? '').toString().toLowerCase()) {
+    case 'junior':
+      return 1;
+    case 'intermedio':
+    case 'intermédio':
+      return 2;
+    case 'senior':
+      return 3;
+    case 'especialista':
+      return 4;
+    case 'lider':
+    case 'líder':
+      return 5;
+    default:
+      return 1;
+  }
 }

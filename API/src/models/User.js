@@ -22,6 +22,7 @@ const User = database.define(
       allowNull: false,
     },
     area_id: { type: DataTypes.INTEGER, allowNull: true },
+    avatar_url: { type: DataTypes.TEXT, allowNull: true },
     points_total: { type: DataTypes.INTEGER, defaultValue: 0 },
     last_login: { type: DataTypes.DATE, allowNull: true },
   },

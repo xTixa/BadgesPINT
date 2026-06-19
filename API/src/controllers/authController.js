@@ -134,7 +134,7 @@ export const updatePassword = async (req, res) => {
 export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.userId, {
-      attributes: ["id", "name", "email", "role", "area_id", "points_total"]
+      attributes: ["id", "name", "email", "role", "area_id", "avatar_url", "points_total"]
     });
 
     if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
@@ -156,6 +156,7 @@ export const getUserProfile = async (req, res) => {
       email: user.email,
       role: user.role,
       area_id: user.area_id,
+      avatar_url: user.avatar_url,
       points_total: user.points_total || 0,
       localizacao: "",
       badges: badgesObtidos,

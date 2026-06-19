@@ -5,6 +5,134 @@ import PDFDocument from "pdfkit";
 import database from "../config/database.js";
 import { QueryTypes } from "sequelize";
 
+function mapPublicBadge(row) {
+  return {
+    id: row.id,
+    name: row.name || row.description || `Badge #${row.id}`,
+    description: row.description,
+    points: Number(row.points || 0),
+    level: row.level,
+    area: row.area,
+    image_url: row.image_url,
+    status: row.status || "obtido",
+    data_atribuicao: row.data_atribuicao,
+  };
+}
+
+export async function getConsultantsRanking(req, res) {
+  try {
+    const rows = await database.query(
+      `SELECT
+         u.id,
+         u.name,
+         u.email,
+         u.area_id,
+         u.avatar_url,
+         u.points_total,
+         a.name AS area_name,
+         COUNT(cb.id) FILTER (WHERE cb.status = 'obtido')::int AS badge_count
+       FROM "Users" u
+       LEFT JOIN areas a ON a.id = u.area_id
+       LEFT JOIN consultor_badges cb ON cb.consultor_id = u.id
+       WHERE u.role = 'consultant'
+       GROUP BY u.id, u.name, u.email, u.area_id, u.avatar_url, u.points_total, a.name
+       ORDER BY u.points_total DESC, badge_count DESC, u.name ASC`,
+      { type: QueryTypes.SELECT }
+    );
+
+    res.json(
+      rows.map((row, index) => ({
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        area_id: row.area_id,
+        area_name: row.area_name,
+        avatar_url: row.avatar_url,
+        points_total: Number(row.points_total || 0),
+        badge_count: Number(row.badge_count || 0),
+        ranking: index + 1,
+      }))
+    );
+  } catch (err) {
+    console.error("Erro ao listar ranking de consultores:", err);
+    res.status(500).json({ message: "Erro ao listar consultores" });
+  }
+}
+
+export async function getConsultantPublicProfile(req, res) {
+  try {
+    const { id } = req.params;
+
+    const rows = await database.query(
+      `SELECT
+         u.id,
+         u.name,
+         u.email,
+         u.area_id,
+         u.avatar_url,
+         u.points_total,
+         a.name AS area_name,
+         ranked.ranking
+       FROM (
+         SELECT
+           u.id,
+           ROW_NUMBER() OVER (
+             ORDER BY u.points_total DESC,
+             COUNT(cb.id) FILTER (WHERE cb.status = 'obtido') DESC,
+             u.name ASC
+           )::int AS ranking
+         FROM "Users" u
+         LEFT JOIN consultor_badges cb ON cb.consultor_id = u.id
+         WHERE u.role = 'consultant'
+         GROUP BY u.id, u.points_total, u.name
+       ) ranked
+       JOIN "Users" u ON u.id = ranked.id
+       LEFT JOIN areas a ON a.id = u.area_id
+       WHERE u.id = :id AND u.role = 'consultant'`,
+      { type: QueryTypes.SELECT, replacements: { id } }
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ message: "Consultor nao encontrado" });
+    }
+
+    const badges = await database.query(
+      `SELECT
+         b.id,
+         COALESCE(b.description, 'Badge #' || b.id) AS name,
+         b.description,
+         b.points,
+         b.level,
+         b.image_url,
+         a.name AS area,
+         cb.status,
+         cb.data_atribuicao
+       FROM consultor_badges cb
+       JOIN badges b ON b.id = cb.badge_id
+       LEFT JOIN areas a ON a.id = b.area_id
+       WHERE cb.consultor_id = :id AND cb.status = 'obtido'
+       ORDER BY cb.data_atribuicao DESC NULLS LAST, b.description ASC`,
+      { type: QueryTypes.SELECT, replacements: { id } }
+    );
+
+    const profile = rows[0];
+    res.json({
+      id: profile.id,
+      name: profile.name,
+      email: profile.email,
+      area_id: profile.area_id,
+      area_name: profile.area_name,
+      avatar_url: profile.avatar_url,
+      points_total: Number(profile.points_total || 0),
+      ranking: Number(profile.ranking || 0),
+      badges: badges.map(mapPublicBadge),
+    });
+  } catch (err) {
+    console.error("Erro ao obter perfil publico do consultor:", err);
+    res.status(500).json({ message: "Erro ao obter perfil do consultor" });
+  }
+}
+
 export async function getConsultantBadges(req, res) {
   try {
     const { id } = req.params;

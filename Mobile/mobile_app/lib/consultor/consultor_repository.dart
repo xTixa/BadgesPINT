@@ -258,6 +258,7 @@ class ConsultorRepository {
     required String name,
     required String email,
     int? areaId,
+    String? avatarUrl,
   }) async {
     if ((_token ?? '').isEmpty || _userId == null) return null;
 
@@ -269,6 +270,7 @@ class ConsultorRepository {
           'name': name,
           'email': email,
           'area_id': areaId,
+          'avatar_url': avatarUrl,
         },
       );
 
@@ -354,6 +356,47 @@ class ConsultorRepository {
     if (userId == null) return <UserNotificationItem>[];
     final rows = await _notificationDao.getAll(userId);
     return rows.map(UserNotificationItem.fromJson).toList();
+  }
+
+  Future<List<RankingItem>> getConsultantsRanking() async {
+    if ((_token ?? '').isEmpty) return getRankingMock();
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultores/ranking',
+        token: _token,
+      );
+
+      if (payload is List) {
+        return payload
+            .whereType<Map<String, dynamic>>()
+            .map(RankingItem.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      // Keep the app usable if the API has not been updated yet.
+    }
+
+    return getRankingMock();
+  }
+
+  Future<PublicConsultantProfile?> getConsultantPublicProfile(int id) async {
+    if ((_token ?? '').isEmpty) return null;
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultor/$id/profile',
+        token: _token,
+      );
+
+      if (payload is Map<String, dynamic>) {
+        return PublicConsultantProfile.fromJson(payload);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
   }
 
   Future<bool> markNotificationAsRead(int notificationId) async {
@@ -550,10 +593,10 @@ class ConsultorRepository {
 
   List<RankingItem> getRankingMock() {
     return <RankingItem>[
-      RankingItem(position: 1, name: 'Ana Ribeiro', points: 1200),
-      RankingItem(position: 2, name: 'Carlos Mendes', points: 1100),
-      RankingItem(position: 3, name: 'Patricia Silva', points: 820),
-      RankingItem(position: 4, name: 'Joao Rocha', points: 790),
+      RankingItem(consultantId: 0, position: 1, name: 'Ana Ribeiro', points: 1200),
+      RankingItem(consultantId: 0, position: 2, name: 'Carlos Mendes', points: 1100),
+      RankingItem(consultantId: 0, position: 3, name: 'Patricia Silva', points: 820),
+      RankingItem(consultantId: 0, position: 4, name: 'Joao Rocha', points: 790),
     ];
   }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,6 +42,7 @@ class ConsultorShellPage extends StatelessWidget {
         );
 
         return Scaffold(
+          extendBody: true,
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
@@ -66,13 +69,18 @@ class ConsultorShellPage extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 18,
                     backgroundColor: const Color(0xFF0F62FE),
-                    child: Text(
-                      controller.profile?.name[0].toUpperCase() ?? '?',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    backgroundImage: _avatarProvider(
+                      controller.profile?.avatarUrl,
                     ),
+                    child: (controller.profile?.avatarUrl ?? '').isEmpty
+                        ? Text(
+                            controller.profile?.name[0].toUpperCase() ?? '?',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
                   ),
                   itemBuilder: (context) => const [
                     PopupMenuItem(
@@ -107,42 +115,69 @@ class ConsultorShellPage extends StatelessWidget {
           // GoRouter's StatefulNavigationShell renders the active branch and
           // preserves each branch's scroll/state via an IndexedStack internally.
           body: navigationShell,
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: selectedIndex,
-            onDestinationSelected: (index) {
-              navigationShell.goBranch(
-                index,
-                // Re-tap the current tab scrolls to the top (standard UX).
-                initialLocation: index == selectedIndex,
-              );
-            },
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.dashboard_rounded),
-                label: 'Dashboard',
+          bottomNavigationBar: SafeArea(
+            minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+            child: Material(
+              elevation: 14,
+              shadowColor: Colors.black.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(24),
+              clipBehavior: Clip.antiAlias,
+              child: NavigationBar(
+                height: 68,
+                selectedIndex: selectedIndex,
+                backgroundColor: Colors.white,
+                indicatorColor: const Color(0xFFEFF4FF),
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                onDestinationSelected: (index) {
+                  navigationShell.goBranch(
+                    index,
+                    // Re-tap the current tab scrolls to the top (standard UX).
+                    initialLocation: index == selectedIndex,
+                  );
+                },
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.dashboard_rounded),
+                    label: 'Dashboard',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.workspace_premium_rounded),
+                    label: 'Catalogo',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.upload_rounded),
+                    label: 'Upload',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.history_rounded),
+                    label: 'Historico',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.person_rounded),
+                    label: 'Perfil',
+                  ),
+                ],
               ),
-              NavigationDestination(
-                icon: Icon(Icons.workspace_premium_rounded),
-                label: 'Catalogo',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.upload_rounded),
-                label: 'Upload',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.history_rounded),
-                label: 'Historico',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.person_rounded),
-                label: 'Perfil',
-              ),
-            ],
+            ),
           ),
         );
       },
     );
   }
+}
+
+ImageProvider<Object>? _avatarProvider(String? value) {
+  if (value == null || value.isEmpty) return null;
+  if (value.startsWith('data:image/')) {
+    final commaIndex = value.indexOf(',');
+    if (commaIndex == -1) return null;
+    try {
+      return MemoryImage(base64Decode(value.substring(commaIndex + 1)));
+    } catch (_) {
+      return null;
+    }
+  }
+  return NetworkImage(value);
 }
 
 class _NotificationBell extends StatelessWidget {

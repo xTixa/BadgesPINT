@@ -254,9 +254,11 @@ class _HomePageState extends State<HomePage> {
           label: const Text('Nivel'),
           dropdownMenuEntries: const [
             DropdownMenuEntry<int?>(value: null, label: 'Todos'),
-            DropdownMenuEntry<int?>(value: 1, label: 'Nivel 1'),
-            DropdownMenuEntry<int?>(value: 2, label: 'Nivel 2'),
-            DropdownMenuEntry<int?>(value: 3, label: 'Nivel 3'),
+            DropdownMenuEntry<int?>(value: 1, label: 'Junior'),
+            DropdownMenuEntry<int?>(value: 2, label: 'Intermedio'),
+            DropdownMenuEntry<int?>(value: 3, label: 'Senior'),
+            DropdownMenuEntry<int?>(value: 4, label: 'Especialista'),
+            DropdownMenuEntry<int?>(value: 5, label: 'Lider'),
           ],
           onSelected: (value) => setState(() => _selectedLevel = value),
         ),
@@ -280,51 +282,82 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         width: 280,
         margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [scheme.primary, scheme.primary.withValues(alpha: 0.85)],
-          ),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.07),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(16),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
               ),
-              child: const Icon(
-                Icons.workspace_premium,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              badge.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              child: _badgeImage(
+                badge,
+                height: 92,
+                width: double.infinity,
+                iconSize: 34,
+                backgroundColor: scheme.primary,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              badge.areaName ?? 'Area Geral',
-              style: const TextStyle(color: Colors.white70),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '${badge.points} pontos',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      badge.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      badge.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            badge.areaName ?? 'Area Geral',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '${badge.points} pts',
+                          style: TextStyle(
+                            color: scheme.primary,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -342,7 +375,6 @@ class _HomePageState extends State<HomePage> {
       borderRadius: BorderRadius.circular(18),
       onTap: () => _openBadge(context, badge),
       child: Container(
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -356,33 +388,50 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: scheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(18),
               ),
-              child: Icon(Icons.workspace_premium, color: scheme.primary),
+              child: _badgeImage(
+                badge,
+                height: 76,
+                width: double.infinity,
+                iconSize: 28,
+                backgroundColor: scheme.primary,
+              ),
             ),
-            const Spacer(),
-            Text(
-              badge.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              badge.areaName ?? 'Geral',
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${badge.points} pts',
-              style: TextStyle(
-                color: scheme.primary,
-                fontWeight: FontWeight.w600,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      badge.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      badge.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${badge.points} pts',
+                      style: TextStyle(
+                        color: scheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -396,6 +445,55 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
         builder: (_) => BadgeDetailPage(badge: badge, controller: controller),
+      ),
+    );
+  }
+
+  Widget _badgeImage(
+    CatalogBadgeItem badge, {
+    required double height,
+    required double width,
+    required double iconSize,
+    required Color backgroundColor,
+  }) {
+    final imageUrl = badge.imageUrl;
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        height: height,
+        width: width,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _badgeImageFallback(
+          height: height,
+          width: width,
+          iconSize: iconSize,
+          backgroundColor: backgroundColor,
+        ),
+      );
+    }
+
+    return _badgeImageFallback(
+      height: height,
+      width: width,
+      iconSize: iconSize,
+      backgroundColor: backgroundColor,
+    );
+  }
+
+  Widget _badgeImageFallback({
+    required double height,
+    required double width,
+    required double iconSize,
+    required Color backgroundColor,
+  }) {
+    return Container(
+      height: height,
+      width: width,
+      color: backgroundColor.withValues(alpha: 0.12),
+      child: Icon(
+        Icons.workspace_premium_rounded,
+        color: backgroundColor,
+        size: iconSize,
       ),
     );
   }

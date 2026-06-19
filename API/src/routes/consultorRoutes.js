@@ -1,10 +1,18 @@
 import { Router } from "express";
-import { getConsultantBadges, generateConsultorBadgeCertificate, getConsultorBadgesProgress } from "../controllers/consultorController.js";
+import {
+  getConsultantBadges,
+  generateConsultorBadgeCertificate,
+  getConsultorBadgesProgress,
+  getConsultantsRanking,
+  getConsultantPublicProfile
+} from "../controllers/consultorController.js";
 import { submitEvidence, getConsultorEvidencesByBadge, uploadEvidenceFile } from "../controllers/evidenceController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = Router();
 
+router.get("/consultores/ranking", authMiddleware, getConsultantsRanking);
+router.get("/consultor/:id/profile", authMiddleware, getConsultantPublicProfile);
 router.get("/consultor/:id/badges", authMiddleware, getConsultantBadges);
 router.get("/consultor/:id/badges-progress", authMiddleware, getConsultorBadgesProgress);
 router.post("/consultor/badges/:badgeId/certificado", authMiddleware, generateConsultorBadgeCertificate);

@@ -65,7 +65,7 @@ export const registerConsultant = async (req, res) => {
 export async function getAllUsers(req, res) {
   try {
     const users = await User.findAll({
-      attributes: ["id", "name", "email", "role", "area_id", "points_total"],
+      attributes: ["id", "name", "email", "role", "area_id", "avatar_url", "points_total"],
       order: [["id", "ASC"]],
     });
 
@@ -80,7 +80,7 @@ export async function getAllUsers(req, res) {
 export const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, area_id } = req.body;
+    const { name, email, area_id, avatar_url } = req.body;
     const requestingUserId = req.userId;
 
     // Verificar se o utilizador está a editar o próprio perfil
@@ -105,6 +105,7 @@ export const updateProfile = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (area_id !== undefined) user.area_id = area_id || null;
+    if (avatar_url !== undefined) user.avatar_url = avatar_url || null;
 
     await user.save();
 
@@ -117,6 +118,7 @@ export const updateProfile = async (req, res) => {
         email: user.email,
         role: user.role,
         area_id: user.area_id,
+        avatar_url: user.avatar_url,
         points_total: user.points_total || 0,
       },
     });

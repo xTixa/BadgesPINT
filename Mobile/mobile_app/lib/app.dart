@@ -14,9 +14,11 @@ import 'consultor/consultor_models.dart';
 import 'consultor/pages/consultor_shell_page.dart';
 import 'consultor/pages/dashboard_page.dart';
 import 'consultor/pages/home_page.dart';
+import 'consultor/pages/ranking_page.dart';
 import 'consultor/pages/upload_page.dart';
 import 'consultor/pages/history_page.dart';
 import 'consultor/pages/profile_page.dart';
+import 'consultor/pages/consultant_profile_page.dart';
 import 'consultor/pages/notifications_page.dart';
 import 'consultor/pages/settings_page.dart';
 
@@ -80,6 +82,8 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
         }
 
         if (location.startsWith('/app') ||
+            location == '/ranking' ||
+            location.startsWith('/consultants') ||
             location == '/notifications' ||
             location == '/settings' ||
             location == '/boot') {
@@ -182,6 +186,30 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
           ],
         ),
 
+        GoRoute(
+          path: '/ranking',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return Scaffold(
+              appBar: AppBar(title: const Text('Ranking')),
+              body: RankingPage(controller: ctrl),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/consultants/:id',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            final id = int.tryParse(state.pathParameters['id'] ?? '');
+            if (ctrl == null || id == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return ConsultantProfilePage(controller: ctrl, consultantId: id);
+          },
+        ),
         GoRoute(
           path: '/notifications',
           builder: (BuildContext context, GoRouterState state) {

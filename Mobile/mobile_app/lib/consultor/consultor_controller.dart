@@ -50,6 +50,7 @@ class ConsultorController extends ChangeNotifier {
       _repository.getMyPedidosStatus(),
       _repository.getMyNotifications(),
       _repository.getAreas(),
+      _repository.getConsultantsRanking(),
     ]);
 
     profile = results[0] as ConsultantUser?;
@@ -59,8 +60,8 @@ class ConsultorController extends ChangeNotifier {
     pedidosStatus = results[4] as List<PedidoBadgeStatus>;
     notifications = results[5] as List<UserNotificationItem>;
     areas = results[6] as List<AreaItem>;
-
-    ranking = _repository.getRankingMock();
+    ranking = results[7] as List<RankingItem>;
+    _updateRankingPosition();
 
     final areaId = profile?.areaId;
     if (areaId != null) {
@@ -101,10 +102,13 @@ class ConsultorController extends ChangeNotifier {
     final results = await Future.wait<dynamic>(<Future<dynamic>>[
       _repository.getMyPedidosStatus(),
       _repository.getMyNotifications(),
+      _repository.getConsultantsRanking(),
     ]);
 
     pedidosStatus = results[0] as List<PedidoBadgeStatus>;
     notifications = results[1] as List<UserNotificationItem>;
+    ranking = results[2] as List<RankingItem>;
+    _updateRankingPosition();
     notifyListeners();
   }
 
@@ -112,11 +116,13 @@ class ConsultorController extends ChangeNotifier {
     required String name,
     required String email,
     int? areaId,
+    String? avatarUrl,
   }) async {
     final updated = await _repository.updateProfile(
       name: name,
       email: email,
       areaId: areaId,
+      avatarUrl: avatarUrl,
     );
 
     if (updated == null) return false;
@@ -290,6 +296,22 @@ class ConsultorController extends ChangeNotifier {
       await refreshRealtimeData();
     }
     return ok;
+  }
+
+  Future<PublicConsultantProfile?> getPublicConsultantProfile(int id) {
+    return _repository.getConsultantPublicProfile(id);
+  }
+
+  void _updateRankingPosition() {
+    final profileId = profile?.id;
+    if (profileId == null || ranking.isEmpty) return;
+
+    for (final item in ranking) {
+      if (item.consultantId == profileId) {
+        rankingPosition = item.position;
+        return;
+      }
+    }
   }
 
   @override

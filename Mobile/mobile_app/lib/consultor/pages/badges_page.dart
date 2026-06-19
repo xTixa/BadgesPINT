@@ -1,67 +1,47 @@
 import 'package:flutter/material.dart';
+
 import 'badge_detail_page.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 
 class BadgesPage extends StatelessWidget {
-  final ConsultorController controller;
+  const BadgesPage({required this.controller, super.key});
 
-  const BadgesPage({super.key, required this.controller});
+  final ConsultorController controller;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
-
-      appBar: AppBar(
-        title: const Text("Badges"),
-        backgroundColor: const Color(0xFF0F62FE),
-        elevation: 0,
-      ),
-
-      body: Column(
+      appBar: AppBar(title: const Text('Badges')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          // 🔹 Header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
-                colors: <Color>[Color(0xFF0F62FE), Color(0xFF4589FF)],
-              ),
-            ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Explorar Badges",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "Escolhe um badge e começa a tua jornada",
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ],
-            ),
+          Text(
+            'Explorar Badges',
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
-
-          const SizedBox(height: 10),
-
-          // 🔹 Lista de badges
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: controller.catalogBadges.length,
-              itemBuilder: (context, index) {
-                return _badgeCard(context, controller.catalogBadges[index]);
+          const SizedBox(height: 6),
+          Text(
+            'Escolhe uma formacao, ve os requisitos e candidata-te.',
+            style: TextStyle(color: Colors.grey.shade700),
+          ),
+          const SizedBox(height: 16),
+          ...controller.catalogBadges.map(
+            (badge) => _BadgeCard(
+              badge: badge,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BadgeDetailPage(
+                      badge: badge,
+                      controller: controller,
+                    ),
+                  ),
+                );
               },
             ),
           ),
@@ -69,105 +49,120 @@ class BadgesPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _badgeCard(BuildContext context, CatalogBadgeItem badge) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (_) => BadgeDetailPage(badge: badge, controller: controller),
-          ),
-        );
-      },
+class _BadgeCard extends StatelessWidget {
+  const _BadgeCard({required this.badge, required this.onTap});
+
+  final CatalogBadgeItem badge;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(color: Colors.black12),
         ),
-
+        clipBehavior: Clip.antiAlias,
         child: Row(
           children: [
-            // 🔹 Badge Icon
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0F62FE).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.workspace_premium,
-                color: Color(0xFF0F62FE),
-                size: 30,
-              ),
-            ),
-
-            const SizedBox(width: 16),
-
-            // 🔹 Info
+            _badgeImage(),
+            const SizedBox(width: 14),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    badge.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      badge.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    badge.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 8),
-
-                  Row(
-                    children: [
-                      _levelChip("A"),
-                      const SizedBox(width: 6),
-                      _levelChip("Junior"),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      badge.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        _chip(badge.levelLabel),
+                        _chip('${badge.points} pts'),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-
-            // 🔹 Arrow
-            const Icon(Icons.arrow_forward_ios, size: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Icon(Icons.arrow_forward_ios, size: 16),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _levelChip(String text) {
+  Widget _badgeImage() {
+    final imageUrl = badge.imageUrl;
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        width: 88,
+        height: 106,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _fallbackImage(),
+      );
+    }
+
+    return _fallbackImage();
+  }
+
+  Widget _fallbackImage() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      width: 88,
+      height: 106,
+      color: const Color(0xFFEFF4FF),
+      child: const Icon(
+        Icons.workspace_premium_rounded,
+        color: Color(0xFF0F62FE),
+        size: 34,
+      ),
+    );
+  }
+
+  Widget _chip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F62FE).withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFFEFF4FF),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         text,
         style: const TextStyle(
           color: Color(0xFF0F62FE),
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
         ),
       ),
     );
