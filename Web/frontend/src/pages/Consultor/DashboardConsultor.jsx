@@ -414,7 +414,14 @@ export default function DashboardConsultor() {
           <div className="flex flex-wrap gap-2">
             <button
               className={secondaryActionClassLarge}
-              onClick={() => alert("Partilhado no LinkedIn (mock)")}
+              onClick={() => {
+                const publicUrl = `${window.location.origin}/badges`;
+                window.open(
+                  `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(publicUrl)}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              }}
             >
               Partilhar no LinkedIn
             </button>

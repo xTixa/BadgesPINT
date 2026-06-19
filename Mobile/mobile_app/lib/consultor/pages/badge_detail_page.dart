@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'upload_page.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
+import '../../shared/app_config.dart';
 
 class BadgeDetailPage extends StatefulWidget {
   final CatalogBadgeItem badge;
@@ -52,7 +53,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
   }
 
   String get _publicBadgeUrl =>
-      'https://badges.softinsa.pt/badge/${widget.badge.id}';
+      '${AppConfig.apiBaseUrl.replaceAll(RegExp(r'\/$'), '')}/share/badges/${widget.badge.id}';
 
   bool get _isObtained {
     return widget.controller.badges.any(

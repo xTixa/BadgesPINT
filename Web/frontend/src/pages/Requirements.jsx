@@ -32,6 +32,19 @@ const writeCachedApplicationId = (user, badgeId) => {
   localStorage.setItem(getApplicationCacheKey(user), JSON.stringify(Array.from(ids)));
 };
 
+const getPublicBadgeUrl = (badgeId) => {
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
+  return `${baseUrl}/share/badges/${badgeId}`;
+};
+
+const openLinkedInShare = (url) => {
+  window.open(
+    `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+    "_blank",
+    "noopener,noreferrer"
+  );
+};
+
 export default function Requirements() {
   const { id } = useParams();
   const [reqs, setReqs] = useState([]);
@@ -139,6 +152,7 @@ export default function Requirements() {
   const level = getBadgeLevel(badge);
   const points = getBadgePoints(badge);
   const description = getBadgeDescription(badge);
+  const publicBadgeUrl = getPublicBadgeUrl(id);
 
   const learningOutcomes = [
     `Demonstrar competencia em ${areaName}.`,
@@ -263,6 +277,14 @@ export default function Requirements() {
                     Entrar para candidatar
                   </Link>
                 )}
+
+                <button
+                  type="button"
+                  onClick={() => openLinkedInShare(publicBadgeUrl)}
+                  className="mb-3 flex h-12 w-full items-center justify-center border border-slate-950 px-4 text-sm font-extrabold text-slate-950 transition hover:bg-slate-50"
+                >
+                  Partilhar no LinkedIn
+                </button>
 
                 <Link
                   to="/badges"
@@ -402,6 +424,13 @@ export default function Requirements() {
                 Entrar para candidatar
               </Link>
             )}
+            <button
+              type="button"
+              onClick={() => openLinkedInShare(publicBadgeUrl)}
+              className="mt-3 flex h-12 w-full items-center justify-center border border-slate-950 px-4 text-sm font-extrabold text-slate-950 transition hover:bg-slate-50"
+            >
+              Partilhar no LinkedIn
+            </button>
           </div>
         </aside>
       </main>
