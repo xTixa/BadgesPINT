@@ -1,5 +1,7 @@
 import Badge from "../models/Badge.js";
 import Requirement from "../models/Requirement.js";
+import BadgeSection from "../models/BadgeSection.js";
+import BadgeLesson from "../models/BadgeLesson.js";
 import Area from "../models/Area.js";
 import User from "../models/User.js";
 import ConsultorBadge from "../models/ConsultorBadge.js";
@@ -13,13 +15,51 @@ cloudinary.config({
   secure: true
 });
 
+async function replaceBadgeCurriculum(badgeId, sections) {
+  await BadgeLesson.destroy({ where: { badge_id: badgeId } });
+  await BadgeSection.destroy({ where: { badge_id: badgeId } });
+
+  if (!Array.isArray(sections) || sections.length === 0) return;
+
+  for (const [sectionIndex, section] of sections.entries()) {
+    const createdSection = await BadgeSection.create({
+      badge_id: badgeId,
+      title: section.title || `Secao ${sectionIndex + 1}`,
+      description: section.description || null,
+      position: Number(section.position ?? sectionIndex + 1),
+    });
+
+    const lessons = Array.isArray(section.lessons) ? section.lessons : [];
+    if (lessons.length > 0) {
+      await BadgeLesson.bulkCreate(
+        lessons.map((lesson, lessonIndex) => ({
+          badge_id: badgeId,
+          section_id: createdSection.id,
+          title: lesson.title || `Aula ${lessonIndex + 1}`,
+          description: lesson.description || null,
+          content_type: lesson.content_type || "article",
+          content_url: lesson.content_url || null,
+          duration_minutes: Number(lesson.duration_minutes || 0),
+          is_preview: lesson.is_preview === true,
+          position: Number(lesson.position ?? lessonIndex + 1),
+        }))
+      );
+    }
+  }
+}
+
 // LISTAR TODOS OS BADGES (com Área + Requisitos)
 export async function adminGetAllBadges(req, res) {
   try {
     const badges = await Badge.findAll({
       include: [
         { model: Area, as: "area", attributes: ["id", "name"] },
-        { model: Requirement, as: "requirements" }
+        { model: Requirement, as: "requirements" },
+        {
+          model: BadgeSection,
+          as: "sections",
+          include: [{ model: BadgeLesson, as: "lessons" }]
+        }
       ],
       order: [["id", "ASC"]]
     });
@@ -37,7 +77,12 @@ export async function adminGetBadge(req, res) {
     const badge = await Badge.findByPk(req.params.id, {
       include: [
         { model: Area, as: "area", attributes: ["id", "name"] },
-        { model: Requirement, as: "requirements" }
+        { model: Requirement, as: "requirements" },
+        {
+          model: BadgeSection,
+          as: "sections",
+          include: [{ model: BadgeLesson, as: "lessons" }]
+        }
       ]
     });
 
@@ -53,7 +98,7 @@ export async function adminGetBadge(req, res) {
 // CRIAR BADGE
 export async function adminCreateBadge(req, res) {
   try {
-    const { requirements, ...badgeData } = req.body;
+    const { requirements, sections, ...badgeData } = req.body;
     const newBadge = await Badge.create(badgeData);
 
     if (Array.isArray(requirements) && requirements.length > 0) {
@@ -67,10 +112,17 @@ export async function adminCreateBadge(req, res) {
       await Requirement.bulkCreate(formatted);
     }
 
+    await replaceBadgeCurriculum(newBadge.id, sections);
+
     const created = await Badge.findByPk(newBadge.id, {
       include: [
         { model: Area, as: "area", attributes: ["id", "name"] },
-        { model: Requirement, as: "requirements" }
+        { model: Requirement, as: "requirements" },
+        {
+          model: BadgeSection,
+          as: "sections",
+          include: [{ model: BadgeLesson, as: "lessons" }]
+        }
       ]
     });
 
@@ -84,7 +136,7 @@ export async function adminCreateBadge(req, res) {
 // ATUALIZAR BADGE
 export async function adminUpdateBadge(req, res) {
   try {
-    const { requirements, ...badgeData } = req.body;
+    const { requirements, sections, ...badgeData } = req.body;
     const badge = await Badge.findByPk(req.params.id);
     if (!badge) {
       return res.status(404).json({ message: "Badge não encontrado" });
@@ -105,11 +157,20 @@ export async function adminUpdateBadge(req, res) {
         await Requirement.bulkCreate(formatted);
       }
     }
+
+    if (Array.isArray(sections)) {
+      await replaceBadgeCurriculum(badge.id, sections);
+    }
     
     const updated = await Badge.findByPk(req.params.id, {
       include: [
         { model: Area, as: "area", attributes: ["id", "name"] },
-        { model: Requirement, as: "requirements" }
+        { model: Requirement, as: "requirements" },
+        {
+          model: BadgeSection,
+          as: "sections",
+          include: [{ model: BadgeLesson, as: "lessons" }]
+        }
       ]
     });
 
@@ -125,6 +186,8 @@ export async function adminDeleteBadge(req, res) {
   try {
     const id = req.params.id;
 
+    await BadgeLesson.destroy({ where: { badge_id: id } });
+    await BadgeSection.destroy({ where: { badge_id: id } });
     await Requirement.destroy({ where: { badge_id: id } });
     await Badge.destroy({ where: { id } });
 

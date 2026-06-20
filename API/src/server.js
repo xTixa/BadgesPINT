@@ -32,6 +32,18 @@ database
       database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS goal_text TEXT'),
       database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS goal_deadline DATE'),
       database.query('ALTER TABLE consultor_badges ADD COLUMN IF NOT EXISTS certificate_code VARCHAR(64) UNIQUE'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS subtitle TEXT'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS slug VARCHAR(180) UNIQUE'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS learning_outcomes JSONB'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS target_audience JSONB'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS prerequisites JSONB'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS duration_minutes INTEGER DEFAULT 0'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS difficulty VARCHAR(40)'),
+      database.query("ALTER TABLE badges ADD COLUMN IF NOT EXISTS language VARCHAR(40) DEFAULT 'pt-PT'"),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS instructor_name VARCHAR(150)'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS promo_video_url TEXT'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT FALSE'),
+      database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS published BOOLEAN DEFAULT TRUE'),
     ]);
   })
   .then(() => {

@@ -1,4 +1,12 @@
-import { Badge, Area } from "../models/index.js";
+import {
+  Badge,
+  Area,
+  Requirement,
+  BadgeSection,
+  BadgeLesson,
+  BadgeReview,
+  User,
+} from "../models/index.js";
 
 function escapeHtml(value = "") {
   return String(value)
@@ -229,6 +237,59 @@ export async function getBadgesByArea(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao obter badges" });
+  }
+}
+
+export async function getBadgeDetails(req, res) {
+  try {
+    const { id } = req.params;
+    const badge = await Badge.findByPk(id, {
+      include: [
+        { model: Area, as: "area", attributes: ["id", "name"] },
+        { model: Requirement, as: "requirements" },
+        {
+          model: BadgeSection,
+          as: "sections",
+          include: [{ model: BadgeLesson, as: "lessons" }],
+        },
+        {
+          model: BadgeReview,
+          as: "reviews",
+          include: [{ model: User, as: "consultor", attributes: ["id", "name", "avatar_url"] }],
+        },
+      ],
+    });
+
+    if (!badge) {
+      return res.status(404).json({ message: "Badge nao encontrado" });
+    }
+
+    const data = badge.toJSON();
+    data.sections = (data.sections || [])
+      .sort((a, b) => (a.position || 0) - (b.position || 0))
+      .map((section) => ({
+        ...section,
+        lessons: (section.lessons || []).sort((a, b) => (a.position || 0) - (b.position || 0)),
+      }));
+    data.reviews = (data.reviews || [])
+      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+      .slice(0, 10);
+
+    const reviewStats = await BadgeReview.findAll({ where: { badge_id: id } });
+    const ratingCount = reviewStats.length;
+    const ratingAverage = ratingCount
+      ? reviewStats.reduce((sum, review) => sum + Number(review.rating || 0), 0) / ratingCount
+      : 0;
+
+    data.rating = {
+      average: Number(ratingAverage.toFixed(1)),
+      count: ratingCount,
+    };
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao obter detalhe do badge" });
   }
 }
 

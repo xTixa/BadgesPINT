@@ -6,6 +6,7 @@ import '../consultor_controller.dart';
 import '../../shared/app_theme.dart';
 import 'badge_detail_page.dart';
 import 'pedidos_page.dart';
+import 'timeline_page.dart';
 import 'upload_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -144,7 +145,12 @@ class _DashboardPageState extends State<DashboardPage>
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: OutlinedButton.icon(
-        onPressed: () => context.push('/timeline'),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TimelinePage(controller: widget.controller),
+          ),
+        ),
         icon: const Icon(Icons.timeline_rounded),
         label: const Text('Ver timeline profissional'),
       ),

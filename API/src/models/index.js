@@ -4,9 +4,13 @@ import LearningPath from "./LearningPath.js";
 import ServiceLine from "./ServiceLine.js";
 import Area from "./Area.js";
 import Badge from "./Badge.js";
+import BadgeSection from "./BadgeSection.js";
+import BadgeLesson from "./BadgeLesson.js";
+import BadgeReview from "./BadgeReview.js";
 import Requirement from "./Requirement.js";
 import ConsultorBadge from "./ConsultorBadge.js";
 import RequirementEvidence from "./RequirementEvidence.js";
+import LessonProgress from "./LessonProgress.js";
 import Ticket from "./Ticket.js";
 import Notification from "./Notification.js";
 import AuditLog from "./AuditLog.js";
@@ -36,9 +40,13 @@ export {
   ServiceLine,
   Area,
   Badge,
+  BadgeSection,
+  BadgeLesson,
+  BadgeReview,
   Requirement,
   RequirementEvidence,
   ConsultorBadge,
+  LessonProgress,
   Ticket,
   Notification,
   AuditLog,

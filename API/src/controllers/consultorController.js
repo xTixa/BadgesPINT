@@ -1,5 +1,8 @@
 import Badge from "../models/Badge.js";
+import BadgeLesson from "../models/BadgeLesson.js";
+import BadgeReview from "../models/BadgeReview.js";
 import ConsultorBadge from "../models/ConsultorBadge.js";
+import LessonProgress from "../models/LessonProgress.js";
 import User from "../models/User.js";
 import Area from "../models/Area.js";
 import PDFDocument from "pdfkit";
@@ -298,6 +301,87 @@ export async function getLearningPathProgress(req, res) {
   } catch (err) {
     console.error("Erro ao obter learning paths mobile:", err);
     res.status(500).json({ message: "Erro ao obter learning paths" });
+  }
+}
+
+export async function updateLessonProgress(req, res) {
+  try {
+    const { lessonId } = req.params;
+    const completed = req.body?.completed !== false;
+    const lesson = await BadgeLesson.findByPk(lessonId);
+
+    if (!lesson) {
+      return res.status(404).json({ message: "Aula nao encontrada" });
+    }
+
+    const [progress, created] = await LessonProgress.findOrCreate({
+      where: { consultor_id: req.userId, lesson_id: lesson.id },
+      defaults: {
+        consultor_id: req.userId,
+        lesson_id: lesson.id,
+        badge_id: lesson.badge_id,
+        completed,
+        completed_at: completed ? new Date() : null,
+      },
+    });
+
+    if (!created) {
+      progress.completed = completed;
+      progress.completed_at = completed ? new Date() : null;
+      await progress.save();
+    }
+
+    res.json({
+      lesson_id: lesson.id,
+      badge_id: lesson.badge_id,
+      completed: progress.completed,
+      completed_at: progress.completed_at,
+    });
+  } catch (err) {
+    console.error("Erro ao atualizar progresso da aula:", err);
+    res.status(500).json({ message: "Erro ao atualizar progresso da aula" });
+  }
+}
+
+export async function upsertBadgeReview(req, res) {
+  try {
+    const { badgeId } = req.params;
+    const rating = Number(req.body?.rating);
+
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating deve estar entre 1 e 5" });
+    }
+
+    const obtained = await ConsultorBadge.findOne({
+      where: { consultor_id: req.userId, badge_id: badgeId, status: "obtido" },
+    });
+
+    if (!obtained) {
+      return res.status(403).json({ message: "So podes avaliar badges obtidos" });
+    }
+
+    const [review, created] = await BadgeReview.findOrCreate({
+      where: { consultor_id: req.userId, badge_id: badgeId },
+      defaults: {
+        consultor_id: req.userId,
+        badge_id: badgeId,
+        rating,
+        title: req.body?.title || null,
+        comment: req.body?.comment || null,
+      },
+    });
+
+    if (!created) {
+      review.rating = rating;
+      review.title = req.body?.title || null;
+      review.comment = req.body?.comment || null;
+      await review.save();
+    }
+
+    res.json(review);
+  } catch (err) {
+    console.error("Erro ao guardar review do badge:", err);
+    res.status(500).json({ message: "Erro ao guardar review" });
   }
 }
 

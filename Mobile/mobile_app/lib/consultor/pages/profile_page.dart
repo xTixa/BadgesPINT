@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import '../widgets/section_card.dart';
+import 'timeline_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({required this.controller, super.key});
@@ -214,7 +215,12 @@ class _ProfilePageState extends State<ProfilePage>
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () => context.push('/timeline'),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TimelinePage(controller: widget.controller),
+                ),
+              ),
               icon: const Icon(Icons.timeline_rounded),
               label: const Text('Timeline profissional'),
             ),

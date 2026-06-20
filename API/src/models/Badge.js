@@ -19,6 +19,55 @@ const Badge = database.define("badges", {
   description: {
     type: DataTypes.TEXT
   },
+  subtitle: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  slug: {
+    type: DataTypes.STRING(180),
+    allowNull: true,
+    unique: true
+  },
+  learning_outcomes: {
+    type: DataTypes.JSONB,
+    allowNull: true
+  },
+  target_audience: {
+    type: DataTypes.JSONB,
+    allowNull: true
+  },
+  prerequisites: {
+    type: DataTypes.JSONB,
+    allowNull: true
+  },
+  duration_minutes: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  difficulty: {
+    type: DataTypes.STRING(40),
+    allowNull: true
+  },
+  language: {
+    type: DataTypes.STRING(40),
+    defaultValue: "pt-PT"
+  },
+  instructor_name: {
+    type: DataTypes.STRING(150),
+    allowNull: true
+  },
+  promo_video_url: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  is_featured: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  published: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
   points: {
     type: DataTypes.INTEGER,
     defaultValue: 0
