@@ -153,6 +153,29 @@ export async function sendBadgeApplicationEmail({ to, name, badgeName }) {
   });
 }
 
+export async function sendSLValidationEmail({ to, name, badgeName, consultorName }) {
+  const displayName = name || "Service Line Leader";
+  const consultor = consultorName || "um consultor";
+
+  return sendMail({
+    to,
+    subject: "Pedido de badge aguarda a tua aprovação - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O pedido de badge "${badgeName}" submetido por ${consultor} foi validado pelo Talent Manager e aguarda a tua aprovação final.`,
+      "Acede à plataforma para aprovar ou rejeitar o pedido.",
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O pedido de badge <strong>${badgeName}</strong> submetido por <strong>${consultor}</strong> foi validado pelo Talent Manager e aguarda a tua aprovação final.</p>
+      <p>Acede à plataforma para aprovar ou rejeitar o pedido.</p>
+    `,
+  });
+}
+
 export function buildEmailStatus(error = null) {
   if (!error) return { emailSent: true };
 

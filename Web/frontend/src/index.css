@@ -81,6 +81,20 @@ textarea:focus-visible,
 		box-shadow: var(--shadow-soft);
 	}
 
+	/* Keep headings readable inside branded dark/blue surfaces.
+	   Base heading styles default to slate, which can leak into hero panels. */
+	.ui-page-header :is(h1, h2, h3, h4),
+	[class*="bg-gradient-to"][class*="text-white"] :is(h1, h2, h3, h4),
+	[class*="bg-[#0F62FE]"][class*="text-white"] :is(h1, h2, h3, h4),
+	[class*="bg-[#16558C]"][class*="text-white"] :is(h1, h2, h3, h4),
+	[class*="bg-slate-950"][class*="text-white"] :is(h1, h2, h3, h4) {
+		color: #ffffff;
+	}
+
+	.ui-page-header p:not([class*="text-"]) {
+		color: rgba(255, 255, 255, 0.86);
+	}
+
 	.ui-page-title {
 		@apply mb-1 text-xl font-bold tracking-tight sm:text-2xl;
 	}

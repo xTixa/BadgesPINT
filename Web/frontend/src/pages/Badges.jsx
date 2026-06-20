@@ -247,42 +247,44 @@ export default function Badges() {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <section className="bg-slate-950 px-6 py-14 text-white">
+      <section className="px-6 py-8">
         <div className="mx-auto max-w-7xl">
-          <Link
-            to={id ? "/areas" : "/"}
-            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-[#BFEFFF] transition hover:text-white"
-          >
-            <i className="bi bi-arrow-left"></i>
-            {id ? "Voltar as areas" : "Voltar ao inicio"}
-          </Link>
+          <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+            <Link
+              to={id ? "/areas" : "/"}
+              className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
+            >
+              <i className="bi bi-arrow-left"></i>
+              {id ? "Voltar as areas" : "Voltar ao inicio"}
+            </Link>
 
-          <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-end">
-            <div>
-              <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
-                Catalogo de badges
-              </p>
-              <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight md:text-5xl">
-                {areaName ? `Badges de ${areaName}` : "Aprende competencias que contam."}
-              </h1>
-              <p className="mt-4 max-w-2xl text-lg text-white/75">
-                Pesquisa, compara niveis, ve requisitos e candidata-te aos badges que
-                fazem sentido para o teu percurso.
-              </p>
-            </div>
+            <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-end">
+              <div>
+                <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
+                  Catalogo de badges
+                </p>
+                <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+                  {areaName ? `Badges de ${areaName}` : "Aprende competencias que contam."}
+                </h1>
+                <p className="mt-4 max-w-2xl text-lg text-white/85">
+                  Pesquisa, compara niveis, ve requisitos e candidata-te aos badges que
+                  fazem sentido para o teu percurso.
+                </p>
+              </div>
 
-            <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-              <label className="relative block">
-                <span className="sr-only">Pesquisar badge</span>
-                <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input
-                  type="search"
-                  value={search}
-                  onChange={(event) => updateSearch(event.target.value)}
-                  placeholder="Pesquisar por tecnologia, area ou nivel"
-                  className="h-12 w-full rounded-xl border-0 bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
-                />
-              </label>
+              <div className="rounded-2xl border border-white/15 bg-white/15 p-4 backdrop-blur">
+                <label className="relative block">
+                  <span className="sr-only">Pesquisar badge</span>
+                  <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(event) => updateSearch(event.target.value)}
+                    placeholder="Pesquisar por tecnologia, area ou nivel"
+                    className="h-12 w-full rounded-xl border-0 bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
+                  />
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -321,7 +323,7 @@ export default function Badges() {
             ["Areas", areas.length],
             ["Pontos", totalPoints],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div key={label} className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
               <p className="text-sm font-semibold text-slate-500">{label}</p>
               <p className="mt-2 text-3xl font-extrabold text-slate-950">{value}</p>
             </div>
@@ -329,7 +331,7 @@ export default function Badges() {
         </section>
 
         <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-          <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+          <aside className="h-fit rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:sticky lg:top-24">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-extrabold text-slate-950">Filtros</h2>
               <button

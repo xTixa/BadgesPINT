@@ -207,9 +207,9 @@ export default function Requirements() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="bg-[#1c1d1f] px-6 py-8 text-white">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+    <div className="min-h-screen bg-[#F2F2F2]">
+      <section className="px-4 py-8 sm:px-6">
+        <div className="mx-auto grid max-w-7xl gap-8 rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)] lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="max-w-3xl py-4">
             <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm font-bold text-[#BFEFFF]">
               <Link to="/" className="hover:text-white">Inicio</Link>
@@ -220,22 +220,22 @@ export default function Requirements() {
             </nav>
 
             <div className="mb-4 flex flex-wrap gap-2">
-              <span className="rounded bg-[#BFEFFF] px-2.5 py-1 text-xs font-extrabold text-slate-950">
+              <span className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-[#0F62FE]">
                 {level}
               </span>
-              <span className="rounded bg-white/10 px-2.5 py-1 text-xs font-bold text-white">
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
                 {areaName}
               </span>
             </div>
 
-            <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
+            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl">
               {badge ? badgeName : "Detalhe do badge"}
             </h1>
-            <p className="mt-4 text-xl leading-relaxed text-white/85">
+            <p className="mt-4 text-xl leading-relaxed text-[#EAF6FF]">
               {description}
             </p>
 
-            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/80">
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#EAF6FF]">
               <span className="font-bold text-[#BFEFFF]">
                 <i className="bi bi-star-fill mr-1"></i>
                 Badge verificado
@@ -245,14 +245,14 @@ export default function Requirements() {
               <span>Atualizado recentemente</span>
             </div>
 
-            <p className="mt-4 text-sm text-white/70">
+            <p className="mt-4 text-sm text-[#D9F7FF]">
               Criado para consultores que querem validar competencias com evidencias reais.
             </p>
           </div>
 
           <aside className="hidden lg:block">
-            <div className="sticky top-24 overflow-hidden rounded-sm border border-slate-200 bg-white text-slate-950 shadow-2xl">
-              <div className="flex aspect-video items-center justify-center bg-[radial-gradient(circle_at_30%_20%,#173C86_0%,#0F62FE_42%,#00AEEF_100%)]">
+            <div className="sticky top-24 overflow-hidden rounded-2xl border border-white/25 bg-white text-slate-950 shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+              <div className="flex aspect-video items-center justify-center bg-[linear-gradient(135deg,#EAF6FF_0%,#D9F7FF_46%,#BFEFFF_100%)]">
                 <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} size="hero" />
               </div>
               <div className="p-5">
@@ -266,7 +266,7 @@ export default function Requirements() {
                     type="button"
                     onClick={handleApply}
                     disabled={applying || applied}
-                    className="mb-3 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mb-3 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {applied
                       ? application?.status === "obtido"
@@ -279,7 +279,7 @@ export default function Requirements() {
                 ) : (
                   <Link
                     to="/login"
-                    className="mb-3 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD]"
+                    className="mb-3 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD]"
                   >
                     Entrar para candidatar
                   </Link>
@@ -288,14 +288,14 @@ export default function Requirements() {
                 <button
                   type="button"
                   onClick={() => openLinkedInShare(publicBadgeUrl)}
-                  className="mb-3 flex h-12 w-full items-center justify-center border border-slate-950 px-4 text-sm font-extrabold text-slate-950 transition hover:bg-slate-50"
+                  className="mb-3 flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                 >
                   Partilhar no LinkedIn
                 </button>
 
                 <Link
                   to="/badges"
-                  className="flex h-12 w-full items-center justify-center border border-slate-950 px-4 text-sm font-extrabold text-slate-950 transition hover:bg-slate-50"
+                  className="flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                 >
                   Ver outros badges
                 </Link>
@@ -316,23 +316,23 @@ export default function Requirements() {
       <main className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-8">
           {error && (
-            <div role="alert" className="border border-rose-200 bg-rose-50 p-4">
+            <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
               <p className="text-sm font-semibold text-rose-700">{error}</p>
             </div>
           )}
 
           {success && (
-            <div role="status" className="border border-emerald-200 bg-emerald-50 p-4">
+            <div role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
               <p className="text-sm font-semibold text-emerald-700">{success}</p>
             </div>
           )}
 
-          <section className="border border-slate-300 bg-white p-6">
+          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <h2 className="text-2xl font-extrabold text-slate-950">O que vais aprender</h2>
             <div className="mt-5 grid gap-x-8 gap-y-3 md:grid-cols-2">
               {learningOutcomes.map((outcome) => (
                 <div key={outcome} className="flex gap-3 text-sm leading-relaxed text-slate-700">
-                  <i className="bi bi-check2 mt-0.5 text-lg text-slate-950"></i>
+                  <i className="bi bi-check2 mt-0.5 text-lg text-[#0F62FE]"></i>
                   <span>{outcome}</span>
                 </div>
               ))}
@@ -348,19 +348,19 @@ export default function Requirements() {
             </div>
 
             {loading ? (
-              <div className="border border-slate-200 bg-white px-6 py-16 text-center">
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
                 <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
                 <p className="font-semibold text-slate-600">A carregar requisitos...</p>
               </div>
             ) : reqs.length > 0 ? (
-              <div className="border border-slate-300">
+              <div className="overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
                 {reqs.map((requirement, index) => (
                   <details
                     key={requirement.id || index}
-                    className="group border-b border-slate-300 bg-white last:border-b-0"
+                    className="group border-b border-slate-200 bg-white last:border-b-0"
                     open={index === 0}
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-slate-50 px-5 py-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-4">
                       <div className="flex min-w-0 items-center gap-3">
                         <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
                         <span className="font-extrabold text-slate-950">
@@ -388,7 +388,7 @@ export default function Requirements() {
                 ))}
               </div>
             ) : (
-              <div className="border border-slate-200 bg-white px-6 py-16 text-center">
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
                 <i className="bi bi-clipboard2-x mb-4 block text-5xl text-slate-300"></i>
                 <h2 className="text-xl font-extrabold text-slate-950">Nenhum requisito definido</h2>
                 <p className="mt-2 text-slate-500">
@@ -406,14 +406,14 @@ export default function Requirements() {
                   Modulos e aulas de apoio para preparar a candidatura.
                 </p>
               </div>
-              <div className="border border-slate-300">
+              <div className="overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
                 {sections.map((section, index) => (
                   <details
                     key={section.id || index}
-                    className="group border-b border-slate-300 bg-white last:border-b-0"
+                    className="group border-b border-slate-200 bg-white last:border-b-0"
                     open={index === 0}
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-slate-50 px-5 py-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-4">
                       <div className="flex min-w-0 items-center gap-3">
                         <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
                         <span className="font-extrabold text-slate-950">{section.title}</span>
@@ -444,14 +444,14 @@ export default function Requirements() {
             </section>
           )}
 
-          <section className="border border-slate-300 bg-white p-6">
+          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <h2 className="text-2xl font-extrabold text-slate-950">Descricao</h2>
             <p className="mt-4 max-w-3xl leading-relaxed text-slate-700">{description}</p>
           </section>
         </div>
 
         <aside className="lg:hidden">
-          <div className="border border-slate-200 bg-white p-5 shadow-lg">
+          <div className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <p className="text-2xl font-extrabold text-slate-950">{points} pontos</p>
             <p className="text-sm font-semibold text-slate-500">ao conquistar este badge</p>
             {user?.role === "consultant" ? (
@@ -459,7 +459,7 @@ export default function Requirements() {
                 type="button"
                 onClick={handleApply}
                 disabled={applying || applied}
-                className="mt-4 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {applied
                   ? application?.status === "obtido"
@@ -472,7 +472,7 @@ export default function Requirements() {
             ) : (
               <Link
                 to="/login"
-                className="mt-4 flex h-12 w-full items-center justify-center bg-[#0F62FE] px-4 text-sm font-extrabold text-white"
+                className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white"
               >
                 Entrar para candidatar
               </Link>
@@ -480,7 +480,7 @@ export default function Requirements() {
             <button
               type="button"
               onClick={() => openLinkedInShare(publicBadgeUrl)}
-              className="mt-3 flex h-12 w-full items-center justify-center border border-slate-950 px-4 text-sm font-extrabold text-slate-950 transition hover:bg-slate-50"
+              className="mt-3 flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
             >
               Partilhar no LinkedIn
             </button>

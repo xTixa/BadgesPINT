@@ -5,7 +5,7 @@ import Area from "../models/Area.js";
 import Notification from "../models/Notification.js";
 import database from "../config/database.js";
 import { QueryTypes, Op } from "sequelize";
-import { sendBadgeApplicationEmail } from "../services/mailService.js";
+import { sendBadgeApplicationEmail, sendSLValidationEmail } from "../services/mailService.js";
 
 async function getServiceLineIdForUser(userId) {
   const user = await User.findByPk(userId);
@@ -368,6 +368,42 @@ export async function tmValidarPedido(req, res) {
       utilizador_id: pedido.consultor_id,
       lido: false
     });
+
+    // Notify SL leaders of the badge's service line
+    try {
+      const badgeWithArea = await Badge.findByPk(pedido.badge_id, {
+        include: [{ model: Area, as: "area", attributes: ["id", "service_line_id"] }],
+        attributes: ["id", "description"],
+      });
+      const consultor = await User.findByPk(pedido.consultor_id, { attributes: ["id", "name"] });
+      const badgeName = badgeWithArea?.description || `Badge #${pedido.badge_id}`;
+      const consultorName = consultor?.name || "consultor";
+
+      if (badgeWithArea?.area?.service_line_id) {
+        const slLeaders = await database.query(
+          `SELECT u.id, u.name, u.email FROM "Users" u
+           JOIN areas a ON a.id = u.area_id
+           WHERE u.role = 'service_line_leader' AND a.service_line_id = :slId`,
+          { replacements: { slId: badgeWithArea.area.service_line_id }, type: QueryTypes.SELECT }
+        );
+        for (const leader of slLeaders) {
+          await Notification.create({
+            tipo: "geral",
+            titulo: "Pedido aguarda aprovação",
+            mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua aprovação.`,
+            utilizador_id: leader.id,
+            lido: false,
+          });
+          if (leader.email) {
+            sendSLValidationEmail({ to: leader.email, name: leader.name, badgeName, consultorName }).catch((e) =>
+              console.error("Email SL falhou:", e.message)
+            );
+          }
+        }
+      }
+    } catch (notifyErr) {
+      console.error("Falha ao notificar SL leaders:", notifyErr.message);
+    }
 
     return res.json(pedido);
   } catch (err) {

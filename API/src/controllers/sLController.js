@@ -148,7 +148,8 @@ export async function getSLEstatisticas(req, res) {
     const counts = await database.query(
       `SELECT COUNT(cb.id)::int AS total,
               COUNT(cb.id) FILTER (WHERE cb.status = 'obtido')::int AS concluidos,
-              COUNT(cb.id) FILTER (WHERE cb.status = 'pendente')::int AS pendentes
+              COUNT(cb.id) FILTER (WHERE cb.status = 'pendente')::int AS pendentes,
+              COUNT(cb.id) FILTER (WHERE cb.workflow_status = 'em_validacao')::int AS aguardam_sl
        FROM consultor_badges cb
        JOIN "Users" u ON u.id = cb.consultor_id
        WHERE u.area_id IN (:areaIds)`,
@@ -161,7 +162,8 @@ export async function getSLEstatisticas(req, res) {
     res.json({
       totalConsultores,
       cursosAtivos,
-      badgesPendentes: counts[0]?.pendentes || 0,
+      badgesPendentes: counts[0]?.aguardam_sl || 0,
+      pedidosPendentesTotal: counts[0]?.pendentes || 0,
       progressoMedio: totalBadges ? Math.round((concluidos / totalBadges) * 100) : 0,
     });
   } catch (err) {
@@ -335,6 +337,88 @@ export async function getSLRelatorio(req, res) {
       message: "Erro ao gerar relatorio",
       detail: process.env.NODE_ENV === "production" ? undefined : err.message,
     });
+  }
+}
+
+export async function getSLGamificacao(req, res) {
+  try {
+    const { areaIds } = await getSLAreaIds(req.userId);
+    if (!areaIds.length) return res.json({ premiumBadges: [], consultores: [], tiers: [], speedAchievers: [], conquistas: [] });
+
+    const premiumBadges = await Badge.findAll({
+      where: {
+        area_id: { [Op.in]: areaIds },
+        [Op.or]: [
+          { level: { [Op.in]: ["Especialista", "Lider"] } },
+          { points: { [Op.gte]: 100 } },
+        ],
+      },
+      include: [{ model: Area, as: "area", attributes: ["id", "name"] }],
+      order: [["points", "DESC"], ["level", "DESC"]],
+    });
+
+    const consultores = await database.query(
+      `SELECT u.id, u.name, u.email, COALESCE(u.points_total, 0) AS points_total, a.name AS area,
+              COUNT(cb.id) FILTER (WHERE cb.status = 'obtido')::int AS badges_obtidos,
+              COUNT(cb.id) FILTER (
+                WHERE cb.status = 'obtido' AND (b.level IN ('Especialista', 'Lider') OR COALESCE(b.points,0) >= 100)
+              )::int AS premium_obtidos
+       FROM "Users" u
+       LEFT JOIN areas a ON a.id = u.area_id
+       LEFT JOIN consultor_badges cb ON cb.consultor_id = u.id
+       LEFT JOIN badges b ON b.id = cb.badge_id
+       WHERE u.role = 'consultant' AND u.area_id IN (:areaIds)
+       GROUP BY u.id, u.name, u.email, u.points_total, a.name
+       ORDER BY COALESCE(u.points_total, 0) DESC, badges_obtidos DESC`,
+      { replacements: { areaIds }, type: QueryTypes.SELECT }
+    );
+
+    const tierDefs = [
+      { name: "Platina", threshold: 500, icon: "bi-gem", color: "#0ea5e9" },
+      { name: "Ouro", threshold: 200, icon: "bi-trophy-fill", color: "#f59e0b" },
+      { name: "Prata", threshold: 100, icon: "bi-award-fill", color: "#94a3b8" },
+      { name: "Bronze", threshold: 50, icon: "bi-patch-check-fill", color: "#b45309" },
+      { name: "Iniciante", threshold: 0, icon: "bi-star-fill", color: "#6b7280" },
+    ];
+    const tiers = tierDefs.map((tier, i) => ({
+      ...tier,
+      count: consultores.filter((c) => {
+        const pts = Number(c.points_total);
+        const next = tierDefs[i - 1];
+        return next ? pts >= tier.threshold && pts < next.threshold : pts >= tier.threshold;
+      }).length,
+    }));
+
+    const speedAchievers = await database.query(
+      `SELECT u.id, u.name, COUNT(*)::int AS badges_no_mes, to_char(date_trunc('month', cb.data_atribuicao), 'YYYY-MM') AS mes
+       FROM consultor_badges cb
+       JOIN "Users" u ON u.id = cb.consultor_id
+       WHERE cb.status = 'obtido' AND cb.data_atribuicao IS NOT NULL AND u.area_id IN (:areaIds)
+       GROUP BY u.id, u.name, date_trunc('month', cb.data_atribuicao)
+       HAVING COUNT(*) >= 3
+       ORDER BY badges_no_mes DESC, mes DESC
+       LIMIT 10`,
+      { replacements: { areaIds }, type: QueryTypes.SELECT }
+    );
+
+    // Special achievement: consultants who completed all 5 levels in any area
+    const fullAreaAchievers = await database.query(
+      `SELECT u.id, u.name, a.name AS area, COUNT(DISTINCT b.level)::int AS niveis_completos
+       FROM consultor_badges cb
+       JOIN "Users" u ON u.id = cb.consultor_id
+       JOIN badges b ON b.id = cb.badge_id
+       JOIN areas a ON a.id = b.area_id
+       WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds) AND b.area_id IN (:areaIds)
+       GROUP BY u.id, u.name, a.id, a.name
+       HAVING COUNT(DISTINCT b.level) >= 5
+       ORDER BY niveis_completos DESC`,
+      { replacements: { areaIds }, type: QueryTypes.SELECT }
+    );
+
+    res.json({ premiumBadges, consultores: consultores.slice(0, 20), tiers, speedAchievers, fullAreaAchievers });
+  } catch (err) {
+    console.error("Erro gamificacao SL:", err);
+    res.status(500).json({ message: "Erro ao carregar gamificacao" });
   }
 }
 

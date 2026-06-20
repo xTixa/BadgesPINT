@@ -47,6 +47,8 @@ import PedidosServiceLine from "./pages/ServiceLine/PedidosServiceLine";
 import ConsultoresServiceLine from "./pages/ServiceLine/ConsultoresServiceLine";
 import BadgesServiceLine from "./pages/ServiceLine/BadgesServiceLine";
 import RelatoriosServiceLine from "./pages/ServiceLine/RelatoriosServiceLine";
+import HistoricoSL from "./pages/ServiceLine/HistoricoSL";
+import GamificacaoSL from "./pages/ServiceLine/GamificacaoSL";
 
 // Admin
 import DashboardAdmin from "./pages/Admin/DashboardAdmin";
@@ -74,11 +76,12 @@ function AppContent() {
   const location = useLocation();
 
   const hideLayout = NO_LAYOUT_ROUTES.includes(location.pathname);
+  const serviceLineLayout = location.pathname.startsWith("/sl");
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F2F2F2]">
       {!hideLayout && <Navbar />}
-      <main className={`flex-1 ${hideLayout ? "" : "px-4 py-8"}`}>
+      <main className={`flex-1 ${hideLayout || serviceLineLayout ? "" : "px-4 py-8"}`}>
         <Routes>
 
           {/* Auth */}
@@ -124,6 +127,8 @@ function AppContent() {
           <Route path="/sl/pedidos" element={<ProtectedRoute role="service_line_leader"><PedidosServiceLine /></ProtectedRoute>} />
           <Route path="/sl/consultores" element={<ProtectedRoute role="service_line_leader"><ConsultoresServiceLine /></ProtectedRoute>} />
           <Route path="/sl/badges" element={<ProtectedRoute role="service_line_leader"><BadgesServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/historico" element={<ProtectedRoute role="service_line_leader"><HistoricoSL /></ProtectedRoute>} />
+          <Route path="/sl/gamificacao" element={<ProtectedRoute role="service_line_leader"><GamificacaoSL /></ProtectedRoute>} />
           <Route path="/sl/estatisticas" element={<ProtectedRoute role="service_line_leader"><RelatoriosServiceLine /></ProtectedRoute>} />
           <Route path="/sl/settings" element={<ProtectedRoute role="service_line_leader"><ServiceLineSettingsPage /></ProtectedRoute>} />
 
@@ -150,7 +155,7 @@ function AppContent() {
           <Route path="/notificacoes" element={<ProtectedRoute><NotificacoesPage /></ProtectedRoute>} />
         </Routes>
       </main>
-      {!hideLayout && <Footer />}
+      {!hideLayout && !serviceLineLayout && <Footer />}
     </div>
   );
 }

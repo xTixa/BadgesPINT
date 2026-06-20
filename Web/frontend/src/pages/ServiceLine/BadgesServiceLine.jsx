@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
-import ServiceLineLayout, { ServiceLineStatCard } from "./ServiceLineLayout";
+import ServiceLineLayout, { ServiceLineStatCard, slActionClass } from "./ServiceLineLayout";
 
 export default function BadgesServiceLine() {
   const [badges, setBadges] = useState([]);
@@ -81,6 +82,7 @@ export default function BadgesServiceLine() {
                     <th className="px-3 py-2 text-left font-semibold">Pontos</th>
                     <th className="px-3 py-2 text-left font-semibold">Tipo</th>
                     <th className="px-3 py-2 text-left font-semibold">Requisitos</th>
+                    <th className="px-3 py-2 text-right font-semibold">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -94,8 +96,25 @@ export default function BadgesServiceLine() {
                         <td className="px-3 py-2">{badge.points || 0}</td>
                         <td className="px-3 py-2"><span className={`rounded-full px-2 py-1 text-xs font-semibold ${isPremium ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-700"}`}>{isPremium ? "Premium" : "Standard"}</span></td>
                         <td className="px-3 py-2">
-                          {(badge.requirements || []).map((req) => <div key={req.id}><span className="font-semibold">{req.code}</span> {req.title}</div>)}
-                          {!badge.requirements?.length && <span className="text-slate-500">Sem requisitos registados.</span>}
+                          {(badge.requirements || []).slice(0, 3).map((req) => (
+                            <div key={req.id} className="text-xs">
+                              <span className="font-semibold text-slate-700">{req.code}</span>
+                              {" "}{req.title}
+                            </div>
+                          ))}
+                          {badge.requirements?.length > 3 && (
+                            <div className="text-xs text-slate-400">+{badge.requirements.length - 3} mais...</div>
+                          )}
+                          {!badge.requirements?.length && <span className="text-slate-400 text-xs">Sem requisitos.</span>}
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <Link
+                            to={`/badges/${badge.id}`}
+                            className={slActionClass}
+                            title="Ver todos os requisitos deste badge"
+                          >
+                            <i className="bi bi-eye mr-1"></i>Requisitos
+                          </Link>
                         </td>
                       </tr>
                     );

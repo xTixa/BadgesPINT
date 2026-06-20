@@ -8,6 +8,7 @@ import {
   getSLCatalogo,
   getSLHistorico,
   getSLRelatorio,
+  getSLGamificacao,
   exportSLReportExcel,
   exportSLReportPDF
 } from "../controllers/sLController.js";
@@ -24,6 +25,7 @@ router.get("/consultores", getSLConsultores);
 router.get("/catalogo", getSLCatalogo);
 router.get("/historico", getSLHistorico);
 router.get("/relatorios", getSLRelatorio);
+router.get("/gamificacao", getSLGamificacao);
 router.post("/export/excel", exportSLReportExcel);
 router.post("/export/pdf", exportSLReportPDF);
 router.post("/badges/:badgeId/certificado", adminGenerateBadgeCertificate);
