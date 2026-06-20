@@ -457,6 +457,7 @@ class _RequirementTileState extends State<RequirementTile> {
       setState(() {
         selectedFileName = null;
         selectedFileBytes = null;
+        expanded = false;
       });
     }
   }

@@ -222,8 +222,13 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
         ),
         GoRoute(
           path: '/settings',
-          builder: (BuildContext context, GoRouterState state) =>
-              const SettingsPage(),
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return SettingsPage(controller: ctrl);
+          },
         ),
       ],
     );

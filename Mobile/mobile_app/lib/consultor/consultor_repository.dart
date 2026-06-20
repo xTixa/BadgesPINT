@@ -385,6 +385,76 @@ class ConsultorRepository {
     return getRankingMock();
   }
 
+  Future<List<LearningPathProgressItem>> getLearningPathProgress() async {
+    if ((_token ?? '').isEmpty) return <LearningPathProgressItem>[];
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultor/learning-paths/progress',
+        token: _token,
+      );
+      if (payload is List) {
+        return payload
+            .whereType<Map<String, dynamic>>()
+            .map(LearningPathProgressItem.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      return <LearningPathProgressItem>[];
+    }
+
+    return <LearningPathProgressItem>[];
+  }
+
+  Future<List<CertificateItem>> getCertificates() async {
+    if ((_token ?? '').isEmpty) return <CertificateItem>[];
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultor/certificates',
+        token: _token,
+      );
+      if (payload is List) {
+        return payload
+            .whereType<Map<String, dynamic>>()
+            .map(CertificateItem.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      return <CertificateItem>[];
+    }
+
+    return <CertificateItem>[];
+  }
+
+  Future<ConsultantUser?> updatePreferences({
+    required bool rgpdPublicationAccepted,
+    required bool publicProfileEnabled,
+    required bool linkedinSharingEnabled,
+    String? goalText,
+    String? goalDeadline,
+  }) async {
+    if ((_token ?? '').isEmpty || _userId == null) return null;
+
+    try {
+      await _apiClient.put(
+        '/api/consultor/preferences',
+        token: _token,
+        body: <String, dynamic>{
+          'rgpd_publication_accepted': rgpdPublicationAccepted,
+          'public_profile_enabled': publicProfileEnabled,
+          'linkedin_sharing_enabled': linkedinSharingEnabled,
+          'goal_text': goalText,
+          'goal_deadline': goalDeadline,
+        },
+      );
+      await _syncService.syncInitialUserData();
+      return getMyProfile();
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<PublicConsultantProfile?> getConsultantPublicProfile(int id) async {
     if ((_token ?? '').isEmpty) return null;
 
@@ -449,14 +519,10 @@ class ConsultorRepository {
   Future<Uint8List?> downloadCertificatePdf(int badgeId) async {
     if ((_token ?? '').isEmpty) return null;
 
-    try {
-      return await _apiClient.postBytes(
-        '/api/consultor/badges/$badgeId/certificado',
-        token: _token,
-      );
-    } catch (_) {
-      return null;
-    }
+    return _apiClient.postBytes(
+      '/api/consultor/badges/$badgeId/certificado',
+      token: _token,
+    );
   }
 
   Future<List<EvidenceItem>> getEvidencesByBadge(int badgeId) async {
@@ -510,7 +576,7 @@ class ConsultorRepository {
         token: _token,
         body: <String, dynamic>{
           'fileName': fileName,
-          'file': 'data:application/octet-stream;base64,${base64Encode(bytes)}',
+          'file': 'data:${_mimeTypeForFile(fileName)};base64,${base64Encode(bytes)}',
         },
       );
 
@@ -521,6 +587,25 @@ class ConsultorRepository {
       return null;
     } catch (_) {
       return null;
+    }
+  }
+
+  String _mimeTypeForFile(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'application/pdf';
+      case 'png':
+        return 'image/png';
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'doc':
+        return 'application/msword';
+      case 'docx':
+        return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      default:
+        return 'application/octet-stream';
     }
   }
 

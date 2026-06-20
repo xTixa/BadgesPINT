@@ -62,6 +62,12 @@ const ConsultorBadge = database.define(
       allowNull: true,
     },
 
+    certificate_code: {
+      type: DataTypes.STRING(64),
+      allowNull: true,
+      unique: true,
+    },
+
     created_at: {
       type: DataTypes.DATE,
       allowNull: true,

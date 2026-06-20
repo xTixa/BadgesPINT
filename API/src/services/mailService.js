@@ -130,6 +130,29 @@ export async function sendTemporaryPasswordEmail({ to, name, temporaryPassword }
   });
 }
 
+export async function sendBadgeApplicationEmail({ to, name, badgeName }) {
+  const displayName = name || "consultor";
+
+  return sendMail({
+    to,
+    subject: "Candidatura a badge recebida - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `Recebemos a tua candidatura ao badge ${badgeName}.`,
+      "A equipa responsavel vai validar os requisitos e evidencias submetidas.",
+      "",
+      "Vais receber notificacoes quando houver atualizacoes.",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>Recebemos a tua candidatura ao badge <strong>${badgeName}</strong>.</p>
+      <p>A equipa responsavel vai validar os requisitos e evidencias submetidas.</p>
+      <p>Vais receber notificacoes quando houver atualizacoes.</p>
+    `,
+  });
+}
+
 export function buildEmailStatus(error = null) {
   if (!error) return { emailSent: true };
 

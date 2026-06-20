@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../consultor_controller.dart';
+
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({required this.controller, super.key});
+
+  final ConsultorController controller;
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -54,18 +58,29 @@ class _SettingsPageState extends State<SettingsPage> {
       lembretesTimeline = prefs.getBool('settings_lembretes_timeline') ?? false;
       recomendacoesBadges =
           prefs.getBool('settings_recomendacoes_badges') ?? true;
-      rgpdPublicacao = prefs.getBool('settings_rgpd_publicacao') ?? false;
+      rgpdPublicacao = widget.controller.profile?.rgpdPublicationAccepted ??
+          prefs.getBool('settings_rgpd_publicacao') ??
+          false;
       permitirGaleriaPublica =
-          prefs.getBool('settings_galeria_publica') ?? false;
-      partilhaLinkedin = prefs.getBool('settings_partilha_linkedin') ?? true;
+          widget.controller.profile?.publicProfileEnabled ??
+          prefs.getBool('settings_galeria_publica') ??
+          false;
+      partilhaLinkedin = widget.controller.profile?.linkedinSharingEnabled ??
+          prefs.getBool('settings_partilha_linkedin') ??
+          true;
       assinaturaEmail = prefs.getBool('settings_assinatura_email') ?? false;
       final savedArea = prefs.getString('settings_area_principal');
       areaPrincipal =
           _areaOptions.contains(savedArea) ? savedArea! : _areaOptions.first;
       _nomeController.text = prefs.getString('settings_nome') ?? '';
-      _objetivoController.text = prefs.getString('settings_objetivo') ?? '';
+      _objetivoController.text =
+          widget.controller.profile?.goalText ??
+          prefs.getString('settings_objetivo') ??
+          '';
       _dataLimiteController.text =
-          prefs.getString('settings_data_limite') ?? '';
+          widget.controller.profile?.goalDeadline ??
+          prefs.getString('settings_data_limite') ??
+          '';
     });
   }
 
@@ -89,6 +104,14 @@ class _SettingsPageState extends State<SettingsPage> {
     await prefs.setString(
       'settings_data_limite',
       _dataLimiteController.text.trim(),
+    );
+
+    await widget.controller.updatePreferences(
+      rgpdPublicationAccepted: rgpdPublicacao,
+      publicProfileEnabled: permitirGaleriaPublica,
+      linkedinSharingEnabled: partilhaLinkedin,
+      goalText: _objetivoController.text.trim(),
+      goalDeadline: _dataLimiteController.text.trim(),
     );
   }
 

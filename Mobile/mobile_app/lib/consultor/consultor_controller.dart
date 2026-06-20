@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../core/services/connectivity_service.dart';
+import '../shared/api_client.dart';
 import '../shared/download_helper.dart';
 import 'consultor_repository.dart';
 import 'consultor_models.dart';
@@ -21,6 +24,8 @@ class ConsultorController extends ChangeNotifier {
   List<RecommendationItem> recommendations = <RecommendationItem>[];
   List<ExpiryAlert> expiryAlerts = <ExpiryAlert>[];
   List<RankingItem> ranking = <RankingItem>[];
+  List<LearningPathProgressItem> learningPaths = <LearningPathProgressItem>[];
+  List<CertificateItem> certificates = <CertificateItem>[];
   List<AreaItem> areas = <AreaItem>[];
   List<CatalogBadgeItem> catalogBadges = <CatalogBadgeItem>[];
   List<CatalogBadgeItem> preferredAreaBadges = <CatalogBadgeItem>[];
@@ -67,6 +72,8 @@ class ConsultorController extends ChangeNotifier {
       _repository.getMyNotifications(),
       _repository.getAreas(),
       _repository.getConsultantsRanking(),
+      _repository.getLearningPathProgress(),
+      _repository.getCertificates(),
     ]);
 
     profile = results[0] as ConsultantUser?;
@@ -77,6 +84,8 @@ class ConsultorController extends ChangeNotifier {
     notifications = results[5] as List<UserNotificationItem>;
     areas = results[6] as List<AreaItem>;
     ranking = results[7] as List<RankingItem>;
+    learningPaths = results[8] as List<LearningPathProgressItem>;
+    certificates = results[9] as List<CertificateItem>;
     _updateRankingPosition();
 
     final areaId = profile?.areaId;
@@ -120,11 +129,15 @@ class ConsultorController extends ChangeNotifier {
       _repository.getMyPedidosStatus(),
       _repository.getMyNotifications(),
       _repository.getConsultantsRanking(),
+      _repository.getLearningPathProgress(),
+      _repository.getCertificates(),
     ]);
 
     pedidosStatus = results[0] as List<PedidoBadgeStatus>;
     notifications = results[1] as List<UserNotificationItem>;
     ranking = results[2] as List<RankingItem>;
+    learningPaths = results[3] as List<LearningPathProgressItem>;
+    certificates = results[4] as List<CertificateItem>;
     _updateRankingPosition();
     pendingSyncCount = await _repository.getPendingMutationCount();
     notifyListeners();
@@ -167,6 +180,26 @@ class ConsultorController extends ChangeNotifier {
       currentPassword: currentPassword,
       newPassword: newPassword,
     );
+  }
+
+  Future<bool> updatePreferences({
+    required bool rgpdPublicationAccepted,
+    required bool publicProfileEnabled,
+    required bool linkedinSharingEnabled,
+    String? goalText,
+    String? goalDeadline,
+  }) async {
+    final updated = await _repository.updatePreferences(
+      rgpdPublicationAccepted: rgpdPublicationAccepted,
+      publicProfileEnabled: publicProfileEnabled,
+      linkedinSharingEnabled: linkedinSharingEnabled,
+      goalText: goalText,
+      goalDeadline: goalDeadline,
+    );
+    if (updated == null) return false;
+    profile = updated;
+    notifyListeners();
+    return true;
   }
 
   int get badgesObtidos => badges.where((BadgeItem b) => b.isObtained).length;
@@ -262,6 +295,16 @@ class ConsultorController extends ChangeNotifier {
 
     final badgeId = selectedBadgeId;
     if (success && badgeId != null && ConnectivityService.instance.isOnline) {
+      _upsertLocalEvidence(
+        EvidenceItem(
+          id: DateTime.now().millisecondsSinceEpoch,
+          requirementId: requirementId,
+          status: 'pendente',
+          evidenceUrl: evidenceUrl,
+        ),
+      );
+      notifyListeners();
+
       // Only re-sync from API if we're online; if queued offline the sync
       // will happen automatically when MutationQueueService flushes.
       await _repository.syncBadgeDetails(badgeId);
@@ -270,6 +313,13 @@ class ConsultorController extends ChangeNotifier {
 
     if (success) notifyListeners();
     return success;
+  }
+
+  void _upsertLocalEvidence(EvidenceItem evidence) {
+    evidences = <EvidenceItem>[
+      evidence,
+      ...evidences.where((item) => item.requirementId != evidence.requirementId),
+    ];
   }
 
   Future<String?> uploadEvidenceFile({
@@ -293,12 +343,43 @@ class ConsultorController extends ChangeNotifier {
     return result;
   }
 
-  Future<bool> downloadCertificate(int badgeId) async {
-    final Uint8List? bytes = await _repository.downloadCertificatePdf(badgeId);
-    if (bytes == null) return false;
+  Future<ActionResult> downloadCertificate(int badgeId) async {
+    try {
+      final Uint8List? bytes = await _repository.downloadCertificatePdf(badgeId);
+      if (bytes == null) {
+        return ActionResult(
+          success: false,
+          message: 'A API nao devolveu o certificado.',
+        );
+      }
 
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return await DownloadHelper.savePdf(bytes, 'certificado_badge_${badgeId}_$timestamp.pdf');
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final saved = await DownloadHelper.savePdf(
+        bytes,
+        'certificado_badge_${badgeId}_$timestamp.pdf',
+      );
+      return ActionResult(
+        success: saved,
+        message: saved
+            ? 'Certificado descarregado.'
+            : 'Nao foi possivel guardar o ficheiro neste dispositivo.',
+      );
+    } on ApiException catch (error) {
+      return ActionResult(
+        success: false,
+        message: _extractApiMessage(error.message),
+      );
+    } on DioException catch (error) {
+      return ActionResult(
+        success: false,
+        message: _certificateConnectionMessage(error),
+      );
+    } catch (error) {
+      return ActionResult(
+        success: false,
+        message: 'Erro ao descarregar certificado: $error',
+      );
+    }
   }
 
   Future<bool> markNotificationAsRead(int notificationId) async {
@@ -332,6 +413,34 @@ class ConsultorController extends ChangeNotifier {
         rankingPosition = item.position;
         return;
       }
+    }
+  }
+
+  String _extractApiMessage(String rawMessage) {
+    try {
+      final dynamic parsed = jsonDecode(rawMessage);
+      if (parsed is Map<String, dynamic>) {
+        final message = (parsed['message'] ?? parsed['error'] ?? '').toString();
+        if (message.isNotEmpty) return message;
+      }
+    } catch (_) {
+      // Keep raw message if it is not JSON.
+    }
+
+    if (rawMessage.trim().isNotEmpty) return rawMessage;
+    return 'Erro ao contactar a API.';
+  }
+
+  String _certificateConnectionMessage(DioException error) {
+    switch (error.type) {
+      case DioExceptionType.connectionError:
+        return 'Sem ligacao ao backend. Confirma se a API esta a correr e se fizeste adb reverse tcp:4000 tcp:4000.';
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.sendTimeout:
+        return 'O backend demorou demasiado a responder ao certificado.';
+      default:
+        return 'Erro ao descarregar certificado: ${error.message ?? error.type.name}';
     }
   }
 

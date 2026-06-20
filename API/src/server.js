@@ -24,7 +24,15 @@ database
   .authenticate()
   .then(() => {
     console.log("Ligação à BD OK");
-    return database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS avatar_url TEXT');
+    return Promise.all([
+      database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS avatar_url TEXT'),
+      database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS rgpd_publication_accepted BOOLEAN DEFAULT FALSE'),
+      database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS public_profile_enabled BOOLEAN DEFAULT FALSE'),
+      database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS linkedin_sharing_enabled BOOLEAN DEFAULT TRUE'),
+      database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS goal_text TEXT'),
+      database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS goal_deadline DATE'),
+      database.query('ALTER TABLE consultor_badges ADD COLUMN IF NOT EXISTS certificate_code VARCHAR(64) UNIQUE'),
+    ]);
   })
   .then(() => {
     return database.sync();

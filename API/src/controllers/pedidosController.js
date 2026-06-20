@@ -5,6 +5,7 @@ import Area from "../models/Area.js";
 import Notification from "../models/Notification.js";
 import database from "../config/database.js";
 import { QueryTypes, Op } from "sequelize";
+import { sendBadgeApplicationEmail } from "../services/mailService.js";
 
 async function getServiceLineIdForUser(userId) {
   const user = await User.findByPk(userId);
@@ -26,6 +27,9 @@ async function notifyBadgeApplication(pedido) {
   const badge = await Badge.findByPk(pedido.badge_id, {
     attributes: ["id", "description"],
   });
+  const consultor = await User.findByPk(pedido.consultor_id, {
+    attributes: ["id", "name", "email"],
+  });
   const badgeName = badge?.description || `#${pedido.badge_id}`;
 
   await Notification.create({
@@ -35,6 +39,18 @@ async function notifyBadgeApplication(pedido) {
     utilizador_id: pedido.consultor_id,
     lido: false
   });
+
+  if (consultor?.email) {
+    try {
+      await sendBadgeApplicationEmail({
+        to: consultor.email,
+        name: consultor.name,
+        badgeName,
+      });
+    } catch (error) {
+      console.error("Notificacao criada, mas email de candidatura falhou:", error.message);
+    }
+  }
 }
 
 /**

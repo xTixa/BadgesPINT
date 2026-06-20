@@ -13,6 +13,19 @@ cloudinary.config({
   secure: true
 });
 
+function safePublicId(fileName) {
+  if (!fileName || typeof fileName !== "string") return undefined;
+  const withoutExtension = fileName.replace(/\.[^/.]+$/, "");
+  const safe = withoutExtension
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+
+  return safe || undefined;
+}
+
 export async function uploadEvidenceFile(req, res) {
   try {
     const { file, fileName } = req.body;
@@ -28,7 +41,7 @@ export async function uploadEvidenceFile(req, res) {
     const uploadResult = await cloudinary.uploader.upload(file, {
       folder: "evidencias",
       resource_type: "auto",
-      public_id: fileName ? fileName.replace(/\.[^/.]+$/, "") : undefined,
+      public_id: `${safePublicId(fileName) || "evidencia"}-${Date.now()}`,
     });
 
     return res.json({

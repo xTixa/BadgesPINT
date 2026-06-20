@@ -8,6 +8,11 @@ class ConsultantUser {
     this.areaId,
     this.location,
     this.avatarUrl,
+    this.rgpdPublicationAccepted = false,
+    this.publicProfileEnabled = false,
+    this.linkedinSharingEnabled = true,
+    this.goalText,
+    this.goalDeadline,
   });
 
   final int id;
@@ -18,6 +23,11 @@ class ConsultantUser {
   final int? areaId;
   final String? location;
   final String? avatarUrl;
+  final bool rgpdPublicationAccepted;
+  final bool publicProfileEnabled;
+  final bool linkedinSharingEnabled;
+  final String? goalText;
+  final String? goalDeadline;
 
   factory ConsultantUser.fromJson(Map<String, dynamic> json) {
     return ConsultantUser(
@@ -29,6 +39,66 @@ class ConsultantUser {
       areaId: _readInt(json['area_id']),
       location: json['localizacao']?.toString(),
       avatarUrl: json['avatar_url']?.toString(),
+      rgpdPublicationAccepted: json['rgpd_publication_accepted'] == true,
+      publicProfileEnabled: json['public_profile_enabled'] == true,
+      linkedinSharingEnabled: json['linkedin_sharing_enabled'] != false,
+      goalText: json['goal_text']?.toString(),
+      goalDeadline: json['goal_deadline']?.toString(),
+    );
+  }
+}
+
+class LearningPathProgressItem {
+  LearningPathProgressItem({
+    required this.id,
+    required this.name,
+    required this.totalBadges,
+    required this.obtainedBadges,
+    required this.progress,
+  });
+
+  final int id;
+  final String name;
+  final int totalBadges;
+  final int obtainedBadges;
+  final int progress;
+
+  factory LearningPathProgressItem.fromJson(Map<String, dynamic> json) {
+    return LearningPathProgressItem(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? '').toString(),
+      totalBadges: _readInt(json['total_badges']) ?? 0,
+      obtainedBadges: _readInt(json['obtained_badges']) ?? 0,
+      progress: _readInt(json['progress']) ?? 0,
+    );
+  }
+}
+
+class CertificateItem {
+  CertificateItem({
+    required this.id,
+    required this.badgeId,
+    required this.badgeName,
+    required this.verificationUrl,
+    this.areaName,
+    this.awardedAt,
+  });
+
+  final int id;
+  final int badgeId;
+  final String badgeName;
+  final String verificationUrl;
+  final String? areaName;
+  final String? awardedAt;
+
+  factory CertificateItem.fromJson(Map<String, dynamic> json) {
+    return CertificateItem(
+      id: _readInt(json['id']) ?? 0,
+      badgeId: _readInt(json['badge_id']) ?? 0,
+      badgeName: (json['badge_name'] ?? 'Badge').toString(),
+      verificationUrl: (json['verification_url'] ?? '').toString(),
+      areaName: json['area_name']?.toString(),
+      awardedAt: json['awarded_at']?.toString(),
     );
   }
 }

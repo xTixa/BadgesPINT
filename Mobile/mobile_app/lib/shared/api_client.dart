@@ -58,7 +58,7 @@ class ApiClient {
   }
 
   Future<Uint8List?> postBytes(String path, {String? token, Map<String, dynamic>? body}) async {
-    final response = await _dio.post<List<int>>(
+    final response = await _dio.post<dynamic>(
       path,
       data: body ?? <String, dynamic>{},
       options: Options(
@@ -71,10 +71,25 @@ class ApiClient {
         response.statusCode! >= 200 &&
         response.statusCode! < 300 &&
         response.data != null) {
-      return Uint8List.fromList(response.data!);
+      final data = response.data;
+      if (data is Uint8List) return data;
+      if (data is List<int>) return Uint8List.fromList(data);
     }
 
-    return null;
+    throw ApiException(
+      statusCode: response.statusCode ?? 0,
+      message: _decodeBytesError(response.data),
+    );
+  }
+
+  String _decodeBytesError(dynamic data) {
+    if (data is Uint8List) {
+      return utf8.decode(data, allowMalformed: true);
+    }
+    if (data is List<int>) {
+      return utf8.decode(data, allowMalformed: true);
+    }
+    return data?.toString() ?? '';
   }
 
   dynamic _decodeResponse(Response<dynamic> response) {

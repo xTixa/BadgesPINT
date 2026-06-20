@@ -29,6 +29,9 @@ class _DashboardPageState extends State<DashboardPage>
     super.initState();
     _searchController = TextEditingController();
     _loadGoal();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _showMilestoneIfNeeded(),
+    );
   }
 
   @override
@@ -47,6 +50,34 @@ class _DashboardPageState extends State<DashboardPage>
     });
   }
 
+  Future<void> _showMilestoneIfNeeded() async {
+    final obtained = widget.controller.badges.where((b) => b.isObtained).length;
+    if (obtained < 3 || !mounted) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'milestone_3_badges_shown_${widget.controller.profile?.id ?? 0}';
+    if (prefs.getBool(key) == true || !mounted) return;
+
+    await prefs.setBool(key, true);
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.celebration_rounded, color: AppColors.primary),
+        title: const Text('Marco alcancado'),
+        content: const Text(
+          'Ja atingiste 3 badges obtidos. Continua a evoluir no teu percurso.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Continuar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -59,6 +90,7 @@ class _DashboardPageState extends State<DashboardPage>
             _buildGoalCard(context),
             _buildNextActionCard(context),
             _buildLearningPaths(context),
+            _buildSpecialAchievements(context),
             _buildRecommendationsAndAlerts(context),
             _buildSearchBar(context),
             _buildTabBar(context),
@@ -326,7 +358,7 @@ class _DashboardPageState extends State<DashboardPage>
 
   Widget _buildLearningPaths(BuildContext context) {
     final controller = widget.controller;
-    final items = controller.badges.take(3).toList();
+    final items = controller.learningPaths.take(5).toList();
     if (items.isEmpty) return const SizedBox.shrink();
 
     return SizedBox(
@@ -337,12 +369,8 @@ class _DashboardPageState extends State<DashboardPage>
         itemCount: items.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final badge = items[index];
-          final progress = controller.progressForBadge(badge.id);
-          final value =
-              progress == null || progress.total == 0
-                  ? (badge.isObtained ? 1.0 : 0.35)
-                  : progress.approved / progress.total;
+          final path = items[index];
+          final value = (path.progress / 100).clamp(0.0, 1.0).toDouble();
 
           return SizedBox(
             width: 250,
@@ -358,7 +386,7 @@ class _DashboardPageState extends State<DashboardPage>
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            badge.name,
+                            path.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontWeight: FontWeight.w800),
@@ -372,7 +400,7 @@ class _DashboardPageState extends State<DashboardPage>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${(value * 100).round()}% do learning path',
+                      '${path.obtainedBadges}/${path.totalBadges} badges - ${path.progress}% do learning path',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -381,6 +409,72 @@ class _DashboardPageState extends State<DashboardPage>
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildSpecialAchievements(BuildContext context) {
+    final special = widget.controller.badges
+        .where(
+          (badge) =>
+              badge.isObtained &&
+              (badge.name.toLowerCase().contains('especialista') ||
+                  badge.name.toLowerCase().contains('lider') ||
+                  (badge.area?.toLowerCase().contains('certificacao') ??
+                      false)),
+        )
+        .take(3)
+        .toList();
+
+    if (special.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5F3FF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFDDD6FE)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.diamond_outlined, color: Color(0xFF6D28D9)),
+                SizedBox(width: 8),
+                Text(
+                  'Conquistas especiais',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ...special.map(
+              (badge) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      size: 16,
+                      color: Color(0xFF6D28D9),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        badge.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

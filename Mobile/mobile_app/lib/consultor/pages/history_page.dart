@@ -176,7 +176,7 @@ class HistoryPage extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: () async {
                         final messenger = ScaffoldMessenger.of(context);
-                        final ok = await controller.downloadCertificate(
+                        final result = await controller.downloadCertificate(
                           badge.id,
                         );
 
@@ -185,10 +185,13 @@ class HistoryPage extends StatelessWidget {
                         messenger.showSnackBar(
                           SnackBar(
                             content: Text(
-                              ok
-                                  ? 'Download iniciado'
-                                  : 'Erro ao descarregar',
+                              result.message ??
+                                  (result.success
+                                      ? 'Download iniciado'
+                                      : 'Erro ao descarregar'),
                             ),
+                            backgroundColor:
+                                result.success ? Colors.green : Colors.red,
                           ),
                         );
                       },

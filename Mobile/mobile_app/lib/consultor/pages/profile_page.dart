@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../consultor_controller.dart';
+import '../consultor_models.dart';
 import '../widgets/section_card.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -282,63 +283,7 @@ class _ProfilePageState extends State<ProfilePage>
           ),
 
           const SizedBox(height: 20),
-          Text(
-            "Badges Obtidos (${obtained.length})",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-
-          const SizedBox(height: 10),
-
-          if (obtained.isEmpty)
-            const Text('Ainda nao tens badges obtidos.')
-          else
-            GridView.builder(
-              itemCount: obtained.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 0.92,
-              ),
-              itemBuilder: (context, index) {
-                final badge = obtained[index];
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.black12),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _BadgeThumb(imageUrl: badge.imageUrl),
-                      const SizedBox(height: 8),
-                      Text(
-                        badge.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${badge.points} pts',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+          _profileTabs(obtained),
           const SizedBox(height: 20),
 
           // 🔹 PARTILHA
@@ -350,8 +295,17 @@ class _ProfilePageState extends State<ProfilePage>
                   ElevatedButton.icon(
                     onPressed: () async {
                       final messenger = ScaffoldMessenger.of(context);
-                      final link =
-                          'https://badges.softinsa.pt/badge/${obtained.first.id}';
+                      final link = _shareLinkForFirstBadge(obtained);
+                      if (link == null) {
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Ativa RGPD e galeria publica nas definicoes para partilhar.',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
 
                       await Clipboard.setData(ClipboardData(text: link));
 
@@ -369,8 +323,17 @@ class _ProfilePageState extends State<ProfilePage>
 
                   ElevatedButton.icon(
                     onPressed: () async {
-                      final link =
-                          'https://badges.softinsa.pt/badge/${obtained.first.id}';
+                      final link = _shareLinkForFirstBadge(obtained);
+                      if (link == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Ativa RGPD e galeria publica nas definicoes para partilhar.',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
 
                       final uri = Uri.parse(
                         'https://www.linkedin.com/sharing/share-offsite/?url=${Uri.encodeComponent(link)}',
@@ -385,6 +348,204 @@ class _ProfilePageState extends State<ProfilePage>
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  String? _shareLinkForFirstBadge(List<BadgeItem> obtained) {
+    final profile = widget.controller.profile;
+    if (profile?.rgpdPublicationAccepted != true ||
+        profile?.publicProfileEnabled != true ||
+        profile?.linkedinSharingEnabled != true ||
+        obtained.isEmpty) {
+      return null;
+    }
+    return _certificateForBadge(obtained.first.id)?.verificationUrl;
+  }
+
+  Widget _profileTabs(List<BadgeItem> obtained) {
+    return DefaultTabController(
+      length: 2,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black12),
+        ),
+        child: Column(
+          children: [
+            const TabBar(
+              tabs: [
+                Tab(text: 'Badges'),
+                Tab(text: 'Meus Certificados'),
+              ],
+            ),
+            SizedBox(
+              height: obtained.isEmpty ? 150 : 360,
+              child: TabBarView(
+                children: [
+                  _badgesTab(obtained),
+                  _certificatesTab(obtained),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _badgesTab(List<BadgeItem> obtained) {
+    if (obtained.isEmpty) {
+      return const Center(child: Text('Ainda nao tens badges obtidos.'));
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: obtained.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 0.78,
+      ),
+      itemBuilder: (context, index) {
+        final badge = obtained[index];
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.black12),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _BadgeThumb(imageUrl: badge.imageUrl),
+              const SizedBox(height: 6),
+              Text(
+                badge.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                '${badge.points} pts',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _certificatesTab(List<BadgeItem> obtained) {
+    if (obtained.isEmpty) {
+      return const Center(child: Text('Ainda nao tens certificados.'));
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(12),
+      itemCount: obtained.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final badge = obtained[index];
+        final certificate = _certificateForBadge(badge.id);
+        final canShare = widget.controller.profile?.rgpdPublicationAccepted == true &&
+            widget.controller.profile?.publicProfileEnabled == true &&
+            (certificate?.verificationUrl ?? '').isNotEmpty;
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.black12),
+          ),
+          child: Row(
+            children: [
+              _BadgeThumb(imageUrl: badge.imageUrl),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      badge.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${badge.points} pts',
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton.filledTonal(
+                    tooltip: 'Descarregar certificado',
+                    onPressed: () => _downloadCertificate(badge.id),
+                    icon: const Icon(Icons.download_rounded),
+                  ),
+                  IconButton(
+                    tooltip: canShare
+                        ? 'Copiar link publico'
+                        : 'Ativa RGPD e galeria publica nas definicoes',
+                    onPressed: canShare
+                        ? () => _copyCertificateLink(certificate!.verificationUrl)
+                        : null,
+                    icon: const Icon(Icons.link_rounded),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  CertificateItem? _certificateForBadge(int badgeId) {
+    for (final certificate in widget.controller.certificates) {
+      if (certificate.badgeId == badgeId) return certificate;
+    }
+    return null;
+  }
+
+  Future<void> _copyCertificateLink(String url) async {
+    await Clipboard.setData(ClipboardData(text: url));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Link publico copiado.')),
+    );
+  }
+
+  Future<void> _downloadCertificate(int badgeId) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await widget.controller.downloadCertificate(badgeId);
+    if (!mounted) return;
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          result.message ??
+              (result.success
+                  ? 'Certificado descarregado.'
+                  : 'Erro ao descarregar certificado.'),
+        ),
+        backgroundColor: result.success ? Colors.green : Colors.red,
       ),
     );
   }
