@@ -21,6 +21,7 @@ import 'consultor/pages/profile_page.dart';
 import 'consultor/pages/consultant_profile_page.dart';
 import 'consultor/pages/notifications_page.dart';
 import 'consultor/pages/settings_page.dart';
+import 'consultor/pages/timeline_page.dart';
 
 enum AuthStage { login, register, firstLogin, authenticated }
 
@@ -86,6 +87,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
             location.startsWith('/consultants') ||
             location == '/notifications' ||
             location == '/settings' ||
+            location == '/timeline' ||
             location == '/boot') {
           return '/login';
         }
@@ -228,6 +230,16 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             }
             return SettingsPage(controller: ctrl);
+          },
+        ),
+        GoRoute(
+          path: '/timeline',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return TimelinePage(controller: ctrl);
           },
         ),
       ],

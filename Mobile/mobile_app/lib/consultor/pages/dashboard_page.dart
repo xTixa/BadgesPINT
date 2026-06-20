@@ -88,6 +88,7 @@ class _DashboardPageState extends State<DashboardPage>
           children: <Widget>[
             _buildHeader(context),
             _buildGoalCard(context),
+            _buildTimelineShortcut(context),
             _buildNextActionCard(context),
             _buildLearningPaths(context),
             _buildSpecialAchievements(context),
@@ -135,6 +136,17 @@ class _DashboardPageState extends State<DashboardPage>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTimelineShortcut(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: OutlinedButton.icon(
+        onPressed: () => context.push('/timeline'),
+        icon: const Icon(Icons.timeline_rounded),
+        label: const Text('Ver timeline profissional'),
       ),
     );
   }
@@ -271,6 +283,7 @@ class _DashboardPageState extends State<DashboardPage>
     final obtained = widget.controller.badges.where((b) => b.isObtained).length;
     final total = widget.controller.badges.length;
     final progress = total == 0 ? 0.0 : obtained / total;
+    final firstName = widget.controller.profile?.name.trim().split(' ').first;
     final milestoneText =
         obtained >= 3
             ? 'Marco alcancado: ja concluiste pelo menos 3 badges.'
@@ -288,9 +301,9 @@ class _DashboardPageState extends State<DashboardPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Os Meus Badges',
-              style: TextStyle(
+            Text(
+              '${_timeGreeting()}, ${firstName?.isEmpty == false ? firstName : 'Consultor'}',
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -477,6 +490,13 @@ class _DashboardPageState extends State<DashboardPage>
         ),
       ),
     );
+  }
+
+  String _timeGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Bom dia';
+    if (hour < 19) return 'Boa tarde';
+    return 'Boa noite';
   }
 
   Widget _buildRecommendationsAndAlerts(BuildContext context) {

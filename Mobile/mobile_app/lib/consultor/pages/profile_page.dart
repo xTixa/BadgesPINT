@@ -210,6 +210,15 @@ class _ProfilePageState extends State<ProfilePage>
               label: const Text('Ver ranking e perfis'),
             ),
           ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => context.push('/timeline'),
+              icon: const Icon(Icons.timeline_rounded),
+              label: const Text('Timeline profissional'),
+            ),
+          ),
 
           const SizedBox(height: 20),
           Row(
@@ -334,12 +343,10 @@ class _ProfilePageState extends State<ProfilePage>
                         );
                         return;
                       }
-
-                      final uri = Uri.parse(
-                        'https://www.linkedin.com/sharing/share-offsite/?url=${Uri.encodeComponent(link)}',
+                      await _openLinkedInShare(
+                        link,
+                        badgeName: obtained.first.name,
                       );
-
-                      await launchUrl(uri);
                     },
                     icon: const Icon(Icons.share),
                     label: const Text("LinkedIn"),
@@ -508,6 +515,18 @@ class _ProfilePageState extends State<ProfilePage>
                         : null,
                     icon: const Icon(Icons.link_rounded),
                   ),
+                  IconButton(
+                    tooltip: canShare
+                        ? 'Partilhar no LinkedIn'
+                        : 'Ativa RGPD e galeria publica nas definicoes',
+                    onPressed: canShare
+                        ? () => _openLinkedInShare(
+                              certificate!.verificationUrl,
+                              badgeName: badge.name,
+                            )
+                        : null,
+                    icon: const Icon(Icons.share_rounded),
+                  ),
                 ],
               ),
             ],
@@ -529,6 +548,37 @@ class _ProfilePageState extends State<ProfilePage>
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Link publico copiado.')),
+    );
+  }
+
+  Future<void> _openLinkedInShare(
+    String url, {
+    required String badgeName,
+  }) async {
+    final text =
+        'Conclui o badge "$badgeName" na plataforma BadgesPINT. Verificacao: $url';
+    await Clipboard.setData(ClipboardData(text: text));
+
+    final shareUri = Uri.https(
+      'www.linkedin.com',
+      '/sharing/share-offsite/',
+      <String, String>{'url': url},
+    );
+
+    final opened = await launchUrl(
+      shareUri,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          opened
+              ? 'LinkedIn aberto. O texto da publicacao foi copiado.'
+              : 'Nao foi possivel abrir o LinkedIn. O texto foi copiado.',
+        ),
+      ),
     );
   }
 

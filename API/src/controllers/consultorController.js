@@ -353,7 +353,7 @@ export async function generateConsultorBadgeCertificate(req, res) {
     }
 
     const [badge, consultor] = await Promise.all([
-      Badge.findByPk(badgeId),
+      Badge.findByPk(badgeId, { include: [{ model: Area, as: "area" }] }),
       User.findByPk(consultorId)
     ]);
 
@@ -373,6 +373,12 @@ export async function generateConsultorBadgeCertificate(req, res) {
     }
 
     const badgeName = badge.name || badge.title || badge.description || `Badge #${badge.id}`;
+    const certificateCode = ensureCertificateCode(consultorBadge);
+    await consultorBadge.save();
+    const verificationUrl = `${publicBaseUrl(req)}/api/public/certificates/${certificateCode}`;
+    const awardedAt = consultorBadge.data_atribuicao
+      ? new Date(consultorBadge.data_atribuicao)
+      : new Date();
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="certificado-badge-${badge.id}.pdf"`);
@@ -380,33 +386,85 @@ export async function generateConsultorBadgeCertificate(req, res) {
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     doc.pipe(res);
 
-    doc.fontSize(26).fillColor("#244080").text("Certificado de Conclusão", { align: "center" });
-    doc.moveDown(1.5);
+    const pageWidth = doc.page.width;
+    const pageHeight = doc.page.height;
+    const borderX = 36;
+    const borderY = 36;
+    const borderWidth = pageWidth - borderX * 2;
+    const borderHeight = pageHeight - borderY * 2;
 
-    const badgeBoxWidth = 150;
-    const badgeBoxX = (doc.page.width - badgeBoxWidth) / 2;
-    const badgeBoxY = doc.y;
-    doc.roundedRect(badgeBoxX, badgeBoxY, badgeBoxWidth, 78, 12).fillAndStroke("#EFF4FF", "#244080");
-    doc.fillColor("#244080").fontSize(13).text("BADGE", badgeBoxX, badgeBoxY + 18, {
+    doc.rect(0, 0, pageWidth, pageHeight).fill("#F7FAFC");
+    doc.roundedRect(borderX, borderY, borderWidth, borderHeight, 18)
+      .fillAndStroke("#FFFFFF", "#0F62FE");
+    doc.rect(borderX, borderY, borderWidth, 92).fill("#0F62FE");
+
+    doc.fillColor("#FFFFFF").fontSize(13).text("Softinsa | BadgesPINT", borderX + 28, borderY + 24);
+    doc.fontSize(30).font("Helvetica-Bold").text("Certificado de Conclusao", borderX + 28, borderY + 46, {
+      width: borderWidth - 56,
+      align: "center",
+    });
+
+    const badgeBoxWidth = 170;
+    const badgeBoxX = (pageWidth - badgeBoxWidth) / 2;
+    const badgeBoxY = 165;
+    doc.roundedRect(badgeBoxX, badgeBoxY, badgeBoxWidth, 96, 18)
+      .fillAndStroke("#EFF4FF", "#0F62FE");
+    doc.fillColor("#0F62FE").font("Helvetica-Bold").fontSize(15).text("BADGE", badgeBoxX, badgeBoxY + 22, {
       width: badgeBoxWidth,
-      align: "center"
+      align: "center",
     });
-    doc.fillColor("#2b2b2b").fontSize(10).text(badge.level || "", badgeBoxX + 12, badgeBoxY + 42, {
-      width: badgeBoxWidth - 24,
-      align: "center"
+    doc.fillColor("#111827").font("Helvetica").fontSize(11).text(badge.level || "Certificacao", badgeBoxX + 14, badgeBoxY + 52, {
+      width: badgeBoxWidth - 28,
+      align: "center",
     });
-    doc.y = badgeBoxY + 105;
 
-    doc.fontSize(14).fillColor("#2b2b2b");
-    doc.text(`Certifica-se que o Consultor ${consultor.name} concluiu`, { align: "center" });
-    doc.moveDown(0.5);
-    doc.fontSize(18).fillColor("#244080").text(`${badgeName}`, { align: "center" });
-    doc.moveDown(1.5);
-    doc.fontSize(12).fillColor("#2b2b2b").text(`Data: ${new Date().toLocaleDateString("pt-PT")}`, { align: "center" });
+    doc.fillColor("#111827").font("Helvetica").fontSize(14).text("Certifica-se que", 86, 305, {
+      width: pageWidth - 172,
+      align: "center",
+    });
+    doc.font("Helvetica-Bold").fontSize(24).fillColor("#0F172A").text(consultor.name, {
+      width: pageWidth - 172,
+      align: "center",
+    });
+    doc.moveDown(0.7);
+    doc.font("Helvetica").fontSize(14).fillColor("#111827").text("concluiu com sucesso o badge", {
+      width: pageWidth - 172,
+      align: "center",
+    });
+    doc.moveDown(0.4);
+    doc.font("Helvetica-Bold").fontSize(22).fillColor("#0F62FE").text(badgeName, {
+      width: pageWidth - 172,
+      align: "center",
+    });
 
-    doc.moveDown(3);
-    doc.fontSize(12).fillColor("#6b8cae").text("______________________________", { align: "center" });
-    doc.text("Assinatura", { align: "center" });
+    const detailsY = 470;
+    doc.roundedRect(76, detailsY, pageWidth - 152, 92, 12)
+      .fillAndStroke("#F8FAFC", "#CBD5E1");
+    doc.fillColor("#334155").font("Helvetica").fontSize(11);
+    doc.text(`Area: ${badge.area?.name || "Nao definida"}`, 98, detailsY + 18);
+    doc.text(`Nivel: ${badge.level || "Nao definido"}`, 98, detailsY + 38);
+    doc.text(`Pontos: ${badge.points || 0}`, 98, detailsY + 58);
+    doc.text(`Data de atribuicao: ${awardedAt.toLocaleDateString("pt-PT")}`, 310, detailsY + 18);
+    doc.text(`Codigo: ${certificateCode}`, 310, detailsY + 38, { width: 210 });
+
+    doc.fillColor("#0F172A").font("Helvetica-Bold").fontSize(12).text("Verificacao publica", 86, 600, {
+      width: pageWidth - 172,
+      align: "center",
+    });
+    doc.fillColor("#475569").font("Helvetica").fontSize(10).text(verificationUrl, 86, 620, {
+      width: pageWidth - 172,
+      align: "center",
+    });
+
+    doc.moveTo(170, 700).lineTo(425, 700).strokeColor("#94A3B8").stroke();
+    doc.fillColor("#475569").fontSize(11).text("Validacao Softinsa", 86, 710, {
+      width: pageWidth - 172,
+      align: "center",
+    });
+    doc.fillColor("#64748B").fontSize(9).text("Este certificado pode ser confirmado atraves do codigo publico de verificacao.", 76, 770, {
+      width: pageWidth - 152,
+      align: "center",
+    });
 
     doc.end();
   } catch (err) {

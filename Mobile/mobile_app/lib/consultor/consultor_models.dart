@@ -145,7 +145,9 @@ class BadgeItem {
       status: (json['status'] ?? 'pendente').toString(),
       points: _readInt(json['pontos']) ?? _readInt(json['points']) ?? 0,
       area: json['area']?.toString(),
-      expireInDays: _readInt(json['expiraEmDias']) ?? _readInt(json['expire_in_days']),
+      expireInDays: _readInt(json['expiraEmDias']) ??
+          _readInt(json['expire_in_days']) ??
+          _readInt(json['expiry_days']),
       imageUrl: json['image_url']?.toString(),
     );
   }
