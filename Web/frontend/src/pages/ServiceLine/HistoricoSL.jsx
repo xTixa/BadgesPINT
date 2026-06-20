@@ -157,9 +157,9 @@ export default function HistoricoSL() {
     rejeitados: pedidos.filter((p) => p.status === "rejeitado").length,
   }), [pedidos]);
 
-  const downloadCertificado = async (badgeId) => {
+  const downloadCertificado = async (badgeId, consultorId) => {
     try {
-      const response = await api.post(`/api/sl/badges/${badgeId}/certificado`, {}, { responseType: "blob" });
+      const response = await api.post(`/api/sl/badges/${badgeId}/certificado`, { consultorId }, { responseType: "blob" });
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -281,7 +281,7 @@ export default function HistoricoSL() {
                           {pedido.status === "obtido" && (
                             <button
                               className={slActionClass}
-                              onClick={() => downloadCertificado(pedido.badge_id)}
+                              onClick={() => downloadCertificado(pedido.badge_id, pedido.consultor_id)}
                               title="Download certificado"
                             >
                               <i className="bi bi-file-earmark-pdf mr-1"></i>PDF

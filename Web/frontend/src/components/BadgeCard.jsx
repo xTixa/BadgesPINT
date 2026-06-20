@@ -42,6 +42,11 @@ export default function BadgeCard({
           <div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#0F62FE] shadow-sm ring-1 ring-[#0F62FE]/10">
             {level}
           </div>
+          {badge?.is_premium && (
+            <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-amber-400 px-2 py-1 text-xs font-bold text-white shadow-sm">
+              <i className="bi bi-star-fill text-[10px]"></i>Premium
+            </div>
+          )}
           <div className="absolute bottom-4 left-4 right-4">
             <p className="text-xs font-bold uppercase tracking-wide text-[#16558C]">
               {areaName}

@@ -55,6 +55,7 @@ export default function Badges() {
   const [selectedLevel, setSelectedLevel] = useState("todos");
   const [selectedArea, setSelectedArea] = useState("todas");
   const [sortBy, setSortBy] = useState("recommended");
+  const [premiumOnly, setPremiumOnly] = useState(false);
   const [applyingId, setApplyingId] = useState(null);
   const [applicationsByBadge, setApplicationsByBadge] = useState(new Map());
 
@@ -174,7 +175,8 @@ export default function Badges() {
       return (
         (!query || searchable.includes(query)) &&
         (selectedLevel === "todos" || level === selectedLevel) &&
-        (selectedArea === "todas" || area === selectedArea)
+        (selectedArea === "todas" || area === selectedArea) &&
+        (!premiumOnly || badge.is_premium === true)
       );
     });
 
@@ -191,8 +193,9 @@ export default function Badges() {
     [badges]
   );
 
+  const hasPremium = badges.some((b) => b.is_premium);
   const hasFilters =
-    search.trim() || selectedLevel !== "todos" || selectedArea !== "todas" || sortBy !== "recommended";
+    search.trim() || selectedLevel !== "todos" || selectedArea !== "todas" || sortBy !== "recommended" || premiumOnly;
 
   const updateSearch = (value) => {
     setSearch(value);
@@ -207,6 +210,7 @@ export default function Badges() {
     setSelectedLevel("todos");
     setSelectedArea("todas");
     setSortBy("recommended");
+    setPremiumOnly(false);
     setSearchParams({}, { replace: true });
   };
 
@@ -390,6 +394,20 @@ export default function Badges() {
                   <option value="level">Nivel</option>
                 </select>
               </label>
+
+              {hasPremium && (
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    checked={premiumOnly}
+                    onChange={(e) => setPremiumOnly(e.target.checked)}
+                    className="h-4 w-4 rounded accent-amber-500"
+                  />
+                  <span className="text-sm font-bold text-amber-700">
+                    <i className="bi bi-star-fill mr-1 text-amber-500"></i>Só Premium
+                  </span>
+                </label>
+              )}
             </div>
           </aside>
 

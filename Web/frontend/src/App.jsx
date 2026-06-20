@@ -64,10 +64,10 @@ import BadgeFormAdmin from "./pages/Admin/BadgeFormAdmin";
 import LearningPathFormAdmin from "./pages/Admin/LearningPathFormAdmin";
 import ExportacaoAdmin from "./pages/Admin/ExportacaoAdmin";
 import VerLogsAuditoria from "./pages/Admin/VerLogsAuditoria";
-import CriarTicket from "./pages/CriarTicket";
-import MeusTickets from "./pages/MeusTickets";
-import GestaoTickets from "./pages/Admin/GestaoTickets";
+import FAQ from "./pages/FAQ";
 import NotificacoesPage from "./pages/NotificacoesPage";
+import Galeria from "./pages/Galeria";
+import GaleriaConsultor from "./pages/GaleriaConsultor";
 
 // Rotas que escondem navbar/footer/sidebar
 const NO_LAYOUT_ROUTES = ["/login", "/first-login", "/recover", "/register"];
@@ -101,6 +101,8 @@ function AppContent() {
           <Route path="/areas/:id/badges" element={<Badges />} />
           <Route path="/badges/:id" element={<Requirements />} />
           <Route path="/badges/:id/requirements" element={<Requirements />} />
+          <Route path="/galeria" element={<Galeria />} />
+          <Route path="/galeria/:id" element={<GaleriaConsultor />} />
 
           {/* Consultor */}
           <Route path="/dashboard" element={<ProtectedRoute role="consultant"><DashboardConsultor /></ProtectedRoute>} />
@@ -147,11 +149,8 @@ function AppContent() {
           <Route path="/admin/learning-paths/:id" element={<ProtectedRoute role="admin"><LearningPathFormAdmin /></ProtectedRoute>} />
           <Route path="/admin/exportacao" element={<ProtectedRoute role="admin"><ExportacaoAdmin /></ProtectedRoute>} />
           <Route path="/admin/logs" element={<ProtectedRoute role="admin"><VerLogsAuditoria /></ProtectedRoute>} />
-          <Route path="/admin/gestao-tickets" element={<ProtectedRoute role="admin"><GestaoTickets /></ProtectedRoute>} />
-
           {/* Shared */}
-          <Route path="/criar-ticket" element={<ProtectedRoute><CriarTicket /></ProtectedRoute>} />
-          <Route path="/meus-tickets" element={<ProtectedRoute><MeusTickets /></ProtectedRoute>} />
+          <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
           <Route path="/notificacoes" element={<ProtectedRoute><NotificacoesPage /></ProtectedRoute>} />
         </Routes>
       </main>

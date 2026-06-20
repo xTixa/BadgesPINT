@@ -11,7 +11,10 @@ import {
   getLearningPathProgress,
   getConsultorGamification,
   updateLessonProgress,
-  upsertBadgeReview
+  upsertBadgeReview,
+  getRecomendados,
+  getBadgesExpirar,
+  getPublicGallery,
 } from "../controllers/consultorController.js";
 import { submitEvidence, getConsultorEvidencesByBadge, uploadEvidenceFile } from "../controllers/evidenceController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
@@ -34,5 +37,8 @@ router.post("/consultor/requirements/:requirementId/evidencias", authMiddleware,
 router.get("/consultor/badges/:badgeId/evidencias", authMiddleware, getConsultorEvidencesByBadge);
 
 router.get("/public/certificates/:code", verifyPublicCertificate);
+router.get("/public/galeria", getPublicGallery);
+router.get("/consultor/recomendados", authMiddleware, getRecomendados);
+router.get("/consultor/badges-expirar", authMiddleware, getBadgesExpirar);
 
 export default router;

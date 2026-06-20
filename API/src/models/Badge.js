@@ -79,6 +79,10 @@ const Badge = database.define("badges", {
   image_url: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+  is_premium: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, { timestamps: false, tableName: "badges" });
 

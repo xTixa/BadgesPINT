@@ -3,6 +3,7 @@ import BadgeLesson from "../models/BadgeLesson.js";
 import BadgeReview from "../models/BadgeReview.js";
 import ConsultorBadge from "../models/ConsultorBadge.js";
 import LessonProgress from "../models/LessonProgress.js";
+import RequirementEvidence from "../models/RequirementEvidence.js";
 import User from "../models/User.js";
 import Area from "../models/Area.js";
 import PDFDocument from "pdfkit";
@@ -671,6 +672,178 @@ export async function generateConsultorBadgeCertificate(req, res) {
 }
 
 // PROGRESSO DO CONSULTOR POR BADGE (x/y requisitos aprovados)
+// RECOMENDAÇÕES — próximo nível na área do consultor
+export async function getRecomendados(req, res) {
+  try {
+    const consultorId = req.userId;
+    const LEVEL_ORDER = ["Junior", "Intermedio", "Senior", "Especialista", "Lider"];
+
+    const user = await User.findByPk(consultorId, { attributes: ["area_id"] });
+
+    const [obtained, started] = await Promise.all([
+      database.query(
+        `SELECT DISTINCT b.area_id, b.level
+         FROM consultor_badges cb
+         JOIN badges b ON b.id = cb.badge_id
+         WHERE cb.consultor_id = :consultorId AND cb.status = 'obtido'`,
+        { type: QueryTypes.SELECT, replacements: { consultorId } }
+      ),
+      ConsultorBadge.findAll({
+        where: { consultor_id: consultorId },
+        attributes: ["badge_id"],
+      }),
+    ]);
+
+    const startedIds = new Set(started.map((s) => s.badge_id));
+    const recommendations = [];
+
+    if (obtained.length === 0 && user?.area_id) {
+      const juniorBadges = await Badge.findAll({
+        where: { area_id: user.area_id, level: "Junior" },
+        include: [{ model: Area, as: "area" }],
+        limit: 3,
+      });
+      for (const b of juniorBadges) {
+        if (!startedIds.has(b.id)) {
+          recommendations.push({
+            id: b.id,
+            nome: b.description || `Badge #${b.id}`,
+            motivo: "Começa pelo nível Júnior na tua área",
+            pontos: b.points || 0,
+            area: b.area?.name,
+            level: b.level,
+          });
+        }
+      }
+    } else {
+      const areaTopLevel = {};
+      for (const row of obtained) {
+        const idx = LEVEL_ORDER.indexOf(row.level);
+        if (areaTopLevel[row.area_id] === undefined || idx > areaTopLevel[row.area_id]) {
+          areaTopLevel[row.area_id] = idx;
+        }
+      }
+
+      for (const [areaId, levelIdx] of Object.entries(areaTopLevel)) {
+        const nextLevel = LEVEL_ORDER[levelIdx + 1];
+        if (!nextLevel) continue;
+
+        const next = await Badge.findOne({
+          where: { area_id: areaId, level: nextLevel },
+          include: [{ model: Area, as: "area" }],
+        });
+        if (next && !startedIds.has(next.id)) {
+          recommendations.push({
+            id: next.id,
+            nome: next.description || `Badge #${next.id}`,
+            motivo: `Próximo nível em ${next.area?.name || "tua área"}`,
+            pontos: next.points || 0,
+            area: next.area?.name,
+            level: next.level,
+          });
+        }
+      }
+    }
+
+    res.json(recommendations.slice(0, 4));
+  } catch (err) {
+    console.error("Erro ao obter recomendações:", err);
+    res.status(500).json({ message: "Erro ao obter recomendações" });
+  }
+}
+
+// ALERTAS DE EXPIRAÇÃO — badges obtidos que expiram nos próximos 60 dias
+export async function getBadgesExpirar(req, res) {
+  try {
+    const rows = await database.query(
+      `SELECT
+         b.id,
+         COALESCE(b.description, 'Badge #' || b.id::text) AS nome,
+         b.expiry_days,
+         cb.data_atribuicao,
+         (cb.data_atribuicao + (b.expiry_days || ' days')::interval) AS expira_em,
+         EXTRACT(DAY FROM
+           (cb.data_atribuicao + (b.expiry_days || ' days')::interval) - NOW()
+         )::int AS dias_restantes
+       FROM consultor_badges cb
+       JOIN badges b ON b.id = cb.badge_id
+       WHERE cb.consultor_id = :consultorId
+         AND cb.status = 'obtido'
+         AND b.expiry_days IS NOT NULL
+         AND cb.data_atribuicao IS NOT NULL
+         AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval) > NOW()
+         AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval) <= NOW() + INTERVAL '60 days'
+       ORDER BY dias_restantes ASC`,
+      { type: QueryTypes.SELECT, replacements: { consultorId: req.userId } }
+    );
+
+    res.json(
+      rows.map((r) => ({
+        id: r.id,
+        nome: r.nome,
+        expiry_days: r.expiry_days,
+        data_atribuicao: r.data_atribuicao,
+        expira_em: r.expira_em,
+        expiraEmDias: Number(r.dias_restantes),
+      }))
+    );
+  } catch (err) {
+    console.error("Erro ao obter alertas de expiração:", err);
+    res.status(500).json({ message: "Erro ao obter alertas" });
+  }
+}
+
+// GALERIA PÚBLICA — consultores com perfil público activo
+export async function getPublicGallery(req, res) {
+  try {
+    const rows = await database.query(
+      `SELECT
+         u.id,
+         u.name,
+         u.avatar_url,
+         u.points_total,
+         a.name AS area_name,
+         COUNT(cb.id) FILTER (WHERE cb.status = 'obtido')::int AS badge_count,
+         COALESCE(
+           json_agg(
+             json_build_object(
+               'id',        b.id,
+               'nome',      COALESCE(b.description, 'Badge #' || b.id::text),
+               'level',     b.level,
+               'image_url', b.image_url
+             ) ORDER BY cb.data_atribuicao DESC NULLS LAST
+           ) FILTER (WHERE cb.status = 'obtido'),
+           '[]'::json
+         ) AS top_badges
+       FROM "Users" u
+       LEFT JOIN areas a ON a.id = u.area_id
+       LEFT JOIN consultor_badges cb ON cb.consultor_id = u.id
+       LEFT JOIN badges b ON b.id = cb.badge_id
+       WHERE u.role = 'consultant'
+         AND u.public_profile_enabled = true
+         AND u.rgpd_publication_accepted = true
+       GROUP BY u.id, u.name, u.avatar_url, u.points_total, a.name
+       ORDER BY badge_count DESC, u.points_total DESC`,
+      { type: QueryTypes.SELECT }
+    );
+
+    res.json(
+      rows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        avatar_url: r.avatar_url,
+        points_total: Number(r.points_total || 0),
+        area_name: r.area_name,
+        badge_count: Number(r.badge_count || 0),
+        top_badges: (Array.isArray(r.top_badges) ? r.top_badges : []).slice(0, 3),
+      }))
+    );
+  } catch (err) {
+    console.error("Erro ao obter galeria pública:", err);
+    res.status(500).json({ message: "Erro ao obter galeria" });
+  }
+}
+
 export async function getConsultorBadgesProgress(req, res) {
   try {
     const { id } = req.params;

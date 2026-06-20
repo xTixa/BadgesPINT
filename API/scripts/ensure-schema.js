@@ -10,6 +10,11 @@ async function main() {
   `);
 
   await database.query(`
+    ALTER TABLE badges
+    ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT false
+  `);
+
+  await database.query(`
     UPDATE consultor_badges
     SET created_at = COALESCE(created_at, submitted_at, data_atribuicao, NOW())
     WHERE created_at IS NULL
