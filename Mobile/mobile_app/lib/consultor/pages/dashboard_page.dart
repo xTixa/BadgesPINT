@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
 import '../../shared/app_theme.dart';
 import 'badge_detail_page.dart';
 import 'pedidos_page.dart';
+import 'upload_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({required this.controller, super.key});
@@ -55,6 +57,7 @@ class _DashboardPageState extends State<DashboardPage>
           children: <Widget>[
             _buildHeader(context),
             _buildGoalCard(context),
+            _buildNextActionCard(context),
             _buildLearningPaths(context),
             _buildRecommendationsAndAlerts(context),
             _buildSearchBar(context),
@@ -96,6 +99,134 @@ class _DashboardPageState extends State<DashboardPage>
                         : '$_personalGoal - ate $_goalDeadline',
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNextActionCard(BuildContext context) {
+    final activePedido = widget.controller.pedidosStatus.where((pedido) {
+      final workflow = pedido.workflowStatus.toLowerCase();
+      final status = pedido.status.toLowerCase();
+      return status != 'obtido' &&
+          workflow != 'obtido' &&
+          workflow != 'rejeitado' &&
+          workflow != 'cancelado';
+    }).toList();
+
+    if (activePedido.isNotEmpty) {
+      final pedido = activePedido.first;
+      return _nextActionShell(
+        icon: Icons.upload_file_rounded,
+        title: 'Continua o badge ${pedido.badgeName}',
+        text: 'Tens uma candidatura ativa. Submete ou acompanha evidencias para avançar.',
+        actionLabel: 'Abrir upload',
+        onPressed: () async {
+          await widget.controller.selectBadge(pedido.badgeId);
+          if (!context.mounted) return;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => UploadPage(controller: widget.controller),
+            ),
+          );
+        },
+      );
+    }
+
+    if (widget.controller.recommendations.isNotEmpty) {
+      final rec = widget.controller.recommendations.first;
+      final matches = widget.controller.catalogBadges.where(
+        (badge) => badge.id == rec.id,
+      );
+      return _nextActionShell(
+        icon: Icons.auto_awesome_rounded,
+        title: 'Proximo badge recomendado',
+        text: '${rec.name} - ${rec.reason}',
+        actionLabel: 'Ver badge',
+        onPressed: matches.isEmpty
+            ? null
+            : () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BadgeDetailPage(
+                      badge: matches.first,
+                      controller: widget.controller,
+                    ),
+                  ),
+                );
+              },
+      );
+    }
+
+    return _nextActionShell(
+      icon: Icons.workspace_premium_rounded,
+      title: 'Explora novos badges',
+      text: 'Consulta o catalogo e escolhe a proxima formacao para desenvolver competencias.',
+      actionLabel: 'Ver catalogo',
+      onPressed: () => context.go('/app/home'),
+    );
+  }
+
+  Widget _nextActionShell({
+    required IconData icon,
+    required String title,
+    required String text,
+    required String actionLabel,
+    required VoidCallback? onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderLight),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: AppColors.primary),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    text,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.grey.shade700),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            FilledButton.tonal(
+              onPressed: onPressed,
+              child: Text(
+                actionLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

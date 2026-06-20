@@ -358,6 +358,11 @@ class ConsultorRepository {
     return rows.map(UserNotificationItem.fromJson).toList();
   }
 
+  Future<int> getPendingMutationCount() async {
+    final pending = await _pendingMutationDao.getAll();
+    return pending.length;
+  }
+
   Future<List<RankingItem>> getConsultantsRanking() async {
     if ((_token ?? '').isEmpty) return getRankingMock();
 

@@ -31,14 +31,30 @@ class ConsultorController extends ChangeNotifier {
   List<RequirementItem> requirements = <RequirementItem>[];
   List<EvidenceItem> evidences = <EvidenceItem>[];
   bool uploadLoading = false;
+  bool isOnline = ConnectivityService.instance.isOnline;
+  int pendingSyncCount = 0;
 
   int rankingPosition = 1; // valor default
 
   Timer? _pollingTimer;
+  void Function(bool)? _connectivityListener;
+
+  Future<void> refreshSyncState() async {
+    isOnline = ConnectivityService.instance.isOnline;
+    pendingSyncCount = await _repository.getPendingMutationCount();
+    notifyListeners();
+  }
 
   Future<void> initialize() async {
     isLoading = true;
     notifyListeners();
+    final listener = (bool online) {
+      isOnline = online;
+      notifyListeners();
+      refreshSyncState();
+    };
+    _connectivityListener = listener;
+    ConnectivityService.instance.addListener(listener);
 
     await _repository.syncInitialData();
 
@@ -79,6 +95,7 @@ class ConsultorController extends ChangeNotifier {
     }
 
     _startRealtimeRefresh();
+    await refreshSyncState();
 
     isLoading = false;
     notifyListeners();
@@ -109,6 +126,7 @@ class ConsultorController extends ChangeNotifier {
     notifications = results[1] as List<UserNotificationItem>;
     ranking = results[2] as List<RankingItem>;
     _updateRankingPosition();
+    pendingSyncCount = await _repository.getPendingMutationCount();
     notifyListeners();
   }
 
@@ -271,6 +289,7 @@ class ConsultorController extends ChangeNotifier {
     }
     final result = await _repository.submitPedido(badgeId);
     await refreshRealtimeData();
+    await refreshSyncState();
     return result;
   }
 
@@ -286,6 +305,7 @@ class ConsultorController extends ChangeNotifier {
     final ok = await _repository.markNotificationAsRead(notificationId);
     if (ok) {
       await refreshRealtimeData();
+      await refreshSyncState();
     }
     return ok;
   }
@@ -294,6 +314,7 @@ class ConsultorController extends ChangeNotifier {
     final ok = await _repository.markAllNotificationsAsRead();
     if (ok) {
       await refreshRealtimeData();
+      await refreshSyncState();
     }
     return ok;
   }
@@ -317,6 +338,10 @@ class ConsultorController extends ChangeNotifier {
   @override
   void dispose() {
     _pollingTimer?.cancel();
+    final listener = _connectivityListener;
+    if (listener != null) {
+      ConnectivityService.instance.removeListener(listener);
+    }
     super.dispose();
   }
 }

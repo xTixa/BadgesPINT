@@ -1,62 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 
-class NotificationsPage extends StatelessWidget {
+enum _NotificationFilter { all, unread, read }
+
+class NotificationsPage extends StatefulWidget {
   const NotificationsPage({required this.controller, super.key});
 
   final ConsultorController controller;
 
   @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+  State<NotificationsPage> createState() => _NotificationsPageState();
+}
 
+class _NotificationsPageState extends State<NotificationsPage> {
+  _NotificationFilter _filter = _NotificationFilter.all;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Notificações'),
+        title: const Text('Notificacoes'),
         actions: <Widget>[
           TextButton.icon(
             onPressed: () async {
-              final ok = await controller.markAllNotificationsAsRead();
+              final ok = await widget.controller.markAllNotificationsAsRead();
               if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     ok
-                        ? 'Notificações marcadas como lidas.'
-                        : 'Não foi possível marcar todas.',
+                        ? 'Notificacoes marcadas como lidas.'
+                        : 'Nao foi possivel marcar todas.',
                   ),
                 ),
               );
             },
             icon: const Icon(Icons.done_all_rounded, size: 18),
-            label: const Text('Marcar todas'),
+            label: const Text('Todas'),
           ),
         ],
       ),
       body: AnimatedBuilder(
-        animation: controller,
-        builder: (BuildContext context, Widget? child) {
-          if (controller.notifications.isEmpty) {
-            return _buildEmptyState(context, scheme);
+        animation: widget.controller,
+        builder: (context, _) {
+          final all = widget.controller.notifications;
+          final unread = all.where((item) => !item.read).length;
+          final filtered = _filtered(all);
+
+          if (all.isEmpty) {
+            return _emptyState(
+              icon: Icons.notifications_off_rounded,
+              title: 'Sem notificacoes',
+              text: 'Quando houver novidades, aparecem aqui.',
+            );
           }
 
-          final unreadCount =
-              controller.notifications.where((n) => !n.read).length;
-
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-            children: <Widget>[
-              // Header summary card
-              _buildSummaryCard(context, scheme, unreadCount),
-              const SizedBox(height: 16),
-              // Notification Items
-              ...controller.notifications.map(
-                (UserNotificationItem item) =>
-                    _buildNotificationCard(context, item, controller, scheme),
-              ),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 112),
+            children: [
+              _summaryCard(unread),
+              const SizedBox(height: 12),
+              _filters(all.length, unread),
+              const SizedBox(height: 14),
+              if (filtered.isEmpty)
+                _emptyState(
+                  icon: Icons.mark_email_read_outlined,
+                  title: 'Nada neste filtro',
+                  text: 'Experimenta mudar o filtro acima.',
+                )
+              else
+                ...filtered.map((item) => _NotificationCard(
+                      item: item,
+                      onTap: () => _openNotification(context, item),
+                    )),
             ],
           );
         },
@@ -64,110 +83,92 @@ class NotificationsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, ColorScheme scheme) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.notifications_off_rounded,
-              size: 44,
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Sem notificações',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: scheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Quando houver novidades, aparecerão aqui.',
-            style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
-          ),
-        ],
-      ),
-    );
+  List<UserNotificationItem> _filtered(List<UserNotificationItem> all) {
+    return switch (_filter) {
+      _NotificationFilter.unread => all.where((item) => !item.read).toList(),
+      _NotificationFilter.read => all.where((item) => item.read).toList(),
+      _ => all,
+    };
   }
 
-  Widget _buildSummaryCard(
+  Future<void> _openNotification(
     BuildContext context,
-    ColorScheme scheme,
-    int unreadCount,
-  ) {
+    UserNotificationItem item,
+  ) async {
+    if (!item.read) {
+      await widget.controller.markNotificationAsRead(item.id);
+    }
+
+    if (!context.mounted) return;
+
+    final text = '${item.title} ${item.message}'.toLowerCase();
+    if (text.contains('evid') ||
+        text.contains('requisito') ||
+        text.contains('badge') ||
+        text.contains('pedido')) {
+      context.go('/app/upload');
+    }
+  }
+
+  Widget _summaryCard(int unread) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: scheme.surfaceContainer,
-        border: Border.all(color: scheme.outlineVariant),
+        color: const Color(0xFF111827),
+        borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
-        children: <Widget>[
+        children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: scheme.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.notifications_rounded,
-              color: scheme.primary,
-              size: 22,
+              color: Colors.white,
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Centro de Notificações',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  unreadCount == 0
-                      ? 'Tudo lido'
-                      : '$unreadCount ${unreadCount == 1 ? 'nova notificação' : 'novas notificações'}',
+              children: [
+                const Text(
+                  'Centro de notificacoes',
                   style: TextStyle(
-                    fontSize: 12,
-                    color:
-                        unreadCount > 0
-                            ? scheme.primary
-                            : scheme.onSurfaceVariant,
-                    fontWeight:
-                        unreadCount > 0 ? FontWeight.w700 : FontWeight.w500,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  unread == 0
+                      ? 'Tudo lido'
+                      : '$unread ${unread == 1 ? 'notificacao por ler' : 'notificacoes por ler'}',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.74),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
           ),
-          if (unreadCount > 0)
+          if (unread > 0)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: scheme.primary,
+                color: Colors.red.shade600,
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
-                '$unreadCount',
+                '$unread',
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ),
@@ -176,225 +177,146 @@ class NotificationsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationCard(
-    BuildContext context,
-    UserNotificationItem item,
-    ConsultorController controller,
-    ColorScheme scheme,
-  ) {
-    final colors = _getNotificationColor(item.id);
-    final accentColor = colors['accent'] as Color;
+  Widget _filters(int total, int unread) {
+    final read = total - unread;
+    return SegmentedButton<_NotificationFilter>(
+      segments: [
+        ButtonSegment(
+          value: _NotificationFilter.all,
+          label: Text('Todas $total'),
+          icon: const Icon(Icons.inbox_outlined),
+        ),
+        ButtonSegment(
+          value: _NotificationFilter.unread,
+          label: Text('Por ler $unread'),
+          icon: const Icon(Icons.markunread_outlined),
+        ),
+        ButtonSegment(
+          value: _NotificationFilter.read,
+          label: Text('Lidas $read'),
+          icon: const Icon(Icons.drafts_outlined),
+        ),
+      ],
+      selected: {_filter},
+      onSelectionChanged: (values) => setState(() => _filter = values.first),
+    );
+  }
+
+  Widget _emptyState({
+    required IconData icon,
+    required String title,
+    required String text,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 48, color: Colors.grey.shade500),
+          const SizedBox(height: 14),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+          const SizedBox(height: 6),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey.shade700),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotificationCard extends StatelessWidget {
+  const _NotificationCard({required this.item, required this.onTap});
+
+  final UserNotificationItem item;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     final isRead = item.read;
+    final color = isRead ? Colors.grey : const Color(0xFF0F62FE);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () async {
-            if (!isRead) await controller.markNotificationAsRead(item.id);
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color:
-                  isRead
-                      ? scheme.surfaceContainer.withValues(alpha: 0.5)
-                      : scheme.surface,
-              border: Border.all(
-                color:
-                    isRead
-                        ? scheme.outlineVariant.withValues(alpha: 0.5)
-                        : scheme.outlineVariant,
-              ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isRead ? Colors.black12 : const Color(0xFFBFDBFE),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    // Left accent bar
-                    Container(
-                      width: 5,
-                      color:
-                          isRead
-                              ? scheme.outlineVariant.withValues(alpha: 0.5)
-                              : accentColor,
-                    ),
-                    // Content
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            // Icon
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: (colors['background'] as Color)
-                                    .withValues(alpha: isRead ? 0.5 : 1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.workspace_premium_rounded,
-                                color: (colors['icon'] as Color).withValues(
-                                  alpha: isRead ? 0.5 : 1,
-                                ),
-                                size: 24,
-                              ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: color.withValues(alpha: 0.1),
+                child: Icon(Icons.workspace_premium_rounded, color: color),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.title.isEmpty ? 'Notificacao' : item.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight:
+                                  isRead ? FontWeight.w700 : FontWeight.w900,
                             ),
-                            const SizedBox(width: 12),
-                            // Text content
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: Text(
-                                          item.title.isEmpty
-                                              ? 'Notificação'
-                                              : item.title,
-                                          style: TextStyle(
-                                            fontWeight:
-                                                isRead
-                                                    ? FontWeight.w600
-                                                    : FontWeight.w800,
-                                            fontSize: 14,
-                                            color:
-                                                isRead
-                                                    ? scheme.onSurfaceVariant
-                                                    : scheme.onSurface,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      // Unread dot
-                                      if (!isRead)
-                                        Container(
-                                          width: 8,
-                                          height: 8,
-                                          margin: const EdgeInsets.only(
-                                            left: 8,
-                                            top: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: accentColor,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    item.message,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: scheme.onSurfaceVariant,
-                                      height: 1.45,
-                                    ),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        _formatTime(DateTime.now()),
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: scheme.onSurfaceVariant
-                                              .withValues(alpha: 0.65),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      if (!isRead)
-                                        GestureDetector(
-                                          onTap: () async {
-                                            await controller
-                                                .markNotificationAsRead(
-                                                  item.id,
-                                                );
-                                          },
-                                          child: Text(
-                                            'Marcar como lida',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                              color: scheme.primary,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
+                        if (!isRead)
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade600,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      item.message,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      isRead ? 'Lida' : 'Toque para abrir',
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime? dateTime) {
-    if (dateTime == null) return 'Agora';
-    final diff = DateTime.now().difference(dateTime);
-    if (diff.inMinutes < 1) return 'Agora';
-    if (diff.inMinutes < 60) return 'há ${diff.inMinutes}m';
-    if (diff.inHours < 24) return 'há ${diff.inHours}h';
-    if (diff.inDays < 7) return 'há ${diff.inDays}d';
-    return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}';
-  }
-
-  Map<String, dynamic> _getNotificationColor(int id) {
-    final colors = <Map<String, dynamic>>[
-      {
-        'background': const Color(0xFFFFF8ED),
-        'icon': const Color(0xFFF59E0B),
-        'accent': const Color(0xFFF59E0B),
-      },
-      {
-        'background': const Color(0xFFEFF6FF),
-        'icon': const Color(0xFF3B82F6),
-        'accent': const Color(0xFF3B82F6),
-      },
-      {
-        'background': const Color(0xFFF0FDFB),
-        'icon': const Color(0xFF14B8A6),
-        'accent': const Color(0xFF14B8A6),
-      },
-      {
-        'background': const Color(0xFFFFF0F5),
-        'icon': const Color(0xFFEC4899),
-        'accent': const Color(0xFFEC4899),
-      },
-      {
-        'background': const Color(0xFFF5F0FF),
-        'icon': const Color(0xFF8B5CF6),
-        'accent': const Color(0xFF8B5CF6),
-      },
-      {
-        'background': const Color(0xFFEFF8FF),
-        'icon': const Color(0xFF0EA5E9),
-        'accent': const Color(0xFF0EA5E9),
-      },
-    ];
-    return colors[id % colors.length];
   }
 }

@@ -114,7 +114,16 @@ class ConsultorShellPage extends StatelessWidget {
           ),
           // GoRouter's StatefulNavigationShell renders the active branch and
           // preserves each branch's scroll/state via an IndexedStack internally.
-          body: navigationShell,
+          body: Column(
+            children: [
+              if (!controller.isOnline || controller.pendingSyncCount > 0)
+                _SyncStatusBanner(
+                  isOnline: controller.isOnline,
+                  pendingCount: controller.pendingSyncCount,
+                ),
+              Expanded(child: navigationShell),
+            ],
+          ),
           bottomNavigationBar: SafeArea(
             minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
             child: Material(
@@ -209,6 +218,61 @@ class _NotificationBell extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _SyncStatusBanner extends StatelessWidget {
+  const _SyncStatusBanner({
+    required this.isOnline,
+    required this.pendingCount,
+  });
+
+  final bool isOnline;
+  final int pendingCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final offline = !isOnline;
+    final color = offline ? const Color(0xFFFFF7ED) : const Color(0xFFEFF6FF);
+    final border = offline ? const Color(0xFFFED7AA) : const Color(0xFFBFDBFE);
+    final iconColor =
+        offline ? const Color(0xFFC2410C) : const Color(0xFF1D4ED8);
+    final text = offline
+        ? 'Sem ligacao. Algumas acoes ficam para sincronizar.'
+        : '$pendingCount ${pendingCount == 1 ? 'alteracao pendente' : 'alteracoes pendentes'} a sincronizar.';
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            offline ? Icons.wifi_off_rounded : Icons.sync_rounded,
+            size: 18,
+            color: iconColor,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: iconColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

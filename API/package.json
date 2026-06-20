@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "audit:db": "node scripts/audit-db.js",
+    "seed:complete-badges": "node scripts/seed-complete-badges.js",
     "seed:badge-images": "node scripts/backfill-badge-images.js",
     "cleanup:db": "node scripts/cleanup-db.js",
     "schema:ensure": "node scripts/ensure-schema.js"

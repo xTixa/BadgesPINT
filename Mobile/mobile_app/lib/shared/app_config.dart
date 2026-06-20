@@ -1,8 +1,14 @@
 class AppConfig {
-  static const String apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://192.168.1.72:4000',
-  );
+  static const String _apiBaseUrl = String.fromEnvironment('API_BASE_URL');
+
+  static String get apiBaseUrl {
+    if (_apiBaseUrl.isEmpty) {
+      throw StateError(
+        'API_BASE_URL nao foi definido. Usa --dart-define=API_BASE_URL=...',
+      );
+    }
+    return _apiBaseUrl;
+  }
 
   static const String firebaseApiKey = String.fromEnvironment(
     'FIREBASE_API_KEY',
