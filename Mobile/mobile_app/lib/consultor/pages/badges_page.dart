@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'badge_detail_page.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
+import '../widgets/badge_medal.dart';
 
 class BadgesPage extends StatelessWidget {
   const BadgesPage({required this.controller, super.key});
@@ -123,29 +124,15 @@ class _BadgeCard extends StatelessWidget {
   }
 
   Widget _badgeImage() {
-    final imageUrl = badge.imageUrl;
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      return Image.network(
-        imageUrl,
-        width: 88,
-        height: 106,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _fallbackImage(),
-      );
-    }
-
-    return _fallbackImage();
-  }
-
-  Widget _fallbackImage() {
     return Container(
       width: 88,
       height: 106,
       color: const Color(0xFFEFF4FF),
-      child: const Icon(
-        Icons.workspace_premium_rounded,
-        color: Color(0xFF0F62FE),
-        size: 34,
+      alignment: Alignment.center,
+      child: BadgeMedal(
+        imageUrl: badge.imageUrl,
+        label: badge.levelLabel,
+        size: 68,
       ),
     );
   }

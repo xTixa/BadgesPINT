@@ -26,6 +26,7 @@ import DashboardConsultor from "./pages/Consultor/DashboardConsultor";
 import PerfilConsultor from "./pages/Consultor/PerfilConsultor";
 import EditarPerfil from "./pages/Consultor/EditarPerfil";
 import Ranking from "./pages/Consultor/Ranking";
+import Gamification from "./pages/Consultor/Gamification";
 import HistoricoBadges from "./pages/Consultor/HistoricoBadges";
 import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
 import ConsultorSettingsPage from "./pages/Consultor/Settings";
@@ -95,6 +96,7 @@ function AppContent() {
           <Route path="/service-lines/:id/areas" element={<Areas />} />
           <Route path="/badges" element={<Badges />} />
           <Route path="/areas/:id/badges" element={<Badges />} />
+          <Route path="/badges/:id" element={<Requirements />} />
           <Route path="/badges/:id/requirements" element={<Requirements />} />
 
           {/* Consultor */}
@@ -103,6 +105,7 @@ function AppContent() {
           <Route path="/editar-perfil" element={<ProtectedRoute role="consultant"><EditarPerfil /></ProtectedRoute>} />
           <Route path="/consultor/perfil" element={<ProtectedRoute role="consultant"><PerfilConsultor /></ProtectedRoute>} />
           <Route path="/consultor/ranking" element={<ProtectedRoute role="consultant"><Ranking /></ProtectedRoute>} />
+          <Route path="/consultor/gamification" element={<ProtectedRoute role="consultant"><Gamification /></ProtectedRoute>} />
           <Route path="/consultor/historico" element={<ProtectedRoute role="consultant"><HistoricoBadges /></ProtectedRoute>} />
           <Route path="/consultor/upload" element={<ProtectedRoute role="consultant"><UploadEvidencias /></ProtectedRoute>} />
           <Route path="/consultor/settings" element={<ProtectedRoute role="consultant"><ConsultorSettingsPage /></ProtectedRoute>} />

@@ -9,6 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import '../widgets/section_card.dart';
+import '../widgets/badge_medal.dart';
+import 'badge_detail_page.dart';
 import 'timeline_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -424,36 +426,40 @@ class _ProfilePageState extends State<ProfilePage>
       ),
       itemBuilder: (context, index) {
         final badge = obtained[index];
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.black12),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _BadgeThumb(imageUrl: badge.imageUrl),
-              const SizedBox(height: 6),
-              Text(
-                badge.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
+        return InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => _openBadgeDetail(badge),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.black12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _BadgeThumb(imageUrl: badge.imageUrl),
+                const SizedBox(height: 6),
+                Text(
+                  badge.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                '${badge.points} pts',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
-              ),
-            ],
+                const SizedBox(height: 3),
+                Text(
+                  '${badge.points} pts',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -475,67 +481,71 @@ class _ProfilePageState extends State<ProfilePage>
         final canShare = widget.controller.profile?.rgpdPublicationAccepted == true &&
             widget.controller.profile?.publicProfileEnabled == true &&
             (certificate?.verificationUrl ?? '').isNotEmpty;
-        return Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.black12),
-          ),
-          child: Row(
-            children: [
-              _BadgeThumb(imageUrl: badge.imageUrl),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        return InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => _openBadgeDetail(badge),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.black12),
+            ),
+            child: Row(
+              children: [
+                _BadgeThumb(imageUrl: badge.imageUrl),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        badge.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${badge.points} pts',
+                        style: TextStyle(color: Colors.grey.shade700),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      badge.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    IconButton.filledTonal(
+                      tooltip: 'Descarregar certificado',
+                      onPressed: () => _downloadCertificate(badge.id),
+                      icon: const Icon(Icons.download_rounded),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${badge.points} pts',
-                      style: TextStyle(color: Colors.grey.shade700),
+                    IconButton(
+                      tooltip: canShare
+                          ? 'Copiar link publico'
+                          : 'Ativa RGPD e galeria publica nas definicoes',
+                      onPressed: canShare
+                          ? () => _copyCertificateLink(certificate!.verificationUrl)
+                          : null,
+                      icon: const Icon(Icons.link_rounded),
+                    ),
+                    IconButton(
+                      tooltip: canShare
+                          ? 'Partilhar no LinkedIn'
+                          : 'Ativa RGPD e galeria publica nas definicoes',
+                      onPressed: canShare
+                          ? () => _openLinkedInShare(
+                                certificate!.verificationUrl,
+                                badgeName: badge.name,
+                              )
+                          : null,
+                      icon: const Icon(Icons.share_rounded),
                     ),
                   ],
                 ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton.filledTonal(
-                    tooltip: 'Descarregar certificado',
-                    onPressed: () => _downloadCertificate(badge.id),
-                    icon: const Icon(Icons.download_rounded),
-                  ),
-                  IconButton(
-                    tooltip: canShare
-                        ? 'Copiar link publico'
-                        : 'Ativa RGPD e galeria publica nas definicoes',
-                    onPressed: canShare
-                        ? () => _copyCertificateLink(certificate!.verificationUrl)
-                        : null,
-                    icon: const Icon(Icons.link_rounded),
-                  ),
-                  IconButton(
-                    tooltip: canShare
-                        ? 'Partilhar no LinkedIn'
-                        : 'Ativa RGPD e galeria publica nas definicoes',
-                    onPressed: canShare
-                        ? () => _openLinkedInShare(
-                              certificate!.verificationUrl,
-                              badgeName: badge.name,
-                            )
-                        : null,
-                    icon: const Icon(Icons.share_rounded),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -547,6 +557,38 @@ class _ProfilePageState extends State<ProfilePage>
       if (certificate.badgeId == badgeId) return certificate;
     }
     return null;
+  }
+
+  void _openBadgeDetail(BadgeItem badge) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BadgeDetailPage(
+          badge: _catalogBadgeFor(badge),
+          controller: widget.controller,
+        ),
+      ),
+    );
+  }
+
+  CatalogBadgeItem _catalogBadgeFor(BadgeItem badge) {
+    final matches = <CatalogBadgeItem>[
+      ...widget.controller.catalogBadges,
+      ...widget.controller.preferredAreaBadges,
+    ].where((item) => item.id == badge.id);
+
+    if (matches.isNotEmpty) return matches.first;
+
+    return CatalogBadgeItem(
+      id: badge.id,
+      name: badge.name,
+      description: badge.name,
+      points: badge.points,
+      level: 1,
+      levelLabel: 'Badge',
+      areaName: badge.area,
+      imageUrl: badge.imageUrl,
+    );
   }
 
   Future<void> _copyCertificateLink(String url) async {
@@ -1049,27 +1091,6 @@ class _BadgeThumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          imageUrl!,
-          height: 34,
-          width: 42,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(
-            Icons.workspace_premium_rounded,
-            color: Color(0xFF0F62FE),
-            size: 30,
-          ),
-        ),
-      );
-    }
-
-    return const Icon(
-      Icons.workspace_premium_rounded,
-      color: Color(0xFF0F62FE),
-      size: 30,
-    );
+    return BadgeMedal(imageUrl: imageUrl, size: 42);
   }
 }

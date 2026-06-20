@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api";
+import BadgeMedal from "../components/BadgeMedal";
 
 const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
 const getBadgeArea = (badge) =>
@@ -74,18 +75,27 @@ export default function Requirements() {
         setLoading(true);
         setError("");
 
-        const [requirementsResponse, badgesResponse] = await Promise.all([
-          api.get(`/badges/${id}/requirements`),
-          api.get("/badges"),
-        ]);
+        const detailResponse = await api.get(`/badges/${id}`).catch(() => null);
+        const [requirementsResponse, badgesResponse] = detailResponse
+          ? [null, null]
+          : await Promise.all([
+              api.get(`/badges/${id}/requirements`),
+              api.get("/badges"),
+            ]);
 
         if (!active) return;
 
-        setReqs(Array.isArray(requirementsResponse.data) ? requirementsResponse.data : []);
-        const foundBadge = Array.isArray(badgesResponse.data)
-          ? badgesResponse.data.find((item) => Number(item.id) === Number(id))
-          : null;
-        setBadge(foundBadge || null);
+        if (detailResponse?.data) {
+          const detail = detailResponse.data;
+          setReqs(Array.isArray(detail.requirements) ? detail.requirements : []);
+          setBadge(detail);
+        } else {
+          setReqs(Array.isArray(requirementsResponse.data) ? requirementsResponse.data : []);
+          const foundBadge = Array.isArray(badgesResponse.data)
+            ? badgesResponse.data.find((item) => Number(item.id) === Number(id))
+            : null;
+          setBadge(foundBadge || null);
+        }
       } catch (err) {
         console.error(err);
         if (!active) return;
@@ -154,12 +164,15 @@ export default function Requirements() {
   const description = getBadgeDescription(badge);
   const publicBadgeUrl = getPublicBadgeUrl(id);
 
-  const learningOutcomes = [
+  const learningOutcomes = Array.isArray(badge?.learning_outcomes) && badge.learning_outcomes.length > 0
+    ? badge.learning_outcomes
+    : [
     `Demonstrar competencia em ${areaName}.`,
     "Perceber os requisitos necessarios antes de submeter evidencias.",
     "Organizar provas de trabalho para validacao pela equipa responsavel.",
     "Ganhar pontos e progresso no percurso profissional.",
   ];
+  const sections = Array.isArray(badge?.sections) ? badge.sections : [];
 
   const handleApply = async () => {
     if (!user) {
@@ -239,14 +252,8 @@ export default function Requirements() {
 
           <aside className="hidden lg:block">
             <div className="sticky top-24 overflow-hidden rounded-sm border border-slate-200 bg-white text-slate-950 shadow-2xl">
-              <div className="aspect-video bg-gradient-to-br from-[#0F62FE] to-[#00AEEF]">
-                {imageUrl ? (
-                  <img src={imageUrl} alt={badgeName} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <i className="bi bi-award text-7xl text-white"></i>
-                  </div>
-                )}
+              <div className="flex aspect-video items-center justify-center bg-[radial-gradient(circle_at_30%_20%,#173C86_0%,#0F62FE_42%,#00AEEF_100%)]">
+                <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} size="hero" />
               </div>
               <div className="p-5">
                 <div className="mb-4">
@@ -390,6 +397,52 @@ export default function Requirements() {
               </div>
             )}
           </section>
+
+          {sections.length > 0 && (
+            <section>
+              <div className="mb-4">
+                <h2 className="text-2xl font-extrabold text-slate-950">Curriculo</h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Modulos e aulas de apoio para preparar a candidatura.
+                </p>
+              </div>
+              <div className="border border-slate-300">
+                {sections.map((section, index) => (
+                  <details
+                    key={section.id || index}
+                    className="group border-b border-slate-300 bg-white last:border-b-0"
+                    open={index === 0}
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-slate-50 px-5 py-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
+                        <span className="font-extrabold text-slate-950">{section.title}</span>
+                      </div>
+                      <span className="text-sm font-semibold text-slate-500">
+                        {(section.lessons || []).length} aulas
+                      </span>
+                    </summary>
+                    <div className="divide-y divide-slate-100">
+                      {(section.lessons || []).map((lesson) => (
+                        <div key={lesson.id} className="flex items-start gap-3 px-5 py-4">
+                          <i className="bi bi-play-circle text-lg text-[#0F62FE]"></i>
+                          <div>
+                            <p className="font-bold text-slate-900">{lesson.title}</p>
+                            {lesson.description && (
+                              <p className="mt-1 text-sm text-slate-600">{lesson.description}</p>
+                            )}
+                            <p className="mt-1 text-xs font-semibold text-slate-400">
+                              {lesson.duration_minutes || 0} min · {lesson.content_type || "article"}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="border border-slate-300 bg-white p-6">
             <h2 className="text-2xl font-extrabold text-slate-950">Descricao</h2>

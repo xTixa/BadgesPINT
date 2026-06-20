@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import BadgeMedal from "./BadgeMedal";
 
 const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
 const getBadgeLevel = (badge) => badge?.level || badge?.nivel || badge?.level_name || "Junior";
@@ -26,24 +27,18 @@ export default function BadgeCard({
   const description = getBadgeDescription(badge);
   const points = getBadgePoints(badge);
   const imageUrl = badge?.image_url || badge?.imageUrl || "";
+  const detailUrl = `/badges/${badge?.id}`;
   const requirementsCount =
     badge?.requirements_count || badge?.requirementsCount || badge?.requisitos_count || 5;
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#0F62FE]/30 hover:shadow-xl">
-      <Link to={`/badges/${badge?.id}/requirements`} className="block">
-        <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-[#0F62FE] to-[#00AEEF]">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={name}
-              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <i className="bi bi-award text-7xl text-white/90"></i>
-            </div>
-          )}
+      <Link to={detailUrl} className="block">
+        <div className="relative aspect-[16/9] overflow-hidden bg-[radial-gradient(circle_at_30%_20%,#173C86_0%,#0F62FE_42%,#00AEEF_100%)]">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.22),transparent_45%)]"></div>
+          <div className="flex h-full w-full items-center justify-center transition duration-300 group-hover:scale-105">
+            <BadgeMedal imageUrl={imageUrl} name={name} level={level} size="hero" />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent"></div>
           <div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#0F62FE] shadow-sm">
             {level}
@@ -81,7 +76,7 @@ export default function BadgeCard({
 
         <div className="mt-5 flex flex-col gap-2">
           <Link
-            to={`/badges/${badge?.id}/requirements`}
+            to={detailUrl}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/20 px-4 py-3 text-sm font-bold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
           >
             <i className="bi bi-list-check"></i>
@@ -105,7 +100,7 @@ export default function BadgeCard({
               </button>
             ) : (
               <Link
-                to={`/badges/${badge?.id}/requirements`}
+                to={detailUrl}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:shadow-md"
               >
                 <i className="bi bi-arrow-right"></i>

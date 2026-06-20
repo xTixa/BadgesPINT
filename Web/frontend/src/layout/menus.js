@@ -5,6 +5,7 @@ export const sidebarMenus = {
     items: [
       { to: "/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
       { to: "/consultor/historico", label: "Meus Badges", icon: "bi-award-fill" },
+      { to: "/consultor/gamification", label: "Gamification", icon: "bi-stars" },
       { to: "/consultor/upload", label: "Upload Evidências", icon: "bi-cloud-upload-fill" },
       { to: "/consultor/ranking", label: "Ranking", icon: "bi-trophy-fill" },
       { to: "/criar-ticket", label: "Reportar Problema", icon: "bi-exclamation-circle-fill" },

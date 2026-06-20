@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'upload_page.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
+import '../widgets/badge_medal.dart';
 import '../../shared/app_config.dart';
 
 class BadgeDetailPage extends StatefulWidget {
@@ -460,44 +461,24 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     required Color backgroundColor,
     required double iconSize,
   }) {
-    final imageUrl = badge.imageUrl;
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      return Image.network(
-        imageUrl,
-        height: height,
-        width: width,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _badgeImageFallback(
-          height: height,
-          width: width,
-          backgroundColor: backgroundColor,
-          iconSize: iconSize,
-        ),
-      );
-    }
-
-    return _badgeImageFallback(
-      height: height,
-      width: width,
-      backgroundColor: backgroundColor,
-      iconSize: iconSize,
-    );
-  }
-
-  Widget _badgeImageFallback({
-    required double height,
-    required double width,
-    required Color backgroundColor,
-    required double iconSize,
-  }) {
     return Container(
       height: height,
       width: width,
-      color: backgroundColor.withValues(alpha: 0.12),
-      child: Icon(
-        Icons.workspace_premium_rounded,
-        color: backgroundColor,
-        size: iconSize,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            backgroundColor.withValues(alpha: 0.95),
+            const Color(0xFF00AEEF),
+          ],
+        ),
+      ),
+      child: BadgeMedal(
+        imageUrl: badge.imageUrl,
+        label: badge.levelLabel,
+        size: 136,
       ),
     );
   }

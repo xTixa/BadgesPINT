@@ -9,6 +9,7 @@ import {
   getConsultorCertificates,
   verifyPublicCertificate,
   getLearningPathProgress,
+  getConsultorGamification,
   updateLessonProgress,
   upsertBadgeReview
 } from "../controllers/consultorController.js";
@@ -21,6 +22,7 @@ router.get("/consultores/ranking", authMiddleware, getConsultantsRanking);
 router.get("/consultor/:id/profile", authMiddleware, getConsultantPublicProfile);
 router.get("/consultor/learning-paths/progress", authMiddleware, getLearningPathProgress);
 router.get("/consultor/certificates", authMiddleware, getConsultorCertificates);
+router.get("/consultor/gamification", authMiddleware, getConsultorGamification);
 router.put("/consultor/preferences", authMiddleware, updateConsultorPreferences);
 router.put("/consultor/lessons/:lessonId/progress", authMiddleware, updateLessonProgress);
 router.put("/consultor/badges/:badgeId/review", authMiddleware, upsertBadgeReview);

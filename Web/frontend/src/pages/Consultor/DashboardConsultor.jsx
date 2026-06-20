@@ -217,6 +217,13 @@ export default function DashboardConsultor() {
                 Continua a desenvolver as tuas competências e acompanha o teu
                 progresso em tempo real.
               </p>
+              <Link
+                to="/consultor/gamification"
+                className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm"
+              >
+                <i className="bi bi-stars"></i>
+                Ver gamification
+              </Link>
             </div>
 
             <div className="grid grid-cols-3 gap-4">

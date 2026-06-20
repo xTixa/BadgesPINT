@@ -297,7 +297,7 @@ export default function Home() {
                 {starterBadges.map((badge) => (
                   <Link
                     key={badge.id}
-                    to={`/badges/${badge.id}/requirements`}
+                    to={`/badges/${badge.id}`}
                     className="rounded-2xl bg-white p-4 text-slate-950 transition hover:-translate-y-1"
                   >
                     <p className="text-sm font-semibold text-[#0F62FE]">{getBadgeArea(badge)}</p>

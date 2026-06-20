@@ -304,6 +304,119 @@ export async function getLearningPathProgress(req, res) {
   }
 }
 
+function levelFromPoints(points) {
+  const levels = [
+    { name: "Rookie", min: 0, next: 250 },
+    { name: "Explorer", min: 250, next: 600 },
+    { name: "Specialist", min: 600, next: 1000 },
+    { name: "Expert", min: 1000, next: 1600 },
+    { name: "Master", min: 1600, next: null },
+  ];
+  const current = [...levels].reverse().find((level) => points >= level.min) || levels[0];
+  const progress = current.next
+    ? Math.round(((points - current.min) / (current.next - current.min)) * 100)
+    : 100;
+  return {
+    name: current.name,
+    min_points: current.min,
+    next_points: current.next,
+    progress: Math.max(0, Math.min(progress, 100)),
+    points_to_next: current.next ? Math.max(current.next - points, 0) : 0,
+  };
+}
+
+export async function getConsultorGamification(req, res) {
+  try {
+    const consultorId = req.userId;
+    const user = await User.findByPk(consultorId);
+    if (!user) return res.status(404).json({ message: "Consultor nao encontrado" });
+
+    const [badges, rankingRows, evidencesCount] = await Promise.all([
+      ConsultorBadge.findAll({
+        where: { consultor_id: consultorId },
+        include: [{ model: Badge, as: "badge" }],
+      }),
+      database.query(
+        `SELECT id, ROW_NUMBER() OVER (
+           ORDER BY points_total DESC, name ASC
+         )::int AS ranking
+         FROM "Users"
+         WHERE role = 'consultant'`,
+        { type: QueryTypes.SELECT }
+      ),
+      RequirementEvidence.count({ where: { consultor_id: consultorId } }),
+    ]);
+
+    const obtained = badges.filter((row) => row.status === "obtido");
+    const pending = badges.filter((row) => row.status === "pendente");
+    const rejected = badges.filter((row) => row.status === "rejeitado");
+    const points = Number(user.points_total || 0) ||
+      obtained.reduce((sum, row) => sum + Number(row.badge?.points || 0), 0);
+    const ranking = rankingRows.find((row) => Number(row.id) === Number(consultorId))?.ranking || null;
+
+    const achievements = [
+      {
+        code: "first_badge",
+        title: "Primeiro Badge",
+        description: "Conquista o primeiro badge validado.",
+        unlocked: obtained.length >= 1,
+        progress: Math.min(obtained.length, 1),
+        target: 1,
+      },
+      {
+        code: "three_badges",
+        title: "3 Badges Obtidos",
+        description: "Mostra consistencia ao concluir tres badges.",
+        unlocked: obtained.length >= 3,
+        progress: Math.min(obtained.length, 3),
+        target: 3,
+      },
+      {
+        code: "points_500",
+        title: "500 Pontos",
+        description: "Atinge 500 pontos acumulados.",
+        unlocked: points >= 500,
+        progress: Math.min(points, 500),
+        target: 500,
+      },
+      {
+        code: "top_3",
+        title: "Top 3 Ranking",
+        description: "Chega ao top 3 da classificacao geral.",
+        unlocked: ranking !== null && ranking <= 3,
+        progress: ranking === null ? 0 : Math.max(4 - ranking, 0),
+        target: 3,
+      },
+      {
+        code: "evidence_builder",
+        title: "Evidence Builder",
+        description: "Submete pelo menos 5 evidencias.",
+        unlocked: evidencesCount >= 5,
+        progress: Math.min(evidencesCount, 5),
+        target: 5,
+      },
+    ];
+
+    res.json({
+      points,
+      level: levelFromPoints(points),
+      ranking,
+      badges: {
+        total: badges.length,
+        obtained: obtained.length,
+        pending: pending.length,
+        rejected: rejected.length,
+      },
+      evidences_submitted: evidencesCount,
+      achievements,
+      unlocked_count: achievements.filter((item) => item.unlocked).length,
+    });
+  } catch (err) {
+    console.error("Erro ao obter gamification:", err);
+    res.status(500).json({ message: "Erro ao obter gamification" });
+  }
+}
+
 export async function updateLessonProgress(req, res) {
   try {
     const { lessonId } = req.params;

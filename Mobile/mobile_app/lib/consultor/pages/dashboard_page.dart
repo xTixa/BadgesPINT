@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
+import '../widgets/badge_medal.dart';
 import '../../shared/app_theme.dart';
 import 'badge_detail_page.dart';
+import 'gamification_page.dart';
 import 'pedidos_page.dart';
 import 'timeline_page.dart';
 import 'upload_page.dart';
@@ -89,6 +91,7 @@ class _DashboardPageState extends State<DashboardPage>
           children: <Widget>[
             _buildHeader(context),
             _buildGoalCard(context),
+            _buildGamificationShortcut(context),
             _buildTimelineShortcut(context),
             _buildNextActionCard(context),
             _buildLearningPaths(context),
@@ -153,6 +156,22 @@ class _DashboardPageState extends State<DashboardPage>
         ),
         icon: const Icon(Icons.timeline_rounded),
         label: const Text('Ver timeline profissional'),
+      ),
+    );
+  }
+
+  Widget _buildGamificationShortcut(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: FilledButton.tonalIcon(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => GamificationPage(controller: widget.controller),
+          ),
+        ),
+        icon: const Icon(Icons.stars_rounded),
+        label: const Text('Ver gamification'),
       ),
     );
   }
@@ -780,21 +799,10 @@ class _DashboardPageState extends State<DashboardPage>
             padding: const EdgeInsets.all(14),
             child: Row(
               children: <Widget>[
-                // Icon
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: (colors['iconBackground'] as Color).withValues(
-                      alpha: 0.18,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    Icons.workspace_premium_rounded,
-                    color: colors['icon'] as Color,
-                    size: 28,
-                  ),
+                BadgeMedal(
+                  imageUrl: badge.imageUrl,
+                  label: badge.isObtained ? 'Obtido' : 'Badge',
+                  size: 56,
                 ),
                 const SizedBox(width: 14),
                 // Content
@@ -921,20 +929,10 @@ class _DashboardPageState extends State<DashboardPage>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: (colors['iconBackground'] as Color).withValues(
-                          alpha: 0.18,
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Icons.workspace_premium_rounded,
-                        color: colors['icon'] as Color,
-                        size: 26,
-                      ),
+                    BadgeMedal(
+                      imageUrl: badge.imageUrl,
+                      label: badge.isObtained ? 'Obtido' : 'Badge',
+                      size: 52,
                     ),
                     if (badge.isObtained)
                       Icon(

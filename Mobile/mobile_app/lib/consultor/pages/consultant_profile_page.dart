@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
+import '../widgets/badge_medal.dart';
+import 'badge_detail_page.dart';
 
 class ConsultantProfilePage extends StatelessWidget {
   const ConsultantProfilePage({
@@ -47,10 +49,13 @@ class ConsultantProfilePage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               if (profile.badges.isNotEmpty) ...[
-                _LatestBadges(badges: profile.badges.take(3).toList()),
+                _LatestBadges(
+                  badges: profile.badges.take(3).toList(),
+                  controller: controller,
+                ),
                 const SizedBox(height: 16),
               ],
-              _BadgesGrid(badges: profile.badges),
+              _BadgesGrid(badges: profile.badges, controller: controller),
             ],
           );
         },
@@ -228,9 +233,10 @@ class _MetricChip extends StatelessWidget {
 }
 
 class _BadgesGrid extends StatelessWidget {
-  const _BadgesGrid({required this.badges});
+  const _BadgesGrid({required this.badges, required this.controller});
 
   final List<BadgeItem> badges;
+  final ConsultorController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -260,34 +266,38 @@ class _BadgesGrid extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final badge = badges[index];
-            return Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.black12),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _BadgeThumb(imageUrl: badge.imageUrl),
-                  const SizedBox(height: 8),
-                  Text(
-                    badge.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
+            return InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () => _openBadgeDetail(context, controller, badge),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.black12),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    _BadgeThumb(imageUrl: badge.imageUrl),
+                    const SizedBox(height: 8),
+                    Text(
+                      badge.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${badge.points} pts',
-                    style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      '${badge.points} pts',
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -298,9 +308,10 @@ class _BadgesGrid extends StatelessWidget {
 }
 
 class _LatestBadges extends StatelessWidget {
-  const _LatestBadges({required this.badges});
+  const _LatestBadges({required this.badges, required this.controller});
 
   final List<BadgeItem> badges;
+  final ConsultorController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -322,40 +333,44 @@ class _LatestBadges extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (context, index) {
               final badge = badges[index];
-              return Container(
-                width: 190,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.black12),
-                ),
-                child: Row(
-                  children: [
-                    _BadgeThumb(imageUrl: badge.imageUrl),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            badge.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w900,
+              return InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: () => _openBadgeDetail(context, controller, badge),
+                child: Container(
+                  width: 190,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.black12),
+                  ),
+                  child: Row(
+                    children: [
+                      _BadgeThumb(imageUrl: badge.imageUrl),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              badge.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${badge.points} pts',
-                            style: TextStyle(color: Colors.grey.shade700),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              '${badge.points} pts',
+                              style: TextStyle(color: Colors.grey.shade700),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -366,6 +381,42 @@ class _LatestBadges extends StatelessWidget {
   }
 }
 
+void _openBadgeDetail(
+  BuildContext context,
+  ConsultorController controller,
+  BadgeItem badge,
+) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => BadgeDetailPage(
+        badge: _catalogBadgeFor(controller, badge),
+        controller: controller,
+      ),
+    ),
+  );
+}
+
+CatalogBadgeItem _catalogBadgeFor(ConsultorController controller, BadgeItem badge) {
+  final matches = <CatalogBadgeItem>[
+    ...controller.catalogBadges,
+    ...controller.preferredAreaBadges,
+  ].where((item) => item.id == badge.id);
+
+  if (matches.isNotEmpty) return matches.first;
+
+  return CatalogBadgeItem(
+    id: badge.id,
+    name: badge.name,
+    description: badge.name,
+    points: badge.points,
+    level: 1,
+    levelLabel: 'Badge',
+    areaName: badge.area,
+    imageUrl: badge.imageUrl,
+  );
+}
+
 class _BadgeThumb extends StatelessWidget {
   const _BadgeThumb({required this.imageUrl});
 
@@ -373,27 +424,6 @@ class _BadgeThumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          imageUrl!,
-          height: 34,
-          width: 42,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(
-            Icons.workspace_premium_rounded,
-            color: Color(0xFF0F62FE),
-            size: 30,
-          ),
-        ),
-      );
-    }
-
-    return const Icon(
-      Icons.workspace_premium_rounded,
-      color: Color(0xFF0F62FE),
-      size: 30,
-    );
+    return BadgeMedal(imageUrl: imageUrl, size: 42);
   }
 }

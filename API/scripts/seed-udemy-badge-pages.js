@@ -23,6 +23,17 @@ function levelDifficulty(level) {
   return "Especialista";
 }
 
+const fallbackBadgeImages = [
+  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+];
+
 function curriculumForBadge(badge) {
   const name = badge.description || `Badge ${badge.id}`;
   return [
@@ -161,6 +172,9 @@ async function main() {
       difficulty: badge.difficulty || levelDifficulty(badge.level),
       language: badge.language || "pt-PT",
       instructor_name: badge.instructor_name || "Equipa Softinsa Academy",
+      image_url:
+        badge.image_url ||
+        fallbackBadgeImages[(Number(badge.id) - 1) % fallbackBadgeImages.length],
       is_featured: badge.is_featured || badge.points >= 100,
       published: badge.published !== false,
     });
