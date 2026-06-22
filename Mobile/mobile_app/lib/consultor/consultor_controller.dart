@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/services/connectivity_service.dart';
 import '../shared/api_client.dart';
@@ -151,18 +152,31 @@ class ConsultorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _scheduleLocalNotifications() {
-    final alertMaps = expiryAlerts
-        .map((a) => <String, dynamic>{
-              'name': a.name,
-              'expire_in_days': a.expireInDays,
-            })
-        .toList();
-    NotificationService.scheduleExpiryReminders(alertMaps);
-    NotificationService.scheduleGoalReminder(
-      goalText: profile?.goalText ?? '',
-      goalDeadline: profile?.goalDeadline,
-    );
+  Future<void> _scheduleLocalNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    final expiryOn = prefs.getBool('settings_alertas_expiracao') ?? true;
+    final remindersOn = prefs.getBool('settings_lembretes_timeline') ?? false;
+
+    if (expiryOn) {
+      final alertMaps = expiryAlerts
+          .map((a) => <String, dynamic>{
+                'name': a.name,
+                'expire_in_days': a.expireInDays,
+              })
+          .toList();
+      NotificationService.scheduleExpiryReminders(alertMaps);
+    } else {
+      NotificationService.cancelExpiryReminders();
+    }
+
+    if (remindersOn) {
+      NotificationService.scheduleGoalReminder(
+        goalText: profile?.goalText ?? '',
+        goalDeadline: profile?.goalDeadline,
+      );
+    } else {
+      NotificationService.cancelGoalReminder();
+    }
   }
 
   Future<bool> updateProfile({
@@ -391,7 +405,7 @@ class ConsultorController extends ChangeNotifier {
         success: saved,
         message:
             saved
-                ? 'Certificado descarregado.'
+                ? 'Certificado guardado com sucesso.'
                 : 'Nao foi possivel guardar o ficheiro neste dispositivo.',
       );
     } on ApiException catch (error) {

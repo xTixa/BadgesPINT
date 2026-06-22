@@ -216,6 +216,16 @@ class NotificationService {
     onOpenNotifications?.call();
   }
 
+  static Future<void> cancelExpiryReminders() async {
+    if (!_localReady || kIsWeb) return;
+    await _localNotifications.cancel(90001);
+  }
+
+  static Future<void> cancelGoalReminder() async {
+    if (!_localReady || kIsWeb) return;
+    await _localNotifications.cancel(90002);
+  }
+
   static Future<void> scheduleExpiryReminders(
     List<Map<String, dynamic>> alerts,
   ) async {

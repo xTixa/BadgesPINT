@@ -488,6 +488,8 @@ class _ProfilePageState extends State<ProfilePage>
         final canShare = widget.controller.profile?.rgpdPublicationAccepted == true &&
             widget.controller.profile?.publicProfileEnabled == true &&
             (certificate?.verificationUrl ?? '').isNotEmpty;
+        final canLinkedIn = canShare &&
+            (widget.controller.profile?.linkedinSharingEnabled ?? false);
         return InkWell(
           borderRadius: BorderRadius.circular(14),
           onTap: () => _openBadgeDetail(badge),
@@ -547,10 +549,10 @@ class _ProfilePageState extends State<ProfilePage>
                       icon: const Icon(Icons.link_rounded),
                     ),
                     IconButton(
-                      tooltip: canShare
+                      tooltip: canLinkedIn
                           ? 'Partilhar no LinkedIn'
-                          : 'Ativa RGPD e galeria publica nas definicoes',
-                      onPressed: canShare
+                          : 'Ativa RGPD, galeria publica e partilha LinkedIn nas definicoes',
+                      onPressed: canLinkedIn
                           ? () => _openLinkedInShare(
                                 certificate!.verificationUrl,
                                 badgeName: badge.name,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../shared/db_viewer_page.dart';
+import '../../shared/notification_service.dart';
 import '../consultor_controller.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -125,13 +126,18 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       if (!profileUpdated) return false;
 
-      return widget.controller.updatePreferences(
+      final result = await widget.controller.updatePreferences(
         rgpdPublicationAccepted: rgpdPublicacao,
         publicProfileEnabled: permitirGaleriaPublica,
         linkedinSharingEnabled: partilhaLinkedin,
         goalText: _objetivoController.text.trim(),
         goalDeadline: _dataLimiteController.text.trim(),
       );
+
+      if (!alertasExpiracao) NotificationService.cancelExpiryReminders();
+      if (!lembretesTimeline) NotificationService.cancelGoalReminder();
+
+      return result;
     } catch (_) {
       return false;
     }
@@ -251,10 +257,6 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       },
     );
-
-    currentCtrl.dispose();
-    newCtrl.dispose();
-    confirmCtrl.dispose();
 
     if (!mounted || error == null) return;
     ScaffoldMessenger.of(context).showSnackBar(

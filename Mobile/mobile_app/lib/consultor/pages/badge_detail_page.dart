@@ -62,11 +62,22 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     );
   }
 
+  Future<void> _openInBrowser(BuildContext context) async {
+    final uri = Uri.parse(_publicBadgeUrl);
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!context.mounted) return;
+    if (!opened) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nao foi possivel abrir o link.')),
+      );
+    }
+  }
+
   Future<void> _shareOnLinkedIn() async {
     final uri = Uri.parse(
       'https://www.linkedin.com/sharing/share-offsite/?url=${Uri.encodeComponent(_publicBadgeUrl)}',
     );
-    await launchUrl(uri);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -326,22 +337,31 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () => _copyPublicLink(context),
-                  icon: const Icon(Icons.verified_outlined),
-                  label: const Text('Link publico'),
+                  icon: const Icon(Icons.link_rounded),
+                  label: const Text('Copiar link'),
                 ),
               ),
-              if (_isObtained) ...[
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _shareOnLinkedIn,
-                    icon: const Icon(Icons.share),
-                    label: const Text('LinkedIn'),
-                  ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _openInBrowser(context),
+                  icon: const Icon(Icons.open_in_browser_rounded),
+                  label: const Text('Ver na web'),
                 ),
-              ],
+              ),
             ],
           ),
+          if (_isObtained) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _shareOnLinkedIn,
+                icon: const Icon(Icons.share_rounded),
+                label: const Text('Partilhar no LinkedIn'),
+              ),
+            ),
+          ],
           if (candidaturaAtiva) ...[
             const SizedBox(height: 12),
             SizedBox(
