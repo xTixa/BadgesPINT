@@ -22,36 +22,8 @@ export default function ConsultorSettingsPage() {
             </div>
           </div>
 
-          {/* PERFIL + OBJETIVOS */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
-              <h2 className="mb-4 text-xl font-semibold">Perfil Pessoal</h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Nome
-                  </label>
-
-                  <input
-                    type="text"
-                    placeholder="Nome"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Área Principal
-                  </label>
-
-                  <select className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10">
-                    <option>Selecione...</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
+          {/* OBJETIVOS */}
+          <div>
             <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
               <h2 className="mb-4 text-xl font-semibold">
                 Objetivos e Aprendizagem

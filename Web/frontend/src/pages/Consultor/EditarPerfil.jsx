@@ -6,12 +6,15 @@ import api from "/src/api";
 export default function EditarPerfil() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [areas, setAreas] = useState([]);
   const [user, setUser] = useState(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    area_id: "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -21,12 +24,46 @@ export default function EditarPerfil() {
   });
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user") || "{}");
-    setUser(userData);
-    setFormData({
-      name: userData.name || "",
-      email: userData.email || "",
-    });
+    let mounted = true;
+
+    async function loadProfileData() {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const [meResponse, areasResponse] = await Promise.all([
+          api.get("/api/auth/me"),
+          api.get("/api/areas"),
+        ]);
+
+        if (!mounted) return;
+
+        const userData = { ...storedUser, ...meResponse.data };
+        setUser(userData);
+        setFormData({
+          name: userData.name || "",
+          email: userData.email || "",
+          area_id: userData.area_id ? String(userData.area_id) : "",
+        });
+        setAreas(Array.isArray(areasResponse.data) ? areasResponse.data : []);
+      } catch (error) {
+        console.error("Erro ao carregar dados do perfil:", error);
+        if (!mounted) return;
+
+        const userData = JSON.parse(localStorage.getItem("user") || "{}");
+        setUser(userData);
+        setFormData({
+          name: userData.name || "",
+          email: userData.email || "",
+          area_id: userData.area_id ? String(userData.area_id) : "",
+        });
+      } finally {
+        if (mounted) setLoadingProfile(false);
+      }
+    }
+
+    loadProfileData();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const handleUpdateProfile = async (e) => {
@@ -40,12 +77,18 @@ export default function EditarPerfil() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      await api.put(`/api/users/${user.id}`, formData, {
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        area_id: formData.area_id ? Number(formData.area_id) : null,
+      };
+
+      const response = await api.put(`/api/users/${user.id}`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       // Atualizar localStorage
-      const updatedUser = { ...user, ...formData };
+      const updatedUser = { ...user, ...(response.data?.user || payload) };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
 
@@ -112,7 +155,7 @@ export default function EditarPerfil() {
     }
   };
 
-  if (!user) {
+  if (loadingProfile || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-[#16558C]"></div>
@@ -213,6 +256,30 @@ export default function EditarPerfil() {
                       }
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
                     />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                      Área
+                    </label>
+
+                    <select
+                      value={formData.area_id}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          area_id: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
+                    >
+                      <option value="">Sem área</option>
+                      {areas.map((area) => (
+                        <option key={area.id} value={area.id}>
+                          {area.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
