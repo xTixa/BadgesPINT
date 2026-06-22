@@ -1,11 +1,10 @@
 class AppConfig {
   static const String _apiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  static const String _defaultApiBaseUrl = 'https://badgespint.onrender.com';
 
   static String get apiBaseUrl {
     if (_apiBaseUrl.isEmpty) {
-      throw StateError(
-        'API_BASE_URL nao foi definido. Usa --dart-define=API_BASE_URL=...',
-      );
+      return _defaultApiBaseUrl;
     }
     return _apiBaseUrl;
   }

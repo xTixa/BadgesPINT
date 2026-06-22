@@ -246,6 +246,23 @@ class ExpiryAlert {
   final int id;
   final String name;
   final int expireInDays;
+
+  factory ExpiryAlert.fromJson(Map<String, dynamic> json) {
+    return ExpiryAlert(
+      id: _readInt(json['id']) ?? _readInt(json['badge_id']) ?? 0,
+      name: (json['nome'] ??
+              json['name'] ??
+              json['badge_name'] ??
+              json['description'] ??
+              'Badge')
+          .toString(),
+      expireInDays: _readInt(json['expiraEmDias']) ??
+          _readInt(json['dias_restantes']) ??
+          _readInt(json['dias']) ??
+          _readInt(json['expire_in_days']) ??
+          0,
+    );
+  }
 }
 
 class RankingItem {

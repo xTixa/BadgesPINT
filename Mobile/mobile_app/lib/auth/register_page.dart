@@ -169,7 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<int>(
-                        initialValue: _selectedAreaId,
+                        value: _selectedAreaId,
                         decoration: const InputDecoration(
                           labelText: 'Area principal',
                           prefixIcon: Icon(Icons.category_outlined),

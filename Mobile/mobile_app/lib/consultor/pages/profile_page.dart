@@ -415,52 +415,60 @@ class _ProfilePageState extends State<ProfilePage>
       return const Center(child: Text('Ainda nao tens badges obtidos.'));
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: obtained.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 0.78,
-      ),
-      itemBuilder: (context, index) {
-        final badge = obtained[index];
-        return InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: () => _openBadgeDetail(badge),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.black12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _BadgeThumb(imageUrl: badge.imageUrl),
-                const SizedBox(height: 6),
-                Text(
-                  badge.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${badge.points} pts',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
-                ),
-              ],
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth < 420 ? 2 : 3;
+
+        return GridView.builder(
+          padding: const EdgeInsets.all(12),
+          itemCount: obtained.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            mainAxisExtent: 138,
           ),
+          itemBuilder: (context, index) {
+            final badge = obtained[index];
+            return InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () => _openBadgeDetail(badge),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.black12),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _BadgeThumb(imageUrl: badge.imageUrl),
+                    const SizedBox(height: 6),
+                    Flexible(
+                      child: Text(
+                        badge.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${badge.points} pts',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -795,7 +803,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int>(
-                    initialValue: selectedAreaId,
+                    value: selectedAreaId,
                     decoration: const InputDecoration(
                       labelText: 'Area principal',
                       prefixIcon: Icon(Icons.hub_outlined),

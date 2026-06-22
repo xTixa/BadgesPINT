@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 
 class BadgeMedal extends StatelessWidget {
-  const BadgeMedal({
-    this.imageUrl,
-    this.label,
-    this.size = 64,
-    super.key,
-  });
+  const BadgeMedal({this.imageUrl, this.label, this.size = 64, super.key});
 
   final String? imageUrl;
   final String? label;
   final double size;
 
-  bool get _hasImage => imageUrl != null && imageUrl!.trim().isNotEmpty;
+  bool get _hasImage {
+    final url = imageUrl?.trim();
+    if (url == null || url.isEmpty) return false;
+
+    final lowerUrl = url.toLowerCase();
+    if (lowerUrl.contains('localhost') || lowerUrl.contains('127.0.0.1')) {
+      return false;
+    }
+    if (lowerUrl.contains('via.placeholder.com') ||
+        lowerUrl.contains('placeholder.com')) {
+      return false;
+    }
+    if (lowerUrl.endsWith('.svg')) return false;
+
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,13 +112,18 @@ class BadgeMedal extends StatelessWidget {
                   width: size * 0.035,
                 ),
               ),
-              child: _hasImage
-                  ? Image.network(
-                      imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _fallbackContent(),
-                    )
-                  : _fallbackContent(),
+              child:
+                  _hasImage
+                      ? Container(
+                        color: Colors.white,
+                        padding: EdgeInsets.all(size * 0.08),
+                        child: Image.network(
+                          imageUrl!,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => _fallbackContent(),
+                        ),
+                      )
+                      : _fallbackContent(),
             ),
           ),
         ],

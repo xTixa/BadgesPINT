@@ -11,7 +11,8 @@ import 'consultor_repository.dart';
 import 'consultor_models.dart';
 
 class ConsultorController extends ChangeNotifier {
-  ConsultorController({required ConsultorRepository repository}) : _repository = repository;
+  ConsultorController({required ConsultorRepository repository})
+    : _repository = repository;
 
   final ConsultorRepository _repository;
   ConsultorRepository get repository => _repository;
@@ -53,11 +54,12 @@ class ConsultorController extends ChangeNotifier {
   Future<void> initialize() async {
     isLoading = true;
     notifyListeners();
-    final listener = (bool online) {
+    void listener(bool online) {
       isOnline = online;
       notifyListeners();
       refreshSyncState();
-    };
+    }
+
     _connectivityListener = listener;
     ConnectivityService.instance.addListener(listener);
 
@@ -74,6 +76,7 @@ class ConsultorController extends ChangeNotifier {
       _repository.getConsultantsRanking(),
       _repository.getLearningPathProgress(),
       _repository.getCertificates(),
+      _repository.getExpiryAlerts(),
     ]);
 
     profile = results[0] as ConsultantUser?;
@@ -86,6 +89,7 @@ class ConsultorController extends ChangeNotifier {
     ranking = results[7] as List<RankingItem>;
     learningPaths = results[8] as List<LearningPathProgressItem>;
     certificates = results[9] as List<CertificateItem>;
+    expiryAlerts = results[10] as List<ExpiryAlert>;
     _updateRankingPosition();
 
     final areaId = profile?.areaId;
@@ -97,7 +101,6 @@ class ConsultorController extends ChangeNotifier {
     }
 
     recommendations = _buildRecommendations();
-    expiryAlerts = _buildExpiryAlerts();
 
     if (badges.isNotEmpty) {
       await selectBadge(badges.first.id);
@@ -131,6 +134,7 @@ class ConsultorController extends ChangeNotifier {
       _repository.getConsultantsRanking(),
       _repository.getLearningPathProgress(),
       _repository.getCertificates(),
+      _repository.getExpiryAlerts(),
     ]);
 
     pedidosStatus = results[0] as List<PedidoBadgeStatus>;
@@ -138,6 +142,7 @@ class ConsultorController extends ChangeNotifier {
     ranking = results[2] as List<RankingItem>;
     learningPaths = results[3] as List<LearningPathProgressItem>;
     certificates = results[4] as List<CertificateItem>;
+    expiryAlerts = results[5] as List<ExpiryAlert>;
     _updateRankingPosition();
     pendingSyncCount = await _repository.getPendingMutationCount();
     notifyListeners();
@@ -161,7 +166,11 @@ class ConsultorController extends ChangeNotifier {
     profile = updated;
     final selectedAreaId = profile?.areaId;
     if (selectedAreaId != null) {
-      await _repository.syncBadgesByArea(selectedAreaId);
+      try {
+        await _repository.syncBadgesByArea(selectedAreaId);
+      } catch (_) {
+        // The profile update succeeded; keep using cached area badges if sync fails.
+      }
     }
     preferredAreaBadges =
         selectedAreaId == null
@@ -208,7 +217,10 @@ class ConsultorController extends ChangeNotifier {
     final profilePoints = profile?.pointsTotal ?? 0;
     if (profilePoints > 0) return profilePoints;
 
-    return badges.fold<int>(0, (int acc, BadgeItem badge) => acc + badge.points);
+    return badges.fold<int>(
+      0,
+      (int acc, BadgeItem badge) => acc + badge.points,
+    );
   }
 
   int get globalProgress {
@@ -217,8 +229,13 @@ class ConsultorController extends ChangeNotifier {
   }
 
   List<RecommendationItem> _buildRecommendations() {
-    final obtainedIds = badges.where((badge) => badge.isObtained).map((badge) => badge.id).toSet();
-    final source = preferredAreaBadges.isNotEmpty ? preferredAreaBadges : catalogBadges;
+    final obtainedIds =
+        badges
+            .where((badge) => badge.isObtained)
+            .map((badge) => badge.id)
+            .toSet();
+    final source =
+        preferredAreaBadges.isNotEmpty ? preferredAreaBadges : catalogBadges;
 
     return source
         .where((badge) => !obtainedIds.contains(badge.id))
@@ -237,22 +254,11 @@ class ConsultorController extends ChangeNotifier {
         .toList();
   }
 
-  List<ExpiryAlert> _buildExpiryAlerts() {
-    return badges
-        .where((badge) => badge.expireInDays != null && badge.expireInDays! <= 30)
-        .map(
-          (badge) => ExpiryAlert(
-            id: badge.id,
-            name: badge.name,
-            expireInDays: badge.expireInDays!,
-          ),
-        )
-        .toList();
-  }
-
   BadgeProgress? progressForBadge(int badgeId) {
     try {
-      return badgesProgress.firstWhere((BadgeProgress p) => p.badgeId == badgeId);
+      return badgesProgress.firstWhere(
+        (BadgeProgress p) => p.badgeId == badgeId,
+      );
     } catch (_) {
       return null;
     }
@@ -277,7 +283,9 @@ class ConsultorController extends ChangeNotifier {
   }
 
   EvidenceItem? latestEvidenceForRequirement(int requirementId) {
-    final items = evidences.where((EvidenceItem e) => e.requirementId == requirementId);
+    final items = evidences.where(
+      (EvidenceItem e) => e.requirementId == requirementId,
+    );
     if (items.isEmpty) return null;
     return items.first;
   }
@@ -318,7 +326,9 @@ class ConsultorController extends ChangeNotifier {
   void _upsertLocalEvidence(EvidenceItem evidence) {
     evidences = <EvidenceItem>[
       evidence,
-      ...evidences.where((item) => item.requirementId != evidence.requirementId),
+      ...evidences.where(
+        (item) => item.requirementId != evidence.requirementId,
+      ),
     ];
   }
 
@@ -345,7 +355,9 @@ class ConsultorController extends ChangeNotifier {
 
   Future<ActionResult> downloadCertificate(int badgeId) async {
     try {
-      final Uint8List? bytes = await _repository.downloadCertificatePdf(badgeId);
+      final Uint8List? bytes = await _repository.downloadCertificatePdf(
+        badgeId,
+      );
       if (bytes == null) {
         return ActionResult(
           success: false,
@@ -360,9 +372,10 @@ class ConsultorController extends ChangeNotifier {
       );
       return ActionResult(
         success: saved,
-        message: saved
-            ? 'Certificado descarregado.'
-            : 'Nao foi possivel guardar o ficheiro neste dispositivo.',
+        message:
+            saved
+                ? 'Certificado descarregado.'
+                : 'Nao foi possivel guardar o ficheiro neste dispositivo.',
       );
     } on ApiException catch (error) {
       return ActionResult(

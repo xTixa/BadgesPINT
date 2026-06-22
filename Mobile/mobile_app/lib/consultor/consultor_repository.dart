@@ -8,6 +8,7 @@ import '../data/local/area_dao.dart';
 import '../data/local/badge_dao.dart';
 import '../data/local/current_user_dao.dart';
 import '../data/local/evidence_dao.dart';
+import '../data/local/json_cache_dao.dart';
 import '../data/local/notification_dao.dart';
 import '../data/local/pending_mutation_dao.dart';
 import '../data/local/requirement_dao.dart';
@@ -47,6 +48,7 @@ class ConsultorRepository {
     RequirementDao? requirementDao,
     EvidenceDao? evidenceDao,
     PendingMutationDao? pendingMutationDao,
+    JsonCacheDao? jsonCacheDao,
   })  : _apiClient = apiClient ?? ApiClient(),
         _sessionStorage = sessionStorage ?? SessionStorage.instance,
         _syncService = syncService ?? SyncService(apiClient: apiClient, sessionStorage: sessionStorage),
@@ -57,7 +59,8 @@ class ConsultorRepository {
         _notificationDao = notificationDao ?? NotificationDao(),
         _requirementDao = requirementDao ?? RequirementDao(),
         _evidenceDao = evidenceDao ?? EvidenceDao(),
-        _pendingMutationDao = pendingMutationDao ?? PendingMutationDao();
+        _pendingMutationDao = pendingMutationDao ?? PendingMutationDao(),
+        _jsonCacheDao = jsonCacheDao ?? JsonCacheDao();
 
   final ApiClient _apiClient;
   final SessionStorage _sessionStorage;
@@ -70,6 +73,7 @@ class ConsultorRepository {
   final RequirementDao _requirementDao;
   final EvidenceDao _evidenceDao;
   final PendingMutationDao _pendingMutationDao;
+  final JsonCacheDao _jsonCacheDao;
 
   bool get _isOnline => ConnectivityService.instance.isOnline;
 
@@ -426,6 +430,43 @@ class ConsultorRepository {
 
     return <CertificateItem>[];
   }
+
+  Future<List<ExpiryAlert>> getExpiryAlerts() async {
+    final userId = _userId;
+    if ((_token ?? '').isEmpty || userId == null) return <ExpiryAlert>[];
+    final cacheKey = _expiryAlertsCacheKey(userId);
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultor/badges-expirar',
+        token: _token,
+      );
+      if (payload is List) {
+        final rows = payload.whereType<Map<String, dynamic>>().toList();
+        await _jsonCacheDao.write(cacheKey, rows);
+        return rows
+            .map(ExpiryAlert.fromJson)
+            .where(
+              (alert) => alert.expireInDays >= 0 && alert.expireInDays <= 30,
+            )
+            .toList();
+      }
+    } catch (_) {
+      final cached = await _jsonCacheDao.readList(cacheKey);
+      return cached
+          .map(ExpiryAlert.fromJson)
+          .where((alert) => alert.expireInDays >= 0 && alert.expireInDays <= 30)
+          .toList();
+    }
+
+    final cached = await _jsonCacheDao.readList(cacheKey);
+    return cached
+        .map(ExpiryAlert.fromJson)
+        .where((alert) => alert.expireInDays >= 0 && alert.expireInDays <= 30)
+        .toList();
+  }
+
+  String _expiryAlertsCacheKey(int userId) => 'user_${userId}_expiry_alerts';
 
   Future<ConsultantUser?> updatePreferences({
     required bool rgpdPublicationAccepted,

@@ -58,26 +58,31 @@ class _DashboardPageState extends State<DashboardPage>
     if (obtained < 3 || !mounted) return;
 
     final prefs = await SharedPreferences.getInstance();
-    final key = 'milestone_3_badges_shown_${widget.controller.profile?.id ?? 0}';
+    final key =
+        'milestone_3_badges_shown_${widget.controller.profile?.id ?? 0}';
     if (prefs.getBool(key) == true || !mounted) return;
 
     await prefs.setBool(key, true);
     if (!mounted) return;
     await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        icon: const Icon(Icons.celebration_rounded, color: AppColors.primary),
-        title: const Text('Marco alcancado'),
-        content: const Text(
-          'Ja atingiste 3 badges obtidos. Continua a evoluir no teu percurso.',
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Continuar'),
+      builder:
+          (context) => AlertDialog(
+            icon: const Icon(
+              Icons.celebration_rounded,
+              color: AppColors.primary,
+            ),
+            title: const Text('Marco alcancado'),
+            content: const Text(
+              'Ja atingiste 3 badges obtidos. Continua a evoluir no teu percurso.',
+            ),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Continuar'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -91,6 +96,7 @@ class _DashboardPageState extends State<DashboardPage>
           children: <Widget>[
             _buildHeader(context),
             _buildGoalCard(context),
+            _buildExpiryAlertsCard(context),
             _buildGamificationShortcut(context),
             _buildTimelineShortcut(context),
             _buildNextActionCard(context),
@@ -144,16 +150,158 @@ class _DashboardPageState extends State<DashboardPage>
     );
   }
 
+  Widget _buildExpiryAlertsCard(BuildContext context) {
+    final alerts = widget.controller.expiryAlerts.take(3).toList();
+    final hasAlerts = alerts.isNotEmpty;
+    final icon =
+        hasAlerts
+            ? Icons.notification_important_rounded
+            : Icons.event_available_rounded;
+    final background = hasAlerts ? const Color(0xFFFFFBEB) : Colors.white;
+    final borderColor =
+        hasAlerts ? const Color(0xFFFDE68A) : AppColors.borderLight;
+    final accent = hasAlerts ? const Color(0xFFD97706) : AppColors.primary;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: accent),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Badges a expirar',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Janela dos proximos 30 dias',
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${widget.controller.expiryAlerts.length}',
+                    style: TextStyle(
+                      color: accent,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (!hasAlerts)
+              Text(
+                'Sem badges a expirar nos proximos 30 dias.',
+                style: TextStyle(color: Colors.grey.shade700),
+              )
+            else ...[
+              ...alerts.map((item) => _expiryAlertRow(item, accent)),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () => context.go('/app/history'),
+                  icon: const Icon(Icons.history_rounded, size: 18),
+                  label: const Text('Ver historico'),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _expiryAlertRow(ExpiryAlert item, Color accent) {
+    final days = item.expireInDays < 0 ? 0 : item.expireInDays;
+    final dayLabel = days == 1 ? 'dia' : 'dias';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(Icons.schedule_rounded, color: accent, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _formatExpirationAlert(item),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              '$days $dayLabel',
+              style: TextStyle(
+                color: accent,
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTimelineShortcut(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: OutlinedButton.icon(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => TimelinePage(controller: widget.controller),
-          ),
-        ),
+        onPressed:
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TimelinePage(controller: widget.controller),
+              ),
+            ),
         icon: const Icon(Icons.timeline_rounded),
         label: const Text('Ver timeline profissional'),
       ),
@@ -164,12 +312,13 @@ class _DashboardPageState extends State<DashboardPage>
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: FilledButton.tonalIcon(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => GamificationPage(controller: widget.controller),
-          ),
-        ),
+        onPressed:
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => GamificationPage(controller: widget.controller),
+              ),
+            ),
         icon: const Icon(Icons.stars_rounded),
         label: const Text('Ver gamification'),
       ),
@@ -177,21 +326,23 @@ class _DashboardPageState extends State<DashboardPage>
   }
 
   Widget _buildNextActionCard(BuildContext context) {
-    final activePedido = widget.controller.pedidosStatus.where((pedido) {
-      final workflow = pedido.workflowStatus.toLowerCase();
-      final status = pedido.status.toLowerCase();
-      return status != 'obtido' &&
-          workflow != 'obtido' &&
-          workflow != 'rejeitado' &&
-          workflow != 'cancelado';
-    }).toList();
+    final activePedido =
+        widget.controller.pedidosStatus.where((pedido) {
+          final workflow = pedido.workflowStatus.toLowerCase();
+          final status = pedido.status.toLowerCase();
+          return status != 'obtido' &&
+              workflow != 'obtido' &&
+              workflow != 'rejeitado' &&
+              workflow != 'cancelado';
+        }).toList();
 
     if (activePedido.isNotEmpty) {
       final pedido = activePedido.first;
       return _nextActionShell(
         icon: Icons.upload_file_rounded,
         title: 'Continua o badge ${pedido.badgeName}',
-        text: 'Tens uma candidatura ativa. Submete ou acompanha evidencias para avançar.',
+        text:
+            'Tens uma candidatura ativa. Submete ou acompanha evidencias para avançar.',
         actionLabel: 'Abrir upload',
         onPressed: () async {
           await widget.controller.selectBadge(pedido.badgeId);
@@ -216,26 +367,29 @@ class _DashboardPageState extends State<DashboardPage>
         title: 'Proximo badge recomendado',
         text: '${rec.name} - ${rec.reason}',
         actionLabel: 'Ver badge',
-        onPressed: matches.isEmpty
-            ? null
-            : () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BadgeDetailPage(
-                      badge: matches.first,
-                      controller: widget.controller,
+        onPressed:
+            matches.isEmpty
+                ? null
+                : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => BadgeDetailPage(
+                            badge: matches.first,
+                            controller: widget.controller,
+                          ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
       );
     }
 
     return _nextActionShell(
       icon: Icons.workspace_premium_rounded,
       title: 'Explora novos badges',
-      text: 'Consulta o catalogo e escolhe a proxima formacao para desenvolver competencias.',
+      text:
+          'Consulta o catalogo e escolhe a proxima formacao para desenvolver competencias.',
       actionLabel: 'Ver catalogo',
       onPressed: () => context.go('/app/home'),
     );
@@ -452,17 +606,18 @@ class _DashboardPageState extends State<DashboardPage>
   }
 
   Widget _buildSpecialAchievements(BuildContext context) {
-    final special = widget.controller.badges
-        .where(
-          (badge) =>
-              badge.isObtained &&
-              (badge.name.toLowerCase().contains('especialista') ||
-                  badge.name.toLowerCase().contains('lider') ||
-                  (badge.area?.toLowerCase().contains('certificacao') ??
-                      false)),
-        )
-        .take(3)
-        .toList();
+    final special =
+        widget.controller.badges
+            .where(
+              (badge) =>
+                  badge.isObtained &&
+                  (badge.name.toLowerCase().contains('especialista') ||
+                      badge.name.toLowerCase().contains('lider') ||
+                      (badge.area?.toLowerCase().contains('certificacao') ??
+                          false)),
+            )
+            .take(3)
+            .toList();
 
     if (special.isEmpty) return const SizedBox.shrink();
 
@@ -524,13 +679,19 @@ class _DashboardPageState extends State<DashboardPage>
     return 'Boa noite';
   }
 
+  String _formatExpirationAlert(ExpiryAlert item) {
+    final days = item.expireInDays < 0 ? 0 : item.expireInDays;
+    if (days == 0) return 'O badge ${item.name} expira hoje';
+
+    final verb = days == 1 ? 'Falta' : 'Faltam';
+    final dayLabel = days == 1 ? 'dia' : 'dias';
+    return '$verb $days $dayLabel para o badge ${item.name} expirar';
+  }
+
   Widget _buildRecommendationsAndAlerts(BuildContext context) {
     final recommendations = widget.controller.recommendations.take(2).toList();
-    final alerts = widget.controller.expiryAlerts.take(2).toList();
 
-    if (recommendations.isEmpty && alerts.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (recommendations.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -541,13 +702,6 @@ class _DashboardPageState extends State<DashboardPage>
               Icons.auto_awesome,
               'Proximo badge recomendado',
               '${item.name} - ${item.reason}',
-            ),
-          ),
-          ...alerts.map(
-            (item) => _dashboardNotice(
-              Icons.schedule,
-              'Alerta de expiracao',
-              '${item.name} expira em ${item.expireInDays} dias',
             ),
           ),
         ],

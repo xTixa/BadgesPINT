@@ -13,14 +13,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  static const List<String> _areaOptions = <String>[
-    'Selecione...',
-    'Data',
-    'DevOps',
-    'Outsystems',
-    'Cloud',
-  ];
-
   late final TextEditingController _nomeController;
   late final TextEditingController _objetivoController;
   late final TextEditingController _dataLimiteController;
@@ -34,8 +26,9 @@ class _SettingsPageState extends State<SettingsPage> {
   bool permitirGaleriaPublica = false;
   bool partilhaLinkedin = true;
   bool assinaturaEmail = false;
+  bool _saving = false;
 
-  String areaPrincipal = 'Selecione...';
+  int? areaPrincipalId;
 
   @override
   void initState() {
@@ -58,21 +51,26 @@ class _SettingsPageState extends State<SettingsPage> {
       lembretesTimeline = prefs.getBool('settings_lembretes_timeline') ?? false;
       recomendacoesBadges =
           prefs.getBool('settings_recomendacoes_badges') ?? true;
-      rgpdPublicacao = widget.controller.profile?.rgpdPublicationAccepted ??
+      rgpdPublicacao =
+          widget.controller.profile?.rgpdPublicationAccepted ??
           prefs.getBool('settings_rgpd_publicacao') ??
           false;
       permitirGaleriaPublica =
           widget.controller.profile?.publicProfileEnabled ??
           prefs.getBool('settings_galeria_publica') ??
           false;
-      partilhaLinkedin = widget.controller.profile?.linkedinSharingEnabled ??
+      partilhaLinkedin =
+          widget.controller.profile?.linkedinSharingEnabled ??
           prefs.getBool('settings_partilha_linkedin') ??
           true;
       assinaturaEmail = prefs.getBool('settings_assinatura_email') ?? false;
-      final savedArea = prefs.getString('settings_area_principal');
-      areaPrincipal =
-          _areaOptions.contains(savedArea) ? savedArea! : _areaOptions.first;
-      _nomeController.text = prefs.getString('settings_nome') ?? '';
+      areaPrincipalId =
+          widget.controller.profile?.areaId ??
+          prefs.getInt('settings_area_principal');
+      _nomeController.text =
+          widget.controller.profile?.name ??
+          prefs.getString('settings_nome') ??
+          '';
       _objetivoController.text =
           widget.controller.profile?.goalText ??
           prefs.getString('settings_objetivo') ??
@@ -84,35 +82,58 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  Future<void> _saveSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('settings_email_confirmacao', emailConfirmacao);
-    await prefs.setBool(
-      'settings_notificacoes_aprovacao',
-      notificacoesAprovacao,
-    );
-    await prefs.setBool('settings_alertas_expiracao', alertasExpiracao);
-    await prefs.setBool('settings_lembretes_timeline', lembretesTimeline);
-    await prefs.setBool('settings_recomendacoes_badges', recomendacoesBadges);
-    await prefs.setBool('settings_rgpd_publicacao', rgpdPublicacao);
-    await prefs.setBool('settings_galeria_publica', permitirGaleriaPublica);
-    await prefs.setBool('settings_partilha_linkedin', partilhaLinkedin);
-    await prefs.setBool('settings_assinatura_email', assinaturaEmail);
-    await prefs.setString('settings_area_principal', areaPrincipal);
-    await prefs.setString('settings_nome', _nomeController.text.trim());
-    await prefs.setString('settings_objetivo', _objetivoController.text.trim());
-    await prefs.setString(
-      'settings_data_limite',
-      _dataLimiteController.text.trim(),
-    );
+  Future<bool> _saveSettings() async {
+    try {
+      final profile = widget.controller.profile;
+      final name = _nomeController.text.trim();
+      if (profile == null || name.isEmpty) return false;
 
-    await widget.controller.updatePreferences(
-      rgpdPublicationAccepted: rgpdPublicacao,
-      publicProfileEnabled: permitirGaleriaPublica,
-      linkedinSharingEnabled: partilhaLinkedin,
-      goalText: _objetivoController.text.trim(),
-      goalDeadline: _dataLimiteController.text.trim(),
-    );
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('settings_email_confirmacao', emailConfirmacao);
+      await prefs.setBool(
+        'settings_notificacoes_aprovacao',
+        notificacoesAprovacao,
+      );
+      await prefs.setBool('settings_alertas_expiracao', alertasExpiracao);
+      await prefs.setBool('settings_lembretes_timeline', lembretesTimeline);
+      await prefs.setBool('settings_recomendacoes_badges', recomendacoesBadges);
+      await prefs.setBool('settings_rgpd_publicacao', rgpdPublicacao);
+      await prefs.setBool('settings_galeria_publica', permitirGaleriaPublica);
+      await prefs.setBool('settings_partilha_linkedin', partilhaLinkedin);
+      await prefs.setBool('settings_assinatura_email', assinaturaEmail);
+      if (areaPrincipalId == null) {
+        await prefs.remove('settings_area_principal');
+      } else {
+        await prefs.setInt('settings_area_principal', areaPrincipalId!);
+      }
+      await prefs.setString('settings_nome', name);
+      await prefs.setString(
+        'settings_objetivo',
+        _objetivoController.text.trim(),
+      );
+      await prefs.setString(
+        'settings_data_limite',
+        _dataLimiteController.text.trim(),
+      );
+
+      final profileUpdated = await widget.controller.updateProfile(
+        name: name,
+        email: profile.email,
+        areaId: areaPrincipalId,
+        avatarUrl: profile.avatarUrl,
+      );
+      if (!profileUpdated) return false;
+
+      return widget.controller.updatePreferences(
+        rgpdPublicationAccepted: rgpdPublicacao,
+        publicProfileEnabled: permitirGaleriaPublica,
+        linkedinSharingEnabled: partilhaLinkedin,
+        goalText: _objetivoController.text.trim(),
+        goalDeadline: _dataLimiteController.text.trim(),
+      );
+    } catch (_) {
+      return false;
+    }
   }
 
   @override
@@ -154,7 +175,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
-                    initialValue: "consultor@softinsa.pt",
+                    initialValue: widget.controller.profile?.email ?? '',
                     enabled: false,
                     decoration: const InputDecoration(
                       labelText: 'Email',
@@ -162,28 +183,50 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue:
-                        _areaOptions.contains(areaPrincipal)
-                            ? areaPrincipal
-                            : _areaOptions.first,
+                  DropdownButtonFormField<int>(
+                    isExpanded: true,
+                    value:
+                        widget.controller.areas.any(
+                              (area) => area.id == areaPrincipalId,
+                            )
+                            ? areaPrincipalId
+                            : null,
                     decoration: const InputDecoration(
                       labelText: 'Área principal',
                       prefixIcon: Icon(Icons.hub_outlined, size: 20),
                     ),
+                    hint: const Text('Seleciona a tua area'),
+                    selectedItemBuilder:
+                        (context) =>
+                            widget.controller.areas
+                                .map(
+                                  (area) => Text(
+                                    area.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )
+                                .toList(),
                     items:
-                        _areaOptions
+                        widget.controller.areas
                             .map(
-                              (String area) => DropdownMenuItem<String>(
-                                value: area,
-                                child: Text(area),
+                              (area) => DropdownMenuItem<int>(
+                                value: area.id,
+                                child: Text(
+                                  area.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             )
                             .toList(),
-                    onChanged: (String? value) {
-                      if (value == null) return;
-                      setState(() => areaPrincipal = value);
-                    },
+                    onChanged:
+                        widget.controller.areas.isEmpty
+                            ? null
+                            : (int? value) {
+                              if (value == null) return;
+                              setState(() => areaPrincipalId = value);
+                            },
                   ),
                 ],
               ),
@@ -362,18 +405,30 @@ class _SettingsPageState extends State<SettingsPage> {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: () async {
-                await _saveSettings();
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Definições guardadas com sucesso.'),
-                    backgroundColor: Color(0xFF065F46),
-                  ),
-                );
-              },
+              onPressed:
+                  _saving
+                      ? null
+                      : () async {
+                        setState(() => _saving = true);
+                        final ok = await _saveSettings();
+                        if (!context.mounted) return;
+                        setState(() => _saving = false);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              ok
+                                  ? 'Definições guardadas com sucesso.'
+                                  : 'Nao foi possivel guardar as definicoes.',
+                            ),
+                            backgroundColor:
+                                ok
+                                    ? const Color(0xFF065F46)
+                                    : const Color(0xFF991B1B),
+                          ),
+                        );
+                      },
               icon: const Icon(Icons.save_rounded, size: 18),
-              label: const Text('Guardar alterações'),
+              label: Text(_saving ? 'A guardar...' : 'Guardar alterações'),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),

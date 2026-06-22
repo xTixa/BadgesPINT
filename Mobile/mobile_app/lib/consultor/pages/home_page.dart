@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import '../widgets/badge_medal.dart';
+import '../../shared/app_theme.dart';
 import 'badge_detail_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -59,7 +60,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final name = controller.profile?.name ?? 'Consultor';
     final recommended =
         controller.preferredAreaBadges.isNotEmpty
             ? controller.preferredAreaBadges
@@ -75,153 +75,185 @@ class _HomePageState extends State<HomePage> {
         }.toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            _hero(context, scheme, name),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'Pesquisar badges...',
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            _filters(areas),
-            const SizedBox(height: 24),
-            const Text(
-              'Recomendados para Ti',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 210,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: recommended.length,
-                itemBuilder: (context, index) {
-                  return _featuredBadgeCard(
-                    context,
-                    recommended[index],
-                    scheme,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1100),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
               children: [
-                const Expanded(
-                  child: Text(
-                    'Explorar Todos',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                _catalogHeader(context, scheme),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _searchController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    hintText: 'Pesquisar badges...',
+                    prefixIcon: Icon(Icons.search),
                   ),
                 ),
-                Text('${filteredCatalog.length} resultados'),
+                const SizedBox(height: 12),
+                _filters(areas),
+                const SizedBox(height: 20),
+                _sectionTitle(
+                  context,
+                  'Recomendados para ti',
+                  '${recommended.length} sugestoes',
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 216,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: recommended.length,
+                    itemBuilder: (context, index) {
+                      return _featuredBadgeCard(
+                        context,
+                        recommended[index],
+                        scheme,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 22),
+                _sectionTitle(
+                  context,
+                  'Explorar todos',
+                  '${filteredCatalog.length} resultados',
+                ),
+                const SizedBox(height: 12),
+                if (filteredCatalog.isEmpty)
+                  const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text('Nenhum badge encontrado com estes filtros.'),
+                    ),
+                  )
+                else
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final columns = constraints.maxWidth > 580 ? 3 : 2;
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: filteredCatalog.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          mainAxisExtent: 226,
+                        ),
+                        itemBuilder: (context, index) {
+                          return _smallBadgeCard(
+                            context,
+                            filteredCatalog[index],
+                            scheme,
+                          );
+                        },
+                      );
+                    },
+                  ),
               ],
             ),
-            const SizedBox(height: 12),
-            if (filteredCatalog.isEmpty)
-              const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('Nenhum badge encontrado com estes filtros.'),
-                ),
-              )
-            else
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: filteredCatalog.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.75,
-                ),
-                itemBuilder: (context, index) {
-                  return _smallBadgeCard(
-                    context,
-                    filteredCatalog[index],
-                    scheme,
-                  );
-                },
-              ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _hero(BuildContext context, ColorScheme scheme, String name) {
+  Widget _sectionTitle(BuildContext context, String title, String trailing) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
+        ),
+        Text(
+          trailing,
+          style: TextStyle(
+            color: Colors.grey.shade700,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _catalogHeader(BuildContext context, ColorScheme scheme) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: scheme.primary,
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Ola, $name!',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Continua a desenvolver as tuas competencias',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ],
-                ),
+              Icon(
+                Icons.workspace_premium_rounded,
+                color: Colors.white,
+                size: 24,
               ),
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white24,
+              SizedBox(width: 10),
+              Expanded(
                 child: Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
+                  'Catalogo de badges',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
+          const Text(
+            'Pesquisa, filtra e escolhe o proximo badge para evoluir.',
+            style: TextStyle(color: Colors.white70, fontSize: 14),
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
-                child: _heroStat(controller.totalPoints.toString(), 'Pontos'),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _heroStat(
+                child: _catalogMetric(
                   controller.catalogBadges.length.toString(),
-                  'Badges',
+                  'badges disponiveis',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _catalogMetric(
+                  controller.preferredAreaBadges.length.toString(),
+                  'da tua area',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.star_rounded, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${controller.totalPoints} pontos acumulados',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -281,31 +313,24 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () => _openBadge(context, badge),
       child: Container(
-        width: 280,
+        width: 260,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.07),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          color: AppColors.lightCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderLight),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+                top: Radius.circular(16),
               ),
               child: _badgeImage(
                 badge,
-                height: 92,
+                height: 84,
                 width: double.infinity,
-                iconSize: 34,
                 backgroundColor: scheme.primary,
               ),
             ),
@@ -377,27 +402,21 @@ class _HomePageState extends State<HomePage> {
       onTap: () => _openBadge(context, badge),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-            ),
-          ],
+          color: AppColors.lightCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderLight),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(18),
+                top: Radius.circular(16),
               ),
               child: _badgeImage(
                 badge,
-                height: 76,
+                height: 72,
                 width: double.infinity,
-                iconSize: 28,
                 backgroundColor: scheme.primary,
               ),
             ),
@@ -454,7 +473,6 @@ class _HomePageState extends State<HomePage> {
     CatalogBadgeItem badge, {
     required double height,
     required double width,
-    required double iconSize,
     required Color backgroundColor,
   }) {
     return Container(
@@ -462,42 +480,47 @@ class _HomePageState extends State<HomePage> {
       width: width,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            backgroundColor.withValues(alpha: 0.95),
-            const Color(0xFF00AEEF),
-          ],
-        ),
+        color: backgroundColor.withValues(alpha: 0.08),
+        border: const Border(bottom: BorderSide(color: AppColors.borderLight)),
       ),
       child: BadgeMedal(
         imageUrl: badge.imageUrl,
         label: badge.levelLabel,
-        size: height >= 90 ? 74 : 58,
+        size: height >= 80 ? 64 : 54,
       ),
     );
   }
 
-  Widget _heroStat(String value, String label) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          value,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+  Widget _catalogMetric(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
           ),
-        ),
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: Colors.white70),
-        ),
-      ],
+          const SizedBox(height: 2),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+        ],
+      ),
     );
   }
 }
