@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "/src/api";
+import { getTimeGreeting } from "../../utils/greeting";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import PageHeader from "../../components/ui/PageHeader";
 import EmptyState from "../../components/ui/EmptyState";
@@ -13,6 +14,9 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 export default function DashboardAdmin() {
   const navigate = useNavigate();
   const { isMobile } = useWindowSize();
+  const adminName = (() => {
+    try { return JSON.parse(localStorage.getItem("user"))?.name?.split(" ")[0] || ""; } catch { return ""; }
+  })();
   const toDateInput = (date) => date.toISOString().slice(0, 10);
   const defaultEnd = new Date();
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -248,7 +252,7 @@ export default function DashboardAdmin() {
       <main className="admin-main">
         <div className="mx-auto max-w-[1400px]">
           <PageHeader
-            title={isMobile ? "Dashboard" : "Dashboard do Administrador"}
+            title={`${getTimeGreeting()}${adminName ? `, ${adminName}` : ""}`}
             subtitle="Visão geral de gestão, métricas e operações do programa de badges."
             icon="bi-speedometer2"
           />

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import BadgeCelebration, { getCelebratedIds, markAsCelebrated } from "../../components/BadgeCelebration";
+import { getTimeGreeting } from "../../utils/greeting";
 
 const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
@@ -30,15 +31,9 @@ export default function DashboardConsultor() {
   const [recomendados, setRecom]      = useState([]);
   const [alertsExpiracao, setExp]     = useState([]);
   const [achievements, setAchiev]     = useState([]);
-  const [greeting, setGreeting]       = useState("Olá");
   const [loading, setLoading]         = useState(true);
   const [celebrationQueue, setCelebrationQueue] = useState([]);
   const [currentCelebration, setCurrentCelebration] = useState(null);
-
-  useEffect(() => {
-    const msg = localStorage.getItem("greeting");
-    if (msg) setGreeting(msg);
-  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -158,7 +153,7 @@ export default function DashboardConsultor() {
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="mb-2 text-sm font-medium text-white/80">Dashboard Pessoal</p>
-              <h1 className="mb-2 text-3xl font-bold">{greeting}, {user.name.split(" ")[0]}</h1>
+              <h1 className="mb-2 text-3xl font-bold">{getTimeGreeting()}, {user.name.split(" ")[0]}</h1>
               <p className="max-w-xl text-white/85">
                 Continua a desenvolver as tuas competências e acompanha o teu progresso em tempo real.
               </p>
