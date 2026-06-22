@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getTimeGreeting } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { TalentStatCard, tmPanelClass } from "./TalentManagerLayout";
@@ -54,7 +55,7 @@ export default function DashboardTalentManager() {
 
   return (
     <TalentManagerLayout
-      title="Dashboard Talent Manager"
+      title={tm ? `${getTimeGreeting()}, ${tm.name.split(" ")[0]}` : "Talent Manager"}
       subtitle="Acompanha a tua equipa, validações pendentes e evolução de badges em tempo real."
       userName={tm?.name || "Talent Manager"}
       heroStats={[

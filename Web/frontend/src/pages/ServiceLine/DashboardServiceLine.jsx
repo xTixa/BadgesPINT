@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getTimeGreeting } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slPanelClass } from "./ServiceLineLayout";
@@ -29,7 +30,6 @@ export default function DashboardServiceLine() {
     progressoMedio: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [greeting, setGreeting] = useState("");
   const [startDate, setStartDate] = useState(toDateInput(defaultStart));
   const [endDate, setEndDate] = useState(toDateInput(defaultEnd));
   const [kpis, setKpis] = useState({
@@ -70,11 +70,6 @@ export default function DashboardServiceLine() {
       },
     ],
   };
-
-  useEffect(() => {
-    const msg = localStorage.getItem("greeting");
-    if (msg) setGreeting(msg);
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -125,7 +120,7 @@ export default function DashboardServiceLine() {
 
   return (
     <ServiceLineLayout
-      title={`${greeting || "Ola"} ${sl.name?.split(" ")[0] || ""}`}
+      title={`${getTimeGreeting()}, ${sl.name?.split(" ")[0] || ""}`}
       subtitle="Acompanha a evolucao da tua Service Line, ranking, badges e progresso por periodo."
       userName={sl.name || "Service Line"}
       heroStats={[
