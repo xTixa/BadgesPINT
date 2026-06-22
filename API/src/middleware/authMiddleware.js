@@ -49,4 +49,13 @@ export const adminMiddleware = (req, res, next) => {
   next();
 };
 
+export const rolesMiddleware = (roles = []) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.userRole)) {
+      return res.status(403).json({ message: "Acesso negado." });
+    }
+    next();
+  };
+};
+
 export default authMiddleware;

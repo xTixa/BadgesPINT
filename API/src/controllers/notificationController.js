@@ -1,6 +1,8 @@
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 import FcmToken from "../models/FcmToken.js";
+import database from "../config/database.js";
+import { QueryTypes } from "sequelize";
 
 // Obter notificações do utilizador
 export const obterNotificacoes = async (req, res) => {
@@ -284,6 +286,116 @@ export const enviarBroadcast = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Erro ao enviar anúncio",
+      error: error.message,
+    });
+  }
+};
+
+export const listarAvisosBroadcast = async (req, res) => {
+  try {
+    const rows = await database.query(
+      `SELECT MIN(id) AS id,
+              titulo,
+              mensagem,
+              tipo,
+              MIN("createdAt") AS "createdAt",
+              MAX("updatedAt") AS "updatedAt",
+              COUNT(*)::int AS destinatarios,
+              COUNT(*) FILTER (WHERE lido = false)::int AS nao_lidos
+       FROM "Notifications"
+       WHERE tipo = 'geral'
+       GROUP BY titulo, mensagem, tipo
+       ORDER BY MIN("createdAt") DESC`,
+      { type: QueryTypes.SELECT }
+    );
+
+    res.json({ success: true, data: rows });
+  } catch (error) {
+    console.error("Erro ao listar avisos:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao listar avisos",
+      error: error.message,
+    });
+  }
+};
+
+export const atualizarAvisoBroadcast = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, mensagem } = req.body;
+
+    if (!titulo || !mensagem) {
+      return res.status(400).json({
+        success: false,
+        message: "Titulo e mensagem sao obrigatorios",
+      });
+    }
+
+    const original = await Notification.findByPk(id);
+    if (!original || original.tipo !== "geral") {
+      return res.status(404).json({
+        success: false,
+        message: "Aviso nao encontrado",
+      });
+    }
+
+    const [updated] = await Notification.update(
+      { titulo, mensagem, updatedAt: new Date() },
+      {
+        where: {
+          tipo: "geral",
+          titulo: original.titulo,
+          mensagem: original.mensagem,
+        },
+      }
+    );
+
+    res.json({
+      success: true,
+      message: `Aviso atualizado em ${updated} notificacao(oes)`,
+      atualizados: updated,
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar aviso:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao atualizar aviso",
+      error: error.message,
+    });
+  }
+};
+
+export const apagarAvisoBroadcast = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const original = await Notification.findByPk(id);
+
+    if (!original || original.tipo !== "geral") {
+      return res.status(404).json({
+        success: false,
+        message: "Aviso nao encontrado",
+      });
+    }
+
+    const deleted = await Notification.destroy({
+      where: {
+        tipo: "geral",
+        titulo: original.titulo,
+        mensagem: original.mensagem,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `Aviso apagado em ${deleted} notificacao(oes)`,
+      apagados: deleted,
+    });
+  } catch (error) {
+    console.error("Erro ao apagar aviso:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao apagar aviso",
       error: error.message,
     });
   }

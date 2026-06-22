@@ -9,9 +9,12 @@ const statusMap = {
   rejeitado: { label: "Rejeitado", className: "bg-rose-100 text-rose-700" },
 };
 
+const formatDateTime = (value) => (value ? new Date(value).toLocaleString("pt-PT") : "Sem data");
+
 export default function PedidosTalentManager() {
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("all");
+  const [selectedPedido, setSelectedPedido] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -36,15 +39,18 @@ export default function PedidosTalentManager() {
     return () => window.clearInterval(intervalId);
   }, [filtro]);
 
-  const totals = useMemo(() => ({
-    total: pedidos.length,
-    pendentes: pedidos.filter((p) => p.status === "pendente").length,
-    aprovados: pedidos.filter((p) => p.status === "obtido").length,
-    rejeitados: pedidos.filter((p) => p.status === "rejeitado").length,
-  }), [pedidos]);
+  const totals = useMemo(
+    () => ({
+      total: pedidos.length,
+      pendentes: pedidos.filter((p) => p.status === "pendente").length,
+      aprovados: pedidos.filter((p) => p.status === "obtido").length,
+      rejeitados: pedidos.filter((p) => p.status === "rejeitado").length,
+    }),
+    [pedidos],
+  );
 
   const validar = async (id) => {
-    const comment = window.prompt("Comentário (opcional):") || "";
+    const comment = window.prompt("Comentario (opcional):") || "";
     try {
       await api.post(`/api/admin/pedidos/${id}/tm/validar`, { comment });
       setPedidos((prev) => prev.map((p) => (p.id === id ? { ...p, workflow_status: "em_validacao", tm_comment: comment } : p)));
@@ -55,7 +61,7 @@ export default function PedidosTalentManager() {
   };
 
   const devolver = async (id) => {
-    const comment = window.prompt("Comentário para devolução:") || "";
+    const comment = window.prompt("Comentario para devolucao:") || "";
     if (!comment) return;
     try {
       await api.post(`/api/admin/pedidos/${id}/tm/devolver`, { comment });
@@ -66,10 +72,37 @@ export default function PedidosTalentManager() {
     }
   };
 
+  const getPedidoHistory = (pedido) => [
+    {
+      label: "Criado",
+      date: pedido.created_at,
+      detail: "Pedido registado na plataforma.",
+      done: true,
+    },
+    {
+      label: "Submetido",
+      date: pedido.submitted_at,
+      detail: pedido.workflow_status === "open" ? "Ainda nao submetido para validacao." : "Pedido submetido para validacao.",
+      done: Boolean(pedido.submitted_at) || pedido.workflow_status !== "open",
+    },
+    {
+      label: "Validacao TM",
+      date: pedido.updated_at,
+      detail: pedido.tm_comment || "Sem comentario do Talent Manager.",
+      done: ["em_validacao", "sl_aprovado", "sl_rejeitado", "closed"].includes(pedido.workflow_status),
+    },
+    {
+      label: "Decisao final",
+      date: pedido.data_atribuicao || pedido.updated_at,
+      detail: pedido.sl_comment || pedido.tm_comment || `Estado atual: ${pedido.status || "pendente"}.`,
+      done: pedido.status === "obtido" || pedido.status === "rejeitado",
+    },
+  ];
+
   return (
     <TalentManagerLayout
       title="Pedidos de Badges"
-      subtitle="Acompanha o estado dos pedidos e encaminha validações para a Service Line."
+      subtitle="Acompanha o estado dos pedidos, valida o fluxo e consulta o historico de cada candidatura."
       heroStats={[
         { label: "Pedidos", value: totals.total },
         { label: "Pendentes", value: totals.pendentes },
@@ -111,11 +144,11 @@ export default function PedidosTalentManager() {
                 <tr>
                   <th className="px-3 py-2 text-left font-semibold">Consultor</th>
                   <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                  <th className="px-3 py-2 text-left font-semibold">Nível</th>
+                  <th className="px-3 py-2 text-left font-semibold">Nivel</th>
                   <th className="px-3 py-2 text-left font-semibold">Estado</th>
                   <th className="px-3 py-2 text-left font-semibold">Workflow</th>
                   <th className="px-3 py-2 text-left font-semibold">Data</th>
-                  <th className="px-3 py-2 text-right font-semibold">Ações</th>
+                  <th className="px-3 py-2 text-right font-semibold">Acoes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -135,18 +168,19 @@ export default function PedidosTalentManager() {
                       <td className="px-3 py-2">{pedido.workflow_status || "open"}</td>
                       <td className="px-3 py-2">{pedido.created_at ? new Date(pedido.created_at).toLocaleDateString("pt-PT") : "-"}</td>
                       <td className="px-3 py-2 text-right">
-                        {pedido.workflow_status === "submitted" ? (
+                        {pedido.workflow_status === "submitted" && (
                           <>
                             <button className={`${tmPrimaryActionClass} mr-2 py-1`} onClick={() => validar(pedido.id)}>
                               Validar
                             </button>
-                            <button className={`${tmActionClass} py-1`} onClick={() => devolver(pedido.id)}>
+                            <button className={`${tmActionClass} mr-2 py-1`} onClick={() => devolver(pedido.id)}>
                               Devolver
                             </button>
                           </>
-                        ) : (
-                          <span className="text-xs text-slate-500">Sem ação</span>
                         )}
+                        <button className={`${tmActionClass} py-1`} onClick={() => setSelectedPedido(pedido)}>
+                          Historico
+                        </button>
                       </td>
                     </tr>
                   );
@@ -156,6 +190,38 @@ export default function PedidosTalentManager() {
           </div>
         )}
       </section>
+
+      {selectedPedido && (
+        <section className="mt-4 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h5 className="mb-1 text-base font-bold text-slate-900">
+                <i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>
+                Historico do processo
+              </h5>
+              <p className="m-0 text-sm text-slate-500">
+                {selectedPedido.user?.name || "Consultor"} - {selectedPedido.badge?.name || selectedPedido.badge?.description || "Badge"}
+              </p>
+            </div>
+            <button className={tmActionClass} onClick={() => setSelectedPedido(null)}>
+              Fechar
+            </button>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-4">
+            {getPedidoHistory(selectedPedido).map((step) => (
+              <div key={step.label} className={`rounded-2xl border p-4 ${step.done ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-slate-50"}`}>
+                <div className="mb-2 flex items-center gap-2">
+                  <i className={`bi ${step.done ? "bi-check-circle-fill text-emerald-600" : "bi-circle text-slate-400"}`}></i>
+                  <span className="text-sm font-bold text-slate-900">{step.label}</span>
+                </div>
+                <p className="m-0 text-xs text-slate-500">{formatDateTime(step.date)}</p>
+                <p className="m-0 mt-2 text-sm text-slate-700">{step.detail}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </TalentManagerLayout>
   );
 }

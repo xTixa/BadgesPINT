@@ -11,6 +11,7 @@ export default function Equipa() {
   const [consultores, setConsultores] = useState([]);
   const [catalogo, setCatalogo] = useState([]);
   const [selectedConsultor, setSelectedConsultor] = useState(null);
+  const [signatureMessage, setSignatureMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -79,6 +80,28 @@ export default function Equipa() {
     } catch (err) {
       console.error("Erro ao gerar certificado:", err);
       alert("Nao foi possivel gerar o certificado.");
+    }
+  };
+
+  const copiarAssinatura = async (item) => {
+    if (!selectedConsultor) return;
+
+    const assinatura = `
+<div style="font-family:Arial,sans-serif;font-size:13px;color:#1f2937">
+  <strong>${selectedConsultor.name}</strong><br/>
+  <span>${selectedConsultor.area || selectedConsultor.service_line || "Softinsa Badges"}</span><br/>
+  <span style="display:inline-block;margin-top:6px;padding:6px 10px;border:1px solid #0F62FE;border-radius:999px;color:#0F62FE;font-weight:700">
+    Badge: ${item.badge}
+  </span>
+</div>`.trim();
+
+    try {
+      await navigator.clipboard.writeText(assinatura);
+      setSignatureMessage("Assinatura copiada para a area de transferencia.");
+      window.setTimeout(() => setSignatureMessage(""), 3000);
+    } catch (err) {
+      console.error("Erro ao copiar assinatura:", err);
+      window.prompt("Copia a assinatura HTML:", assinatura);
     }
   };
 
@@ -192,6 +215,11 @@ export default function Equipa() {
 
                 <SectionCard title="Timeline profissional" icon="bi-clock-history">
                   <div className="mb-2 text-sm font-semibold text-slate-900">{selectedConsultor?.name || "Seleciona um consultor"}</div>
+                  {signatureMessage && (
+                    <div className="mb-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                      {signatureMessage}
+                    </div>
+                  )}
                   <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
                     {(selectedConsultor?.timeline || []).map((item) => (
                       <li key={item.id} className="px-3 py-3">
@@ -201,12 +229,22 @@ export default function Equipa() {
                             <div className="text-xs text-slate-500">{item.status} · {item.workflow_status || "sem workflow"} · {formatDate(item.data)}</div>
                           </div>
                           {item.status === "obtido" && (
-                            <button
-                              className="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                              onClick={() => downloadCertificado(selectedConsultor.id, item.badge_id)}
-                            >
-                              PDF
-                            </button>
+                            <div className="flex shrink-0 gap-1">
+                              <button
+                                className="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                onClick={() => copiarAssinatura(item)}
+                                title="Copiar assinatura de email"
+                              >
+                                <i className="bi bi-envelope-paper"></i>
+                              </button>
+                              <button
+                                className="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                onClick={() => downloadCertificado(selectedConsultor.id, item.badge_id)}
+                                title="Download certificado PDF"
+                              >
+                                PDF
+                              </button>
+                            </div>
                           )}
                         </div>
                       </li>

@@ -39,6 +39,7 @@ import HistoricoValidacoes from "./pages/TalentManager/HistoricoValidacoes";
 import RelatoriosTalent from "./pages/TalentManager/RelatoriosTalent";
 import TalentManagerSettingsPage from "./pages/TalentManager/SettingsTM";
 import PedidosTalentManager from "./pages/TalentManager/PedidosTalentManager";
+import CatalogoBadgesTM from "./pages/TalentManager/CatalogoBadgesTM";
 
 // Service Line
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
@@ -118,10 +119,12 @@ function AppContent() {
           {/* Talent Manager */}
           <Route path="/tm/dashboard" element={<ProtectedRoute role="talent_manager"><DashboardTalentManager /></ProtectedRoute>} />
           <Route path="/tm/pedidos" element={<ProtectedRoute role="talent_manager"><PedidosTalentManager /></ProtectedRoute>} />
+          <Route path="/tm/catalogo" element={<ProtectedRoute role="talent_manager"><CatalogoBadgesTM /></ProtectedRoute>} />
           <Route path="/tm/equipa" element={<ProtectedRoute role="talent_manager"><Equipa /></ProtectedRoute>} />
           <Route path="/tm/evidencias" element={<ProtectedRoute role="talent_manager"><ValidarEvidencias /></ProtectedRoute>} />
           <Route path="/tm/historico" element={<ProtectedRoute role="talent_manager"><HistoricoValidacoes /></ProtectedRoute>} />
           <Route path="/tm/relatorios" element={<ProtectedRoute role="talent_manager"><RelatoriosTalent /></ProtectedRoute>} />
+          <Route path="/tm/avisos" element={<ProtectedRoute role="talent_manager"><Avisos /></ProtectedRoute>} />
           <Route path="/tm/settings" element={<ProtectedRoute role="talent_manager"><TalentManagerSettingsPage /></ProtectedRoute>} />
 
           {/* Service Line */}
@@ -132,6 +135,7 @@ function AppContent() {
           <Route path="/sl/historico" element={<ProtectedRoute role="service_line_leader"><HistoricoSL /></ProtectedRoute>} />
           <Route path="/sl/gamificacao" element={<ProtectedRoute role="service_line_leader"><GamificacaoSL /></ProtectedRoute>} />
           <Route path="/sl/estatisticas" element={<ProtectedRoute role="service_line_leader"><RelatoriosServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/avisos" element={<ProtectedRoute role="service_line_leader"><Avisos /></ProtectedRoute>} />
           <Route path="/sl/settings" element={<ProtectedRoute role="service_line_leader"><ServiceLineSettingsPage /></ProtectedRoute>} />
 
           {/* Admin */}
