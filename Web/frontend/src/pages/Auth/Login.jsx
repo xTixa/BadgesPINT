@@ -1,7 +1,7 @@
 import api from "/src/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "/src/assets/logo.png";
+import AuthShell from "./AuthShell";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ export default function Login() {
   useEffect(() => {
     const savedLogin = localStorage.getItem("savedLogin");
     if (!savedLogin) return;
+
     try {
       const parsed = JSON.parse(savedLogin);
       setEmail(parsed.email || "");
@@ -36,7 +37,6 @@ export default function Login() {
 
       const { user, token, greeting, firstLogin } = res.data;
 
-      // Guardar sessão
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
 
@@ -46,17 +46,14 @@ export default function Login() {
         localStorage.removeItem("savedLogin");
       }
 
-      // Guardar saudação
       if (greeting) {
         localStorage.setItem("greeting", greeting);
       }
 
-      // Se for primeiro login → vai mudar password
       if (firstLogin) {
         return navigate("/first-login");
       }
 
-      // Redirecionar por role
       switch (user.role) {
         case "admin":
           navigate("/admin/dashboard");
@@ -75,139 +72,101 @@ export default function Login() {
       }
     } catch (err) {
       console.error(err);
-      setError("Credenciais inválidas. Verifica email e password.");
+      setError("Credenciais invalidas. Verifica email e password.");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-slate-100">
-      {/* ESQUERDA */}
-      <div className="relative flex-1 flex flex-col justify-center overflow-hidden px-8 py-14 md:py-16 bg-gradient-to-br from-[#0F62FE] via-[#0F62FE] to-[#00AEEF] text-[#F2F2F2]">
-        <div className="pointer-events-none absolute -top-20 -left-20 h-56 w-56 rounded-full bg-white/10 blur-2xl"></div>
-        <div className="pointer-events-none absolute bottom-8 right-0 h-40 w-40 rounded-full bg-cyan-300/20 blur-2xl"></div>
-        <div className="relative max-w-md mx-auto text-center md:text-left">
-          <img
-            src={logo}
-            alt="Softinsa"
-            className="h-16 md:h-20 w-auto mb-8 mx-auto md:mx-0 drop-shadow-[0_5px_14px_rgba(0,0,0,0.28)]"
+    <AuthShell
+      title="Iniciar sessao"
+      description="Insere os teus dados para entrar na plataforma."
+      asideTitle="Bem-vindo ao portal de badges"
+      asideText="Acompanha a tua evolucao, consulta conquistas e gere pedidos numa experiencia mais limpa e direta."
+      asideNote={{
+        label: "Credenciais de teste",
+        text: "Usa uma destas contas para validar a plataforma:",
+        items: [
+          "Admin: admin@example.com | Password123",
+          "Talent Manager: natalia.neves@softinsa.pt | qwerty",
+          "Service Line Leader: monica@yopmail.com | qwerty123",
+          "Consultant: guilherme@softinsa.pt | Password123",
+        ],
+      }}
+    >
+      <form onSubmit={handleLogin}>
+        {error && <p className="auth-message auth-message-error">{error}</p>}
+
+        <div className="auth-field">
+          <label>Email</label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="auth-input"
+            placeholder="exemplo@dominio.com"
           />
-          <h1 className="text-4xl font-extrabold mb-3 tracking-tight">
-            Bem-vindo de volta!
-          </h1>
-          <p className="text-[#BFEFFF] text-lg mb-8">
-            Credenciais de teste:
-            <br />
-            admin: admin@example.com / Password123
-            <br />
-            tm: tm@soft.pt / qwerty
-            <br />
-            sl: monica@yopmail.com / qwerty123
-            <br />
-            consultant: guilherme@softinsa.pt / Password123
-          </p>
-          <p className="italic text-sm text-white/80">
-            “O conhecimento é a tua melhor credencial.”
-          </p>
         </div>
-      </div>
 
-      {/* FORMULÁRIO */}
-      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-white via-[#F8FBFF] to-[#EEF6FF]">
-        <form
-          onSubmit={handleLogin}
-          className="w-full max-w-sm rounded-3xl bg-white px-10 py-10 md:py-12 mx-6 border border-[#0F62FE]/30 shadow-[0_20px_50px_rgba(15,98,254,0.12)]"
-        >
-          <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
-            Iniciar Sessão
-          </h2>
-
-          {/* EMAIL */}
-          <div className="mb-6">
-            <label className="block text-[15px] font-medium text-gray-700 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus:border-[#0F62FE] focus:bg-white focus:ring-4 focus:ring-[#0F62FE]/10"
-              placeholder="exemplo@dominio.com"
-            />
-          </div>
-
-          {/* PASSWORD */}
-          <div className="mb-8">
-            <label className="block text-[15px] font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus:border-[#0F62FE] focus:bg-white focus:ring-4 focus:ring-[#0F62FE]/10"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-3 my-auto px-2 text-sm font-medium text-slate-800 hover:text-[#00AEEF]"
-                aria-label={
-                  showPassword ? "Ocultar password" : "Mostrar password"
-                }
-              >
-                {showPassword ? "Ocultar" : "Mostrar"}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between mb-6 text-sm">
-            <label className="flex items-center gap-2 text-gray-700">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#0F62FE]"
-              />
-              Guardar email neste dispositivo
-            </label>
+        <div className="auth-field">
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <label className="auth-label m-0">Password</label>
             <button
               type="button"
               onClick={() => navigate("/recover")}
-              className="text-slate-800 hover:underline font-medium"
+              className="auth-link"
             >
-              Esqueceste-te da password?
+              Recuperar password
             </button>
           </div>
-
-          {/* BOTÃO */}
-          <button
-            type="submit"
-            className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] hover:scale-[1.01] transition-all duration-200"
-          >
-            Entrar
-          </button>
-
-          {error && (
-            <p className="mt-4 text-sm text-red-600 text-center font-medium">
-              {error}
-            </p>
-          )}
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 mb-2">Ainda não tens conta?</p>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="auth-input pr-12"
+              placeholder="********"
+            />
             <button
               type="button"
-              onClick={() => navigate("/register")}
-              className="w-full py-3 rounded-lg font-semibold text-slate-800 border border-[#0F62FE]/20 text-[#0F62FE] hover:bg-[#0F62FE] hover:text-white"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-3 my-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-[#0F62FE]"
+              aria-label={showPassword ? "Ocultar password" : "Mostrar password"}
             >
-              Criar Conta
+              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+
+        <div className="mb-6 flex items-center justify-between gap-4 text-sm">
+          <label className="flex items-center gap-2 text-slate-700">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#0F62FE]"
+            />
+            Lembrar email neste dispositivo
+          </label>
+        </div>
+
+        <button type="submit" className="auth-primary-button">
+          <i className="bi bi-box-arrow-in-right"></i>
+          Entrar
+        </button>
+
+        <div className="mt-6 text-center">
+          <p className="mb-3 text-sm text-slate-600">Ainda nao tens conta?</p>
+          <button
+            type="button"
+            onClick={() => navigate("/register")}
+            className="auth-secondary-button"
+          >
+            Criar conta
+          </button>
+        </div>
+      </form>
+    </AuthShell>
   );
 }
