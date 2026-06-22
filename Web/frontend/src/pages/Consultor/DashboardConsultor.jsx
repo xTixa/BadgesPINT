@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
+import BadgeCelebration, { getCelebratedIds, markAsCelebrated } from "../../components/BadgeCelebration";
 
 const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
@@ -31,6 +32,8 @@ export default function DashboardConsultor() {
   const [achievements, setAchiev]     = useState([]);
   const [greeting, setGreeting]       = useState("Olá");
   const [loading, setLoading]         = useState(true);
+  const [celebrationQueue, setCelebrationQueue] = useState([]);
+  const [currentCelebration, setCurrentCelebration] = useState(null);
 
   useEffect(() => {
     const msg = localStorage.getItem("greeting");
@@ -56,7 +59,17 @@ export default function DashboardConsultor() {
         if (!mounted) return;
 
         if (badgeRes.status === "fulfilled") {
-          setBadges(Array.isArray(badgeRes.value.data) ? badgeRes.value.data : []);
+          const allBadges = Array.isArray(badgeRes.value.data) ? badgeRes.value.data : [];
+          setBadges(allBadges);
+
+          const celebrated = getCelebratedIds();
+          const newlyObtained = allBadges.filter(
+            (b) => b.status === "obtido" && !celebrated.includes(b.id)
+          );
+          if (newlyObtained.length > 0) {
+            setCelebrationQueue(newlyObtained.slice(1));
+            setCurrentCelebration(newlyObtained[0]);
+          }
         }
 
         if (lpRes.status === "fulfilled") {
@@ -99,6 +112,17 @@ export default function DashboardConsultor() {
   const btnSecondary = "rounded-lg border border-[#16558C]/35 px-3 py-1.5 text-xs font-semibold text-[#16558C] transition hover:bg-[#16558C]/10";
   const btnSecondaryLg = "rounded-lg border border-[#16558C]/35 px-3 py-2 text-xs font-semibold text-[#16558C] transition hover:bg-[#16558C]/10 sm:text-sm";
 
+  const handleCelebrationClose = () => {
+    if (currentCelebration) markAsCelebrated(currentCelebration.id);
+    if (celebrationQueue.length > 0) {
+      const [next, ...rest] = celebrationQueue;
+      setCurrentCelebration(next);
+      setCelebrationQueue(rest);
+    } else {
+      setCurrentCelebration(null);
+    }
+  };
+
   const shareLinkedIn = () => {
     const url = `${window.location.origin}/galeria/${user?.id}`;
     window.open(
@@ -122,6 +146,8 @@ export default function DashboardConsultor() {
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: user.name }} />
+
+      <BadgeCelebration badge={currentCelebration} onClose={handleCelebrationClose} />
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
 
