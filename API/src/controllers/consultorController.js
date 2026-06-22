@@ -752,7 +752,7 @@ export async function getRecomendados(req, res) {
   }
 }
 
-// ALERTAS DE EXPIRAÇÃO — badges obtidos que expiram nos próximos 60 dias
+// ALERTAS DE EXPIRAÇÃO — badges obtidos que expiram nos próximos 30 dias
 export async function getBadgesExpirar(req, res) {
   try {
     const rows = await database.query(
@@ -762,9 +762,9 @@ export async function getBadgesExpirar(req, res) {
          b.expiry_days,
          cb.data_atribuicao,
          (cb.data_atribuicao + (b.expiry_days || ' days')::interval) AS expira_em,
-         EXTRACT(DAY FROM
+         CEIL(EXTRACT(EPOCH FROM (
            (cb.data_atribuicao + (b.expiry_days || ' days')::interval) - NOW()
-         )::int AS dias_restantes
+         )) / 86400)::int AS dias_restantes
        FROM consultor_badges cb
        JOIN badges b ON b.id = cb.badge_id
        WHERE cb.consultor_id = :consultorId
@@ -772,7 +772,7 @@ export async function getBadgesExpirar(req, res) {
          AND b.expiry_days IS NOT NULL
          AND cb.data_atribuicao IS NOT NULL
          AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval) > NOW()
-         AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval) <= NOW() + INTERVAL '60 days'
+         AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval) <= NOW() + INTERVAL '30 days'
        ORDER BY dias_restantes ASC`,
       { type: QueryTypes.SELECT, replacements: { consultorId: req.userId } }
     );

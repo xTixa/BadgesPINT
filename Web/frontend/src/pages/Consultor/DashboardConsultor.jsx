@@ -5,6 +5,22 @@ import Sidebar from "../../layout/Sidebar";
 
 const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
+function getAlertBadgeName(alert) {
+  return alert?.nome || alert?.name || alert?.badge_name || "este badge";
+}
+
+function getAlertDays(alert) {
+  const days = Number(alert?.expiraEmDias ?? alert?.dias_restantes ?? alert?.dias ?? 0);
+  return Number.isFinite(days) ? Math.max(0, days) : 0;
+}
+
+function formatExpirationAlert(alert) {
+  const days = getAlertDays(alert);
+  const badgeName = getAlertBadgeName(alert);
+  if (days === 0) return `O badge ${badgeName} expira hoje`;
+  return `Falta${days === 1 ? "" : "m"} ${days} dia${days === 1 ? "" : "s"} para o badge ${badgeName} expirar`;
+}
+
 export default function DashboardConsultor() {
   const navigate = useNavigate();
   const [user, setUser]               = useState(null);
@@ -212,8 +228,8 @@ export default function DashboardConsultor() {
                   {alertsExpiracao.map((a) => (
                     <li key={a.id} className="flex items-center justify-between gap-3 py-3">
                       <div>
-                        <div className="text-sm font-semibold text-slate-900">{a.nome}</div>
-                        <div className="text-xs text-rose-500 font-medium">Expira em {a.expiraEmDias} dias</div>
+                        <div className="text-sm font-semibold text-slate-900">{getAlertBadgeName(a)}</div>
+                        <div className="text-xs font-medium text-rose-500">{formatExpirationAlert(a)}</div>
                       </div>
                       <Link to="/consultor/historico" className={btnSecondary}>Ver</Link>
                     </li>
