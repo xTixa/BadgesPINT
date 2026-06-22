@@ -161,11 +161,19 @@ class NotificationService {
       importance: Importance.high,
     );
 
-    await _localNotifications
+    const slaChannel = AndroidNotificationChannel(
+      'badges_sla',
+      'SLA de Badges',
+      description: 'Alertas de SLA ultrapassado na plataforma.',
+      importance: Importance.max,
+    );
+
+    final androidPlugin = _localNotifications
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(channel);
+        >();
+    await androidPlugin?.createNotificationChannel(channel);
+    await androidPlugin?.createNotificationChannel(slaChannel);
 
     _localReady = true;
   }
@@ -178,21 +186,27 @@ class NotificationService {
     final body = notification?.body ?? message.data['mensagem']?.toString();
     if (title == null && body == null) return;
 
+    final isSla = message.data['type']?.toString() == 'sla';
+    final channelId = isSla ? 'badges_sla' : 'badges_alerts';
+    final channelName = isSla ? 'SLA de Badges' : 'Alertas de Badges';
+    final channelDesc = isSla
+        ? 'Alertas de SLA ultrapassado na plataforma.'
+        : 'Aprovacoes, rejeicoes, lembretes e expiracoes de badges.';
+
     await _localNotifications.show(
       message.hashCode,
       title ?? 'Softinsa Badges',
       body ?? '',
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
-          'badges_alerts',
-          'Alertas de Badges',
-          channelDescription:
-              'Aprovacoes, rejeicoes, lembretes e expiracoes de badges.',
-          importance: Importance.high,
-          priority: Priority.high,
+          channelId,
+          channelName,
+          channelDescription: channelDesc,
+          importance: isSla ? Importance.max : Importance.high,
+          priority: isSla ? Priority.max : Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
-        macOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
+        macOS: const DarwinNotificationDetails(),
       ),
       payload: message.data['notificationId']?.toString(),
     );
@@ -200,5 +214,110 @@ class NotificationService {
 
   static void _openNotifications() {
     onOpenNotifications?.call();
+  }
+
+  static Future<void> scheduleExpiryReminders(
+    List<Map<String, dynamic>> alerts,
+  ) async {
+    if (!_localReady || kIsWeb) return;
+
+    await _localNotifications.cancel(90001);
+    await _localNotifications.cancel(90002);
+
+    final expiring = alerts
+        .where((a) {
+          final days = a['expire_in_days'];
+          return days is int && days >= 0 && days <= 7;
+        })
+        .toList();
+
+    if (expiring.isEmpty) return;
+
+    final names = expiring
+        .map((a) => a['name']?.toString() ?? '')
+        .where((n) => n.isNotEmpty)
+        .take(3)
+        .join(', ');
+
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'badges_alerts',
+        'Alertas de Badges',
+        channelDescription:
+            'Aprovacoes, rejeicoes, lembretes e expiracoes de badges.',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+      iOS: DarwinNotificationDetails(),
+    );
+
+    await _localNotifications.show(
+      90001,
+      'Badges a expirar em breve',
+      'Os seguintes badges expiram nos proximos 7 dias: $names',
+      details,
+    );
+  }
+
+  static Future<void> scheduleGoalReminder({
+    required String goalText,
+    required String? goalDeadline,
+  }) async {
+    if (!_localReady || kIsWeb) return;
+
+    await _localNotifications.cancel(90002);
+
+    if (goalDeadline == null || goalDeadline.isEmpty || goalText.isEmpty) {
+      return;
+    }
+
+    // Parse deadline in common formats: dd/MM/yyyy or yyyy-MM-dd
+    DateTime? deadline;
+    try {
+      final parts = goalDeadline.contains('/')
+          ? goalDeadline.split('/')
+          : goalDeadline.split('-');
+      if (parts.length == 3) {
+        if (goalDeadline.contains('/')) {
+          deadline = DateTime(
+            int.parse(parts[2]),
+            int.parse(parts[1]),
+            int.parse(parts[0]),
+          );
+        } else {
+          deadline = DateTime(
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+            int.parse(parts[2]),
+          );
+        }
+      }
+    } catch (_) {
+      return;
+    }
+
+    if (deadline == null) return;
+
+    final daysLeft = deadline.difference(DateTime.now()).inDays;
+    if (daysLeft < 0 || daysLeft > 30) return;
+
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'badges_alerts',
+        'Alertas de Badges',
+        channelDescription:
+            'Aprovacoes, rejeicoes, lembretes e expiracoes de badges.',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+      iOS: DarwinNotificationDetails(),
+    );
+
+    await _localNotifications.show(
+      90002,
+      'Lembrete: objetivo na timeline',
+      'Faltam $daysLeft dia${daysLeft == 1 ? '' : 's'} para: $goalText',
+      details,
+    );
   }
 }

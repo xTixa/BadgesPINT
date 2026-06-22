@@ -182,6 +182,20 @@ class ConsultorRepository {
     }
   }
 
+  Future<String?> recoverPassword({required String email}) async {
+    try {
+      await _apiClient.post(
+        '/api/auth/recover-password',
+        body: <String, dynamic>{'email': email},
+      );
+      return null;
+    } on ApiException catch (error) {
+      return _extractApiMessage(error.message);
+    } catch (_) {
+      return 'Nao foi possivel enviar o email de recuperacao.';
+    }
+  }
+
   Future<bool> completeFirstLogin({required String newPassword}) async {
     if ((_token ?? '').isEmpty) return false;
 

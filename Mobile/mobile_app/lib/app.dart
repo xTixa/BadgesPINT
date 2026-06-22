@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'auth/first_login_page.dart';
 import 'auth/login_page.dart';
+import 'auth/recover_password_page.dart';
 import 'auth/register_page.dart';
 import 'core/services/mutation_queue_service.dart';
 import 'shared/app_theme.dart';
@@ -72,6 +73,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
           if (location == '/login' ||
               location == '/register' ||
               location == '/first-login' ||
+              location == '/recover-password' ||
               location == '/boot') {
             return '/app/dashboard';
           }
@@ -105,7 +107,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
           builder: (BuildContext context, GoRouterState state) => LoginPage(
             onLogin: _handleLogin,
             onOpenRegister: _openRegister,
-            onRecoverPassword: _showRecoverMessage,
+            onRecoverPassword: _openRecoverPassword,
           ),
         ),
         GoRoute(
@@ -114,6 +116,14 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
             areas: _areas,
             onRegister: _handleRegister,
             onBackToLogin: _backToLogin,
+          ),
+        ),
+        GoRoute(
+          path: '/recover-password',
+          builder: (BuildContext context, GoRouterState state) =>
+              RecoverPasswordPage(
+            onRecover: _handleRecoverPassword,
+            onBack: _backToLogin,
           ),
         ),
         GoRoute(
@@ -401,12 +411,12 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
     _router.go('/login');
   }
 
-  void _showRecoverMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Recuperacao de password disponivel em breve no mobile.'),
-      ),
-    );
+  void _openRecoverPassword() {
+    _router.go('/recover-password');
+  }
+
+  Future<String?> _handleRecoverPassword(String email) {
+    return _repository.recoverPassword(email: email);
   }
 
   @override

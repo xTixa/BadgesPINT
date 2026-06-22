@@ -112,8 +112,6 @@ class ConsultorShellPage extends StatelessWidget {
               ),
             ],
           ),
-          // GoRouter's StatefulNavigationShell renders the active branch and
-          // preserves each branch's scroll/state via an IndexedStack internally.
           body: Column(
             children: [
               if (!controller.isOnline || controller.pendingSyncCount > 0)
@@ -140,7 +138,6 @@ class ConsultorShellPage extends StatelessWidget {
                 onDestinationSelected: (index) {
                   navigationShell.goBranch(
                     index,
-                    // Re-tap the current tab scrolls to the top (standard UX).
                     initialLocation: index == selectedIndex,
                   );
                 },

@@ -23,11 +23,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _anim;
   late Animation<double> _fade;
-  bool _savingProfile = false;
-  bool _savingPassword = false;
+  late TabController _tabController;
 
   @override
   void initState() {
@@ -38,11 +37,13 @@ class _ProfilePageState extends State<ProfilePage>
     );
     _fade = CurvedAnimation(parent: _anim, curve: Curves.easeIn);
     _anim.forward();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
     _anim.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -116,8 +117,7 @@ class _ProfilePageState extends State<ProfilePage>
                             padding: const EdgeInsets.only(top: 10),
                             child: IconButton.filledTonal(
                               tooltip: 'Editar perfil',
-                              onPressed:
-                                  _savingProfile ? null : _openEditProfileSheet,
+                              onPressed: _openEditProfileSheet,
                               icon: const Icon(Icons.edit_outlined),
                             ),
                           ),
@@ -199,7 +199,7 @@ class _ProfilePageState extends State<ProfilePage>
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: _savingPassword ? null : _openChangePasswordSheet,
+              onPressed: _openChangePasswordSheet,
               icon: const Icon(Icons.lock_reset_outlined),
               label: const Text('Alterar password'),
             ),
@@ -379,33 +379,32 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _profileTabs(List<BadgeItem> obtained) {
-    return DefaultTabController(
-      length: 2,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black12),
-        ),
-        child: Column(
-          children: [
-            const TabBar(
-              tabs: [
-                Tab(text: 'Badges'),
-                Tab(text: 'Meus Certificados'),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'Badges'),
+              Tab(text: 'Meus Certificados'),
+            ],
+          ),
+          SizedBox(
+            height: obtained.isEmpty ? 150 : 360,
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _badgesTab(obtained),
+                _certificatesTab(obtained),
               ],
             ),
-            SizedBox(
-              height: obtained.isEmpty ? 150 : 360,
-              child: TabBarView(
-                children: [
-                  _badgesTab(obtained),
-                  _certificatesTab(obtained),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -531,6 +530,15 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     IconButton(
                       tooltip: canShare
+                          ? 'Abrir pagina publica'
+                          : 'Ativa RGPD e galeria publica nas definicoes',
+                      onPressed: canShare
+                          ? () => _openCertificateInBrowser(certificate!.verificationUrl)
+                          : null,
+                      icon: const Icon(Icons.open_in_browser_rounded),
+                    ),
+                    IconButton(
+                      tooltip: canShare
                           ? 'Copiar link publico'
                           : 'Ativa RGPD e galeria publica nas definicoes',
                       onPressed: canShare
@@ -597,6 +605,18 @@ class _ProfilePageState extends State<ProfilePage>
       areaName: badge.area,
       imageUrl: badge.imageUrl,
     );
+  }
+
+  Future<void> _openCertificateInBrowser(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!mounted) return;
+    if (!opened) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nao foi possivel abrir o link.')),
+      );
+    }
   }
 
   Future<void> _copyCertificateLink(String url) async {
@@ -679,15 +699,16 @@ class _ProfilePageState extends State<ProfilePage>
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (context) {
+      builder: (ctx) {
+        bool saving = false;
         return StatefulBuilder(
-          builder: (context, setSheetState) {
+          builder: (ctx, setSheetState) {
             return Padding(
               padding: EdgeInsets.fromLTRB(
                 16,
                 16,
                 16,
-                MediaQuery.of(context).viewInsets.bottom + 16,
+                MediaQuery.of(ctx).viewInsets.bottom + 16,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -729,8 +750,8 @@ class _ProfilePageState extends State<ProfilePage>
                               if (bytes == null) return;
 
                               if (bytes.length > 4 * 1024 * 1024) {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                if (!ctx.mounted) return;
+                                ScaffoldMessenger.of(ctx).showSnackBar(
                                   const SnackBar(
                                     content: Text(
                                       'Escolhe uma imagem com menos de 4 MB.',
@@ -777,7 +798,7 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                       ),
                       IconButton(
-                        onPressed: () => Navigator.pop(context, false),
+                        onPressed: () => Navigator.pop(ctx, false),
                         icon: const Icon(Icons.close),
                       ),
                     ],
@@ -823,35 +844,36 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   const SizedBox(height: 16),
                   FilledButton.icon(
-                    onPressed: () async {
-                      final name = nameController.text.trim();
-                      final email = emailController.text.trim();
+                    onPressed: saving
+                        ? null
+                        : () async {
+                            final name = nameController.text.trim();
+                            final email = emailController.text.trim();
 
-                      if (name.isEmpty ||
-                          email.isEmpty ||
-                          !email.contains('@')) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Preenche nome e email valido.'),
-                          ),
-                        );
-                        return;
-                      }
+                            if (name.isEmpty ||
+                                email.isEmpty ||
+                                !email.contains('@')) {
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Preenche nome e email valido.'),
+                                ),
+                              );
+                              return;
+                            }
 
-                      final navigator = Navigator.of(context);
-                      setState(() => _savingProfile = true);
-                      final ok = await widget.controller.updateProfile(
-                        name: name,
-                        email: email,
-                        areaId: selectedAreaId,
-                        avatarUrl: selectedAvatarUrl,
-                      );
-                      if (!mounted) return;
-                      setState(() => _savingProfile = false);
-                      navigator.pop(ok);
-                    },
+                            final navigator = Navigator.of(ctx);
+                            setSheetState(() => saving = true);
+                            final ok = await widget.controller.updateProfile(
+                              name: name,
+                              email: email,
+                              areaId: selectedAreaId,
+                              avatarUrl: selectedAvatarUrl,
+                            );
+                            if (!ctx.mounted) return;
+                            navigator.pop(ok);
+                          },
                     icon: const Icon(Icons.save_outlined),
-                    label: Text(_savingProfile ? 'A guardar...' : 'Guardar'),
+                    label: Text(saving ? 'A guardar...' : 'Guardar'),
                   ),
                 ],
               ),
@@ -860,9 +882,6 @@ class _ProfilePageState extends State<ProfilePage>
         );
       },
     );
-
-    nameController.dispose();
-    emailController.dispose();
 
     if (!mounted || result == null) return;
 
@@ -886,114 +905,110 @@ class _ProfilePageState extends State<ProfilePage>
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            MediaQuery.of(context).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  const Expanded(
-                    child: Text(
-                      'Alterar password',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: currentController,
-                obscureText: true,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Password atual',
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: newController,
-                obscureText: true,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Nova password',
-                  prefixIcon: Icon(Icons.lock_reset_outlined),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: confirmController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirmar nova password',
-                  prefixIcon: Icon(Icons.verified_user_outlined),
-                ),
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () async {
-                  final current = currentController.text;
-                  final next = newController.text;
-                  final confirm = confirmController.text;
-                  final messenger = ScaffoldMessenger.of(context);
-                  final navigator = Navigator.of(context);
-
-                  if (current.isEmpty || next.length < 6) {
-                    messenger.showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Indica a password atual e uma nova com pelo menos 6 caracteres.',
+      builder: (ctx) {
+        bool saving = false;
+        return StatefulBuilder(
+          builder: (ctx, setSheet) => Padding(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              MediaQuery.of(ctx).viewInsets.bottom + 16,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Alterar password',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
-                    );
-                    return;
-                  }
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: currentController,
+                  obscureText: true,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Password atual',
+                    prefixIcon: Icon(Icons.lock_outline),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: newController,
+                  obscureText: true,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Nova password',
+                    prefixIcon: Icon(Icons.lock_reset_outlined),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: confirmController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirmar nova password',
+                    prefixIcon: Icon(Icons.verified_user_outlined),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: saving
+                      ? null
+                      : () async {
+                          final current = currentController.text;
+                          final next = newController.text;
+                          final confirm = confirmController.text;
+                          final messenger = ScaffoldMessenger.of(ctx);
+                          final navigator = Navigator.of(ctx);
 
-                  if (next != confirm) {
-                    messenger.showSnackBar(
-                      const SnackBar(
-                        content: Text('As passwords nao coincidem.'),
-                      ),
-                    );
-                    return;
-                  }
+                          if (current.isEmpty || next.length < 6) {
+                            messenger.showSnackBar(const SnackBar(
+                              content: Text(
+                                'Indica a password atual e uma nova com pelo menos 6 caracteres.',
+                              ),
+                            ));
+                            return;
+                          }
 
-                  setState(() => _savingPassword = true);
-                  final error = await widget.controller.changePassword(
-                    currentPassword: current,
-                    newPassword: next,
-                  );
-                  if (!mounted) return;
-                  setState(() => _savingPassword = false);
-                  navigator.pop(error ?? '');
-                },
-                icon: const Icon(Icons.save_outlined),
-                label: Text(_savingPassword ? 'A guardar...' : 'Guardar'),
-              ),
-            ],
+                          if (next != confirm) {
+                            messenger.showSnackBar(const SnackBar(
+                              content: Text('As passwords nao coincidem.'),
+                            ));
+                            return;
+                          }
+
+                          setSheet(() => saving = true);
+                          final error = await widget.controller.changePassword(
+                            currentPassword: current,
+                            newPassword: next,
+                          );
+                          if (!ctx.mounted) return;
+                          navigator.pop(error ?? '');
+                        },
+                  icon: const Icon(Icons.save_outlined),
+                  label: Text(saving ? 'A guardar...' : 'Guardar'),
+                ),
+              ],
+            ),
           ),
         );
       },
     );
-
-    currentController.dispose();
-    newController.dispose();
-    confirmController.dispose();
 
     if (!mounted || result == null) return;
     if (result.isEmpty) {

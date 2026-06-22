@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../shared/db_viewer_page.dart';
 import '../consultor_controller.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -142,6 +143,126 @@ class _SettingsPageState extends State<SettingsPage> {
     _objetivoController.dispose();
     _dataLimiteController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openChangePasswordSheet() async {
+    final currentCtrl = TextEditingController();
+    final newCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+
+    final error = await showModalBottomSheet<String?>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        bool saving = false;
+        return StatefulBuilder(
+          builder: (ctx, setSheet) => Padding(
+            padding: EdgeInsets.fromLTRB(
+              16, 16, 16, MediaQuery.of(ctx).viewInsets.bottom + 16,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    const Expanded(
+                      child: Text(
+                        'Alterar password',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: currentCtrl,
+                  obscureText: true,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Password atual',
+                    prefixIcon: Icon(Icons.lock_outline),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: newCtrl,
+                  obscureText: true,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Nova password',
+                    prefixIcon: Icon(Icons.lock_reset_outlined),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: confirmCtrl,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirmar nova password',
+                    prefixIcon: Icon(Icons.verified_user_outlined),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: saving
+                      ? null
+                      : () async {
+                          final current = currentCtrl.text;
+                          final next = newCtrl.text;
+                          final confirm = confirmCtrl.text;
+                          final messenger = ScaffoldMessenger.of(ctx);
+                          if (current.isEmpty || next.length < 6) {
+                            messenger.showSnackBar(const SnackBar(
+                              content: Text(
+                                'Indica a password atual e uma nova com pelo menos 6 caracteres.',
+                              ),
+                            ));
+                            return;
+                          }
+                          if (next != confirm) {
+                            messenger.showSnackBar(const SnackBar(
+                              content: Text('As passwords nao coincidem.'),
+                            ));
+                            return;
+                          }
+                          setSheet(() => saving = true);
+                          final err = await widget.controller.changePassword(
+                            currentPassword: current,
+                            newPassword: next,
+                          );
+                          if (!ctx.mounted) return;
+                          Navigator.pop(ctx, err ?? '');
+                        },
+                  icon: const Icon(Icons.save_outlined),
+                  label: Text(saving ? 'A guardar...' : 'Guardar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    currentCtrl.dispose();
+    newCtrl.dispose();
+    confirmCtrl.dispose();
+
+    if (!mounted || error == null) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error.isEmpty ? 'Password alterada com sucesso.' : error),
+        backgroundColor: error.isEmpty ? const Color(0xFF065F46) : const Color(0xFF991B1B),
+      ),
+    );
   }
 
   @override
@@ -393,9 +514,28 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: const Icon(Icons.password),
                   title: const Text("Alterar Password"),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                  onTap: () => _openChangePasswordSheet(),
                 ),
               ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          _buildSectionLabel(context, 'Desenvolvimento', Icons.bug_report_outlined),
+          const SizedBox(height: 8),
+          _buildCard(
+            child: ListTile(
+              leading: const Icon(Icons.storage_outlined),
+              title: const Text('Ver Base de Dados Local'),
+              subtitle: const Text('Inspecionar tabelas SQLite da app'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => const DbViewerPage(),
+                ),
+              ),
             ),
           ),
 

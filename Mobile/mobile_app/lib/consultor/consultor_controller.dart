@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../core/services/connectivity_service.dart';
 import '../shared/api_client.dart';
 import '../shared/download_helper.dart';
+import '../shared/notification_service.dart';
 import 'consultor_repository.dart';
 import 'consultor_models.dart';
 
@@ -108,6 +109,7 @@ class ConsultorController extends ChangeNotifier {
 
     _startRealtimeRefresh();
     await refreshSyncState();
+    _scheduleLocalNotifications();
 
     isLoading = false;
     notifyListeners();
@@ -145,7 +147,22 @@ class ConsultorController extends ChangeNotifier {
     expiryAlerts = results[5] as List<ExpiryAlert>;
     _updateRankingPosition();
     pendingSyncCount = await _repository.getPendingMutationCount();
+    _scheduleLocalNotifications();
     notifyListeners();
+  }
+
+  void _scheduleLocalNotifications() {
+    final alertMaps = expiryAlerts
+        .map((a) => <String, dynamic>{
+              'name': a.name,
+              'expire_in_days': a.expireInDays,
+            })
+        .toList();
+    NotificationService.scheduleExpiryReminders(alertMaps);
+    NotificationService.scheduleGoalReminder(
+      goalText: profile?.goalText ?? '',
+      goalDeadline: profile?.goalDeadline,
+    );
   }
 
   Future<bool> updateProfile({
