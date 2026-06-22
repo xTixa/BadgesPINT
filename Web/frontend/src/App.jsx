@@ -77,12 +77,14 @@ function AppContent() {
   const location = useLocation();
 
   const hideLayout = NO_LAYOUT_ROUTES.includes(location.pathname);
-  const serviceLineLayout = location.pathname.startsWith("/sl");
+  const sidebarLayout =
+    location.pathname.startsWith("/sl") ||
+    location.pathname === "/notificacoes";
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F2F2F2]">
       {!hideLayout && <Navbar />}
-      <main className={`flex-1 ${hideLayout || serviceLineLayout ? "" : "px-4 py-8"}`}>
+      <main className={`flex-1 ${hideLayout || sidebarLayout ? "" : "px-4 py-8"}`}>
         <Routes>
 
           {/* Auth */}
@@ -158,7 +160,7 @@ function AppContent() {
           <Route path="/notificacoes" element={<ProtectedRoute><NotificacoesPage /></ProtectedRoute>} />
         </Routes>
       </main>
-      {!hideLayout && !serviceLineLayout && <Footer />}
+      {!hideLayout && !sidebarLayout && <Footer />}
     </div>
   );
 }
