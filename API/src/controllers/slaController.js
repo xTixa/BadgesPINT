@@ -211,64 +211,68 @@ async function getOverduePedidosForSLA(sla) {
   });
 }
 
-export async function checkSLAAlerts(req, res) {
-  try {
-    const slas = await SLA.findAll({
-      where: {
-        status: "active",
-        notification_enabled: true,
-      },
-      include: [{ model: User, as: "team", attributes: ["id", "name", "email", "role"] }],
-    });
+export async function runSLAAlertCheck() {
+  const slas = await SLA.findAll({
+    where: {
+      status: "active",
+      notification_enabled: true,
+    },
+    include: [{ model: User, as: "team", attributes: ["id", "name", "email", "role"] }],
+  });
 
-    let checked = 0;
-    let alerts = 0;
+  let checked = 0;
+  let alerts = 0;
 
-    for (const sla of slas) {
-      const pedidos = await getOverduePedidosForSLA(sla);
-      checked += pedidos.length;
+  for (const sla of slas) {
+    const pedidos = await getOverduePedidosForSLA(sla);
+    checked += pedidos.length;
 
-      for (const pedido of pedidos) {
-        const badgeName = pedido.badge?.description || `Badge #${pedido.badge_id}`;
-        const consultorName = pedido.user?.name || "consultor";
-        const workflowStatus = pedido.workflow_status;
-        const titulo = `SLA ultrapassado - Pedido #${pedido.id}`;
-        const mensagem = `O pedido do badge "${badgeName}" de ${consultorName} ultrapassou o SLA de ${sla.hours_limit} horas.`;
+    for (const pedido of pedidos) {
+      const badgeName = pedido.badge?.description || `Badge #${pedido.badge_id}`;
+      const consultorName = pedido.user?.name || "consultor";
+      const workflowStatus = pedido.workflow_status;
+      const titulo = `SLA ultrapassado - Pedido #${pedido.id}`;
+      const mensagem = `O pedido do badge "${badgeName}" de ${consultorName} ultrapassou o SLA de ${sla.hours_limit} horas.`;
 
-        const notification = await createUniqueNotification({
-          titulo,
-          mensagem,
-          utilizador_id: sla.team_id,
-          push: sla.push_notification !== false,
-          email:
-            sla.email_notification && sla.team?.email
-              ? {
-                  to: sla.team.email,
-                  send: () =>
-                    sendSLAAlertEmail({
-                      to: sla.team.email,
-                      name: sla.team.name,
-                      badgeName,
-                      consultorName,
-                      hoursLimit: sla.hours_limit,
-                      workflowStatus,
-                    }),
-                }
-              : null,
-        });
+      const notification = await createUniqueNotification({
+        titulo,
+        mensagem,
+        utilizador_id: sla.team_id,
+        push: sla.push_notification !== false,
+        email:
+          sla.email_notification && sla.team?.email
+            ? {
+                to: sla.team.email,
+                send: () =>
+                  sendSLAAlertEmail({
+                    to: sla.team.email,
+                    name: sla.team.name,
+                    badgeName,
+                    consultorName,
+                    hoursLimit: sla.hours_limit,
+                    workflowStatus,
+                  }),
+              }
+            : null,
+      });
 
-        if (!notification.getDataValue("_existing")) {
-          alerts += 1;
-        }
+      if (!notification.getDataValue("_existing")) {
+        alerts += 1;
       }
     }
+  }
 
-    res.json({
-      success: true,
-      slas_checked: slas.length,
-      overdue_pedidos_checked: checked,
-      alerts_created_or_existing: alerts,
-    });
+  return {
+    success: true,
+    slas_checked: slas.length,
+    overdue_pedidos_checked: checked,
+    alerts_created_or_existing: alerts,
+  };
+}
+
+export async function checkSLAAlerts(req, res) {
+  try {
+    res.json(await runSLAAlertCheck());
   } catch (err) {
     console.error("Erro ao verificar alertas SLA:", err);
     res.status(500).json({ message: "Erro ao verificar alertas SLA" });

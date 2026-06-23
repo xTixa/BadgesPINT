@@ -17,7 +17,7 @@ As prioridades antes de entrega devem ser agora:
 2. Criar testes minimos para auth, pedidos, evidencias, roles e SLA.
 3. Confirmar SMTP/Firebase/Cloudinary em ambiente final.
 4. Corrigir codificacao PT e documentar `.env`, seeds e passos de arranque.
-5. Fechar requisitos de produto ainda pendentes: i18n, timeline profissional, historico detalhado e assinatura email com badges.
+5. Fechar requisitos de produto ainda pendentes: i18n, timeline profissional, historico detalhado, websocket em tempo real e testes mobile offline.
 
 ## Concluido desde esta analise
 
@@ -30,6 +30,11 @@ As prioridades antes de entrega devem ser agora:
 - Emails: aprovacao, rejeicao, devolucao, candidatura, reset e validacao SL ja existem no `mailService`.
 - Notificacoes centralizadas: `notificationService.js` cria notificacoes e aciona push via hooks do modelo `Notification`.
 - Alertas SLA: existe endpoint admin `POST /api/admin/slas/check-alerts` para detetar pedidos fora de SLA e notificar responsaveis.
+- Scheduler SLA: `API/src/jobs/slaAlertJob.js` executa automaticamente a verificacao de SLAs.
+- Lembretes de objetivos: `API/src/jobs/reminderJob.js` notifica consultores com `goal_deadline` nos proximos 7 dias.
+- Teste manual de jobs: endpoints admin `POST /api/admin/jobs/sla-alerts/run` e `POST /api/admin/jobs/goal-reminders/run`.
+- Motivo de rejeicao/devolucao: `consultor_badges.rejection_reason` fica persistido e exposto nos relatorios.
+- Assinatura de email com badges: template HTML e helper `getEmailSignature()` foram adicionados.
 - Mobile: fallback de ranking mock ficou limitado a `kDebugMode`, nao a producao.
 
 ## Gaps criticos ativos
@@ -64,15 +69,6 @@ Acao recomendada:
 - Confirmar variaveis SMTP, Firebase e Cloudinary em `.env` de producao.
 - Executar `flutter analyze`/`flutter test` fora do timeout do Codex ou num terminal local.
 
-### 3. SLA ainda precisa automatizacao
-
-O endpoint `POST /api/admin/slas/check-alerts` ja verifica pedidos fora de SLA e notifica responsaveis, mas ainda depende de chamada manual/API.
-
-Acao recomendada:
-
-- Adicionar cron/job externo ou scheduler backend para executar a verificacao periodicamente.
-- Definir regra de repeticao: notificar uma vez por pedido, diariamente, ou ate ser tratado.
-
 ## Matriz por area funcional
 
 | Area | Estado | Evidencia | Falta / Melhorar |
@@ -96,8 +92,8 @@ Acao recomendada:
 | LinkedIn share | Parcial | `/share/badges/:id`, campos `linkedin_sharing_enabled` | Verificar botao em UI, imagem OG real e consentimento RGPD |
 | Notificacoes em BD | Implementado | `Notification` model/controller, `notificationService.js` | Validar unread counts em UI |
 | Push notifications | Implementado / por validar | Firebase backend/mobile existe | Confirmar credenciais Firebase e rececao em dispositivo real |
-| Emails | Implementado / por validar | `mailService.js` | Confirmar SMTP final e templates |
-| SLA | Parcial | `SLA.js`, `slaRoutes.js`, `GestaoSLA.jsx`, `checkSLAAlerts` | Falta scheduler automatico para chamar os alertas |
+| Emails | Implementado / por validar | `mailService.js`, `emailSignature.html` | Confirmar SMTP final e aspeto dos templates em Outlook/Gmail |
+| SLA | Implementado / por validar | `SLA.js`, `slaRoutes.js`, `GestaoSLA.jsx`, `checkSLAAlerts`, `slaAlertJob.js` | Confirmar regra de repeticao em producao |
 | Relatorios/exportacao | Implementado | `exportController.js`, paginas de relatorios | Validar Excel/PDF com dados reais e permissoes |
 | Auditoria | Parcial | `AuditLog`, `authController` | Logar alteracoes admin, pedidos, evidencias, SLA, exports |
 | Galeria publica | Implementado | `/api/public/galeria`, `Galeria.jsx` | Confirmar consentimento RGPD e esconder email/dados sensiveis |
@@ -134,12 +130,11 @@ Acao recomendada:
 ## Requisitos que parecem faltar ou precisam confirmacao
 
 - Aceitacao RGPD juridicamente consistente, com texto/politica versionada.
-- Automatizacao dos alertas SLA para equipas responsaveis.
 - Historico detalhado de cada candidatura, preferencialmente com eventos/auditoria por etapa.
 - Comparacao/ranking por service line/area para SL.
 - Timeline de evolucao profissional completa e ligada a dados reais.
 - Internacionalizacao PT/EN/ES.
-- Assinatura de email com badges, caso seja requisito bonus.
+- WebSocket para dashboards em tempo real.
 - Testes automatizados e evidencia de validacao.
 
 ## Plano sugerido de conclusao
@@ -155,7 +150,7 @@ Acao recomendada:
 
 1. Validar SMTP, Firebase, Cloudinary e BD em ambiente final.
 2. Testar fluxo completo de candidatura ponta a ponta.
-3. Automatizar `POST /api/admin/slas/check-alerts` com scheduler/cron.
+3. Confirmar jobs automaticos de SLA e objetivos no ambiente final.
 4. Executar `flutter analyze` e `flutter test` fora do timeout atual.
 
 ### Prioridade 2 - requisitos restantes
@@ -164,7 +159,7 @@ Acao recomendada:
 2. Internacionalizacao PT/EN/ES.
 3. Timeline profissional ligada a dados reais.
 4. Comparacao/ranking por service line/area para SL.
-5. Assinatura de email com badges, se for mantida como bonus.
+5. WebSocket ou polling melhorado para dashboards em tempo real.
 
 ## Checklist final antes de demonstracao
 

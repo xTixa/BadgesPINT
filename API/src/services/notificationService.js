@@ -1,4 +1,15 @@
 import Notification from "../models/Notification.js";
+import { sendPushToUser } from "./firebaseService.js";
+
+export async function sendPushNotification({ utilizador_id, titulo, mensagem, tipo = "geral", data = {} }) {
+  return sendPushToUser(utilizador_id, {
+    id: data.notificationId || "",
+    tipo,
+    titulo,
+    mensagem,
+    ...data,
+  });
+}
 
 export async function createNotification({
   utilizador_id,

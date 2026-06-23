@@ -123,7 +123,7 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
     `SELECT cb.id, :scope AS tipo, u.name AS consultor, COALESCE(b.name, b.description, 'Badge #' || b.id) AS badge,
             cb.workflow_status AS detalhe, COALESCE(b.points, 0)::text AS pontos, a.name AS area,
             cb.status AS situacao, COALESCE(cb.data_atribuicao, cb.submitted_at, cb.created_at) AS data,
-            cb.tm_comment, cb.sl_comment
+            cb.tm_comment, cb.sl_comment, cb.rejection_reason
      FROM consultor_badges cb
      JOIN "Users" u ON u.id = cb.consultor_id
      JOIN badges b ON b.id = cb.badge_id

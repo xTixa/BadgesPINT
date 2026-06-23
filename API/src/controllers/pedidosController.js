@@ -129,6 +129,7 @@ export async function getAllPedidos(req, res) {
         "sl_validator_id",
         "sl_validated_at",
         "sl_comment",
+        "rejection_reason",
         "created_at"
       ],
       where,
@@ -211,6 +212,7 @@ export async function aprovarPedido(req, res) {
       pedido.status = "obtido";
       pedido.workflow_status = "fechado";
       pedido.data_atribuicao = pedido.data_atribuicao || new Date();
+      pedido.rejection_reason = null;
       await pedido.save({ transaction });
 
       const [user, badge] = await Promise.all([
@@ -265,6 +267,7 @@ export async function rejeitarPedido(req, res) {
       pedido.status = "rejeitado";
       pedido.workflow_status = "fechado";
       pedido.sl_comment = motivo || pedido.sl_comment;
+      pedido.rejection_reason = motivo || pedido.rejection_reason;
       await pedido.save({ transaction });
     });
 
@@ -440,6 +443,7 @@ export async function tmValidarPedido(req, res) {
     pedido.tm_validator_id = req.userId;
     pedido.tm_validated_at = new Date();
     pedido.tm_comment = comment || null;
+    pedido.rejection_reason = null;
     await pedido.save();
 
     await createNotification({
@@ -509,12 +513,15 @@ export async function tmDevolverPedido(req, res) {
     pedido.tm_validator_id = req.userId;
     pedido.tm_validated_at = new Date();
     pedido.tm_comment = comment || null;
+    pedido.rejection_reason = comment || null;
     await pedido.save();
 
     await notifyConsultorPedido({
       pedido,
       titulo: "Pedido devolvido",
-      mensagem: "O teu pedido precisa de retificação. Revê as evidências e volta a submeter.",
+      mensagem: comment
+        ? `O teu pedido precisa de retificacao. Motivo: ${comment}`
+        : "O teu pedido precisa de retificacao. Reve as evidencias e volta a submeter.",
       emailFactory: (payload) => sendBadgeReturnedEmail({ ...payload, comment }),
     });
 
@@ -559,6 +566,7 @@ export async function slAprovarPedido(req, res) {
       pedido.sl_validator_id = req.userId;
       pedido.sl_validated_at = new Date();
       pedido.sl_comment = comment || null;
+      pedido.rejection_reason = null;
       await pedido.save({ transaction });
 
       const [badge, user] = await Promise.all([
@@ -620,13 +628,16 @@ export async function slRejeitarPedido(req, res) {
       pedido.sl_validator_id = req.userId;
       pedido.sl_validated_at = new Date();
       pedido.sl_comment = comment || null;
+      pedido.rejection_reason = comment || null;
       await pedido.save({ transaction });
     });
 
     await notifyConsultorPedido({
       pedido,
       titulo: "Pedido rejeitado",
-      mensagem: "O teu pedido foi rejeitado pela Service Line.",
+      mensagem: comment
+        ? `O teu pedido foi rejeitado pela Service Line. Motivo: ${comment}`
+        : "O teu pedido foi rejeitado pela Service Line.",
       emailFactory: (payload) => sendBadgeRejectedEmail({ ...payload, comment }),
     });
 
@@ -672,13 +683,16 @@ export async function slDevolverPedido(req, res) {
       pedido.sl_validator_id = req.userId;
       pedido.sl_validated_at = new Date();
       pedido.sl_comment = comment || null;
+      pedido.rejection_reason = comment || null;
       await pedido.save({ transaction });
     });
 
     await notifyConsultorPedido({
       pedido,
       titulo: "Pedido devolvido",
-      mensagem: "O teu pedido foi devolvido pela Service Line para retificação.",
+      mensagem: comment
+        ? `O teu pedido foi devolvido pela Service Line para retificacao. Motivo: ${comment}`
+        : "O teu pedido foi devolvido pela Service Line para retificacao.",
       emailFactory: (payload) => sendBadgeReturnedEmail({ ...payload, comment }),
     });
 

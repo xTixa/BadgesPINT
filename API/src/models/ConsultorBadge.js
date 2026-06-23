@@ -57,6 +57,11 @@ const ConsultorBadge = database.define(
       allowNull: true,
     },
 
+    rejection_reason: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+
     data_atribuicao: {
       type: DataTypes.DATE,
       allowNull: true,

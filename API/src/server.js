@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import database from "./config/database.js";
 import routes from "./routes/index.js";
 import * as models from "./models/index.js";
+import { startBackgroundJobs } from "./jobs/index.js";
 
 //import { LearningPath } from "./models/index.js";
 
@@ -77,6 +78,7 @@ database
       database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS goal_text TEXT'),
       database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS goal_deadline DATE'),
       database.query('ALTER TABLE consultor_badges ADD COLUMN IF NOT EXISTS certificate_code VARCHAR(64) UNIQUE'),
+      database.query('ALTER TABLE consultor_badges ADD COLUMN IF NOT EXISTS rejection_reason TEXT'),
       database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS subtitle TEXT'),
       database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS slug VARCHAR(180) UNIQUE'),
       database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS learning_outcomes JSONB'),
@@ -98,6 +100,7 @@ database
     console.log("Models sincronizados com PostgreSQL");
     app.listen(PORT, () => {
       console.log(`Server a correr em http://localhost:${PORT}`);
+      startBackgroundJobs();
     });
   })
   .catch((err) => console.error("Erro ao iniciar servidor:", err));

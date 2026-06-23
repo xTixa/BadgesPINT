@@ -1,6 +1,11 @@
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const isProduction = process.env.NODE_ENV === "production";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function getSmtpConfig() {
   const {
@@ -48,6 +53,20 @@ function requireSmtpConfig() {
   return config;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function readSignatureTemplate() {
+  const templatePath = path.resolve(__dirname, "../templates/emailSignature.html");
+  return fs.readFileSync(templatePath, "utf8");
+}
+
 function getTransporter() {
   const { from, ...transportConfig } = requireSmtpConfig();
   return {
@@ -66,6 +85,10 @@ export function getFrontendUrl() {
     process.env.APP_BASE_URL ||
     "http://localhost:5173"
   ).replace(/\/$/, "");
+}
+
+export function getDashboardUrl(path = "/consultor") {
+  return `${getFrontendUrl()}${path}`;
 }
 
 export async function sendMail({ to, subject, text, html }) {
@@ -179,7 +202,7 @@ export async function sendSLValidationEmail({ to, name, badgeName, consultorName
   });
 }
 
-export async function sendBadgeApprovedEmail({ to, name, badgeName }) {
+export async function sendBadgeApprovedEmail({ to, name, badgeName, dashboardUrl = getDashboardUrl("/consultor/historico") }) {
   const displayName = name || "consultor";
 
   return sendMail({
@@ -190,6 +213,7 @@ export async function sendBadgeApprovedEmail({ to, name, badgeName }) {
       "",
       `O teu pedido para o badge ${badgeName} foi aprovado.`,
       "O badge ja esta disponivel no teu historico e no teu perfil.",
+      `Dashboard: ${dashboardUrl}`,
       "",
       "Plataforma Badges Softinsa",
     ].join("\n"),
@@ -197,11 +221,12 @@ export async function sendBadgeApprovedEmail({ to, name, badgeName }) {
       <p>Ola ${displayName},</p>
       <p>O teu pedido para o badge <strong>${badgeName}</strong> foi aprovado.</p>
       <p>O badge ja esta disponivel no teu historico e no teu perfil.</p>
+      <p><a href="${dashboardUrl}">Abrir dashboard</a></p>
     `,
   });
 }
 
-export async function sendBadgeRejectedEmail({ to, name, badgeName, comment }) {
+export async function sendBadgeRejectedEmail({ to, name, badgeName, comment, dashboardUrl = getDashboardUrl("/consultor/historico") }) {
   const displayName = name || "consultor";
   const reason = comment ? `Motivo: ${comment}` : "Consulta o detalhe do pedido para mais informacao.";
 
@@ -213,6 +238,7 @@ export async function sendBadgeRejectedEmail({ to, name, badgeName, comment }) {
       "",
       `O teu pedido para o badge ${badgeName} foi rejeitado.`,
       reason,
+      `Dashboard: ${dashboardUrl}`,
       "",
       "Plataforma Badges Softinsa",
     ].join("\n"),
@@ -220,11 +246,12 @@ export async function sendBadgeRejectedEmail({ to, name, badgeName, comment }) {
       <p>Ola ${displayName},</p>
       <p>O teu pedido para o badge <strong>${badgeName}</strong> foi rejeitado.</p>
       <p>${reason}</p>
+      <p><a href="${dashboardUrl}">Abrir dashboard</a></p>
     `,
   });
 }
 
-export async function sendBadgeReturnedEmail({ to, name, badgeName, comment }) {
+export async function sendBadgeReturnedEmail({ to, name, badgeName, comment, dashboardUrl = getDashboardUrl("/consultor/historico") }) {
   const displayName = name || "consultor";
   const reason = comment ? `Nota: ${comment}` : "Revê as evidencias e volta a submeter o pedido.";
 
@@ -236,6 +263,7 @@ export async function sendBadgeReturnedEmail({ to, name, badgeName, comment }) {
       "",
       `O teu pedido para o badge ${badgeName} foi devolvido para retificacao.`,
       reason,
+      `Dashboard: ${dashboardUrl}`,
       "",
       "Plataforma Badges Softinsa",
     ].join("\n"),
@@ -243,8 +271,60 @@ export async function sendBadgeReturnedEmail({ to, name, badgeName, comment }) {
       <p>Ola ${displayName},</p>
       <p>O teu pedido para o badge <strong>${badgeName}</strong> foi devolvido para retificacao.</p>
       <p>${reason}</p>
+      <p><a href="${dashboardUrl}">Abrir dashboard</a></p>
     `,
   });
+}
+
+export const sendBadgeApprovalEmail = sendBadgeApprovedEmail;
+export const sendBadgeRejectionEmail = sendBadgeRejectedEmail;
+
+export async function sendGoalReminderEmail({ to, name, goalText, goalDeadline }) {
+  const displayName = name || "consultor";
+  const dashboardUrl = getDashboardUrl("/consultor/settings");
+  const deadline = goalDeadline
+    ? new Date(goalDeadline).toLocaleDateString("pt-PT")
+    : "brevemente";
+
+  return sendMail({
+    to,
+    subject: "Lembrete de objetivo - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O teu objetivo "${goalText || "objetivo pessoal"}" termina em ${deadline}.`,
+      "Revê o teu progresso e atualiza o objetivo se necessario.",
+      `Dashboard: ${dashboardUrl}`,
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O teu objetivo <strong>${goalText || "objetivo pessoal"}</strong> termina em <strong>${deadline}</strong>.</p>
+      <p>Revê o teu progresso e atualiza o objetivo se necessario.</p>
+      <p><a href="${dashboardUrl}">Abrir objetivos</a></p>
+    `,
+  });
+}
+
+export function getEmailSignature({ user, badges = [] } = {}) {
+  const template = readSignatureTemplate();
+  const badgeHtml = badges.length
+    ? badges
+        .slice(0, 6)
+        .map((badge) => {
+          const name = escapeHtml(badge?.name || badge?.description || badge?.badge || "Badge");
+          const level = escapeHtml(badge?.level || badge?.nivel || "");
+          return `<span style="display:inline-block;margin:0 6px 6px 0;padding:5px 8px;border:1px solid #BFEFFF;border-radius:999px;background:#F8FBFF;color:#16558C;font-size:11px;font-weight:700;">${name}${level ? ` · ${level}` : ""}</span>`;
+        })
+        .join("")
+    : '<span style="font-size:12px;color:#64748b;">Sem badges publicados na assinatura.</span>';
+
+  return template
+    .replaceAll("{{name}}", escapeHtml(user?.name || "Consultor"))
+    .replaceAll("{{role}}", escapeHtml(user?.role || "Softinsa Badges"))
+    .replaceAll("{{email}}", escapeHtml(user?.email || ""))
+    .replaceAll("{{badges}}", badgeHtml);
 }
 
 export async function sendSLAAlertEmail({ to, name, badgeName, consultorName, hoursLimit, workflowStatus }) {

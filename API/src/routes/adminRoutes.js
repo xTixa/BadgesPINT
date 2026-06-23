@@ -14,6 +14,8 @@ import {
   exportToPDF,
   exportPreview
 } from "../controllers/exportController.js";
+import { runGoalReminderJob } from "../jobs/reminderJob.js";
+import { runSLAAlertJob } from "../jobs/slaAlertJob.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -39,5 +41,21 @@ router.post("/export/pdf", exportToPDF);
 router.post("/export/preview", exportPreview);
 
 router.post("/email/test", testEmailConfig);
+router.post("/jobs/goal-reminders/run", async (req, res) => {
+  try {
+    res.json(await runGoalReminderJob({ daysAhead: Number(req.body?.daysAhead || 7) }));
+  } catch (error) {
+    console.error("Erro ao executar job de objetivos:", error);
+    res.status(500).json({ message: "Erro ao executar job de objetivos" });
+  }
+});
+router.post("/jobs/sla-alerts/run", async (req, res) => {
+  try {
+    res.json(await runSLAAlertJob());
+  } catch (error) {
+    console.error("Erro ao executar job de SLA:", error);
+    res.status(500).json({ message: "Erro ao executar job de SLA" });
+  }
+});
 
 export default router;
