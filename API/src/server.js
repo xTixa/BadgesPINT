@@ -32,7 +32,10 @@ const allowedOrigins = (
 
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+    if (!origin) return callback(null, true);
+    const cleaned = origin.replace(/\/$/, "");
+    if (allowedOrigins.includes(cleaned)) return callback(null, true);
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleaned)) {
       return callback(null, true);
     }
     return callback(new Error(`Origem CORS nao permitida: ${origin}`));
