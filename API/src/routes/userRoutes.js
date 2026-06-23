@@ -6,7 +6,7 @@ import { protect } from "../middleware/authMiddleware.js";
 const router = Router();
 
 router.get("/", protect(["admin"]), getAllUsers);
-router.post("/register", protect(["admin"]), registerConsultant);
+router.post("/register", registerConsultant);
 
 // Rotas protegidas
 router.put("/:id", authMiddleware, updateProfile);

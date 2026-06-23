@@ -7,7 +7,7 @@ import {
   deleteSLA,
   getSLAsByTeamType
 } from "../controllers/slaController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware, { rolesMiddleware } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -23,12 +23,12 @@ router.get("/team-type/:teamType", getSLAsByTeamType);
 router.get("/:id", getSLAById);
 
 // Criar novo SLA
-router.post("/", createSLA);
+router.post("/", rolesMiddleware(["admin"]), createSLA);
 
 // Atualizar SLA
-router.put("/:id", updateSLA);
+router.put("/:id", rolesMiddleware(["admin"]), updateSLA);
 
 // Deletar SLA
-router.delete("/:id", deleteSLA);
+router.delete("/:id", rolesMiddleware(["admin"]), deleteSLA);
 
 export default router;

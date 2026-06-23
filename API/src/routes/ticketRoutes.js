@@ -1,20 +1,18 @@
 import express from "express";
 import * as ticketController from "../controllers/ticketController.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
+import { authMiddleware, rolesMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Todas as rotas requerem autenticação
 router.use(authMiddleware);
 
-// Rotas para utilizadores
-router.post("/", ticketController.criarTicket); // Criar novo ticket
-router.get("/meus", ticketController.obterMeusTickets); // Obter meus tickets
-router.get("/:id", ticketController.obterTicket); // Obter detalhes de um ticket
+router.post("/", ticketController.criarTicket);
+router.get("/meus", ticketController.obterMeusTickets);
 
-// Rotas para admin
-router.get("/", ticketController.obterTodosTickets); // Obter todos os tickets (admin)
-router.put("/:id", ticketController.atualizarTicket); // Atualizar ticket (admin)
-router.get("/stats/estatisticas", ticketController.obterEstatisticas); // Estatísticas
+router.get("/stats/estatisticas", rolesMiddleware(["admin"]), ticketController.obterEstatisticas);
+router.get("/", rolesMiddleware(["admin"]), ticketController.obterTodosTickets);
+router.put("/:id", rolesMiddleware(["admin"]), ticketController.atualizarTicket);
+
+router.get("/:id", ticketController.obterTicket);
 
 export default router;

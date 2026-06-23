@@ -115,6 +115,7 @@ export const obterTicket = async (req, res) => {
   try {
     const { id } = req.params;
     const utilizador_id = req.userId;
+    const role = req.userRole;
 
     const ticket = await Ticket.findByPk(id);
 
@@ -122,6 +123,13 @@ export const obterTicket = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Ticket não encontrado",
+      });
+    }
+
+    if (role !== "admin" && ticket.utilizador_id !== utilizador_id) {
+      return res.status(403).json({
+        success: false,
+        message: "Acesso negado",
       });
     }
 

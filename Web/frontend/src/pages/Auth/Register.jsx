@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "/src/api";
 import { useNavigate } from "react-router-dom";
 import AuthShell from "./AuthShell";
@@ -9,13 +9,36 @@ export default function Register() {
   const [form, setForm] = useState({
     nome: "",
     email: "",
-    area: "",
+    area_id: "",
     rgpd: false,
   });
 
+  const [areas, setAreas] = useState([]);
+  const [loadingAreas, setLoadingAreas] = useState(true);
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function fetchAreas() {
+      try {
+        const res = await api.get("/api/areas");
+        if (active) setAreas(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        console.error("Erro ao carregar areas:", err);
+        if (active) setErro("Nao foi possivel carregar as areas disponiveis.");
+      } finally {
+        if (active) setLoadingAreas(false);
+      }
+    }
+
+    fetchAreas();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,13 +53,11 @@ export default function Register() {
       const res = await api.post("/api/users/register", {
         nome: form.nome,
         email: form.email,
-        area: form.area,
+        area_id: Number(form.area_id),
         rgpdAccepted: form.rgpd,
       });
 
-      setMensagem(
-        `Utilizador criado! Password temporaria: ${res.data.temporaryPassword}. Verifica o teu email para confirmar a conta antes de entrar.`
-      );
+      setMensagem(res.data?.message || "Registo criado. Verifica o email para receberes os dados de acesso.");
 
       setTimeout(() => navigate("/login"), 4000);
     } catch (err) {
@@ -95,19 +116,19 @@ export default function Register() {
         <div className="auth-field">
           <label>Area / Service Line</label>
           <select
-            name="area"
+            name="area_id"
             required
             className="auth-input"
-            value={form.area}
+            value={form.area_id}
             onChange={handleChange}
+            disabled={loadingAreas}
           >
-            <option value="">Selecionar...</option>
-            <option value="DevOps">DevOps</option>
-            <option value="Cloud">Cloud</option>
-            <option value="Frontend">Frontend</option>
-            <option value="Backend">Backend</option>
-            <option value="Data">Data & Analytics</option>
-            <option value="Outsystems">Outsystems</option>
+            <option value="">{loadingAreas ? "A carregar..." : "Selecionar..."}</option>
+            {areas.map((area) => (
+              <option key={area.id} value={area.id}>
+                {area.name}
+              </option>
+            ))}
           </select>
         </div>
 

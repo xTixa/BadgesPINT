@@ -1,10 +1,10 @@
 import User from "../models/User.js";
+import Area from "../models/Area.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {
   buildEmailStatus,
   sendTemporaryPasswordEmail,
-  shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
 
 const generateTemporaryPassword = () => crypto.randomBytes(6).toString("base64url");
@@ -20,7 +20,25 @@ const normalizeDateOnly = (value) => {
 
 export const registerConsultant = async (req, res) => {
   try {
-    const { nome, email, area_id } = req.body;
+    const { nome, email, area_id, rgpdAccepted } = req.body;
+
+    if (!nome || !email) {
+      return res.status(400).json({ message: "Nome e email sao obrigatorios." });
+    }
+
+    if (rgpdAccepted !== true) {
+      return res.status(400).json({ message: "E obrigatorio aceitar os termos RGPD." });
+    }
+
+    const parsedAreaId = Number(area_id);
+    if (!Number.isInteger(parsedAreaId) || parsedAreaId <= 0) {
+      return res.status(400).json({ message: "Area invalida." });
+    }
+
+    const area = await Area.findByPk(parsedAreaId);
+    if (!area) {
+      return res.status(400).json({ message: "Area nao encontrada." });
+    }
 
     // Verifica duplicado
     const existing = await User.findOne({ where: { email } });
@@ -35,8 +53,9 @@ export const registerConsultant = async (req, res) => {
       email,
       password_hash: hash,
       role: "consultant",
-      area_id: area_id || null,
+      area_id: parsedAreaId,
       points_total: 0,
+      rgpd_publication_accepted: true,
     });
 
     let emailStatus = { emailSent: false };
@@ -61,8 +80,13 @@ export const registerConsultant = async (req, res) => {
     res.status(201).json({
       message: "Utilizador criado com sucesso.",
       ...emailStatus,
-      ...(shouldExposeEmailSecretsForDev() ? { temporaryPassword: generatedPassword } : {}),
-      user: newUser,
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        area_id: newUser.area_id,
+      },
     });
 
   } catch (err) {

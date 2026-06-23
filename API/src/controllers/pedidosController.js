@@ -129,15 +129,19 @@ export async function getPedidoById(req, res) {
       ]
     });
 
-    if (req.userRole === "service_line_leader") {
-      const slServiceLineId = await getServiceLineIdForUser(req.userId);
-      if (!slServiceLineId || pedido?.badge?.area?.service_line_id !== slServiceLineId) {
-        return res.status(403).json({ message: "Acesso negado" });
-      }
-    }
-
     if (!pedido) {
       return res.status(404).json({ message: "Pedido não encontrado" });
+    }
+
+    if (req.userRole === "consultant" && pedido.consultor_id !== req.userId) {
+      return res.status(403).json({ message: "Acesso negado" });
+    }
+
+    if (req.userRole === "service_line_leader") {
+      const slServiceLineId = await getServiceLineIdForUser(req.userId);
+      if (!slServiceLineId || pedido.badge?.area?.service_line_id !== slServiceLineId) {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
     }
 
     res.json(pedido);
@@ -292,6 +296,10 @@ export async function cancelarPedido(req, res) {
     const pedido = await ConsultorBadge.findByPk(id);
     if (!pedido) {
       return res.status(404).json({ message: "Pedido não encontrado" });
+    }
+
+    if (pedido.consultor_id !== req.userId) {
+      return res.status(403).json({ message: "Acesso negado" });
     }
 
     if (pedido.status !== "pendente" || pedido.workflow_status !== "open") {

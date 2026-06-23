@@ -5,8 +5,11 @@ import {
   adminUpdateRequirement,
   adminDeleteRequirement
 } from "../controllers/adminRequirementController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = Router();
+
+router.use(protect(["admin"]));
 
 // GET requisitos por badge
 router.get("/:badge_id", adminGetRequirements);
