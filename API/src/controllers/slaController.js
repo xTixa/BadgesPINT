@@ -1,5 +1,11 @@
 import SLA from "../models/SLA.js";
 import User from "../models/User.js";
+import ConsultorBadge from "../models/ConsultorBadge.js";
+import Badge from "../models/Badge.js";
+import Area from "../models/Area.js";
+import { Op } from "sequelize";
+import { sendSLAAlertEmail } from "../services/mailService.js";
+import { createUniqueNotification } from "../services/notificationService.js";
 
 /**
  * Listar todos os SLAs
@@ -157,5 +163,114 @@ export async function getSLAsByTeamType(req, res) {
   } catch (err) {
     console.error("Erro ao obter SLAs:", err);
     res.status(500).json({ message: "Erro ao obter SLAs" });
+  }
+}
+
+async function getServiceLineIdForUser(userId) {
+  const user = await User.findByPk(userId, { attributes: ["id", "area_id"] });
+  if (!user?.area_id) return null;
+  const area = await Area.findByPk(user.area_id, { attributes: ["id", "service_line_id"] });
+  return area?.service_line_id || null;
+}
+
+async function getOverduePedidosForSLA(sla) {
+  const cutoff = new Date(Date.now() - Number(sla.hours_limit || 24) * 60 * 60 * 1000);
+
+  if (sla.team_type === "talent_manager") {
+    return ConsultorBadge.findAll({
+      where: {
+        workflow_status: "submitted",
+        submitted_at: { [Op.lte]: cutoff },
+      },
+      include: [
+        { model: Badge, as: "badge", attributes: ["id", "description", "area_id"] },
+        { model: User, as: "user", attributes: ["id", "name", "email"] },
+      ],
+      order: [["submitted_at", "ASC"]],
+    });
+  }
+
+  const serviceLineId = await getServiceLineIdForUser(sla.team_id);
+  if (!serviceLineId) return [];
+
+  return ConsultorBadge.findAll({
+    where: {
+      workflow_status: "em_validacao",
+      tm_validated_at: { [Op.lte]: cutoff },
+    },
+    include: [
+      {
+        model: Badge,
+        as: "badge",
+        attributes: ["id", "description", "area_id"],
+        include: [{ model: Area, as: "area", where: { service_line_id: serviceLineId }, attributes: ["id", "service_line_id"] }],
+      },
+      { model: User, as: "user", attributes: ["id", "name", "email"] },
+    ],
+    order: [["tm_validated_at", "ASC"]],
+  });
+}
+
+export async function checkSLAAlerts(req, res) {
+  try {
+    const slas = await SLA.findAll({
+      where: {
+        status: "active",
+        notification_enabled: true,
+      },
+      include: [{ model: User, as: "team", attributes: ["id", "name", "email", "role"] }],
+    });
+
+    let checked = 0;
+    let alerts = 0;
+
+    for (const sla of slas) {
+      const pedidos = await getOverduePedidosForSLA(sla);
+      checked += pedidos.length;
+
+      for (const pedido of pedidos) {
+        const badgeName = pedido.badge?.description || `Badge #${pedido.badge_id}`;
+        const consultorName = pedido.user?.name || "consultor";
+        const workflowStatus = pedido.workflow_status;
+        const titulo = `SLA ultrapassado - Pedido #${pedido.id}`;
+        const mensagem = `O pedido do badge "${badgeName}" de ${consultorName} ultrapassou o SLA de ${sla.hours_limit} horas.`;
+
+        const notification = await createUniqueNotification({
+          titulo,
+          mensagem,
+          utilizador_id: sla.team_id,
+          push: sla.push_notification !== false,
+          email:
+            sla.email_notification && sla.team?.email
+              ? {
+                  to: sla.team.email,
+                  send: () =>
+                    sendSLAAlertEmail({
+                      to: sla.team.email,
+                      name: sla.team.name,
+                      badgeName,
+                      consultorName,
+                      hoursLimit: sla.hours_limit,
+                      workflowStatus,
+                    }),
+                }
+              : null,
+        });
+
+        if (!notification.getDataValue("_existing")) {
+          alerts += 1;
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      slas_checked: slas.length,
+      overdue_pedidos_checked: checked,
+      alerts_created_or_existing: alerts,
+    });
+  } catch (err) {
+    console.error("Erro ao verificar alertas SLA:", err);
+    res.status(500).json({ message: "Erro ao verificar alertas SLA" });
   }
 }

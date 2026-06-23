@@ -1,7 +1,7 @@
 import Ticket from "../models/Ticket.js";
-import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 import { fn, col } from "sequelize";
+import { createNotification } from "../services/notificationService.js";
 
 // Criar novo ticket
 export const criarTicket = async (req, res) => {
@@ -186,7 +186,7 @@ export const atualizarTicket = async (req, res) => {
       mensagem = "Seu ticket foi fechado";
     }
 
-    await Notification.create({
+    await createNotification({
       tipo,
       titulo: `Atualização: ${ticket.titulo}`,
       mensagem,

@@ -176,6 +176,98 @@ export async function sendSLValidationEmail({ to, name, badgeName, consultorName
   });
 }
 
+export async function sendBadgeApprovedEmail({ to, name, badgeName }) {
+  const displayName = name || "consultor";
+
+  return sendMail({
+    to,
+    subject: "Badge aprovado - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O teu pedido para o badge ${badgeName} foi aprovado.`,
+      "O badge ja esta disponivel no teu historico e no teu perfil.",
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O teu pedido para o badge <strong>${badgeName}</strong> foi aprovado.</p>
+      <p>O badge ja esta disponivel no teu historico e no teu perfil.</p>
+    `,
+  });
+}
+
+export async function sendBadgeRejectedEmail({ to, name, badgeName, comment }) {
+  const displayName = name || "consultor";
+  const reason = comment ? `Motivo: ${comment}` : "Consulta o detalhe do pedido para mais informacao.";
+
+  return sendMail({
+    to,
+    subject: "Pedido de badge rejeitado - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O teu pedido para o badge ${badgeName} foi rejeitado.`,
+      reason,
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O teu pedido para o badge <strong>${badgeName}</strong> foi rejeitado.</p>
+      <p>${reason}</p>
+    `,
+  });
+}
+
+export async function sendBadgeReturnedEmail({ to, name, badgeName, comment }) {
+  const displayName = name || "consultor";
+  const reason = comment ? `Nota: ${comment}` : "Revê as evidencias e volta a submeter o pedido.";
+
+  return sendMail({
+    to,
+    subject: "Pedido de badge devolvido - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O teu pedido para o badge ${badgeName} foi devolvido para retificacao.`,
+      reason,
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O teu pedido para o badge <strong>${badgeName}</strong> foi devolvido para retificacao.</p>
+      <p>${reason}</p>
+    `,
+  });
+}
+
+export async function sendSLAAlertEmail({ to, name, badgeName, consultorName, hoursLimit, workflowStatus }) {
+  const displayName = name || "responsavel";
+
+  return sendMail({
+    to,
+    subject: "Alerta SLA ultrapassado - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O pedido do badge ${badgeName} submetido por ${consultorName} ultrapassou o SLA de ${hoursLimit} horas.`,
+      `Estado atual: ${workflowStatus}.`,
+      "Acede a plataforma para tratar o pedido.",
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O pedido do badge <strong>${badgeName}</strong> submetido por <strong>${consultorName}</strong> ultrapassou o SLA de <strong>${hoursLimit} horas</strong>.</p>
+      <p>Estado atual: ${workflowStatus}.</p>
+      <p>Acede a plataforma para tratar o pedido.</p>
+    `,
+  });
+}
+
 export function buildEmailStatus(error = null) {
   if (!error) return { emailSent: true };
 

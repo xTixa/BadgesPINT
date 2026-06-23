@@ -62,7 +62,9 @@ const Notification = database.define(
   }
 );
 
-Notification.afterCreate(async (notification) => {
+Notification.afterCreate(async (notification, options) => {
+  if (options?.skipPush) return;
+
   try {
     await sendPushToUser(notification.utilizador_id, notification);
   } catch (error) {
@@ -70,7 +72,9 @@ Notification.afterCreate(async (notification) => {
   }
 });
 
-Notification.afterBulkCreate(async (notifications) => {
+Notification.afterBulkCreate(async (notifications, options) => {
+  if (options?.skipPush) return;
+
   try {
     await sendPushToUsers(
       notifications.map((notification) => notification.utilizador_id),

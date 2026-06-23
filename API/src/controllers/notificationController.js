@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import FcmToken from "../models/FcmToken.js";
 import database from "../config/database.js";
 import { QueryTypes } from "sequelize";
+import { createNotifications } from "../services/notificationService.js";
 
 // Obter notificações do utilizador
 export const obterNotificacoes = async (req, res) => {
@@ -274,7 +275,7 @@ export const enviarBroadcast = async (req, res) => {
       lido: false,
     }));
 
-    await Notification.bulkCreate(notifications);
+    await createNotifications(notifications);
 
     res.json({
       success: true,

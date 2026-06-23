@@ -2,10 +2,16 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import User from "../models/User.js";
 import Badge from "../models/Badge.js";
 import Area from "../models/Area.js";
-import Notification from "../models/Notification.js";
 import database from "../config/database.js";
 import { QueryTypes, Op } from "sequelize";
-import { sendBadgeApplicationEmail, sendSLValidationEmail } from "../services/mailService.js";
+import {
+  sendBadgeApplicationEmail,
+  sendBadgeApprovedEmail,
+  sendBadgeRejectedEmail,
+  sendBadgeReturnedEmail,
+  sendSLValidationEmail,
+} from "../services/mailService.js";
+import { createNotification } from "../services/notificationService.js";
 
 async function getServiceLineIdForUser(userId) {
   const user = await User.findByPk(userId);
@@ -23,6 +29,42 @@ async function ensureSLAccess(pedido, slServiceLineId) {
   return badge?.area?.service_line_id === slServiceLineId;
 }
 
+async function getPedidoNotificationContext(pedido) {
+  const [badge, consultor] = await Promise.all([
+    Badge.findByPk(pedido.badge_id, { attributes: ["id", "description"] }),
+    User.findByPk(pedido.consultor_id, { attributes: ["id", "name", "email"] }),
+  ]);
+
+  return {
+    badge,
+    consultor,
+    badgeName: badge?.description || `Badge #${pedido.badge_id}`,
+    consultorName: consultor?.name || "consultor",
+  };
+}
+
+async function notifyConsultorPedido({ pedido, titulo, mensagem, emailFactory, transaction = null }) {
+  const { consultor, badgeName } = await getPedidoNotificationContext(pedido);
+
+  return createNotification({
+    titulo,
+    mensagem,
+    utilizador_id: pedido.consultor_id,
+    transaction,
+    email: consultor?.email && emailFactory
+      ? {
+          to: consultor.email,
+          send: () =>
+            emailFactory({
+              to: consultor.email,
+              name: consultor.name,
+              badgeName,
+            }),
+        }
+      : null,
+  });
+}
+
 async function notifyBadgeApplication(pedido) {
   const badge = await Badge.findByPk(pedido.badge_id, {
     attributes: ["id", "description"],
@@ -32,12 +74,10 @@ async function notifyBadgeApplication(pedido) {
   });
   const badgeName = badge?.description || `#${pedido.badge_id}`;
 
-  await Notification.create({
-    tipo: "geral",
+  await createNotification({
     titulo: "Candidatura submetida",
     mensagem: `Candidataste-te ao badge ${badgeName}.`,
     utilizador_id: pedido.consultor_id,
-    lido: false
   });
 
   if (consultor?.email) {
@@ -157,25 +197,39 @@ export async function getPedidoById(req, res) {
 export async function aprovarPedido(req, res) {
   try {
     const { id } = req.params;
+    let pedido;
 
-    const pedido = await ConsultorBadge.findByPk(id);
-    if (!pedido) {
-      return res.status(404).json({ message: "Pedido não encontrado" });
-    }
+    await database.transaction(async (transaction) => {
+      pedido = await ConsultorBadge.findByPk(id, { transaction });
+      if (!pedido) {
+        const error = new Error("Pedido não encontrado");
+        error.statusCode = 404;
+        throw error;
+      }
 
-    pedido.status = "obtido";
-    pedido.workflow_status = "fechado";
-    pedido.data_atribuicao = new Date();
-    await pedido.save();
+      const wasObtained = pedido.status === "obtido";
+      pedido.status = "obtido";
+      pedido.workflow_status = "fechado";
+      pedido.data_atribuicao = pedido.data_atribuicao || new Date();
+      await pedido.save({ transaction });
 
-    // Atualizar pontos do utilizador
-    const user = await User.findByPk(pedido.consultor_id);
-    const badge = await Badge.findByPk(pedido.badge_id);
+      const [user, badge] = await Promise.all([
+        User.findByPk(pedido.consultor_id, { transaction }),
+        Badge.findByPk(pedido.badge_id, { transaction }),
+      ]);
 
-    if (user && badge) {
-      user.points_total = (user.points_total || 0) + badge.points;
-      await user.save();
-    }
+      if (user && badge && !wasObtained) {
+        user.points_total = (user.points_total || 0) + (badge.points || 0);
+        await user.save({ transaction });
+      }
+    });
+
+    await notifyConsultorPedido({
+      pedido,
+      titulo: "Badge aprovado",
+      mensagem: "O teu pedido foi aprovado e o badge está disponível.",
+      emailFactory: sendBadgeApprovedEmail,
+    });
 
     res.json({
       message: "Pedido aprovado com sucesso",
@@ -183,6 +237,9 @@ export async function aprovarPedido(req, res) {
     });
 
   } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
     console.error("Erro ao aprovar pedido:", err);
     res.status(500).json({ message: "Erro ao aprovar pedido" });
   }
@@ -195,15 +252,28 @@ export async function rejeitarPedido(req, res) {
   try {
     const { id } = req.params;
     const { motivo } = req.body;
+    let pedido;
 
-    const pedido = await ConsultorBadge.findByPk(id);
-    if (!pedido) {
-      return res.status(404).json({ message: "Pedido não encontrado" });
-    }
+    await database.transaction(async (transaction) => {
+      pedido = await ConsultorBadge.findByPk(id, { transaction });
+      if (!pedido) {
+        const error = new Error("Pedido não encontrado");
+        error.statusCode = 404;
+        throw error;
+      }
 
-    pedido.status = "rejeitado";
-    pedido.workflow_status = "fechado";
-    await pedido.save();
+      pedido.status = "rejeitado";
+      pedido.workflow_status = "fechado";
+      pedido.sl_comment = motivo || pedido.sl_comment;
+      await pedido.save({ transaction });
+    });
+
+    await notifyConsultorPedido({
+      pedido,
+      titulo: "Pedido rejeitado",
+      mensagem: motivo ? `O teu pedido foi rejeitado. Motivo: ${motivo}` : "O teu pedido foi rejeitado.",
+      emailFactory: (payload) => sendBadgeRejectedEmail({ ...payload, comment: motivo }),
+    });
 
     res.json({
       message: "Pedido rejeitado com sucesso",
@@ -211,6 +281,9 @@ export async function rejeitarPedido(req, res) {
     });
 
   } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
     console.error("Erro ao rejeitar pedido:", err);
     res.status(500).json({ message: "Erro ao rejeitar pedido" });
   }
@@ -369,12 +442,10 @@ export async function tmValidarPedido(req, res) {
     pedido.tm_comment = comment || null;
     await pedido.save();
 
-    await Notification.create({
-      tipo: "geral",
+    await createNotification({
       titulo: "Pedido em validação",
       mensagem: "O teu pedido foi validado pelo Talent Manager e segue para validação final.",
       utilizador_id: pedido.consultor_id,
-      lido: false
     });
 
     // Notify SL leaders of the badge's service line
@@ -395,18 +466,17 @@ export async function tmValidarPedido(req, res) {
           { replacements: { slId: badgeWithArea.area.service_line_id }, type: QueryTypes.SELECT }
         );
         for (const leader of slLeaders) {
-          await Notification.create({
-            tipo: "geral",
+          await createNotification({
             titulo: "Pedido aguarda aprovação",
             mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua aprovação.`,
             utilizador_id: leader.id,
-            lido: false,
+            email: leader.email
+              ? {
+                  to: leader.email,
+                  send: () => sendSLValidationEmail({ to: leader.email, name: leader.name, badgeName, consultorName }),
+                }
+              : null,
           });
-          if (leader.email) {
-            sendSLValidationEmail({ to: leader.email, name: leader.name, badgeName, consultorName }).catch((e) =>
-              console.error("Email SL falhou:", e.message)
-            );
-          }
         }
       }
     } catch (notifyErr) {
@@ -441,12 +511,11 @@ export async function tmDevolverPedido(req, res) {
     pedido.tm_comment = comment || null;
     await pedido.save();
 
-    await Notification.create({
-      tipo: "geral",
+    await notifyConsultorPedido({
+      pedido,
       titulo: "Pedido devolvido",
       mensagem: "O teu pedido precisa de retificação. Revê as evidências e volta a submeter.",
-      utilizador_id: pedido.consultor_id,
-      lido: false
+      emailFactory: (payload) => sendBadgeReturnedEmail({ ...payload, comment }),
     });
 
     return res.json(pedido);
@@ -468,38 +537,52 @@ export async function slAprovarPedido(req, res) {
       return res.status(403).json({ message: "Apenas Service Line Leader" });
     }
 
-    const pedido = await ConsultorBadge.findByPk(id);
+    let pedido = await ConsultorBadge.findByPk(id);
     if (!pedido) return res.status(404).json({ message: "Pedido não encontrado" });
 
     const slServiceLineId = await getServiceLineIdForUser(req.userId);
     const hasAccess = await ensureSLAccess(pedido, slServiceLineId);
     if (!hasAccess) return res.status(403).json({ message: "Acesso negado" });
 
-    pedido.workflow_status = "fechado";
-    pedido.status = "obtido";
-    pedido.data_atribuicao = new Date();
-    pedido.sl_validator_id = req.userId;
-    pedido.sl_validated_at = new Date();
-    pedido.sl_comment = comment || null;
-    await pedido.save();
+    await database.transaction(async (transaction) => {
+      pedido = await ConsultorBadge.findByPk(id, { transaction });
+      if (!pedido) {
+        const error = new Error("Pedido não encontrado");
+        error.statusCode = 404;
+        throw error;
+      }
 
-    const badge = await Badge.findByPk(pedido.badge_id);
-    const user = await User.findByPk(pedido.consultor_id);
-    if (badge && user) {
-      user.points_total = (user.points_total || 0) + (badge.points || 0);
-      await user.save();
-    }
+      const wasObtained = pedido.status === "obtido";
+      pedido.workflow_status = "fechado";
+      pedido.status = "obtido";
+      pedido.data_atribuicao = pedido.data_atribuicao || new Date();
+      pedido.sl_validator_id = req.userId;
+      pedido.sl_validated_at = new Date();
+      pedido.sl_comment = comment || null;
+      await pedido.save({ transaction });
 
-    await Notification.create({
-      tipo: "geral",
+      const [badge, user] = await Promise.all([
+        Badge.findByPk(pedido.badge_id, { transaction }),
+        User.findByPk(pedido.consultor_id, { transaction }),
+      ]);
+      if (badge && user && !wasObtained) {
+        user.points_total = (user.points_total || 0) + (badge.points || 0);
+        await user.save({ transaction });
+      }
+    });
+
+    await notifyConsultorPedido({
+      pedido,
       titulo: "Badge aprovado",
       mensagem: "O teu pedido foi aprovado e o badge está disponível.",
-      utilizador_id: pedido.consultor_id,
-      lido: false
+      emailFactory: sendBadgeApprovedEmail,
     });
 
     return res.json(pedido);
   } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
     console.error("Erro SL aprovar pedido:", err);
     res.status(500).json({ message: "Erro ao aprovar pedido" });
   }
@@ -517,30 +600,41 @@ export async function slRejeitarPedido(req, res) {
       return res.status(403).json({ message: "Apenas Service Line Leader" });
     }
 
-    const pedido = await ConsultorBadge.findByPk(id);
+    let pedido = await ConsultorBadge.findByPk(id);
     if (!pedido) return res.status(404).json({ message: "Pedido não encontrado" });
 
     const slServiceLineId = await getServiceLineIdForUser(req.userId);
     const hasAccess = await ensureSLAccess(pedido, slServiceLineId);
     if (!hasAccess) return res.status(403).json({ message: "Acesso negado" });
 
-    pedido.workflow_status = "fechado";
-    pedido.status = "rejeitado";
-    pedido.sl_validator_id = req.userId;
-    pedido.sl_validated_at = new Date();
-    pedido.sl_comment = comment || null;
-    await pedido.save();
+    await database.transaction(async (transaction) => {
+      pedido = await ConsultorBadge.findByPk(id, { transaction });
+      if (!pedido) {
+        const error = new Error("Pedido não encontrado");
+        error.statusCode = 404;
+        throw error;
+      }
 
-    await Notification.create({
-      tipo: "geral",
+      pedido.workflow_status = "fechado";
+      pedido.status = "rejeitado";
+      pedido.sl_validator_id = req.userId;
+      pedido.sl_validated_at = new Date();
+      pedido.sl_comment = comment || null;
+      await pedido.save({ transaction });
+    });
+
+    await notifyConsultorPedido({
+      pedido,
       titulo: "Pedido rejeitado",
       mensagem: "O teu pedido foi rejeitado pela Service Line.",
-      utilizador_id: pedido.consultor_id,
-      lido: false
+      emailFactory: (payload) => sendBadgeRejectedEmail({ ...payload, comment }),
     });
 
     return res.json(pedido);
   } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
     console.error("Erro SL rejeitar pedido:", err);
     res.status(500).json({ message: "Erro ao rejeitar pedido" });
   }
@@ -558,30 +652,41 @@ export async function slDevolverPedido(req, res) {
       return res.status(403).json({ message: "Apenas Service Line Leader" });
     }
 
-    const pedido = await ConsultorBadge.findByPk(id);
+    let pedido = await ConsultorBadge.findByPk(id);
     if (!pedido) return res.status(404).json({ message: "Pedido não encontrado" });
 
     const slServiceLineId = await getServiceLineIdForUser(req.userId);
     const hasAccess = await ensureSLAccess(pedido, slServiceLineId);
     if (!hasAccess) return res.status(403).json({ message: "Acesso negado" });
 
-    pedido.workflow_status = "open";
-    pedido.status = "pendente";
-    pedido.sl_validator_id = req.userId;
-    pedido.sl_validated_at = new Date();
-    pedido.sl_comment = comment || null;
-    await pedido.save();
+    await database.transaction(async (transaction) => {
+      pedido = await ConsultorBadge.findByPk(id, { transaction });
+      if (!pedido) {
+        const error = new Error("Pedido não encontrado");
+        error.statusCode = 404;
+        throw error;
+      }
 
-    await Notification.create({
-      tipo: "geral",
+      pedido.workflow_status = "open";
+      pedido.status = "pendente";
+      pedido.sl_validator_id = req.userId;
+      pedido.sl_validated_at = new Date();
+      pedido.sl_comment = comment || null;
+      await pedido.save({ transaction });
+    });
+
+    await notifyConsultorPedido({
+      pedido,
       titulo: "Pedido devolvido",
       mensagem: "O teu pedido foi devolvido pela Service Line para retificação.",
-      utilizador_id: pedido.consultor_id,
-      lido: false
+      emailFactory: (payload) => sendBadgeReturnedEmail({ ...payload, comment }),
     });
 
     return res.json(pedido);
   } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
     console.error("Erro SL devolver pedido:", err);
     res.status(500).json({ message: "Erro ao devolver pedido" });
   }

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
+
 import '../core/services/connectivity_service.dart';
 import '../core/services/sync_service.dart';
 import '../data/local/application_dao.dart';
@@ -382,7 +384,9 @@ class ConsultorRepository {
   }
 
   Future<List<RankingItem>> getConsultantsRanking() async {
-    if ((_token ?? '').isEmpty) return getRankingMock();
+    if ((_token ?? '').isEmpty) {
+      return kDebugMode ? getRankingMock() : <RankingItem>[];
+    }
 
     try {
       final payload = await _apiClient.get(
@@ -397,10 +401,10 @@ class ConsultorRepository {
             .toList();
       }
     } catch (_) {
-      // Keep the app usable if the API has not been updated yet.
+      if (!kDebugMode) return <RankingItem>[];
     }
 
-    return getRankingMock();
+    return kDebugMode ? getRankingMock() : <RankingItem>[];
   }
 
   Future<List<LearningPathProgressItem>> getLearningPathProgress() async {

@@ -3,7 +3,7 @@ import RequirementEvidence from "../models/RequirementEvidence.js";
 import ConsultorBadge from "../models/ConsultorBadge.js";
 import Badge from "../models/Badge.js";
 import User from "../models/User.js";
-import Notification from "../models/Notification.js";
+import { createNotification } from "../services/notificationService.js";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -197,12 +197,10 @@ export async function approveEvidence(req, res) {
         Badge.findByPk(evidence.badge_id)
       ]);
 
-      await Notification.create({
-        tipo: "geral",
+      await createNotification({
         titulo: "Evidência aprovada",
         mensagem: `O requisito ${reqItem?.code || ""} ${reqItem?.title ? `(${reqItem.title})` : ""} foi aprovado${badge ? ` no badge ${badge.name || badge.description}` : ""}.`,
         utilizador_id: evidence.consultor_id,
-        lido: false
       });
     } catch (err) {
       console.error("Erro ao criar notificação:", err);
@@ -234,12 +232,10 @@ export async function rejectEvidence(req, res) {
         Badge.findByPk(evidence.badge_id)
       ]);
 
-      await Notification.create({
-        tipo: "geral",
+      await createNotification({
         titulo: "Evidência rejeitada",
         mensagem: `O requisito ${reqItem?.code || ""} ${reqItem?.title ? `(${reqItem.title})` : ""} foi rejeitado${badge ? ` no badge ${badge.name || badge.description}` : ""}.`,
         utilizador_id: evidence.consultor_id,
-        lido: false
       });
     } catch (err) {
       console.error("Erro ao criar notificação:", err);

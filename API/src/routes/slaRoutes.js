@@ -5,7 +5,8 @@ import {
   createSLA,
   updateSLA,
   deleteSLA,
-  getSLAsByTeamType
+  getSLAsByTeamType,
+  checkSLAAlerts
 } from "../controllers/slaController.js";
 import authMiddleware, { rolesMiddleware } from "../middleware/authMiddleware.js";
 
@@ -18,6 +19,9 @@ router.get("/", getAllSLAs);
 
 // Obter SLAs por tipo de equipa
 router.get("/team-type/:teamType", getSLAsByTeamType);
+
+// Verificar pedidos fora de SLA e notificar responsaveis
+router.post("/check-alerts", rolesMiddleware(["admin"]), checkSLAAlerts);
 
 // Obter um SLA
 router.get("/:id", getSLAById);
