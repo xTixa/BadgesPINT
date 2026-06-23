@@ -99,8 +99,18 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
       routes: <RouteBase>[
         GoRoute(
           path: '/boot',
-          builder: (BuildContext context, GoRouterState state) =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
+          builder: (BuildContext context, GoRouterState state) => const Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('A carregar...', style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ),
+            ),
         ),
         GoRoute(
           path: '/login',

@@ -12,7 +12,11 @@ Future<void> main() async {
     await DatabaseHelper.instance.database;
   }
   await ConnectivityService.instance.initialize();
-  await NotificationService.initialize();
+  try {
+    await NotificationService.initialize();
+  } catch (e) {
+    debugPrint('Firebase init failed (push desativado): $e');
+  }
   runApp(const BadgesPintApp());
 }
 
