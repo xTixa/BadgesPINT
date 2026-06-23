@@ -14,23 +14,27 @@ class UploadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 112),
-      children: [
-        const AppHeader(
-          title: 'Submeter Evidencias',
-          subtitle: 'Envia provas para cumprir requisitos',
-          icon: Icons.cloud_upload_rounded,
-        ),
-        const SizedBox(height: 16),
-        _buildInfoCard(scheme),
-        const SizedBox(height: 18),
-        _buildBadgeSelector(context),
-        const SizedBox(height: 18),
-        _buildRequirements(context),
-      ],
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final scheme = Theme.of(context).colorScheme;
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 112),
+          children: [
+            const AppHeader(
+              title: 'Submeter Evidencias',
+              subtitle: 'Envia provas para cumprir requisitos',
+              icon: Icons.cloud_upload_rounded,
+            ),
+            const SizedBox(height: 16),
+            _buildInfoCard(scheme),
+            const SizedBox(height: 18),
+            _buildBadgeSelector(context),
+            const SizedBox(height: 18),
+            _buildRequirements(context),
+          ],
+        );
+      },
     );
   }
 
@@ -87,7 +91,7 @@ class UploadPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<int>(
-          value: selectedBadgeId,
+          initialValue: selectedBadgeId,
           isExpanded: true,
           hint: const Text(
             'Seleciona um badge em progresso',
@@ -363,7 +367,7 @@ class _RequirementTileState extends State<RequirementTile> {
                     ),
                   if (hasEvidence) ...[
                     const SizedBox(height: 12),
-                    _submittedEvidenceBox(evidence!),
+                    _submittedEvidenceBox(evidence),
                   ],
                   if (!approved) ...[
                     const SizedBox(height: 12),
