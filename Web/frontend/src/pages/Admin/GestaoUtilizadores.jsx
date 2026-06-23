@@ -142,7 +142,11 @@ export default function GestaoUtilizadores() {
       const passwordNote = response.data?.temporaryPassword
         ? ` Password temporaria: ${response.data.temporaryPassword}`
         : "";
-      setSuccess(`${getRoleLabel(response.data?.role)} criado com sucesso.${emailNote}${passwordNote}`);
+      setSuccess(
+        `${getRoleLabel(response.data?.role)}: ${
+          response.data?.message || "Utilizador criado com sucesso."
+        }${emailNote}${passwordNote}`,
+      );
       fetchUsers();
     } catch (err) {
       console.error("Erro ao criar utilizador:", err);

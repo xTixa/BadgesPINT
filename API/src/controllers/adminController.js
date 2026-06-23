@@ -227,15 +227,12 @@ export async function createUser(req, res) {
     } catch (mailError) {
       console.error("Erro ao enviar email de convite:", mailError);
       emailStatus = buildEmailStatus(mailError);
-      if (process.env.NODE_ENV === "production" && !password) {
-        return res.status(500).json({
-          message: "Utilizador criado, mas nao foi possivel enviar o email com a password temporaria.",
-          ...emailStatus,
-        });
-      }
     }
 
     res.status(201).json({
+      message: emailStatus.emailSent
+        ? "Utilizador criado com sucesso."
+        : "Utilizador criado, mas nao foi possivel enviar o email com a password temporaria.",
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
