@@ -8,6 +8,7 @@ import database from "../config/database.js";
 import { QueryTypes, Op, fn, col } from "sequelize";
 import {
   isEmailConfigured,
+  sendMail,
   sendTemporaryPasswordEmail,
   shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
@@ -315,5 +316,48 @@ export async function deleteUser(req, res) {
   } catch (err) {
     console.error("Erro ao apagar user:", err);
     res.status(500).json({ message: "Erro ao apagar utilizador" });
+  }
+}
+
+export async function testEmailConfig(req, res) {
+  try {
+    const { to } = req.body;
+
+    if (!to) {
+      return res.status(400).json({ message: "Email de destino obrigatorio." });
+    }
+
+    if (!isEmailConfigured()) {
+      return res.status(400).json({
+        message: "Servico de email nao configurado no servidor.",
+        emailConfigured: false,
+      });
+    }
+
+    const info = await sendMail({
+      to,
+      subject: "Teste SMTP - Badges Softinsa",
+      text: "Este e um email de teste da plataforma Badges Softinsa.",
+      html: "<p>Este e um email de teste da plataforma <strong>Badges Softinsa</strong>.</p>",
+    });
+
+    res.json({
+      success: true,
+      emailConfigured: true,
+      accepted: info.accepted,
+      rejected: info.rejected,
+      messageId: info.messageId,
+    });
+  } catch (err) {
+    console.error("Erro no teste de email:", err);
+    res.status(500).json({
+      success: false,
+      emailConfigured: isEmailConfigured(),
+      message: "Falha ao enviar email de teste.",
+      detail: process.env.NODE_ENV === "production" ? undefined : err.message,
+      code: err.code,
+      command: err.command,
+      responseCode: err.responseCode,
+    });
   }
 }

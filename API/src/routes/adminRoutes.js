@@ -6,7 +6,8 @@ import {
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  testEmailConfig
 } from "../controllers/adminController.js";
 import {
   exportToExcel,
@@ -36,5 +37,7 @@ router.delete("/users/:id", deleteUser);
 router.post("/export/excel", exportToExcel);
 router.post("/export/pdf", exportToPDF);
 router.post("/export/preview", exportPreview);
+
+router.post("/email/test", testEmailConfig);
 
 export default router;
