@@ -251,32 +251,32 @@ export default function Badges() {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <section className="px-6 py-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+      <section className="px-0 pb-4">
+        <div className="mx-auto w-full max-w-[1600px]">
+          <div className="overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-6 text-white shadow-[0_12px_40px_rgba(15,98,254,0.18)] lg:p-7">
             <Link
               to={id ? "/areas" : "/"}
-              className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
             >
               <i className="bi bi-arrow-left"></i>
               {id ? "Voltar as areas" : "Voltar ao inicio"}
             </Link>
 
-            <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-end">
+            <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
               <div>
-                <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
+                <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
                   Catalogo de badges
                 </p>
-                <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+                <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-white md:text-4xl">
                   {areaName ? `Badges de ${areaName}` : "Aprende competencias que contam."}
                 </h1>
-                <p className="mt-4 max-w-2xl text-lg text-white/85">
+                <p className="mt-3 max-w-3xl text-base text-white/85">
                   Pesquisa, compara niveis, ve requisitos e candidata-te aos badges que
                   fazem sentido para o teu percurso.
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-white/15 bg-white/15 p-4 backdrop-blur">
+              <div className="rounded-2xl border border-white/15 bg-white/15 p-3 backdrop-blur">
                 <label className="relative block">
                   <span className="sr-only">Pesquisar badge</span>
                   <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -285,7 +285,7 @@ export default function Badges() {
                     value={search}
                     onChange={(event) => updateSearch(event.target.value)}
                     placeholder="Pesquisar por tecnologia, area ou nivel"
-                    className="h-12 w-full rounded-xl border-0 bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
+                    className="h-11 w-full rounded-xl border-0 bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
                   />
                 </label>
               </div>
@@ -294,7 +294,7 @@ export default function Badges() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-7xl px-6 py-10">
+      <main className="mx-auto w-full max-w-[1600px] px-0 py-4">
         <PublicBreadcrumbs
           items={
             id
@@ -320,22 +320,22 @@ export default function Badges() {
           </div>
         )}
 
-        <section className="mb-8 grid gap-4 md:grid-cols-4">
+        <section className="mb-6 grid gap-4 md:grid-cols-4">
           {[
             ["Badges", badges.length],
             ["Resultados", filteredBadges.length],
             ["Areas", areas.length],
             ["Pontos", totalPoints],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div key={label} className="rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
               <p className="text-sm font-semibold text-slate-500">{label}</p>
-              <p className="mt-2 text-3xl font-extrabold text-slate-950">{value}</p>
+              <p className="mt-1 text-2xl font-extrabold text-slate-950">{value}</p>
             </div>
           ))}
         </section>
 
-        <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-          <aside className="h-fit rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:sticky lg:top-24">
+        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+          <aside className="h-fit rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:sticky lg:top-24">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-extrabold text-slate-950">Filtros</h2>
               <button
@@ -348,7 +348,7 @@ export default function Badges() {
               </button>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-4">
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-slate-700">Area</span>
                 <select
@@ -412,9 +412,9 @@ export default function Badges() {
           </aside>
 
           <section>
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-950">
+                <h2 className="text-xl font-extrabold text-slate-950">
                   {filteredBadges.length} badges encontrados
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
@@ -424,12 +424,12 @@ export default function Badges() {
             </div>
 
             {loading ? (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
                 <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
                 <p className="text-lg font-semibold text-slate-600">A carregar catalogo...</p>
               </div>
             ) : filteredBadges.length > 0 ? (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {filteredBadges.map((badge) => {
                   const application = applicationsByBadge.get(Number(badge.id));
 
@@ -453,7 +453,7 @@ export default function Badges() {
                 })}
               </div>
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
                 <i className="bi bi-search mb-4 block text-6xl text-slate-300"></i>
                 <h2 className="text-xl font-extrabold text-slate-950">Sem resultados</h2>
                 <p className="mx-auto mt-2 max-w-xl text-slate-500">

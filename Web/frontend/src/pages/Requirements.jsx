@@ -208,10 +208,10 @@ export default function Requirements() {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <section className="px-4 py-8 sm:px-6">
-        <div className="mx-auto grid max-w-7xl gap-8 rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)] lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="max-w-3xl py-4">
-            <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm font-bold text-[#BFEFFF]">
+      <section className="px-0 pb-4">
+        <div className="mx-auto grid w-full max-w-[1600px] gap-6 rounded-2xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-6 text-white shadow-[0_12px_40px_rgba(15,98,254,0.18)] lg:grid-cols-[minmax(0,1fr)_320px] lg:p-7">
+          <div className="max-w-5xl">
+            <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-bold text-[#BFEFFF]">
               <Link to="/" className="hover:text-white">Inicio</Link>
               <span className="text-white/40">/</span>
               <Link to="/badges" className="hover:text-white">Badges</Link>
@@ -219,7 +219,7 @@ export default function Requirements() {
               <span className="text-white/80">{areaName}</span>
             </nav>
 
-            <div className="mb-4 flex flex-wrap gap-2">
+            <div className="mb-3 flex flex-wrap gap-2">
               <span className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-[#0F62FE]">
                 {level}
               </span>
@@ -228,14 +228,14 @@ export default function Requirements() {
               </span>
             </div>
 
-            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl">
+            <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white md:text-4xl">
               {badge ? badgeName : "Detalhe do badge"}
             </h1>
-            <p className="mt-4 text-xl leading-relaxed text-[#EAF6FF]">
+            <p className="mt-3 max-w-4xl text-base leading-7 text-[#EAF6FF]">
               {description}
             </p>
 
-            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#EAF6FF]">
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#EAF6FF]">
               <span className="font-bold text-[#BFEFFF]">
                 <i className="bi bi-star-fill mr-1"></i>
                 Badge verificado
@@ -245,19 +245,19 @@ export default function Requirements() {
               <span>Atualizado recentemente</span>
             </div>
 
-            <p className="mt-4 text-sm text-[#D9F7FF]">
+            <p className="mt-3 text-sm text-[#D9F7FF]">
               Criado para consultores que querem validar competencias com evidencias reais.
             </p>
           </div>
 
           <aside className="hidden lg:block">
-            <div className="sticky top-24 overflow-hidden rounded-2xl border border-white/25 bg-white text-slate-950 shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-              <div className="flex aspect-video items-center justify-center bg-[linear-gradient(135deg,#EAF6FF_0%,#D9F7FF_46%,#BFEFFF_100%)]">
+            <div className="sticky top-24 overflow-hidden rounded-2xl border border-white/25 bg-white text-slate-950 shadow-[0_12px_40px_rgba(15,98,254,0.18)]">
+              <div className="flex h-40 items-center justify-center bg-[linear-gradient(135deg,#EAF6FF_0%,#D9F7FF_46%,#BFEFFF_100%)]">
                 <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} size="hero" />
               </div>
-              <div className="p-5">
-                <div className="mb-4">
-                  <p className="text-3xl font-extrabold">{points} pontos</p>
+              <div className="p-4">
+                <div className="mb-3">
+                  <p className="text-2xl font-extrabold">{points} pontos</p>
                   <p className="text-sm font-semibold text-slate-500">ao conquistar este badge</p>
                 </div>
 
@@ -266,7 +266,7 @@ export default function Requirements() {
                     type="button"
                     onClick={handleApply}
                     disabled={applying || applied}
-                    className="mb-3 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {applied
                       ? application?.status === "obtido"
@@ -279,7 +279,7 @@ export default function Requirements() {
                 ) : (
                   <Link
                     to="/login"
-                    className="mb-3 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD]"
+                    className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD]"
                   >
                     Entrar para candidatar
                   </Link>
@@ -288,19 +288,19 @@ export default function Requirements() {
                 <button
                   type="button"
                   onClick={() => openLinkedInShare(publicBadgeUrl)}
-                  className="mb-3 flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+                  className="mb-3 flex h-10 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                 >
                   Partilhar no LinkedIn
                 </button>
 
                 <Link
                   to="/badges"
-                  className="flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+                  className="flex h-10 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                 >
                   Ver outros badges
                 </Link>
 
-                <div className="mt-5 space-y-3 text-sm">
+                <div className="mt-4 space-y-2 text-sm">
                   <p className="font-extrabold">Este badge inclui:</p>
                   <p><i className="bi bi-list-check mr-2"></i>{reqs.length} requisitos de validacao</p>
                   <p><i className="bi bi-upload mr-2"></i>Submissao de evidencias</p>
@@ -313,8 +313,8 @@ export default function Requirements() {
         </div>
       </section>
 
-      <main className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="space-y-8">
+      <main className="mx-auto grid w-full max-w-[1600px] gap-6 px-0 py-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-6">
           {error && (
             <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
               <p className="text-sm font-semibold text-rose-700">{error}</p>
@@ -327,9 +327,9 @@ export default function Requirements() {
             </div>
           )}
 
-          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="text-2xl font-extrabold text-slate-950">O que vais aprender</h2>
-            <div className="mt-5 grid gap-x-8 gap-y-3 md:grid-cols-2">
+          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <h2 className="text-xl font-extrabold text-slate-950">O que vais aprender</h2>
+            <div className="mt-4 grid gap-x-8 gap-y-3 md:grid-cols-2 xl:grid-cols-4">
               {learningOutcomes.map((outcome) => (
                 <div key={outcome} className="flex gap-3 text-sm leading-relaxed text-slate-700">
                   <i className="bi bi-check2 mt-0.5 text-lg text-[#0F62FE]"></i>
@@ -341,14 +341,14 @@ export default function Requirements() {
 
           <section>
             <div className="mb-4">
-              <h2 className="text-2xl font-extrabold text-slate-950">Conteudo do badge</h2>
+                <h2 className="text-xl font-extrabold text-slate-950">Conteudo do badge</h2>
               <p className="mt-1 text-sm text-slate-600">
                 {reqs.length} requisitos • evidencia obrigatoria • validacao pela equipa responsavel
               </p>
             </div>
 
             {loading ? (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
                 <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
                 <p className="font-semibold text-slate-600">A carregar requisitos...</p>
               </div>
@@ -360,7 +360,7 @@ export default function Requirements() {
                     className="group border-b border-slate-200 bg-white last:border-b-0"
                     open={index === 0}
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-3.5">
                       <div className="flex min-w-0 items-center gap-3">
                         <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
                         <span className="font-extrabold text-slate-950">
@@ -371,7 +371,7 @@ export default function Requirements() {
                         Obrigatorio
                       </span>
                     </summary>
-                    <div className="px-5 py-5">
+                    <div className="px-5 py-4">
                       <p className="max-w-3xl text-sm leading-relaxed text-slate-700">
                         {requirement.description || requirement.descricao}
                       </p>
@@ -388,7 +388,7 @@ export default function Requirements() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
                 <i className="bi bi-clipboard2-x mb-4 block text-5xl text-slate-300"></i>
                 <h2 className="text-xl font-extrabold text-slate-950">Nenhum requisito definido</h2>
                 <p className="mt-2 text-slate-500">
@@ -401,7 +401,7 @@ export default function Requirements() {
           {sections.length > 0 && (
             <section>
               <div className="mb-4">
-                <h2 className="text-2xl font-extrabold text-slate-950">Curriculo</h2>
+                <h2 className="text-xl font-extrabold text-slate-950">Curriculo</h2>
                 <p className="mt-1 text-sm text-slate-600">
                   Modulos e aulas de apoio para preparar a candidatura.
                 </p>
@@ -413,7 +413,7 @@ export default function Requirements() {
                     className="group border-b border-slate-200 bg-white last:border-b-0"
                     open={index === 0}
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-3.5">
                       <div className="flex min-w-0 items-center gap-3">
                         <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
                         <span className="font-extrabold text-slate-950">{section.title}</span>
@@ -424,7 +424,7 @@ export default function Requirements() {
                     </summary>
                     <div className="divide-y divide-slate-100">
                       {(section.lessons || []).map((lesson) => (
-                        <div key={lesson.id} className="flex items-start gap-3 px-5 py-4">
+                        <div key={lesson.id} className="flex items-start gap-3 px-5 py-3.5">
                           <i className="bi bi-play-circle text-lg text-[#0F62FE]"></i>
                           <div>
                             <p className="font-bold text-slate-900">{lesson.title}</p>
@@ -444,9 +444,9 @@ export default function Requirements() {
             </section>
           )}
 
-          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="text-2xl font-extrabold text-slate-950">Descricao</h2>
-            <p className="mt-4 max-w-3xl leading-relaxed text-slate-700">{description}</p>
+          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <h2 className="text-xl font-extrabold text-slate-950">Descricao</h2>
+            <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{description}</p>
           </section>
         </div>
 

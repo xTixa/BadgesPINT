@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import api from "../api";
 import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
 import PublicJourneyStepper from "../components/PublicJourneyStepper";
 
+const serviceLineIcons = ["bi-cloud", "bi-code-slash", "bi-people", "bi-diagram-3"];
+
 export default function ServiceLines() {
-  const { id } = useParams(); // learning path id
+  const { id } = useParams();
   const [sls, setSls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pathName, setPathName] = useState("");
@@ -13,151 +15,169 @@ export default function ServiceLines() {
 
   useEffect(() => {
     if (!id) return;
-    
-    setLoading(true);
-    setError("");
-    
-    // Buscar service lines
-    api.get(`/learning-paths/${id}/service-lines`)
-      .then(res => {
-        setSls(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setError("Não foi possível carregar as service lines neste momento.");
-        setLoading(false);
-      });
 
-    // Buscar nome do learning path
-    api.get(`/learning-paths`)
-      .then(res => {
-        const path = res.data.find(p => p.id === parseInt(id));
+    let active = true;
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [serviceLinesResponse, pathsResponse] = await Promise.all([
+          api.get(`/learning-paths/${id}/service-lines`),
+          api.get("/learning-paths").catch(() => ({ data: [] })),
+        ]);
+
+        if (!active) return;
+
+        setSls(Array.isArray(serviceLinesResponse.data) ? serviceLinesResponse.data : []);
+
+        const paths = Array.isArray(pathsResponse.data) ? pathsResponse.data : [];
+        const path = paths.find((item) => Number(item.id) === Number(id));
         if (path) setPathName(path.name);
-      })
-      .catch(err => console.error(err));
+      } catch (err) {
+        console.error(err);
+        if (!active) return;
+        setSls([]);
+        setError("Nao foi possivel carregar as service lines neste momento.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadData();
+
+    return () => {
+      active = false;
+    };
   }, [id]);
 
-  const getServiceLineIcon = (index) => {
-    const icons = [
-      // Cloud icon
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />,
-      // Code icon
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />,
-      // Users icon
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-    ];
-    return icons[index % icons.length];
-  };
-
-  const getCardColor = (index) => {
-    const colors = ["bg-[#0F62FE]", "bg-[#00AEEF]", "bg-[#0F62FE]", "bg-[#00AEEF]"];
-    return colors[index % colors.length];
-  };
+  const stats = useMemo(
+    () => [
+      ["Linhas", sls.length],
+      ["Etapa", "2/4"],
+      ["Percurso", pathName ? "Ativo" : "Geral"],
+    ],
+    [pathName, sls.length],
+  );
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <div className="bg-gradient-to-br from-[#0F62FE] via-[#0F62FE] to-[#00AEEF] text-[#F2F2F2] py-16 px-6 border-b border-[#0F62FE]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center mb-4">
-            <Link 
-              to="/learning-paths" 
-              className="text-[#BFEFFF] hover:text-white transition flex items-center gap-2 text-sm font-medium focus-visible:ring-2 focus-visible:ring-white/60"
+      <section className="px-0 pb-4">
+        <div className="mx-auto w-full max-w-[1600px]">
+          <div className="overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-6 text-white shadow-[0_12px_40px_rgba(15,98,254,0.18)] lg:p-7">
+            <Link
+              to="/learning-paths"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Voltar aos Percursos
+              <i className="bi bi-arrow-left"></i>
+              Voltar aos percursos
             </Link>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-            Linhas de Serviço
-          </h1>
-          <p className="text-lg md:text-xl text-[#BFEFFF] max-w-3xl">
-            {pathName && `Percurso: ${pathName} - `}
-            Escolhe a linha de serviço que melhor se adequa aos teus objetivos profissionais.
-          </p>
-        </div>
-      </div>
 
-      {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
+            <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
+              <div>
+                <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
+                  Linhas de servico
+                </p>
+                <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                  {pathName || "Escolhe a linha de servico do teu percurso."}
+                </h1>
+                <p className="mt-3 max-w-3xl text-base text-white/85">
+                  Avanca para a linha de servico mais alinhada com os teus objetivos
+                  e consulta as areas de competencia disponiveis.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                {stats.map(([label, value]) => (
+                  <div key={label} className="rounded-xl bg-white px-3 py-3 text-center">
+                    <p className="text-xs font-bold uppercase text-slate-500">{label}</p>
+                    <p className="mt-1 text-xl font-extrabold text-slate-950">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main className="mx-auto w-full max-w-[1600px] px-0 py-4">
         <PublicBreadcrumbs
           items={[
-            { label: "Início", to: "/" },
+            { label: "Inicio", to: "/" },
             { label: "Percursos", to: "/learning-paths" },
-            { label: "Linhas de Serviço" },
+            { label: "Linhas de Servico" },
           ]}
         />
         <PublicJourneyStepper currentStep="service-lines" />
 
-        <div className="mb-6 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/5 px-4 py-3 text-sm text-slate-700">
-          Passo 2: Escolhe uma linha de serviço para veres as áreas de competência.
+        <div className="mb-5 rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0F62FE]/10 text-[#0F62FE]">
+              <i className="bi bi-diagram-2"></i>
+            </span>
+            <div>
+              <p className="text-sm font-extrabold text-slate-950">Passo 2</p>
+              <p className="text-sm text-slate-500">
+                Escolhe uma linha de servico para veres as areas de competencia.
+              </p>
+            </div>
+          </div>
         </div>
 
         {error && (
-          <div role="alert" className="mb-8 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
-            <p className="text-sm font-semibold text-rose-700 sm:text-base">{error}</p>
+          <div role="alert" className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+            <p className="text-sm font-semibold text-rose-700">{error}</p>
           </div>
         )}
 
         {loading ? (
-          <div role="status" aria-live="polite" className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0F62FE] mb-4"></div>
-            <p className="text-gray-600 text-lg">A carregar linhas de serviço...</p>
+          <div role="status" aria-live="polite" className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+            <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
+            <p className="text-lg font-semibold text-slate-600">A carregar linhas de servico...</p>
           </div>
         ) : sls.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {sls.map((sl, index) => (
-              <div 
-                key={sl.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              <article
+                key={sl.id}
+                className="flex min-h-[220px] flex-col rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_38px_rgba(15,98,254,0.12)]"
               >
-                <div className={`h-48 ${getCardColor(index)} relative overflow-hidden`}>
-                  <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
-                  
-                  {/* Ícone grande */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <svg className="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      {getServiceLineIcon(index)}
-                    </svg>
-                  </div>
-                  
-                  {/* Badge com número */}
-                  <div className="absolute top-4 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#0F62FE]">
-                    <span className="text-lg font-bold text-slate-800">{index + 1}</span>
-                  </div>
+                <div className="mb-4 flex items-start justify-between gap-4">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0F62FE]/10 text-lg text-[#0F62FE]">
+                    <i className={`bi ${serviceLineIcons[index % serviceLineIcons.length]}`}></i>
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-500">
+                    #{index + 1}
+                  </span>
                 </div>
 
-                {/* Card Body */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">
-                    {sl.name}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-6 min-h-[60px]">
-                    {sl.description || "Linha de serviço especializada com áreas de competência técnica."}
-                  </p>
+                <h2 className="text-lg font-extrabold text-slate-950">{sl.name}</h2>
+                <p className="mt-3 flex-1 text-sm leading-6 text-slate-500">
+                  {sl.description ||
+                    "Linha de servico especializada com areas de competencia tecnica."}
+                </p>
 
-                  {/* Action Button */}
-                  <Link
-                    to={`/service-lines/${sl.id}/areas`}
-                    className="block w-full text-center px-6 py-3 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] text-white font-semibold shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#0F62FE]/35"
-                  >
-                    Ver Áreas →
-                  </Link>
-                </div>
-              </div>
+                <Link
+                  to={`/service-lines/${sl.id}/areas`}
+                  className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-5 text-sm font-bold text-white transition hover:bg-[#16558C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F62FE]/35"
+                >
+                  Ver areas
+                  <i className="bi bi-arrow-right"></i>
+                </Link>
+              </article>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <svg className="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-            <p className="text-gray-500 text-lg">Nenhuma linha de serviço disponível</p>
+          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+            <i className="bi bi-diagram-2 mb-4 block text-6xl text-slate-300"></i>
+            <h2 className="text-xl font-extrabold text-slate-950">Sem linhas de servico</h2>
+            <p className="mx-auto mt-2 max-w-xl text-slate-500">
+              Ainda nao existem linhas de servico publicadas para este percurso.
+            </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
