@@ -12,6 +12,37 @@ dotenv.config();
 
 const app = express();
 
+app.set("trust proxy", 1);
+
+const allowedOrigins = (
+  process.env.CORS_ORIGINS ||
+  [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    process.env.FRONTEND_URL,
+    process.env.PUBLIC_APP_URL,
+  ]
+    .filter(Boolean)
+    .join(",")
+)
+  .split(",")
+  .map((origin) => origin.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origem CORS nao permitida: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
 // Redirecionar HTTP → HTTPS em produção (Render define x-forwarded-proto)
 if (process.env.NODE_ENV === "production") {
   app.use((req, res, next) => {
@@ -22,8 +53,11 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.use(cors());
 app.use(express.json({ limit: "5mb" }));
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true, service: "BadgesPINT API" });
+});
 
 // Rotas
 app.use("/", routes);
