@@ -63,7 +63,12 @@ export default function Register() {
         rgpdAccepted: form.rgpd,
       });
 
-      setMensagem(res.data?.message || "Registo criado. Verifica o email para receberes os dados de acesso.");
+      const passwordNote = res.data?.temporaryPassword
+        ? ` Password temporaria: ${res.data.temporaryPassword}`
+        : "";
+      setMensagem(
+        `${res.data?.message || "Registo criado. Verifica o email para receberes os dados de acesso."}${passwordNote}`,
+      );
 
       setTimeout(() => navigate("/login"), 4000);
     } catch (err) {

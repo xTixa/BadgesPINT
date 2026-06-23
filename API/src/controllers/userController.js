@@ -3,8 +3,9 @@ import Area from "../models/Area.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {
-  buildEmailStatus,
+  isEmailConfigured,
   sendTemporaryPasswordEmail,
+  shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
 
 const generateTemporaryPassword = () => crypto.randomBytes(6).toString("base64url");
@@ -61,24 +62,26 @@ export const registerConsultant = async (req, res) => {
       rgpd_publication_accepted: true,
     });
 
-    let emailStatus = { emailSent: false };
-    try {
-      await sendTemporaryPasswordEmail({
+    const emailStatus = isEmailConfigured()
+      ? { emailSent: false, emailQueued: true }
+      : { emailSent: false, emailQueued: false, emailError: "Email nao configurado no servidor." };
+
+    if (emailStatus.emailQueued) {
+      sendTemporaryPasswordEmail({
         to: newUser.email,
         name: newUser.name,
         temporaryPassword: generatedPassword,
+      }).catch((mailError) => {
+        console.error("Utilizador criado, mas email de convite falhou:", mailError.message);
       });
-      emailStatus = buildEmailStatus();
-    } catch (mailError) {
-      console.error("Erro ao enviar email de convite:", mailError);
-      emailStatus = buildEmailStatus(mailError);
     }
 
     res.status(201).json({
-      message: emailStatus.emailSent
-        ? "Utilizador criado com sucesso."
-        : "Utilizador criado, mas nao foi possivel enviar o email com a password temporaria.",
+      message: emailStatus.emailQueued
+        ? "Utilizador criado com sucesso. O email com a password temporaria esta a ser enviado."
+        : "Utilizador criado, mas o email nao esta configurado no servidor.",
       ...emailStatus,
+      ...(shouldExposeEmailSecretsForDev() ? { temporaryPassword: generatedPassword } : {}),
       user: {
         id: newUser.id,
         name: newUser.name,

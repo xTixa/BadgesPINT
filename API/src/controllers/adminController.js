@@ -7,7 +7,7 @@ import crypto from "crypto";
 import database from "../config/database.js";
 import { QueryTypes, Op, fn, col } from "sequelize";
 import {
-  buildEmailStatus,
+  isEmailConfigured,
   sendTemporaryPasswordEmail,
   shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
@@ -216,23 +216,24 @@ export async function createUser(req, res) {
       area_id: area_id || null
     });
 
-    let emailStatus = { emailSent: false };
-    try {
-      await sendTemporaryPasswordEmail({
+    const emailStatus = isEmailConfigured()
+      ? { emailSent: false, emailQueued: true }
+      : { emailSent: false, emailQueued: false, emailError: "Email nao configurado no servidor." };
+
+    if (emailStatus.emailQueued) {
+      sendTemporaryPasswordEmail({
         to: newUser.email,
         name: newUser.name,
         temporaryPassword,
+      }).catch((mailError) => {
+        console.error("Utilizador criado, mas email de convite falhou:", mailError.message);
       });
-      emailStatus = buildEmailStatus();
-    } catch (mailError) {
-      console.error("Erro ao enviar email de convite:", mailError);
-      emailStatus = buildEmailStatus(mailError);
     }
 
     res.status(201).json({
-      message: emailStatus.emailSent
-        ? "Utilizador criado com sucesso."
-        : "Utilizador criado, mas nao foi possivel enviar o email com a password temporaria.",
+      message: emailStatus.emailQueued
+        ? "Utilizador criado com sucesso. O email com a password temporaria esta a ser enviado."
+        : "Utilizador criado, mas o email nao esta configurado no servidor.",
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,

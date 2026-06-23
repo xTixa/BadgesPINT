@@ -21,6 +21,9 @@ function getSmtpConfig() {
     host: SMTP_HOST,
     port: Number(SMTP_PORT),
     secure: SMTP_SECURE === "true" || Number(SMTP_PORT) === 465,
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 10000,
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASS,

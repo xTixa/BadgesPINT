@@ -136,6 +136,8 @@ export default function GestaoUtilizadores() {
       setForm({ nome: "", email: "", role: "consultant", area_id: "" });
       const emailNote = response.data?.emailSent
         ? " Email enviado com a password temporaria."
+        : response.data?.emailQueued
+          ? " Email em envio com a password temporaria."
         : response.data?.emailError
           ? ` ${response.data.emailError}`
           : "";
