@@ -7,6 +7,7 @@ import crypto from "crypto";
 import database from "../config/database.js";
 import { QueryTypes, Op, fn, col } from "sequelize";
 import {
+  getMailErrorDetails,
   isEmailConfigured,
   sendMail,
   sendTemporaryPasswordEmail,
@@ -227,7 +228,10 @@ export async function createUser(req, res) {
         name: newUser.name,
         temporaryPassword,
       }).catch((mailError) => {
-        console.error("Utilizador criado, mas email de convite falhou:", mailError.message);
+        console.error(
+          "Utilizador criado, mas email de convite falhou:",
+          getMailErrorDetails(mailError),
+        );
       });
     }
 

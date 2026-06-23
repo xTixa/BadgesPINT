@@ -283,6 +283,18 @@ export function buildEmailStatus(error = null) {
   };
 }
 
+export function getMailErrorDetails(error) {
+  if (!error) return null;
+
+  return {
+    message: error.message,
+    code: error.code,
+    command: error.command,
+    responseCode: error.responseCode,
+    response: error.response,
+  };
+}
+
 export function shouldExposeEmailSecretsForDev() {
   return !isProduction;
 }

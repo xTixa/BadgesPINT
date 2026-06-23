@@ -7,7 +7,8 @@ import Badge from "../models/Badge.js";
 import PasswordReset from "../models/PasswordReset.js";
 import { createAuditLog } from "./auditLogController.js";
 import {
-  buildEmailStatus,
+  getMailErrorDetails,
+  isEmailConfigured,
   sendPasswordResetEmail,
   shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
@@ -254,29 +255,27 @@ export const recoverPassword = async (req, res) => {
       expires_at: expiresAt,
     });
 
-    let emailStatus = { emailSent: false };
-    try {
-      await sendPasswordResetEmail({
+    const emailStatus = isEmailConfigured()
+      ? { emailSent: false, emailQueued: true }
+      : { emailSent: false, emailQueued: false, emailError: "Email nao configurado no servidor." };
+
+    if (emailStatus.emailQueued) {
+      sendPasswordResetEmail({
         to: user.email,
         name: user.name,
         token: rawToken,
+      }).catch((mailError) => {
+        console.error(
+          "Token de recuperacao criado, mas email falhou:",
+          getMailErrorDetails(mailError),
+        );
       });
-      emailStatus = buildEmailStatus();
-    } catch (mailError) {
-      console.error("Erro ao enviar email de reset:", mailError);
-      emailStatus = buildEmailStatus(mailError);
-      if (process.env.NODE_ENV === "production") {
-        return res.status(500).json({
-          message: "Nao foi possivel enviar o email de recuperacao.",
-          ...emailStatus,
-        });
-      }
     }
 
     const payload = {
-      message: emailStatus.emailSent
+      message: emailStatus.emailQueued
         ? "Se o email existir, enviamos instrucoes."
-        : "Token de recuperacao criado, mas o email nao foi enviado.",
+        : "Token de recuperacao criado, mas o email nao esta configurado no servidor.",
       ...emailStatus,
     };
     if (shouldExposeEmailSecretsForDev()) {

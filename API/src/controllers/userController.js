@@ -3,6 +3,7 @@ import Area from "../models/Area.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {
+  getMailErrorDetails,
   isEmailConfigured,
   sendTemporaryPasswordEmail,
   shouldExposeEmailSecretsForDev,
@@ -72,7 +73,10 @@ export const registerConsultant = async (req, res) => {
         name: newUser.name,
         temporaryPassword: generatedPassword,
       }).catch((mailError) => {
-        console.error("Utilizador criado, mas email de convite falhou:", mailError.message);
+        console.error(
+          "Utilizador criado, mas email de convite falhou:",
+          getMailErrorDetails(mailError),
+        );
       });
     }
 
