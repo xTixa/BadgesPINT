@@ -20,7 +20,7 @@ const normalizeDateOnly = (value) => {
 
 export const registerConsultant = async (req, res) => {
   try {
-    const { nome, email, area_id, rgpdAccepted } = req.body;
+    const { nome, email, area_id, area, rgpdAccepted } = req.body;
 
     if (!nome || !email) {
       return res.status(400).json({ message: "Nome e email sao obrigatorios." });
@@ -31,12 +31,15 @@ export const registerConsultant = async (req, res) => {
     }
 
     const parsedAreaId = Number(area_id);
-    if (!Number.isInteger(parsedAreaId) || parsedAreaId <= 0) {
-      return res.status(400).json({ message: "Area invalida." });
+    let selectedArea = null;
+
+    if (Number.isInteger(parsedAreaId) && parsedAreaId > 0) {
+      selectedArea = await Area.findByPk(parsedAreaId);
+    } else if (typeof area === "string" && area.trim()) {
+      selectedArea = await Area.findOne({ where: { name: area.trim() } });
     }
 
-    const area = await Area.findByPk(parsedAreaId);
-    if (!area) {
+    if (!selectedArea) {
       return res.status(400).json({ message: "Area nao encontrada." });
     }
 
@@ -53,7 +56,7 @@ export const registerConsultant = async (req, res) => {
       email,
       password_hash: hash,
       role: "consultant",
-      area_id: parsedAreaId,
+      area_id: selectedArea.id,
       points_total: 0,
       rgpd_publication_accepted: true,
     });

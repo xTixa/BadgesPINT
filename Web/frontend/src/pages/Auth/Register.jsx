@@ -50,6 +50,12 @@ export default function Register() {
     setMensagem("");
 
     try {
+      if (!form.area_id) {
+        setErro("Seleciona uma area antes de criar o utilizador.");
+        setLoading(false);
+        return;
+      }
+
       const res = await api.post("/api/users/register", {
         nome: form.nome,
         email: form.email,
@@ -148,7 +154,11 @@ export default function Register() {
           </label>
         </div>
 
-        <button type="submit" disabled={loading} className="auth-primary-button">
+        <button
+          type="submit"
+          disabled={loading || loadingAreas || areas.length === 0}
+          className="auth-primary-button"
+        >
           <i className="bi bi-person-plus"></i>
           {loading ? "A criar..." : "Criar utilizador"}
         </button>
