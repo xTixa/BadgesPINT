@@ -105,6 +105,7 @@ class NotificationService {
     if (!await ensureFirebaseInitialized()) return;
 
     final token = await FirebaseMessaging.instance.getToken();
+    debugPrint('FCM token: $token');
     if (token != null && token.isNotEmpty) {
       final registered = await repository.registerDeviceToken(token);
       debugPrint(
@@ -168,10 +169,11 @@ class NotificationService {
       importance: Importance.max,
     );
 
-    final androidPlugin = _localNotifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+    final androidPlugin =
+        _localNotifications
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
     await androidPlugin?.createNotificationChannel(channel);
     await androidPlugin?.createNotificationChannel(slaChannel);
 
@@ -189,9 +191,10 @@ class NotificationService {
     final isSla = message.data['type']?.toString() == 'sla';
     final channelId = isSla ? 'badges_sla' : 'badges_alerts';
     final channelName = isSla ? 'SLA de Badges' : 'Alertas de Badges';
-    final channelDesc = isSla
-        ? 'Alertas de SLA ultrapassado na plataforma.'
-        : 'Aprovacoes, rejeicoes, lembretes e expiracoes de badges.';
+    final channelDesc =
+        isSla
+            ? 'Alertas de SLA ultrapassado na plataforma.'
+            : 'Aprovacoes, rejeicoes, lembretes e expiracoes de badges.';
 
     await _localNotifications.show(
       message.hashCode,
@@ -234,12 +237,11 @@ class NotificationService {
     await _localNotifications.cancel(90001);
     await _localNotifications.cancel(90002);
 
-    final expiring = alerts
-        .where((a) {
+    final expiring =
+        alerts.where((a) {
           final days = a['expire_in_days'];
           return days is int && days >= 0 && days <= 7;
-        })
-        .toList();
+        }).toList();
 
     if (expiring.isEmpty) return;
 
@@ -284,9 +286,10 @@ class NotificationService {
     // Parse deadline in common formats: dd/MM/yyyy or yyyy-MM-dd
     DateTime? deadline;
     try {
-      final parts = goalDeadline.contains('/')
-          ? goalDeadline.split('/')
-          : goalDeadline.split('-');
+      final parts =
+          goalDeadline.contains('/')
+              ? goalDeadline.split('/')
+              : goalDeadline.split('-');
       if (parts.length == 3) {
         if (goalDeadline.contains('/')) {
           deadline = DateTime(
