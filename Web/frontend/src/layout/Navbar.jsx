@@ -91,6 +91,8 @@ export default function Navbar() {
   const roleLabel = roleLabelMap[user?.role] || "Utilizador";
   const dashboardPath = roleDashboardMap[user?.role] || "/";
   const settingsPath = roleSettingsMap[user?.role] || "/";
+  const isConsultor = user?.role === "consultant" || user?.role === "consultor";
+  const totalPoints = Number(user?.points_total || user?.points || 0);
 
   const navLinkClass = ({ isActive }) =>
     `rounded-full px-3.5 py-2 text-sm font-semibold transition-all duration-200
@@ -151,6 +153,16 @@ export default function Navbar() {
             ) : (
               <>
                 <NotificationCenter />
+                {isConsultor && (
+                  <div
+                    className="flex items-center gap-1.5 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/10 px-3 py-2 text-sm font-bold text-[#0F62FE] shadow-sm"
+                    title={`${totalPoints} pontos`}
+                    aria-label={`${totalPoints} pontos`}
+                  >
+                    <i className="bi bi-coin text-[#0F62FE]"></i>
+                    <span>{totalPoints}</span>
+                  </div>
+                )}
 
                 <div
                   className="relative"

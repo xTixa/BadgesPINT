@@ -54,15 +54,18 @@ export default function Ranking() {
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: user?.name || "Consultant" }} />
 
-      <main className="admin-main">
-        <div className="mb-8 rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <h1 className="mb-2 text-3xl font-bold">Ranking de Consultores</h1>
-
-          <p className="text-white/85">
-            Acompanha os colaboradores com maior pontuacao e conquista o teu
-            lugar no topo.
-          </p>
-        </div>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+          <div className="relative z-10">
+            <p className="mb-2 text-sm font-medium text-white/80">Area do consultor</p>
+            <h1 className="text-3xl font-bold text-white">Ranking de Consultores</h1>
+            <p className="mt-2 max-w-2xl text-white/85">
+              Acompanha os colaboradores com maior pontuacao e conquista o teu
+              lugar no topo.
+            </p>
+          </div>
+        </section>
 
         <div className="mb-6 grid gap-4 md:grid-cols-3">
           <div className="rounded-3xl bg-white p-5 shadow-sm">

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "/src/api";
 import { getTimeGreeting } from "../../utils/greeting";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import PageHeader from "../../components/ui/PageHeader";
+import AdminHero from "../../components/ui/AdminHero";
 import EmptyState from "../../components/ui/EmptyState";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
@@ -251,10 +251,9 @@ export default function DashboardAdmin() {
 
       <main className="admin-main">
         <div className="mx-auto max-w-[1400px]">
-          <PageHeader
+          <AdminHero
             title={`${getTimeGreeting()}${adminName ? `, ${adminName}` : ""}`}
-            subtitle="Visão geral de gestão, métricas e operações do programa de badges."
-            icon="bi-speedometer2"
+            subtitle="Visao geral de gestao, metricas e operacoes do programa de badges."
           />
 
           {loading ? (

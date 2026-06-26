@@ -72,14 +72,23 @@ import GaleriaConsultor from "./pages/GaleriaConsultor";
 
 // Rotas que escondem navbar/footer/sidebar
 const NO_LAYOUT_ROUTES = ["/login", "/first-login", "/recover", "/register"];
+const SIDEBAR_LAYOUT_PREFIXES = ["/consultor", "/tm", "/sl", "/admin"];
+const SIDEBAR_LAYOUT_ROUTES = [
+  "/dashboard",
+  "/perfil",
+  "/editar-perfil",
+  "/notificacoes",
+  "/faq",
+];
 
 function AppContent() {
   const location = useLocation();
 
   const hideLayout = NO_LAYOUT_ROUTES.includes(location.pathname);
   const sidebarLayout =
-    location.pathname.startsWith("/sl") ||
-    location.pathname === "/notificacoes";
+    SIDEBAR_LAYOUT_PREFIXES.some((prefix) =>
+      location.pathname.startsWith(prefix),
+    ) || SIDEBAR_LAYOUT_ROUTES.includes(location.pathname);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F2F2F2]">
@@ -160,7 +169,17 @@ function AppContent() {
           <Route path="/notificacoes" element={<ProtectedRoute><NotificacoesPage /></ProtectedRoute>} />
         </Routes>
       </main>
-      {!hideLayout && !sidebarLayout && <Footer />}
+      {!hideLayout && (
+        <div
+          className={
+            sidebarLayout
+              ? "transition-[margin] duration-300 lg:ml-[var(--sidebar-width,270px)]"
+              : ""
+          }
+        >
+          <Footer />
+        </div>
+      )}
     </div>
   );
 }

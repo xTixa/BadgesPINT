@@ -138,33 +138,36 @@ export default function GestaoBadges() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
-              <i className="bi bi-award-fill text-indigo-500" />
-              Gestão de Badges
-            </h3>
-            <p className="text-sm text-slate-500">Criar, editar e gerir badges (expiração, pontos, níveis)</p>
-          </div>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+          <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="mb-2 text-sm font-medium text-white/80">Painel de administracao</p>
+              <h1 className="text-3xl font-bold text-white">Gestao de Badges</h1>
+              <p className="mt-2 max-w-2xl text-white/85">
+                Criar, editar e gerir badges, pontos, niveis e expiracao.
+              </p>
+            </div>
 
           <Link
             to="/admin/badges/novo"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm transition hover:bg-[#EFF4FF]"
           >
             <i className="bi bi-plus-circle"></i>
             Criar novo Badge
           </Link>
-        </div>
+          </div>
+        </section>
 
-        <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+        <section className="mb-6 grid grid-cols-1 gap-3 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)] md:grid-cols-3">
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Pesquisar</label>
             <div className="relative">
               <i className="bi bi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input
                 type="text"
-                className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                 placeholder="Nome do badge..."
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
@@ -175,7 +178,7 @@ export default function GestaoBadges() {
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Área</label>
             <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
               value={filtroArea}
               onChange={(e) => setFiltroArea(e.target.value)}
             >
@@ -189,7 +192,7 @@ export default function GestaoBadges() {
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Nível</label>
             <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
               value={filtroNivel}
               onChange={(e) => setFiltroNivel(e.target.value)}
             >
@@ -199,17 +202,17 @@ export default function GestaoBadges() {
               ))}
             </select>
           </div>
-        </div>
+        </section>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-500">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0F62FE]/20 border-t-[#0F62FE]"></div>
             <p className="text-sm">A carregar...</p>
           </div>
         ) : erro ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{erro}</div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -264,7 +267,7 @@ export default function GestaoBadges() {
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-[#0F62FE]/30 px-3 py-1.5 text-xs font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                           onClick={() => handleEditBadge(b)}
                         >
                           <i className="bi bi-pencil"></i>
@@ -308,8 +311,8 @@ export default function GestaoBadges() {
           className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4"
         >
           <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-4">
-                <h5 className="text-lg font-bold text-slate-800">Editar Badge</h5>
+              <div className="flex items-center justify-between border-b border-[#0F62FE]/15 bg-[#EFF4FF] px-5 py-4">
+                <h5 className="text-lg font-bold text-[#0F62FE]">Editar Badge</h5>
                 <button
                   type="button"
                   className="rounded-md px-2 py-1 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
@@ -324,7 +327,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">Nome do Badge *</label>
                   <input
                     type="text"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
@@ -333,7 +336,7 @@ export default function GestaoBadges() {
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-slate-700">Nível *</label>
                   <select
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.level}
                     onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                   >
@@ -347,7 +350,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">Pontos *</label>
                   <input
                     type="number"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.points}
                     onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) })}
                     min="0"
@@ -358,7 +361,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">Dias até Expiração</label>
                   <input
                     type="number"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.expiry_days || ""}
                     onChange={(e) => setFormData({ ...formData, expiry_days: e.target.value ? parseInt(e.target.value) : null })}
                     placeholder="Deixe em branco se sem expiração"
@@ -370,7 +373,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">URL da Imagem</label>
                   <input
                     type="text"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.image_url || ""}
                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                     placeholder="https://..."
@@ -388,7 +391,7 @@ export default function GestaoBadges() {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#0F62FE] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#16558C]"
                   onClick={handleSaveEdit}
                 >
                   <i className="bi bi-check-circle"></i>

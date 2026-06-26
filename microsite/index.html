@@ -1,0 +1,1332 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BadgesPINT — Plataforma de Certificação Profissional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #0f62fe;
+        --primary-dark: #16558c;
+        --secondary: #00aeef;
+        --soft: #bfefff;
+        --dark: #0f1c2e;
+        --dark-2: #1f2d44;
+        --text: #1f2937;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --surface: #f8fafc;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--text);
+        background: #fff;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* ── NAV ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        transition: box-shadow 0.2s;
+      }
+      nav.scrolled {
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+      }
+
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
+      }
+      .nav-brand .badge-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 18px;
+      }
+      .nav-brand span {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--dark-2);
+        letter-spacing: -0.02em;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--muted);
+        transition: color 0.15s;
+      }
+      .nav-links a:hover {
+        color: var(--primary);
+      }
+
+      .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 1.1rem;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+          background 0.15s,
+          transform 0.15s;
+      }
+      .nav-cta:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7rem 2rem 5rem;
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(
+            circle at 15% 10%,
+            rgba(191, 239, 255, 0.9) 0%,
+            transparent 30rem
+          ),
+          radial-gradient(
+            circle at 85% 90%,
+            rgba(15, 98, 254, 0.12) 0%,
+            transparent 32rem
+          ),
+          linear-gradient(135deg, #eef9ff 0%, #f8fbff 48%, #e8f4ff 100%);
+      }
+
+      .hero-grid {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        opacity: 0.55;
+        background-image:
+          linear-gradient(rgba(15, 98, 254, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(15, 98, 254, 0.07) 1px, transparent 1px);
+        background-size: 34px 34px;
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black 15%,
+          black 86%,
+          transparent
+        );
+      }
+
+      .hero-particles {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .hero-particles span {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(0, 174, 239, 0.18);
+        box-shadow: 0 0 24px rgba(15, 98, 254, 0.15);
+        animation: float 9s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0);
+          opacity: 0.22;
+        }
+        50% {
+          transform: translate3d(14px, -28px, 0);
+          opacity: 0.6;
+        }
+      }
+
+      .hero-inner {
+        position: relative;
+        z-index: 2;
+        max-width: 820px;
+        text-align: center;
+      }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 99px;
+        background: rgba(15, 98, 254, 0.1);
+        color: var(--primary);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 1.4rem;
+      }
+
+      .hero-title {
+        font-size: clamp(2.4rem, 5vw, 3.8rem);
+        font-weight: 900;
+        line-height: 1.1;
+        color: var(--dark-2);
+        letter-spacing: -0.03em;
+        margin-bottom: 1.25rem;
+      }
+      .hero-title .gradient-text {
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+        color: var(--muted);
+        max-width: 580px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.7;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 3.5rem;
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 2rem;
+        border-radius: 12px;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 10px 28px rgba(15, 98, 254, 0.28);
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 34px rgba(15, 98, 254, 0.36);
+      }
+
+      .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 2rem;
+        border-radius: 12px;
+        border: 2px solid rgba(15, 98, 254, 0.25);
+        color: var(--primary);
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.7);
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .btn-outline:hover {
+        background: rgba(15, 98, 254, 0.06);
+        border-color: var(--primary);
+      }
+
+      .hero-badges {
+        display: flex;
+        gap: 0.8rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .tech-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid var(--border);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text);
+        backdrop-filter: blur(4px);
+      }
+      .tech-chip .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      /* ── SECTIONS ── */
+      .section {
+        padding: 5rem 2rem;
+      }
+      .section-alt {
+        background: var(--surface);
+      }
+
+      .section-header {
+        text-align: center;
+        max-width: 620px;
+        margin: 0 auto 3.5rem;
+      }
+      .section-label {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--primary);
+        margin-bottom: 0.6rem;
+      }
+      .section-title {
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        font-weight: 800;
+        color: var(--dark-2);
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin-bottom: 0.75rem;
+      }
+      .section-desc {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      /* ── FEATURES GRID ── */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .feature-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1.75rem;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.09);
+      }
+
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--dark-2);
+        margin-bottom: 0.4rem;
+      }
+      .feature-card p {
+        font-size: 0.875rem;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      /* ── ROLES ── */
+      .roles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 1.25rem;
+      }
+
+      .role-card {
+        border-radius: 18px;
+        padding: 1.75rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+      }
+      .role-card::before {
+        content: "";
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .role-card::after {
+        content: "";
+        position: absolute;
+        bottom: -40px;
+        left: -20px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .role-icon {
+        font-size: 2rem;
+        margin-bottom: 0.9rem;
+      }
+      .role-card h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+      }
+      .role-card p {
+        font-size: 0.825rem;
+        opacity: 0.85;
+        line-height: 1.6;
+      }
+      .role-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 1rem;
+      }
+      .role-tag {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      /* ── TECH STACK ── */
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+      }
+
+      .tech-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        text-align: center;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .tech-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      }
+      .tech-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+      .tech-card span {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--dark-2);
+      }
+      .tech-card small {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      /* ── STATS ── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 4rem;
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem 1.25rem;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 0.35rem;
+      }
+      .stat-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      /* ── DARK BANNER ── */
+      .banner {
+        background: var(--dark-2);
+        border-radius: 24px;
+        padding: 3.5rem 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin: 0 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .banner::before {
+        content: "";
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 174, 239, 0.2) 0%,
+          transparent 70%
+        );
+      }
+      .banner-text h2 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+      .banner-text p {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.9rem;
+      }
+      .banner-badges {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .banner-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.55rem 1.1rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        padding: 3rem 2rem 2rem;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .footer-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      .footer-brand {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .footer-brand strong {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--dark-2);
+      }
+      .footer-brand span {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .footer-meta {
+        text-align: right;
+      }
+      .footer-meta p {
+        font-size: 0.78rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .footer-chips {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+        justify-content: center;
+      }
+      .footer-chip {
+        padding: 0.3rem 0.75rem;
+        border-radius: 99px;
+        background: rgba(15, 98, 254, 0.07);
+        color: var(--primary);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      /* ── DOWNLOAD SECTION ── */
+      .download-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+      @media (max-width: 680px) {
+        .download-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .download-card {
+        border-radius: 22px;
+        padding: 2.5rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .download-card.web {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 60%,
+          var(--secondary) 100%
+        );
+        color: #fff;
+      }
+      .download-card.apk {
+        background: var(--dark-2);
+        color: #fff;
+      }
+      .download-card::after {
+        content: "";
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .download-card-icon {
+        font-size: 2.6rem;
+        line-height: 1;
+      }
+      .download-card h3 {
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .download-card p {
+        font-size: 0.88rem;
+        opacity: 0.8;
+        line-height: 1.65;
+        max-width: 340px;
+      }
+      .download-card .dl-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .dl-chip {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.25rem 0.65rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .download-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.85rem 1.75rem;
+        border-radius: 14px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        width: fit-content;
+        margin-top: 0.25rem;
+      }
+      .download-btn.web-btn {
+        background: #fff;
+        color: var(--primary);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      }
+      .download-btn.web-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
+      }
+      .download-btn.apk-btn {
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(15, 98, 254, 0.35);
+      }
+      .download-btn.apk-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(15, 98, 254, 0.45);
+      }
+      .download-btn.disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      .download-note {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        margin-top: -0.5rem;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        nav .nav-links {
+          display: none;
+        }
+        .banner {
+          margin: 0 1rem;
+          padding: 2.5rem 1.5rem;
+        }
+        .footer-meta {
+          text-align: left;
+        }
+      }
+
+      /* ── SCROLL REVEAL ── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition:
+          opacity 0.55s ease,
+          transform 0.55s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav id="navbar">
+      <a href="#hero" class="nav-brand">
+        <div class="badge-icon">🏅</div>
+        <span>BadgesPINT</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Funcionalidades</a></li>
+        <li><a href="#roles">Perfis</a></li>
+        <li><a href="#stack">Tecnologias</a></li>
+        <li><a href="#download">Download</a></li>
+      </ul>
+      <!-- SUBSTITUIR: trocar o href pelo URL real da plataforma web -->
+      <a href="URL_DA_PLATAFORMA_WEB" target="_blank" class="nav-cta"
+        >Aceder à plataforma →</a
+      >
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-grid"></div>
+      <div class="hero-particles">
+        <span
+          style="
+            left: 8%;
+            top: 22%;
+            width: 12px;
+            height: 12px;
+            animation-delay: 0s;
+          "
+        ></span>
+        <span
+          style="
+            left: 20%;
+            top: 65%;
+            width: 8px;
+            height: 8px;
+            animation-delay: -1.5s;
+          "
+        ></span>
+        <span
+          style="
+            left: 75%;
+            top: 18%;
+            width: 10px;
+            height: 10px;
+            animation-delay: -0.8s;
+          "
+        ></span>
+        <span
+          style="
+            left: 88%;
+            top: 55%;
+            width: 14px;
+            height: 14px;
+            animation-delay: -2.1s;
+          "
+        ></span>
+        <span
+          style="
+            left: 45%;
+            top: 80%;
+            width: 9px;
+            height: 9px;
+            animation-delay: -3.3s;
+          "
+        ></span>
+        <span
+          style="
+            left: 60%;
+            top: 30%;
+            width: 11px;
+            height: 11px;
+            animation-delay: -1.2s;
+          "
+        ></span>
+      </div>
+
+      <div class="hero-inner">
+        <h1 class="hero-title">
+          Gamifica o<br />
+          <span class="gradient-text">desenvolvimento profissional</span>
+        </h1>
+        <p class="hero-subtitle">
+          BadgesPINT é uma plataforma de certificação de competências que
+          permite aos colaboradores da Softinsa ganhar, gerir e partilhar badges
+          profissionais através de percursos de aprendizagem validados.
+        </p>
+        <div class="hero-actions">
+          <!-- SUBSTITUIR: trocar URL_DA_PLATAFORMA_WEB pelo URL real -->
+          <a href="URL_DA_PLATAFORMA_WEB" target="_blank" class="btn-primary"
+            >🌐 Aceder à plataforma web</a
+          >
+          <a href="#download" class="btn-outline">📱 Download APK Android</a>
+        </div>
+        <div class="hero-badges">
+          <div class="tech-chip">
+            <span class="dot" style="background: #61dafb"></span> React 18
+          </div>
+          <div class="tech-chip">
+            <span class="dot" style="background: #68a063"></span> Node.js
+          </div>
+          <div class="tech-chip">
+            <span class="dot" style="background: #54c5f8"></span> Flutter
+          </div>
+          <div class="tech-chip">
+            <span class="dot" style="background: #336791"></span> PostgreSQL
+          </div>
+          <div class="tech-chip">
+            <span class="dot" style="background: #f5a623"></span> Firebase
+          </div>
+          <div class="tech-chip">
+            <span class="dot" style="background: #a855f7"></span> IA Generativa
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="stats-row reveal">
+          <div class="stat-card">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Perfis de utilizador</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Plataformas (Web + iOS + Android)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">IA</div>
+            <div class="stat-label">Geração de badges com Hugging Face</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">🏅</div>
+            <div class="stat-label">Gamificação & rankings</div>
+          </div>
+        </div>
+
+        <div class="section-header reveal">
+          <span class="section-label">Sobre o projeto</span>
+          <h2 class="section-title">
+            Uma plataforma completa de reconhecimento de competências
+          </h2>
+          <p class="section-desc">
+            Desenvolvido para a Softinsa, o BadgesPINT digitaliza e gamifica o
+            crescimento profissional dos colaboradores — desde a submissão de
+            evidências de aprendizagem até à validação por gestores e emissão
+            automática de badges certificados.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section section-alt" id="features">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-label">Funcionalidades</span>
+          <h2 class="section-title">
+            Tudo o que precisas para certificar competências
+          </h2>
+          <p class="section-desc">
+            Da gestão de badges à validação de evidências, passando por rankings
+            e inteligência artificial.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card reveal">
+            <div
+              class="feature-icon"
+              style="background: rgba(15, 98, 254, 0.1)"
+            >
+              🏅
+            </div>
+            <h3>Catálogo de Badges</h3>
+            <p>
+              Exploração e pesquisa de badges disponíveis por área de serviço,
+              linha de serviço e requisitos de certificação.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.07s">
+            <div
+              class="feature-icon"
+              style="background: rgba(0, 174, 239, 0.1)"
+            >
+              📋
+            </div>
+            <h3>Submissão de Evidências</h3>
+            <p>
+              Consultores submetem evidências documentais das suas aprendizagens
+              para análise e aprovação pelos Talent Managers.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.14s">
+            <div
+              class="feature-icon"
+              style="background: rgba(16, 185, 129, 0.1)"
+            >
+              ✅
+            </div>
+            <h3>Fluxo de Validação</h3>
+            <p>
+              Processo estruturado de aprovação ou rejeição de evidências, com
+              histórico e notificações em tempo real.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.21s">
+            <div
+              class="feature-icon"
+              style="background: rgba(245, 158, 11, 0.1)"
+            >
+              🏆
+            </div>
+            <h3>Rankings & Gamificação</h3>
+            <p>
+              Tabela classificativa de consultores com pontuações baseadas em
+              badges conquistados, incentivando o crescimento profissional.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.28s">
+            <div
+              class="feature-icon"
+              style="background: rgba(168, 85, 247, 0.1)"
+            >
+              🤖
+            </div>
+            <h3>Geração de Badges com IA</h3>
+            <p>
+              Administradores podem gerar automaticamente imagens de badges
+              usando modelos de IA do Hugging Face.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.35s">
+            <div
+              class="feature-icon"
+              style="background: rgba(239, 68, 68, 0.1)"
+            >
+              📊
+            </div>
+            <h3>Relatórios e Dashboards</h3>
+            <p>
+              Exportação de relatórios em PDF e Excel, com dashboards analíticos
+              por linha de serviço, equipa e consultores.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.42s">
+            <div
+              class="feature-icon"
+              style="background: rgba(245, 158, 11, 0.1)"
+            >
+              🔔
+            </div>
+            <h3>Notificações Push</h3>
+            <p>
+              Sistema de notificações via Firebase Cloud Messaging para alertar
+              consultores sobre validações e novos badges disponíveis.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.49s">
+            <div
+              class="feature-icon"
+              style="background: rgba(15, 98, 254, 0.1)"
+            >
+              📱
+            </div>
+            <h3>App Mobile</h3>
+            <p>
+              Aplicação Flutter nativa para iOS e Android, com todas as
+              funcionalidades da plataforma web disponíveis em mobilidade.
+            </p>
+          </div>
+          <div class="feature-card reveal" style="transition-delay: 0.56s">
+            <div
+              class="feature-icon"
+              style="background: rgba(0, 174, 239, 0.1)"
+            >
+              🌙
+            </div>
+            <h3>Tema Escuro & Multi-língua</h3>
+            <p>
+              Suporte a modo escuro e adaptação da interface a múltiplos idiomas
+              para maior acessibilidade e conforto visual.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROLES -->
+    <section class="section" id="roles">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-label">Perfis de utilizador</span>
+          <h2 class="section-title">
+            Uma plataforma para cada papel na organização
+          </h2>
+          <p class="section-desc">
+            Quatro perfis distintos com permissões e dashboards adaptados às
+            suas responsabilidades.
+          </p>
+        </div>
+
+        <div class="roles-grid">
+          <div
+            class="role-card reveal"
+            style="
+              background: linear-gradient(135deg, #0f62fe 0%, #16558c 100%);
+            "
+          >
+            <div class="role-icon">👤</div>
+            <h3>Consultor</h3>
+            <p>
+              Visualiza o seu percurso de badges, submete evidências e acompanha
+              a sua posição nos rankings.
+            </p>
+            <div class="role-tags">
+              <span class="role-tag">Dashboard pessoal</span>
+              <span class="role-tag">Histórico de badges</span>
+              <span class="role-tag">Rankings</span>
+              <span class="role-tag">Upload de evidências</span>
+            </div>
+          </div>
+
+          <div
+            class="role-card reveal"
+            style="
+              background: linear-gradient(135deg, #00aeef 0%, #0f62fe 100%);
+              transition-delay: 0.08s;
+            "
+          >
+            <div class="role-icon">🎯</div>
+            <h3>Talent Manager</h3>
+            <p>
+              Valida evidências da sua equipa, acompanha o progresso dos
+              consultores e gere o processo de certificação.
+            </p>
+            <div class="role-tags">
+              <span class="role-tag">Validação</span>
+              <span class="role-tag">Gestão de equipa</span>
+              <span class="role-tag">Histórico</span>
+            </div>
+          </div>
+
+          <div
+            class="role-card reveal"
+            style="
+              background: linear-gradient(135deg, #1f2d44 0%, #16558c 100%);
+              transition-delay: 0.16s;
+            "
+          >
+            <div class="role-icon">📈</div>
+            <h3>Service Line Leader</h3>
+            <p>
+              Supervisiona a linha de serviço, define catálogos de badges e
+              analisa relatórios de desempenho da equipa.
+            </p>
+            <div class="role-tags">
+              <span class="role-tag">Catálogos</span>
+              <span class="role-tag">Relatórios</span>
+              <span class="role-tag">Gestão de SL</span>
+            </div>
+          </div>
+
+          <div
+            class="role-card reveal"
+            style="
+              background: linear-gradient(135deg, #7c3aed 0%, #0f62fe 100%);
+              transition-delay: 0.24s;
+            "
+          >
+            <div class="role-icon">⚙️</div>
+            <h3>Administrador</h3>
+            <p>
+              Configuração total da plataforma: criação de badges com IA, gestão
+              de utilizadores e definições globais.
+            </p>
+            <div class="role-tags">
+              <span class="role-tag">Criar badges</span>
+              <span class="role-tag">IA generativa</span>
+              <span class="role-tag">Config. global</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD & ACESSO -->
+    <section class="section section-alt" id="download">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-label">Acesso & Download</span>
+          <h2 class="section-title">Experimenta a plataforma</h2>
+          <p class="section-desc">
+            Acede à versão web no browser ou instala a app Android no teu
+            dispositivo.
+          </p>
+        </div>
+
+        <div class="download-grid">
+          <!-- CARD WEB -->
+          <div class="download-card web reveal">
+            <div class="download-card-icon">🌐</div>
+            <h3>Plataforma Web</h3>
+            <p>
+              Acede à versão completa no browser — sem instalação necessária.
+              Compatível com Chrome, Firefox, Edge e Safari.
+            </p>
+            <div class="dl-meta">
+              <span class="dl-chip">React 18</span>
+              <span class="dl-chip">Vite</span>
+              <span class="dl-chip">TailwindCSS</span>
+            </div>
+            <!-- SUBSTITUIR: href="URL_DA_PLATAFORMA_WEB" pelo URL real quando disponivel -->
+            <a
+              href="URL_DA_PLATAFORMA_WEB"
+              target="_blank"
+              class="download-btn web-btn"
+            >
+              🚀 Abrir plataforma web
+            </a>
+            <p class="download-note">URL a disponibilizar brevemente</p>
+          </div>
+
+          <!-- CARD APK -->
+          <div class="download-card apk reveal" style="transition-delay: 0.1s">
+            <div class="download-card-icon">📱</div>
+            <h3>App Android</h3>
+            <p>
+              Instala a app mobile no teu dispositivo Android. Ativa "Fontes
+              desconhecidas" nas definições antes de instalar.
+            </p>
+            <div class="dl-meta">
+              <span class="dl-chip">Flutter</span>
+              <span class="dl-chip">Android 6.0+</span>
+              <span class="dl-chip">Firebase FCM</span>
+            </div>
+            <!-- SUBSTITUIR: href="app-release.apk" pelo caminho real do APK quando disponivel -->
+            <a
+              href="app-release.apk"
+              download
+              class="download-btn apk-btn disabled"
+              id="apk-btn"
+            >
+              ⬇ Download APK
+            </a>
+            <p class="download-note" id="apk-note">
+              APK a disponibilizar brevemente
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DARK BANNER -->
+    <section class="section" id="equipa">
+      <div class="container">
+        <div class="banner reveal">
+          <div class="banner-text">
+            <h2>Desenvolvido no PINT 2025/2026</h2>
+            <p>
+              Projeto Integrado — Licenciatura em Engenharia Informática ·
+              Instituto Politécnico de Viseu
+            </p>
+          </div>
+          <div class="banner-badges">
+            <div class="banner-badge">🎓 IPV</div>
+            <div class="banner-badge">🏢 Softinsa</div>
+            <div class="banner-badge">📅 2025/2026</div>
+            <div class="banner-badge">💻 2.º Ano</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <strong>BadgesPINT</strong>
+          <span>Plataforma de Certificação Profissional</span>
+        </div>
+        <div class="footer-meta">
+          <p>Instituto Politécnico de Viseu · ESTGV</p>
+          <p>Parceria Softinsa · PINT 2025/2026</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Nav shadow on scroll
+      const nav = document.getElementById("navbar");
+      window.addEventListener("scroll", () => {
+        nav.classList.toggle("scrolled", window.scrollY > 20);
+      });
+
+      // Scroll reveal
+      const reveals = document.querySelectorAll(".reveal");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              observer.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+      reveals.forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>

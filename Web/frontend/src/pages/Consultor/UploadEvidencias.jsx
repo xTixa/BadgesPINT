@@ -118,18 +118,19 @@ export default function UploadEvidencias() {
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold">Upload de Evidências</h1>
+            <p className="mb-2 text-sm font-medium text-white/80">Area do consultor</p>
+            <h1 className="text-3xl font-bold text-white">Upload de Evidencias</h1>
 
             <p className="mt-2 text-white/80">
               Submete documentação e comprovativos para validação dos teus
               badges.
             </p>
           </div>
-        </div>
+        </section>
 
         <div className="mb-6 grid gap-4 md:grid-cols-3">
           <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">

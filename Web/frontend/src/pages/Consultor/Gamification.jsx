@@ -67,13 +67,14 @@ export default function Gamification() {
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: user?.name || "Consultor" }} />
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <div className="mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <p className="text-sm font-bold uppercase tracking-[0.16em] text-white/70">
-            Gamification
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+          <p className="relative z-10 mb-2 text-sm font-medium text-white/80">
+            Area do consultor
           </p>
-          <div className="mt-3 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="relative z-10 mt-3 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 className="text-4xl font-black">Centro de conquistas</h1>
+              <h1 className="text-3xl font-bold text-white">Centro de conquistas</h1>
               <p className="mt-2 max-w-2xl text-white/85">
                 Acompanha o teu nivel, pontos, ranking, conquistas desbloqueadas
                 e proximos marcos de evolucao.

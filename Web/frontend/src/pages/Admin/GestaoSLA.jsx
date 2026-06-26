@@ -152,25 +152,28 @@ export default function GestaoSLA() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
-              <i className="bi bi-hourglass-split text-amber-500"></i>
-              Gestão de SLA
-            </h3>
-            <p className="text-sm text-slate-500">Definir e gerir SLA da equipa de Talent e Service Line</p>
-          </div>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+          <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="mb-2 text-sm font-medium text-white/80">Painel de administracao</p>
+              <h1 className="text-3xl font-bold text-white">Gestao de SLA</h1>
+              <p className="mt-2 max-w-2xl text-white/85">
+                Definir limites, notificacoes e acompanhamento dos pedidos por equipa.
+              </p>
+            </div>
           <button
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-600"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm transition hover:bg-[#EFF4FF]"
             onClick={handleNovoSLA}
           >
             <i className="bi bi-plus-circle"></i>
             Novo SLA
           </button>
-        </div>
+          </div>
+        </section>
 
-        <div className="mb-6 flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2">
+        <section className="mb-6 flex flex-wrap gap-2 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           {[
             { value: "all", label: `Todos (${slas.length})`, tone: "text-slate-700" },
             { value: "overdue", label: `Atrasados (${slas.filter((s) => s.overdue > 0).length})`, tone: "text-rose-700" },
@@ -182,19 +185,19 @@ export default function GestaoSLA() {
               onClick={() => setFiltro(item.value)}
               className={`rounded-xl px-3 py-2 text-sm font-semibold transition ${
                 filtro === item.value
-                  ? "bg-slate-800 text-white"
-                  : `bg-slate-100 hover:bg-slate-200 ${item.tone}`
+                  ? "bg-[#0F62FE] text-white"
+                  : `bg-[#0F62FE]/10 hover:bg-[#0F62FE]/15 ${item.tone}`
               }`}
             >
               {item.label}
             </button>
           ))}
-        </div>
+        </section>
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-500">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-200 border-t-amber-500"></div>
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0F62FE]/20 border-t-[#0F62FE]"></div>
               <p className="text-sm">A carregar SLAs...</p>
             </div>
           ) : (
@@ -238,7 +241,7 @@ export default function GestaoSLA() {
                       </td>
                       <td className="px-4 py-3">
                         <button
-                          className="mr-2 rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-50"
+                          className="mr-2 rounded-lg border border-[#0F62FE]/30 px-3 py-1.5 text-xs font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                           onClick={() => handleEditSLA(sla)}
                         >
                           <i className="bi bi-pencil mr-1"></i>
@@ -280,13 +283,13 @@ export default function GestaoSLA() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4 shadow-sm">
-            <h6 className="mb-2 flex items-center gap-2 text-sm font-bold text-cyan-700">
+          <div className="rounded-2xl border border-[#0F62FE]/20 bg-[#0F62FE]/10 p-4 shadow-sm">
+            <h6 className="mb-2 flex items-center gap-2 text-sm font-bold text-[#0F62FE]">
               <i className="bi bi-hourglass-bottom"></i>
                   Pedidos Pendentes
             </h6>
             <p className="text-sm text-slate-600">
-              <strong className="text-2xl font-bold text-cyan-700">{slas.reduce((sum, s) => sum + s.pending, 0)}</strong>
+              <strong className="text-2xl font-bold text-[#0F62FE]">{slas.reduce((sum, s) => sum + s.pending, 0)}</strong>
               <span className="ml-2">pedidos em espera de aprovação</span>
             </p>
           </div>
@@ -298,8 +301,8 @@ export default function GestaoSLA() {
           className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4"
         >
           <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-4">
-                <h5 className="text-lg font-bold text-slate-800">
+              <div className="flex items-center justify-between border-b border-[#0F62FE]/15 bg-[#EFF4FF] px-5 py-4">
+                <h5 className="text-lg font-bold text-[#0F62FE]">
                   {editingSLA ? "Editar SLA" : "Novo SLA"}
                 </h5>
                 <button
@@ -315,7 +318,7 @@ export default function GestaoSLA() {
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-slate-700">Tipo de Equipa *</label>
                   <select
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.team_type}
                     onChange={(e) =>
                       setFormData({ ...formData, team_type: e.target.value, team_id: "" })
@@ -329,7 +332,7 @@ export default function GestaoSLA() {
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-slate-700">Equipa *</label>
                   <select
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.team_id}
                     onChange={(e) => setFormData({ ...formData, team_id: e.target.value })}
                   >
@@ -348,7 +351,7 @@ export default function GestaoSLA() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">Limite de Horas (SLA) *</label>
                   <input
                     type="number"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.hours_limit}
                     onChange={(e) => setFormData({ ...formData, hours_limit: parseInt(e.target.value) })}
                     placeholder="24"
@@ -362,7 +365,7 @@ export default function GestaoSLA() {
                   <div className="space-y-2 text-sm text-slate-700">
                     <label className="flex items-center gap-2">
                     <input
-                      className="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-300"
+                      className="h-4 w-4 rounded border-slate-300 text-[#0F62FE] focus:ring-[#0F62FE]/30"
                       type="checkbox"
                       checked={formData.email_notification}
                       onChange={(e) => setFormData({ ...formData, email_notification: e.target.checked })}
@@ -375,7 +378,7 @@ export default function GestaoSLA() {
 
                     <label className="flex items-center gap-2">
                     <input
-                      className="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-300"
+                      className="h-4 w-4 rounded border-slate-300 text-[#0F62FE] focus:ring-[#0F62FE]/30"
                       type="checkbox"
                       checked={formData.push_notification}
                       onChange={(e) => setFormData({ ...formData, push_notification: e.target.checked })}
@@ -388,7 +391,7 @@ export default function GestaoSLA() {
 
                     <label className="flex items-center gap-2">
                     <input
-                      className="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-300"
+                      className="h-4 w-4 rounded border-slate-300 text-[#0F62FE] focus:ring-[#0F62FE]/30"
                       type="checkbox"
                       checked={formData.notification_enabled}
                       onChange={(e) => setFormData({ ...formData, notification_enabled: e.target.checked })}
@@ -412,7 +415,7 @@ export default function GestaoSLA() {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-600"
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#0F62FE] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#16558C]"
                   onClick={handleSaveSLA}
                 >
                   <i className="bi bi-check-circle"></i>

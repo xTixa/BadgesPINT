@@ -36,47 +36,55 @@ export default function GestaoLearningPaths() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main">
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h3 className="mb-1 flex items-center gap-2 text-2xl font-bold text-slate-800">
-              <i className="bi bi-diagram-3-fill text-amber-500" />
-              Gestão de Learning Paths
-            </h3>
-            <p className="text-sm text-slate-500">Criar, ativar/desativar e exportar percursos.</p>
-          </div>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="mb-2 text-sm font-medium text-white/80">Painel de administracao</p>
+              <h1 className="text-3xl font-bold text-white">Gestao de Learning Paths</h1>
+              <p className="mt-2 max-w-2xl text-white/85">
+                Criar, ativar, desativar e organizar percursos de evolucao.
+              </p>
+            </div>
 
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <input
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:min-w-[220px]"
-              placeholder="Procurar por nome"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-            />
             <Link
               to="/admin/learning-paths/novo"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm transition hover:bg-[#EFF4FF]"
             >
-              <i className="bi bi-plus-circle" /> Novo
+              <i className="bi bi-plus-circle" /> Novo Learning Path
             </Link>
           </div>
-        </div>
+        </section>
 
         <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
           {[{ label: "Ativos", valor: lista.filter((lp) => lp.ativo).length }, { label: "Inativos", valor: lista.filter((lp) => !lp.ativo).length }, { label: "Total Badges", valor: lista.reduce((acc, lp) => acc + lp.badges, 0) }].map((card) => (
-            <div key={card.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div key={card.label} className="rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{card.label}</p>
-              <h4 className="mt-1 text-2xl font-bold text-slate-800">{card.valor}</h4>
+              <h4 className="mt-1 text-2xl font-bold text-[#0F62FE]">{card.valor}</h4>
             </div>
           ))}
         </div>
 
-        <div className="mb-4 flex flex-wrap gap-2">
+        <section className="mb-4 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="mb-3 max-w-md">
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Pesquisar</label>
+            <div className="relative">
+              <i className="bi bi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input
+                className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                placeholder="Procurar por nome"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
           <button
             className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
               filtroAtivo === "todos"
-                ? "bg-slate-800 text-white"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                ? "bg-[#0F62FE] text-white"
+                : "bg-[#0F62FE]/10 text-[#0F62FE] hover:bg-[#0F62FE]/15"
             }`}
             onClick={() => setFiltroAtivo("todos")}
           >
@@ -95,16 +103,17 @@ export default function GestaoLearningPaths() {
           <button
             className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
               filtroAtivo === "inativos"
-                ? "bg-amber-500 text-white"
-                : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                ? "bg-slate-700 text-white"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
             onClick={() => setFiltroAtivo("inativos")}
           >
             Inativos
           </button>
-        </div>
+          </div>
+        </section>
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
@@ -138,7 +147,7 @@ export default function GestaoLearningPaths() {
                       </button>
                       <Link
                         to={`/admin/learning-paths/${l.id}`}
-                        className="rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
+                        className="rounded-lg border border-[#0F62FE]/30 px-3 py-1.5 text-xs font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                       >
                         Editar
                       </Link>

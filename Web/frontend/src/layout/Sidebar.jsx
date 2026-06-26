@@ -77,13 +77,13 @@ export default function Sidebar({ user }) {
 
       {isMobile && mobileOpen && (
         <div
-          className="fixed inset-x-0 bottom-0 top-[72px] z-[890] bg-[#0F62FE]/30 lg:hidden"
+          className="fixed inset-x-0 bottom-0 top-[72px] z-[800] bg-[#0F62FE]/30 lg:hidden"
           onClick={() => setMobileOpen(false)}
         ></div>
       )}
 
       <aside
-        className={`fixed top-[72px] bottom-0 left-0 z-[1100] flex flex-col overflow-x-hidden overflow-y-auto border-r border-[#0F62FE]/15 bg-gradient-to-b from-[#FFFFFF] via-[#F8FBFF] to-[#EEF6FF] shadow-[8px_0_24px_rgba(15,98,254,0.10)] transition-all duration-300 ${asideWidth} ${asidePosition}`}
+        className={`fixed top-[72px] bottom-0 left-0 z-[900] flex flex-col overflow-x-hidden overflow-y-auto border-r border-[#0F62FE]/15 bg-gradient-to-b from-[#FFFFFF] via-[#F8FBFF] to-[#EEF6FF] shadow-[8px_0_24px_rgba(15,98,254,0.10)] transition-all duration-300 ${asideWidth} ${asidePosition}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#0F62FE]/15 px-4 py-3">

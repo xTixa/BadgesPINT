@@ -147,7 +147,7 @@ export default function DashboardConsultor() {
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
 
         {/* Hero */}
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
           <div className="absolute right-24 bottom-0 h-24 w-24 rounded-full bg-white/5"></div>
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">

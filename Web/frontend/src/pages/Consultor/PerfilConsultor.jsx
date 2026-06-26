@@ -110,7 +110,7 @@ export default function PerfilConsultor() {
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
         {/* Hero */}
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
@@ -121,7 +121,8 @@ export default function PerfilConsultor() {
                 onError={(e) => { e.target.src = PLACEHOLDER_IMG; }}
               />
               <div>
-                <h1 className="text-3xl font-bold">{user.nome}</h1>
+                <p className="mb-2 text-sm font-medium text-white/80">Area do consultor</p>
+                <h1 className="text-3xl font-bold text-white">{user.nome}</h1>
                 <p className="mt-1 text-white/80">{user.cargo}</p>
                 <p className="mt-2 text-sm text-white/70">{user.email}</p>
               </div>
@@ -134,7 +135,7 @@ export default function PerfilConsultor() {
               Editar Perfil
             </button>
           </div>
-        </div>
+        </section>
 
         {/* Stat Cards */}
         <div className="mb-8 grid gap-4 md:grid-cols-3">

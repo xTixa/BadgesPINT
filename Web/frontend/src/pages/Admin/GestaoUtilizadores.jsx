@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import AdminHero from "../../components/ui/AdminHero";
 
 const roleLabels = {
   admin: "Administrador",
@@ -325,17 +326,10 @@ export default function GestaoUtilizadores() {
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
       <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-
-          <div className="relative z-10">
-            <h1 className="text-3xl font-bold">Gestao de Utilizadores</h1>
-            <p className="mt-2 max-w-2xl text-white/80">
-              Consulta perfis registados, filtra por funcao e cria novos
-              utilizadores para a plataforma.
-            </p>
-          </div>
-        </div>
+        <AdminHero
+          title="Gestao de Utilizadores"
+          subtitle="Consulta perfis registados, filtra por funcao e cria novos utilizadores para a plataforma."
+        />
 
         <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {[

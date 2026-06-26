@@ -1,48 +1,138 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
+import EmptyState from "../../components/ui/EmptyState";
+
+const roleLabels = {
+  admin: "Admin",
+  talent_manager: "Talent Manager",
+  service_line_leader: "Service Line",
+};
+
+function readCurrentRole() {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null")?.role || "admin";
+  } catch {
+    return "admin";
+  }
+}
+
+function formatDate(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleDateString("pt-PT");
+}
+
+function statusMeta(status) {
+  switch (status) {
+    case "pending":
+      return {
+        label: "Pendente",
+        icon: "bi-hourglass-split",
+        className: "bg-amber-50 text-amber-700 ring-amber-200",
+      };
+    case "approved":
+      return {
+        label: "Aprovado",
+        icon: "bi-check-circle",
+        className: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+      };
+    case "rejected":
+      return {
+        label: "Rejeitado",
+        icon: "bi-x-circle",
+        className: "bg-rose-50 text-rose-700 ring-rose-200",
+      };
+    default:
+      return {
+        label: "Desconhecido",
+        icon: "bi-question-circle",
+        className: "bg-slate-50 text-slate-700 ring-slate-200",
+      };
+  }
+}
+
+function workflowMeta(status) {
+  switch (status) {
+    case "submitted":
+      return {
+        label: "Submetido",
+        className: "bg-amber-50 text-amber-700 ring-amber-200",
+      };
+    case "em_validacao":
+      return {
+        label: "Em validacao",
+        className: "bg-sky-50 text-sky-700 ring-sky-200",
+      };
+    case "fechado":
+      return {
+        label: "Fechado",
+        className: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+      };
+    case "open":
+    default:
+      return {
+        label: "Aberto",
+        className: "bg-slate-50 text-slate-700 ring-slate-200",
+      };
+  }
+}
 
 export default function GestaoPedidosBadges() {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState("all");
-  const [showDetails, setShowDetails] = useState(null);
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
-  const storedUser = localStorage.getItem("user");
-  const currentRole = storedUser ? JSON.parse(storedUser).role : "admin";
-  const pedidosBaseUrl = currentRole === "admin" ? "/api/admin/pedidos" : "/api/admin/pedidos";
+  const currentRole = readCurrentRole();
+  const pedidosBaseUrl = "/api/admin/pedidos";
+  const roleName = roleLabels[currentRole] || "Admin";
 
-  // Carregar pedidos do backend
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const url = filtro === "all" 
-          ? pedidosBaseUrl
-          : `${pedidosBaseUrl}?status=${filtro === "pending" ? "pendente" : filtro === "approved" ? "obtido" : "rejeitado"}`;
+        const url =
+          filtro === "all"
+            ? pedidosBaseUrl
+            : `${pedidosBaseUrl}?status=${
+                filtro === "pending"
+                  ? "pendente"
+                  : filtro === "approved"
+                    ? "obtido"
+                    : "rejeitado"
+              }`;
 
         const response = await api.get(url, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Mapear dados do backend para o formato do frontend
-        const pedidosFormatados = response.data.map(p => ({
+        const pedidosFormatados = response.data.map((p) => ({
           id: p.id,
           userName: p.user?.name || "Desconhecido",
           userEmail: p.user?.email || "",
-          badgeName: p.badge?.name || "Desconhecido",
+          badgeName:
+            p.badge?.name ||
+            p.badge?.description ||
+            p.badge_name ||
+            "Desconhecido",
           badgeLevel: p.badge?.level || "",
           badgePoints: p.badge?.points || 0,
-          status: p.status === "obtido" ? "approved" : p.status === "pendente" ? "pending" : "rejected",
+          status:
+            p.status === "obtido"
+              ? "approved"
+              : p.status === "pendente"
+                ? "pending"
+                : "rejected",
           workflowStatus: p.workflow_status || "open",
           tmComment: p.tm_comment || "",
           slComment: p.sl_comment || "",
-          dataPedido: new Date(p.created_at).toLocaleDateString("pt-PT"),
-          dataAtribuicao: p.data_atribuicao ? new Date(p.data_atribuicao).toLocaleDateString("pt-PT") : "-"
+          dataPedido: formatDate(p.created_at),
+          dataAtribuicao: formatDate(p.data_atribuicao),
         }));
 
         setPedidos(pedidosFormatados);
@@ -58,25 +148,58 @@ export default function GestaoPedidosBadges() {
     const intervalId = window.setInterval(fetchPedidos, 15000);
 
     return () => window.clearInterval(intervalId);
-  }, [filtro, token, pedidosBaseUrl]);
+  }, [filtro, token]);
 
-  // Filtrar pedidos
-  const pedidosFiltrados = pedidos.filter(p => {
-    if (filtro === "all") return true;
-    return p.status === filtro;
-  });
+  const stats = useMemo(
+    () => ({
+      total: pedidos.length,
+      pending: pedidos.filter((p) => p.status === "pending").length,
+      approved: pedidos.filter((p) => p.status === "approved").length,
+      rejected: pedidos.filter((p) => p.status === "rejected").length,
+    }),
+    [pedidos],
+  );
 
-  // Aprovar pedido
+  const pedidosFiltrados = useMemo(
+    () => pedidos.filter((p) => filtro === "all" || p.status === filtro),
+    [pedidos, filtro],
+  );
+
+  const filterOptions = [
+    { value: "all", label: "Todos", count: stats.total, icon: "bi-inboxes" },
+    {
+      value: "pending",
+      label: "Pendentes",
+      count: stats.pending,
+      icon: "bi-hourglass-split",
+    },
+    {
+      value: "approved",
+      label: "Aprovados",
+      count: stats.approved,
+      icon: "bi-check-circle",
+    },
+    {
+      value: "rejected",
+      label: "Rejeitados",
+      count: stats.rejected,
+      icon: "bi-x-circle",
+    },
+  ];
+
   const handleAprovPedido = async (id) => {
     if (!window.confirm("Tem a certeza que deseja aprovar este pedido?")) return;
 
     try {
-      await api.post(`/api/admin/pedidos/${id}/aprovar`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post(
+        `/api/admin/pedidos/${id}/aprovar`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
 
-      setPedidos(prev => prev.map(p => p.id === id ? { ...p, status: "approved" } : p));
-      setShowDetails(null);
+      setPedidos((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, status: "approved" } : p)),
+      );
       alert("Pedido aprovado com sucesso!");
     } catch (err) {
       console.error("Erro ao aprovar pedido:", err);
@@ -84,17 +207,19 @@ export default function GestaoPedidosBadges() {
     }
   };
 
-  // Rejeitar pedido
   const handleRejectPedido = async (id) => {
     if (!window.confirm("Tem a certeza que deseja rejeitar este pedido?")) return;
 
     try {
-      await api.post(`/api/admin/pedidos/${id}/rejeitar`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post(
+        `/api/admin/pedidos/${id}/rejeitar`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
 
-      setPedidos(prev => prev.map(p => p.id === id ? { ...p, status: "rejected" } : p));
-      setShowDetails(null);
+      setPedidos((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, status: "rejected" } : p)),
+      );
       alert("Pedido rejeitado com sucesso!");
     } catch (err) {
       console.error("Erro ao rejeitar pedido:", err);
@@ -102,41 +227,21 @@ export default function GestaoPedidosBadges() {
     }
   };
 
-  const statusBadge = (status) => {
-    switch (status) {
-      case "pending":
-        return { color: "warning", label: "Pendente", icon: "bi-hourglass-split" };
-      case "approved":
-        return { color: "success", label: "Aprovado", icon: "bi-check-circle" };
-      case "rejected":
-        return { color: "danger", label: "Rejeitado", icon: "bi-x-circle" };
-      default:
-        return { color: "secondary", label: "Desconhecido", icon: "bi-question-circle" };
-    }
-  };
-
-  const workflowBadge = (status) => {
-    switch (status) {
-      case "open":
-        return { color: "secondary", label: "Open" };
-      case "submitted":
-        return { color: "warning", label: "Submitted" };
-      case "em_validacao":
-        return { color: "info", label: "Em Validação" };
-      case "fechado":
-        return { color: "success", label: "Fechado" };
-      default:
-        return { color: "secondary", label: "Open" };
-    }
-  };
-
   const handleTmValidar = async (id) => {
-    const comment = window.prompt("Comentário (opcional):") || "";
+    const comment = window.prompt("Comentario (opcional):") || "";
     try {
-      await api.post(`/api/admin/pedidos/${id}/tm/validar`, { comment }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "em_validacao", tmComment: comment } : p));
+      await api.post(
+        `/api/admin/pedidos/${id}/tm/validar`,
+        { comment },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? { ...p, workflowStatus: "em_validacao", tmComment: comment }
+            : p,
+        ),
+      );
     } catch (err) {
       console.error("Erro TM validar pedido:", err);
       alert("Erro ao validar pedido.");
@@ -144,13 +249,19 @@ export default function GestaoPedidosBadges() {
   };
 
   const handleTmDevolver = async (id) => {
-    const comment = window.prompt("Comentário para devolução:") || "";
+    const comment = window.prompt("Comentario para devolucao:") || "";
     if (!comment) return;
     try {
-      await api.post(`/api/admin/pedidos/${id}/tm/devolver`, { comment }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "open", tmComment: comment } : p));
+      await api.post(
+        `/api/admin/pedidos/${id}/tm/devolver`,
+        { comment },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, workflowStatus: "open", tmComment: comment } : p,
+        ),
+      );
     } catch (err) {
       console.error("Erro TM devolver pedido:", err);
       alert("Erro ao devolver pedido.");
@@ -158,12 +269,25 @@ export default function GestaoPedidosBadges() {
   };
 
   const handleSlAprovar = async (id) => {
-    const comment = window.prompt("Comentário (opcional):") || "";
+    const comment = window.prompt("Comentario (opcional):") || "";
     try {
-      await api.post(`/api/admin/pedidos/${id}/sl/aprovar`, { comment }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "fechado", status: "approved", slComment: comment } : p));
+      await api.post(
+        `/api/admin/pedidos/${id}/sl/aprovar`,
+        { comment },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                workflowStatus: "fechado",
+                status: "approved",
+                slComment: comment,
+              }
+            : p,
+        ),
+      );
     } catch (err) {
       console.error("Erro SL aprovar pedido:", err);
       alert("Erro ao aprovar pedido.");
@@ -171,12 +295,25 @@ export default function GestaoPedidosBadges() {
   };
 
   const handleSlRejeitar = async (id) => {
-    const comment = window.prompt("Comentário (opcional):") || "";
+    const comment = window.prompt("Comentario (opcional):") || "";
     try {
-      await api.post(`/api/admin/pedidos/${id}/sl/rejeitar`, { comment }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "fechado", status: "rejected", slComment: comment } : p));
+      await api.post(
+        `/api/admin/pedidos/${id}/sl/rejeitar`,
+        { comment },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                workflowStatus: "fechado",
+                status: "rejected",
+                slComment: comment,
+              }
+            : p,
+        ),
+      );
     } catch (err) {
       console.error("Erro SL rejeitar pedido:", err);
       alert("Erro ao rejeitar pedido.");
@@ -184,224 +321,313 @@ export default function GestaoPedidosBadges() {
   };
 
   const handleSlDevolver = async (id) => {
-    const comment = window.prompt("Comentário para devolução:") || "";
+    const comment = window.prompt("Comentario para devolucao:") || "";
     if (!comment) return;
     try {
-      await api.post(`/api/admin/pedidos/${id}/sl/devolver`, { comment }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPedidos(prev => prev.map(p => p.id === id ? { ...p, workflowStatus: "open", status: "pending", slComment: comment } : p));
+      await api.post(
+        `/api/admin/pedidos/${id}/sl/devolver`,
+        { comment },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                workflowStatus: "open",
+                status: "pending",
+                slComment: comment,
+              }
+            : p,
+        ),
+      );
     } catch (err) {
       console.error("Erro SL devolver pedido:", err);
       alert("Erro ao devolver pedido.");
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "pending":
-        return "warning";
-      case "approved":
-        return "success";
-      case "rejected":
-        return "danger";
-      default:
-        return "secondary";
+  const actionButtonClass =
+    "inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition";
+  const approveButtonClass = `${actionButtonClass} bg-emerald-600 text-white hover:bg-emerald-700`;
+  const rejectButtonClass = `${actionButtonClass} bg-rose-600 text-white hover:bg-rose-700`;
+  const returnButtonClass = `${actionButtonClass} bg-amber-500 text-white hover:bg-amber-600`;
+
+  function renderActions(pedido) {
+    if (currentRole === "admin" && pedido.status === "pending") {
+      return (
+        <>
+          <button
+            className={approveButtonClass}
+            onClick={() => handleAprovPedido(pedido.id)}
+          >
+            <i className="bi bi-check-circle"></i>Aprovar
+          </button>
+          <button
+            className={rejectButtonClass}
+            onClick={() => handleRejectPedido(pedido.id)}
+          >
+            <i className="bi bi-x-circle"></i>Rejeitar
+          </button>
+        </>
+      );
     }
-  };
+
+    if (currentRole === "talent_manager" && pedido.workflowStatus === "submitted") {
+      return (
+        <>
+          <button
+            className={approveButtonClass}
+            onClick={() => handleTmValidar(pedido.id)}
+          >
+            <i className="bi bi-check-circle"></i>Validar
+          </button>
+          <button
+            className={returnButtonClass}
+            onClick={() => handleTmDevolver(pedido.id)}
+          >
+            <i className="bi bi-arrow-counterclockwise"></i>Devolver
+          </button>
+        </>
+      );
+    }
+
+    if (
+      currentRole === "service_line_leader" &&
+      pedido.workflowStatus === "em_validacao"
+    ) {
+      return (
+        <>
+          <button
+            className={approveButtonClass}
+            onClick={() => handleSlAprovar(pedido.id)}
+          >
+            <i className="bi bi-check-circle"></i>Aprovar
+          </button>
+          <button
+            className={rejectButtonClass}
+            onClick={() => handleSlRejeitar(pedido.id)}
+          >
+            <i className="bi bi-x-circle"></i>Rejeitar
+          </button>
+          <button
+            className={returnButtonClass}
+            onClick={() => handleSlDevolver(pedido.id)}
+          >
+            <i className="bi bi-arrow-counterclockwise"></i>Devolver
+          </button>
+        </>
+      );
+    }
+
+    if (pedido.status === "approved") {
+      return (
+        <span className="inline-flex items-center gap-1 text-sm font-bold text-emerald-700">
+          <i className="bi bi-check2-all"></i> Processado
+        </span>
+      );
+    }
+
+    if (pedido.status === "rejected") {
+      return (
+        <span className="inline-flex items-center gap-1 text-sm font-bold text-rose-700">
+          <i className="bi bi-x-lg"></i> Rejeitado
+        </span>
+      );
+    }
+
+    return <span className="text-sm font-semibold text-slate-400">Sem acoes</span>;
+  }
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#F2F2F2" }}>
-      <Sidebar user={{ role: currentRole, name: currentRole === "talent_manager" ? "Talent Manager" : currentRole === "service_line_leader" ? "Service Line" : "Admin" }} />
+    <div className="admin-shell">
+      <Sidebar user={{ role: currentRole, name: roleName }} />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "250px" }}>
-        {/* Header */}
-        <div className="mb-4">
-          <h3 className="fw-bold text-dark mb-0">
-            <i className="bi bi-inbox me-2" style={{ color: "#0dcaf0" }}></i>
-            Gestão de Pedidos de Badges
-          </h3>
-          <p className="text-muted small mt-1">Consultar e gerir pedidos de badges (cursos, certificações, atribuições)</p>
-        </div>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="mb-2 text-sm font-medium text-white/80">
+                Painel de administracao
+              </p>
+              <h1 className="text-3xl font-bold text-white">
+                Gestao de Pedidos de Badges
+              </h1>
+              <p className="mt-2 max-w-2xl text-white/85">
+                Consulta pedidos submetidos, acompanha o workflow e executa
+                aprovacoes ou rejeicoes.
+              </p>
+            </div>
 
-        {/* Mensagem de erro */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+              {[
+                { label: "Total", value: stats.total, icon: "bi-inboxes" },
+                {
+                  label: "Pendentes",
+                  value: stats.pending,
+                  icon: "bi-hourglass-split",
+                },
+                {
+                  label: "Aprovados",
+                  value: stats.approved,
+                  icon: "bi-check-circle",
+                },
+                {
+                  label: "Rejeitados",
+                  value: stats.rejected,
+                  icon: "bi-x-circle",
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="min-w-[110px] rounded-2xl bg-white/10 p-4 backdrop-blur-sm"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-2xl font-bold">{item.value}</div>
+                      <div className="text-xs text-white/80">{item.label}</div>
+                    </div>
+                    <i className={`bi ${item.icon} text-xl text-white/85`}></i>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {error && (
-          <div className="alert alert-danger mb-4">
-            <i className="bi bi-exclamation-triangle me-2"></i>
+          <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+            <i className="bi bi-exclamation-triangle mr-2"></i>
             {error}
           </div>
         )}
 
-        {/* Filtros e Estatísticas */}
-        <div className="row mb-4 g-3">
-          <div className="col-auto">
-            <div className="btn-group" role="group">
-              <input
-                type="radio"
-                className="btn-check"
-                name="filtroPedidos"
-                id="filtroAll"
-                value="all"
-                checked={filtro === "all"}
-                onChange={(e) => setFiltro(e.target.value)}
-              />
-              <label className="btn btn-outline-secondary" htmlFor="filtroAll">
-                Todos ({pedidos.length})
-              </label>
-
-              <input
-                type="radio"
-                className="btn-check"
-                name="filtroPedidos"
-                id="filtroPending"
-                value="pending"
-                checked={filtro === "pending"}
-                onChange={(e) => setFiltro(e.target.value)}
-              />
-              <label className="btn btn-outline-warning" htmlFor="filtroPending">
-                <i className="bi bi-hourglass-split me-1"></i>
-                Pendentes ({pedidos.filter(p => p.status === "pending").length})
-              </label>
-
-              <input
-                type="radio"
-                className="btn-check"
-                name="filtroPedidos"
-                id="filtroApproved"
-                value="approved"
-                checked={filtro === "approved"}
-                onChange={(e) => setFiltro(e.target.value)}
-              />
-              <label className="btn btn-outline-success" htmlFor="filtroApproved">
-                <i className="bi bi-check-circle me-1"></i>
-                Aprovados ({pedidos.filter(p => p.status === "approved").length})
-              </label>
-
-              <input
-                type="radio"
-                className="btn-check"
-                name="filtroPedidos"
-                id="filtroRejected"
-                value="rejected"
-                checked={filtro === "rejected"}
-                onChange={(e) => setFiltro(e.target.value)}
-              />
-              <label className="btn btn-outline-danger" htmlFor="filtroRejected">
-                <i className="bi bi-x-circle me-1"></i>
-                Rejeitados ({pedidos.filter(p => p.status === "rejected").length})
-              </label>
-            </div>
+        <section className="mb-4 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="flex flex-wrap items-center gap-2">
+            {filterOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setFiltro(option.value)}
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition ${
+                  filtro === option.value
+                    ? "border-[#0F62FE] bg-[#0F62FE] text-white shadow-sm"
+                    : "border-[#0F62FE]/15 bg-white text-slate-600 hover:bg-[#0F62FE]/10 hover:text-[#0F62FE]"
+                }`}
+              >
+                <i className={`bi ${option.icon}`}></i>
+                {option.label}
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs ${
+                    filtro === option.value
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  {option.count}
+                </span>
+              </button>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* Tabela de Pedidos */}
-        <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <section className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status"></div>
-              <p className="mt-3 text-muted">A carregar pedidos...</p>
+            <div className="flex flex-col items-center justify-center px-6 py-16 text-slate-500">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#0F62FE]"></div>
+              <p className="mt-3 text-sm font-semibold text-slate-500">
+                A carregar pedidos...
+              </p>
             </div>
-          ) : pedidos.length === 0 ? (
-            <div className="text-center py-5">
-              <i className="bi bi-inbox" style={{ fontSize: "3rem", color: "#ccc" }}></i>
-              <p className="mt-3 text-muted">Nenhum pedido encontrado</p>
+          ) : pedidosFiltrados.length === 0 ? (
+            <div className="p-6">
+              <EmptyState message="Nenhum pedido encontrado." icon="bi-inbox" />
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table mb-0">
-                <thead className="table-light">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-100">
+                <thead className="bg-slate-50">
                   <tr>
-                    <th style={{ width: "20%" }}>Utilizador</th>
-                    <th style={{ width: "20%" }}>Badge</th>
-                    <th style={{ width: "12%" }}>Nível</th>
-                    <th style={{ width: "12%" }}>Status</th>
-                    <th style={{ width: "12%" }}>Workflow</th>
-                    <th style={{ width: "14%" }}>Data Pedido</th>
-                    <th style={{ width: "22%" }}>Ações</th>
+                    {[
+                      "Utilizador",
+                      "Badge",
+                      "Nivel",
+                      "Status",
+                      "Workflow",
+                      "Data",
+                      "Acoes",
+                    ].map((header) => (
+                      <th
+                        key={header}
+                        className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
+                      >
+                        {header}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
 
-                <tbody>
-                  {pedidos.filter(p => filtro === "all" ? true : p.status === filtro).map((pedido) => (
-                    <tr key={pedido.id} style={{ borderColor: "#e9ecef" }}>
-                      <td className="py-3">
-                        <strong>{pedido.userName}</strong>
-                        <br />
-                        <small className="text-muted">{pedido.userEmail}</small>
-                      </td>
-                      <td className="py-3">
-                        {pedido.badgeName}
-                      </td>
-                      <td className="py-3">
-                        <span className="badge bg-info">{pedido.badgeLevel}</span>
-                      </td>
-                      <td className="py-3">
-                        <span className={`badge bg-${pedido.status === "pending" ? "warning" : pedido.status === "approved" ? "success" : "danger"}`}>
-                          {pedido.status === "pending" ? "Pendente" : pedido.status === "approved" ? "Aprovado" : "Rejeitado"}
-                        </span>
-                      </td>
-                      <td className="py-3">
-                        <span className={`badge bg-${workflowBadge(pedido.workflowStatus).color}`}>
-                          {workflowBadge(pedido.workflowStatus).label}
-                        </span>
-                      </td>
-                      <td className="py-3">
-                        <small>{pedido.dataPedido}</small>
-                      </td>
-                      <td className="py-3">
-                        {currentRole === "admin" && pedido.status === "pending" && (
-                          <>
-                            <button
-                              className="btn btn-sm btn-success me-2"
-                              onClick={() => handleAprovPedido(pedido.id)}
-                            >
-                              <i className="bi bi-check-circle me-1"></i>Aprovar
-                            </button>
-                            <button
-                              className="btn btn-sm btn-danger"
-                              onClick={() => handleRejectPedido(pedido.id)}
-                            >
-                              <i className="bi bi-x-circle me-1"></i>Rejeitar
-                            </button>
-                          </>
-                        )}
-                        {currentRole === "talent_manager" && pedido.workflowStatus === "submitted" && (
-                          <>
-                            <button className="btn btn-sm btn-success me-2" onClick={() => handleTmValidar(pedido.id)}>
-                              <i className="bi bi-check-circle me-1"></i>Validar
-                            </button>
-                            <button className="btn btn-sm btn-warning" onClick={() => handleTmDevolver(pedido.id)}>
-                              <i className="bi bi-arrow-counterclockwise me-1"></i>Devolver
-                            </button>
-                          </>
-                        )}
-                        {currentRole === "service_line_leader" && pedido.workflowStatus === "em_validacao" && (
-                          <>
-                            <button className="btn btn-sm btn-success me-2" onClick={() => handleSlAprovar(pedido.id)}>
-                              <i className="bi bi-check-circle me-1"></i>Aprovar
-                            </button>
-                            <button className="btn btn-sm btn-danger me-2" onClick={() => handleSlRejeitar(pedido.id)}>
-                              <i className="bi bi-x-circle me-1"></i>Rejeitar
-                            </button>
-                            <button className="btn btn-sm btn-warning" onClick={() => handleSlDevolver(pedido.id)}>
-                              <i className="bi bi-arrow-counterclockwise me-1"></i>Devolver
-                            </button>
-                          </>
-                        )}
-                        {pedido.status === "approved" && (
-                          <span className="text-success"><i className="bi bi-check2-all"></i> Processado</span>
-                        )}
-                        {pedido.status === "rejected" && (
-                          <span className="text-danger"><i className="bi bi-x-lg"></i> Rejeitado</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
+                  {pedidosFiltrados.map((pedido) => {
+                    const status = statusMeta(pedido.status);
+                    const workflow = workflowMeta(pedido.workflowStatus);
+
+                    return (
+                      <tr key={pedido.id} className="transition hover:bg-slate-50">
+                        <td className="px-4 py-4">
+                          <div className="font-bold text-slate-900">
+                            {pedido.userName}
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            {pedido.userEmail || "Sem email"}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="font-semibold text-slate-900">
+                            {pedido.badgeName}
+                          </div>
+                          <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#0F62FE]/10 px-2 py-0.5 text-xs font-bold text-[#0F62FE]">
+                            <i className="bi bi-coin"></i>
+                            {pedido.badgePoints} pts
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className="inline-flex rounded-full bg-sky-50 px-2.5 py-1 text-xs font-bold text-sky-700 ring-1 ring-inset ring-sky-200">
+                            {pedido.badgeLevel || "N/D"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset ${status.className}`}
+                          >
+                            <i className={`bi ${status.icon}`}></i>
+                            {status.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span
+                            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset ${workflow.className}`}
+                          >
+                            {workflow.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-slate-600">
+                          {pedido.dataPedido}
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {renderActions(pedido)}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           )}
-        </div>
+        </section>
       </main>
     </div>
   );
