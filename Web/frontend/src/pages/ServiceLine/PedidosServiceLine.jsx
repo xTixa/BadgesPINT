@@ -141,7 +141,7 @@ export default function PedidosServiceLine() {
         filtro === "all" || filtro === "em_validacao"
           ? {}
           : { status: filtro };
-      const res = await api.get("/api/admin/pedidos", { params });
+      const res = await api.get("/api/pedidos", { params });
       const data = Array.isArray(res.data) ? res.data : [];
       setPedidos(
         filtro === "em_validacao"
@@ -171,7 +171,7 @@ export default function PedidosServiceLine() {
   const aprovar = async (id) => {
     const comment = window.prompt("Comentário (opcional):") || "";
     try {
-      await api.post(`/api/admin/pedidos/${id}/sl/aprovar`, { comment });
+      await api.post(`/api/pedidos/${id}/sl/aprovar`, { comment });
       setPedidos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, workflow_status: "fechado", status: "obtido", sl_comment: comment, sl_validated_at: new Date().toISOString() } : p))
       );
@@ -184,7 +184,7 @@ export default function PedidosServiceLine() {
   const rejeitar = async (id) => {
     const comment = window.prompt("Motivo da rejeição (opcional):") || "";
     try {
-      await api.post(`/api/admin/pedidos/${id}/sl/rejeitar`, { comment });
+      await api.post(`/api/pedidos/${id}/sl/rejeitar`, { comment });
       setPedidos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, workflow_status: "fechado", status: "rejeitado", sl_comment: comment, sl_validated_at: new Date().toISOString() } : p))
       );
@@ -197,7 +197,7 @@ export default function PedidosServiceLine() {
   const devolver = async (id) => {
     const comment = window.prompt("Motivo da devolução:") || "";
     try {
-      await api.post(`/api/admin/pedidos/${id}/sl/devolver`, { comment });
+      await api.post(`/api/pedidos/${id}/sl/devolver`, { comment });
       setPedidos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, workflow_status: "open", status: "pendente", sl_comment: comment } : p))
       );

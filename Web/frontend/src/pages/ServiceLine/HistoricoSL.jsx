@@ -124,7 +124,7 @@ export default function HistoricoSL() {
       try {
         setLoading(true);
         setError("");
-        const res = await api.get("/api/admin/pedidos");
+        const res = await api.get("/api/pedidos");
         if (mounted) setPedidos(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar histórico SL:", err);
