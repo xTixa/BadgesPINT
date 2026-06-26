@@ -11,6 +11,8 @@ import 'pedidos_page.dart';
 import 'timeline_page.dart';
 import 'upload_page.dart';
 
+enum _DashboardSort { name, pointsDesc, pointsAsc }
+
 class DashboardPage extends StatefulWidget {
   const DashboardPage({required this.controller, super.key});
 
@@ -24,6 +26,8 @@ class _DashboardPageState extends State<DashboardPage>
     with SingleTickerProviderStateMixin {
   late TextEditingController _searchController;
   int _selectedTab = 0; // 0: All, 1: Mine
+  String _selectedAreaFilter = 'Todas';
+  _DashboardSort _sort = _DashboardSort.name;
   String _personalGoal = '';
   String _goalDeadline = '';
 
@@ -743,6 +747,7 @@ class _DashboardPageState extends State<DashboardPage>
 
   Widget _buildSearchBar(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final hasActiveFilters = _activeFilterCount > 0;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -768,18 +773,188 @@ class _DashboardPageState extends State<DashboardPage>
           const SizedBox(width: 10),
           Container(
             decoration: BoxDecoration(
-              color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              border: Border.all(color: scheme.outlineVariant),
+              color:
+                  hasActiveFilters
+                      ? scheme.primary.withValues(alpha: 0.12)
+                      : scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              border: Border.all(
+                color:
+                    hasActiveFilters ? scheme.primary : scheme.outlineVariant,
+              ),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: IconButton(
-              icon: Icon(Icons.tune_rounded, color: scheme.onSurfaceVariant),
-              onPressed: () {},
-              tooltip: 'Filtros',
+            child: Badge.count(
+              count: _activeFilterCount,
+              isLabelVisible: hasActiveFilters,
+              child: IconButton(
+                icon: Icon(
+                  Icons.tune_rounded,
+                  color:
+                      hasActiveFilters
+                          ? scheme.primary
+                          : scheme.onSurfaceVariant,
+                ),
+                onPressed: () => _showFilters(context),
+                tooltip: 'Filtros',
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  int get _activeFilterCount {
+    var count = 0;
+    if (_selectedAreaFilter != 'Todas') count++;
+    if (_sort != _DashboardSort.name) count++;
+    return count;
+  }
+
+  List<String> get _availableAreas {
+    final areas =
+        widget.controller.badges
+            .map(_areaForBadge)
+            .map((area) => area.trim())
+            .where((area) => area.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+
+    return <String>['Todas', ...areas];
+  }
+
+  String _normalizeArea(String? value) => (value ?? '').trim().toLowerCase();
+
+  String _areaForBadge(BadgeItem badge) {
+    final directArea = badge.area?.trim();
+    if (directArea != null && directArea.isNotEmpty) return directArea;
+
+    final matches = <CatalogBadgeItem>[
+      ...widget.controller.catalogBadges,
+      ...widget.controller.preferredAreaBadges,
+    ].where((item) => item.id == badge.id);
+
+    if (matches.isEmpty) return '';
+    return matches.first.areaName?.trim() ?? '';
+  }
+
+  Future<void> _showFilters(BuildContext context) async {
+    var draftArea =
+        _availableAreas.contains(_selectedAreaFilter)
+            ? _selectedAreaFilter
+            : 'Todas';
+    var draftSort = _sort;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        final bottomInset = MediaQuery.of(sheetContext).viewInsets.bottom;
+
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 4, 20, bottomInset + 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Filtros',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: draftArea,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Area',
+                        prefixIcon: Icon(Icons.hub_outlined),
+                      ),
+                      items:
+                          _availableAreas
+                              .map(
+                                (area) => DropdownMenuItem(
+                                  value: area,
+                                  child: Text(
+                                    area,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setSheetState(() => draftArea = value);
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                    SegmentedButton<_DashboardSort>(
+                      segments: const [
+                        ButtonSegment(
+                          value: _DashboardSort.name,
+                          label: Text('Nome'),
+                          icon: Icon(Icons.sort_by_alpha_rounded),
+                        ),
+                        ButtonSegment(
+                          value: _DashboardSort.pointsDesc,
+                          label: Text('Mais pts'),
+                          icon: Icon(Icons.arrow_downward_rounded),
+                        ),
+                        ButtonSegment(
+                          value: _DashboardSort.pointsAsc,
+                          label: Text('Menos pts'),
+                          icon: Icon(Icons.arrow_upward_rounded),
+                        ),
+                      ],
+                      selected: {draftSort},
+                      onSelectionChanged:
+                          (values) =>
+                              setSheetState(() => draftSort = values.first),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedAreaFilter = 'Todas';
+                                _sort = _DashboardSort.name;
+                              });
+                              Navigator.pop(sheetContext);
+                            },
+                            child: const Text('Limpar'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedAreaFilter = draftArea;
+                                _sort = draftSort;
+                              });
+                              Navigator.pop(sheetContext);
+                            },
+                            child: const Text('Aplicar'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -828,16 +1003,31 @@ class _DashboardPageState extends State<DashboardPage>
   }
 
   Widget _buildBadgeGrid(BuildContext context) {
-    final query = _searchController.text.toLowerCase();
+    final query = _searchController.text.trim().toLowerCase();
     final all = widget.controller.badges;
     final filtered =
         (_selectedTab == 0 ? all : all.where((b) => b.isObtained))
             .where(
               (b) =>
                   b.name.toLowerCase().contains(query) ||
-                  (b.area?.toLowerCase().contains(query) ?? false),
+                  _areaForBadge(b).toLowerCase().contains(query),
+            )
+            .where(
+              (b) =>
+                  _selectedAreaFilter == 'Todas' ||
+                  _normalizeArea(_areaForBadge(b)) ==
+                      _normalizeArea(_selectedAreaFilter),
             )
             .toList();
+
+    switch (_sort) {
+      case _DashboardSort.pointsDesc:
+        filtered.sort((a, b) => b.points.compareTo(a.points));
+      case _DashboardSort.pointsAsc:
+        filtered.sort((a, b) => a.points.compareTo(b.points));
+      case _DashboardSort.name:
+        filtered.sort((a, b) => a.name.compareTo(b.name));
+    }
 
     if (filtered.isEmpty) {
       return _buildEmptyState(context);
@@ -925,6 +1115,7 @@ class _DashboardPageState extends State<DashboardPage>
   Widget _buildBadgeListCard(BuildContext context, BadgeItem badge) {
     final colors = _getBadgeCardColor(badge);
     final scheme = Theme.of(context).colorScheme;
+    final area = _areaForBadge(badge);
 
     return Material(
       color: Colors.transparent,
@@ -973,10 +1164,10 @@ class _DashboardPageState extends State<DashboardPage>
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (badge.area != null) ...<Widget>[
+                      if (area.isNotEmpty) ...<Widget>[
                         const SizedBox(height: 3),
                         Text(
-                          badge.area!,
+                          area,
                           style: TextStyle(
                             fontSize: 12,
                             color: scheme.onSurfaceVariant,
@@ -1051,6 +1242,7 @@ class _DashboardPageState extends State<DashboardPage>
   Widget _buildBadgeGridCard(BuildContext context, BadgeItem badge) {
     final colors = _getBadgeCardColor(badge);
     final scheme = Theme.of(context).colorScheme;
+    final area = _areaForBadge(badge);
 
     return Material(
       color: Colors.transparent,
@@ -1106,11 +1298,11 @@ class _DashboardPageState extends State<DashboardPage>
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (badge.area != null)
+                if (area.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 3),
                     child: Text(
-                      badge.area!,
+                      area,
                       style: TextStyle(
                         fontSize: 11,
                         color: scheme.onSurfaceVariant,

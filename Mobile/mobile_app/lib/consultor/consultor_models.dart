@@ -139,13 +139,19 @@ class BadgeItem {
   bool get isObtained => status.toLowerCase() == 'obtido';
 
   factory BadgeItem.fromJson(Map<String, dynamic> json) {
+    final area = json['area'];
+
     return BadgeItem(
       id: _readInt(json['id']) ?? 0,
       name: (json['name'] ?? json['description'] ?? 'Badge').toString(),
       status: (json['status'] ?? 'pendente').toString(),
       points: _readInt(json['pontos']) ?? _readInt(json['points']) ?? 0,
-      area: json['area']?.toString(),
-      expireInDays: _readInt(json['expiraEmDias']) ??
+      area:
+          json['area_name']?.toString() ??
+          (area is Map<String, dynamic> ? area['name']?.toString() : null) ??
+          area?.toString(),
+      expireInDays:
+          _readInt(json['expiraEmDias']) ??
           _readInt(json['expire_in_days']) ??
           _readInt(json['expiry_days']),
       imageUrl: json['image_url']?.toString(),
@@ -250,13 +256,15 @@ class ExpiryAlert {
   factory ExpiryAlert.fromJson(Map<String, dynamic> json) {
     return ExpiryAlert(
       id: _readInt(json['id']) ?? _readInt(json['badge_id']) ?? 0,
-      name: (json['nome'] ??
-              json['name'] ??
-              json['badge_name'] ??
-              json['description'] ??
-              'Badge')
-          .toString(),
-      expireInDays: _readInt(json['expiraEmDias']) ??
+      name:
+          (json['nome'] ??
+                  json['name'] ??
+                  json['badge_name'] ??
+                  json['description'] ??
+                  'Badge')
+              .toString(),
+      expireInDays:
+          _readInt(json['expiraEmDias']) ??
           _readInt(json['dias_restantes']) ??
           _readInt(json['dias']) ??
           _readInt(json['expire_in_days']) ??
@@ -334,12 +342,13 @@ class PublicConsultantProfile {
       areaId: _readInt(json['area_id']),
       areaName: json['area_name']?.toString(),
       avatarUrl: json['avatar_url']?.toString(),
-      badges: rawBadges is List
-          ? rawBadges
-              .whereType<Map<String, dynamic>>()
-              .map(BadgeItem.fromJson)
-              .toList()
-          : <BadgeItem>[],
+      badges:
+          rawBadges is List
+              ? rawBadges
+                  .whereType<Map<String, dynamic>>()
+                  .map(BadgeItem.fromJson)
+                  .toList()
+              : <BadgeItem>[],
     );
   }
 }
@@ -373,7 +382,9 @@ class CatalogBadgeItem {
 
     return CatalogBadgeItem(
       id: _readInt(json['id']) ?? 0,
-      name: (json['name'] ?? json['title'] ?? json['description'] ?? 'Badge').toString(),
+      name:
+          (json['name'] ?? json['title'] ?? json['description'] ?? 'Badge')
+              .toString(),
       description: (json['description'] ?? '').toString(),
       points: _readInt(json['points']) ?? 0,
       level: _readLevel(rawLevel),
@@ -419,14 +430,16 @@ class PedidoBadgeStatus {
 
     return PedidoBadgeStatus(
       id: _readInt(json['id']) ?? 0,
-      badgeId: _readInt(json['badge_id']) ??
+      badgeId:
+          _readInt(json['badge_id']) ??
           (badge is Map<String, dynamic> ? _readInt(badge['id']) : null) ??
           0,
       status: (json['status'] ?? '').toString(),
       workflowStatus: (json['workflow_status'] ?? '').toString(),
-      badgeName: badge is Map<String, dynamic>
-          ? (badge['name'] ?? badge['description'] ?? 'Badge').toString()
-          : 'Badge',
+      badgeName:
+          badge is Map<String, dynamic>
+              ? (badge['name'] ?? badge['description'] ?? 'Badge').toString()
+              : 'Badge',
       createdAt: (json['created_at'] ?? json['createdAt'])?.toString(),
       submittedAt: json['submitted_at']?.toString(),
       tmValidatedAt: json['tm_validated_at']?.toString(),
