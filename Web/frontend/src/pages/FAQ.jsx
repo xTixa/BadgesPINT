@@ -121,11 +121,11 @@ export default function FAQ() {
       {user ? <Sidebar user={user} /> : null}
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <div className="mx-auto max-w-3xl">
+        <div className="w-full">
           <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
             <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-            <div className="relative z-10 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15">
+            <div className="relative z-10 text-left">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15">
                 <i className="bi bi-question-circle-fill text-2xl text-white"></i>
               </div>
               <p className="mb-2 text-sm font-medium text-white/80">
@@ -158,7 +158,7 @@ export default function FAQ() {
               Nenhuma pergunta encontrada para "{search}".
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="grid gap-6 xl:grid-cols-2">
               {filtered.map((category) => (
                 <section
                   key={category.category}
@@ -176,14 +176,18 @@ export default function FAQ() {
             </div>
           )}
 
-          <div className="mt-10 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-            <i className="bi bi-envelope-fill mb-2 block text-2xl text-slate-400"></i>
-            <p className="text-sm font-semibold text-slate-700">
-              Nao encontraste o que procuravas?
-            </p>
-            <p className="mt-1 text-sm text-slate-500">
-              Fala com o teu Talent Manager ou com o administrador da plataforma.
-            </p>
+          <div className="mt-10 flex items-start gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-left">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
+              <i className="bi bi-envelope-fill text-xl text-[#0F62FE]"></i>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-700">
+                Nao encontraste o que procuravas?
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Fala com o teu Talent Manager ou com o administrador da plataforma.
+              </p>
+            </div>
           </div>
         </div>
       </main>
