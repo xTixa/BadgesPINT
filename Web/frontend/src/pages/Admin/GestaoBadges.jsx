@@ -122,7 +122,17 @@ export default function GestaoBadges() {
       window.open(fileURL, "_blank");
     } catch (err) {
       console.error(err);
-      alert("Erro ao gerar certificado.");
+      let msg = "Erro ao gerar certificado.";
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          msg = json.error || json.message || msg;
+        } catch { /* mantém mensagem genérica */ }
+      } else if (err.response?.data?.error) {
+        msg = err.response.data.error;
+      }
+      alert(msg);
     }
   };
 
