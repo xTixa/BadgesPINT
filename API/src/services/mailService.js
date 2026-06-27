@@ -342,13 +342,24 @@ export async function sendGoalReminderEmail({ to, name, goalText, goalDeadline }
   });
 }
 
+function getBadgeImageUrl(value) {
+  const imageUrl = String(value || "").trim();
+  if (!imageUrl) return "";
+  if (/^(https?:|cid:|data:image\/)/i.test(imageUrl)) return imageUrl;
+  return `${getFrontendUrl()}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+}
+
 export function getEmailSignature({ user, badges = [] } = {}) {
   const template = readSignatureTemplate();
   const badgeHtml = badges.length
     ? badges
         .slice(0, 6)
         .map((badge) => {
-          const name = escapeHtml(badge?.name || badge?.description || badge?.badge || "Badge");
+          const badgeName = escapeHtml(badge?.name || badge?.description || badge?.badge || "Badge");
+          const imageUrl = getBadgeImageUrl(badge?.image_url);
+          const name = imageUrl
+            ? `<img src="${escapeHtml(imageUrl)}" width="28" height="28" alt="${badgeName}" style="display:inline-block;width:28px;height:28px;margin-right:6px;vertical-align:middle;object-fit:contain;" />${badgeName}`
+            : badgeName;
           const level = escapeHtml(badge?.level || badge?.nivel || "");
           return `<span style="display:inline-block;margin:0 6px 6px 0;padding:5px 8px;border:1px solid #BFEFFF;border-radius:999px;background:#F8FBFF;color:#16558C;font-size:11px;font-weight:700;">${name}${level ? ` · ${level}` : ""}</span>`;
         })

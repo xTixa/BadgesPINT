@@ -11,6 +11,7 @@ export default function ConsultorSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const selectionKey = selected.join(",");
 
   const apply = (data) => {
     setSignature(data);
@@ -22,6 +23,17 @@ export default function ConsultorSettingsPage() {
       .catch(() => setError("Não foi possível carregar a assinatura."))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (loading) return undefined;
+    const timer = window.setTimeout(() => {
+      const badgeIds = selectionKey ? selectionKey.split(",").map(Number) : [];
+      api.post("/api/consultor/email-signature/preview", { badge_ids: badgeIds })
+        .then((res) => setSignature(res.data))
+        .catch(() => setError("Não foi possível atualizar a pré-visualização."));
+    }, 180);
+    return () => window.clearTimeout(timer);
+  }, [loading, selectionKey]);
 
   const toggleBadge = (id) => setSelected((current) => current.includes(id)
     ? current.filter((item) => item !== id)

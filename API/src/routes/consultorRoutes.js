@@ -18,7 +18,7 @@ import {
 } from "../controllers/consultorController.js";
 import { submitEvidence, getConsultorEvidencesByBadge, uploadEvidenceFile } from "../controllers/evidenceController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
-import { getMyEmailSignature, updateMyEmailSignature } from "../controllers/emailSignatureController.js";
+import { getMyEmailSignature, previewMyEmailSignature, updateMyEmailSignature } from "../controllers/emailSignatureController.js";
 
 const router = Router();
 
@@ -28,6 +28,7 @@ router.get("/consultor/learning-paths/progress", authMiddleware, getLearningPath
 router.get("/consultor/certificates", authMiddleware, getConsultorCertificates);
 router.get("/consultor/gamification", authMiddleware, getConsultorGamification);
 router.get("/consultor/email-signature", authMiddleware, getMyEmailSignature);
+router.post("/consultor/email-signature/preview", authMiddleware, previewMyEmailSignature);
 router.put("/consultor/email-signature", authMiddleware, updateMyEmailSignature);
 router.put("/consultor/preferences", authMiddleware, updateConsultorPreferences);
 router.put("/consultor/lessons/:lessonId/progress", authMiddleware, updateLessonProgress);

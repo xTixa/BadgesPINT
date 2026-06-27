@@ -15,18 +15,19 @@ async function loadObtainedBadges(userId) {
   );
 }
 
-function selectedBadges(user, available) {
-  const selectedIds = Array.isArray(user.email_signature_badge_ids)
-    ? user.email_signature_badge_ids.map(Number)
-    : [];
-  if (!selectedIds.length) return available.slice(0, 4);
+function selectedBadges(user, available, explicitIds) {
+  const configuredIds = explicitIds === undefined
+    ? user.email_signature_badge_ids
+    : explicitIds;
+  if (!Array.isArray(configuredIds)) return available.slice(0, 4);
+  const selectedIds = configuredIds.map(Number);
   const positions = new Map(selectedIds.map((id, index) => [id, index]));
   return available.filter((badge) => positions.has(Number(badge.id)))
     .sort((a, b) => positions.get(Number(a.id)) - positions.get(Number(b.id))).slice(0, 6);
 }
 
-function responseFor(user, available) {
-  const badges = selectedBadges(user, available);
+function responseFor(user, available, explicitIds) {
+  const badges = selectedBadges(user, available, explicitIds);
   return {
     enabled: Boolean(user.email_signature_enabled),
     selected_badge_ids: badges.map((badge) => Number(badge.id)),
@@ -34,6 +35,12 @@ function responseFor(user, available) {
     html: getEmailSignature({ user, badges }),
     plain_text: `${user.name}\n${user.email}\nBadges: ${badges.map((badge) => badge.name).join(", ") || "Sem badges"}`,
   };
+}
+
+function validBadgeIds(value, available) {
+  const availableIds = new Set(available.map((badge) => Number(badge.id)));
+  return [...new Set((Array.isArray(value) ? value : []).map(Number))]
+    .filter((id) => availableIds.has(id));
 }
 
 export async function getMyEmailSignature(req, res) {
@@ -52,15 +59,28 @@ export async function updateMyEmailSignature(req, res) {
     const user = await User.findByPk(req.userId);
     if (!user || user.role !== "consultant") return res.status(404).json({ message: "Consultor não encontrado" });
     const available = await loadObtainedBadges(user.id);
-    const availableIds = new Set(available.map((badge) => Number(badge.id)));
-    const requestedIds = [...new Set((req.body?.badge_ids || []).map(Number))].filter((id) => availableIds.has(id));
+    const requestedIds = validBadgeIds(req.body?.badge_ids, available);
     if (requestedIds.length > 6) return res.status(400).json({ message: "Seleciona no máximo 6 badges" });
     user.email_signature_enabled = req.body?.enabled === true;
     user.email_signature_badge_ids = requestedIds;
     await user.save();
-    res.json(responseFor(user, available));
+    res.json(responseFor(user, available, requestedIds));
   } catch (error) {
     console.error("Erro ao guardar assinatura de email:", error);
     res.status(500).json({ message: "Erro ao guardar assinatura de email" });
+  }
+}
+
+export async function previewMyEmailSignature(req, res) {
+  try {
+    const user = await User.findByPk(req.userId);
+    if (!user || user.role !== "consultant") return res.status(404).json({ message: "Consultor não encontrado" });
+    const available = await loadObtainedBadges(user.id);
+    const requestedIds = validBadgeIds(req.body?.badge_ids, available);
+    if (requestedIds.length > 6) return res.status(400).json({ message: "Seleciona no máximo 6 badges" });
+    res.json(responseFor(user, available, requestedIds));
+  } catch (error) {
+    console.error("Erro ao pré-visualizar assinatura de email:", error);
+    res.status(500).json({ message: "Erro ao pré-visualizar assinatura de email" });
   }
 }
