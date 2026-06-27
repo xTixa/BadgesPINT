@@ -7,6 +7,7 @@ import RequirementEvidence from "../models/RequirementEvidence.js";
 import User from "../models/User.js";
 import Area from "../models/Area.js";
 import PDFDocument from "pdfkit";
+import { renderCertificatePdf } from "../services/certificateService.js";
 import database from "../config/database.js";
 import { QueryTypes } from "sequelize";
 import crypto from "crypto";
@@ -578,90 +579,28 @@ export async function generateConsultorBadgeCertificate(req, res) {
       ? new Date(consultorBadge.data_atribuicao)
       : new Date();
 
+    let badgeImageBuffer = null;
+    if (badge.image_url) {
+      try {
+        const imgRes = await fetch(badge.image_url);
+        if (imgRes.ok) badgeImageBuffer = Buffer.from(await imgRes.arrayBuffer());
+      } catch { /* continua sem imagem */ }
+    }
+
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="certificado-badge-${badge.id}.pdf"`);
 
-    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    const doc = new PDFDocument({ size: "A4", margin: 0 });
     doc.pipe(res);
 
-    const pageWidth = doc.page.width;
-    const pageHeight = doc.page.height;
-    const borderX = 36;
-    const borderY = 36;
-    const borderWidth = pageWidth - borderX * 2;
-    const borderHeight = pageHeight - borderY * 2;
-
-    doc.rect(0, 0, pageWidth, pageHeight).fill("#F7FAFC");
-    doc.roundedRect(borderX, borderY, borderWidth, borderHeight, 18)
-      .fillAndStroke("#FFFFFF", "#0F62FE");
-    doc.rect(borderX, borderY, borderWidth, 92).fill("#0F62FE");
-
-    doc.fillColor("#FFFFFF").fontSize(13).text("Softinsa | BadgesPINT", borderX + 28, borderY + 24);
-    doc.fontSize(30).font("Helvetica-Bold").text("Certificado de Conclusao", borderX + 28, borderY + 46, {
-      width: borderWidth - 56,
-      align: "center",
-    });
-
-    const badgeBoxWidth = 170;
-    const badgeBoxX = (pageWidth - badgeBoxWidth) / 2;
-    const badgeBoxY = 165;
-    doc.roundedRect(badgeBoxX, badgeBoxY, badgeBoxWidth, 96, 18)
-      .fillAndStroke("#EFF4FF", "#0F62FE");
-    doc.fillColor("#0F62FE").font("Helvetica-Bold").fontSize(15).text("BADGE", badgeBoxX, badgeBoxY + 22, {
-      width: badgeBoxWidth,
-      align: "center",
-    });
-    doc.fillColor("#111827").font("Helvetica").fontSize(11).text(badge.level || "Certificacao", badgeBoxX + 14, badgeBoxY + 52, {
-      width: badgeBoxWidth - 28,
-      align: "center",
-    });
-
-    doc.fillColor("#111827").font("Helvetica").fontSize(14).text("Certifica-se que", 86, 305, {
-      width: pageWidth - 172,
-      align: "center",
-    });
-    doc.font("Helvetica-Bold").fontSize(24).fillColor("#0F172A").text(consultor.name, {
-      width: pageWidth - 172,
-      align: "center",
-    });
-    doc.moveDown(0.7);
-    doc.font("Helvetica").fontSize(14).fillColor("#111827").text("concluiu com sucesso o badge", {
-      width: pageWidth - 172,
-      align: "center",
-    });
-    doc.moveDown(0.4);
-    doc.font("Helvetica-Bold").fontSize(22).fillColor("#0F62FE").text(badgeName, {
-      width: pageWidth - 172,
-      align: "center",
-    });
-
-    const detailsY = 470;
-    doc.roundedRect(76, detailsY, pageWidth - 152, 92, 12)
-      .fillAndStroke("#F8FAFC", "#CBD5E1");
-    doc.fillColor("#334155").font("Helvetica").fontSize(11);
-    doc.text(`Area: ${badge.area?.name || "Nao definida"}`, 98, detailsY + 18);
-    doc.text(`Nivel: ${badge.level || "Nao definido"}`, 98, detailsY + 38);
-    doc.text(`Pontos: ${badge.points || 0}`, 98, detailsY + 58);
-    doc.text(`Data de atribuicao: ${awardedAt.toLocaleDateString("pt-PT")}`, 310, detailsY + 18);
-    doc.text(`Codigo: ${certificateCode}`, 310, detailsY + 38, { width: 210 });
-
-    doc.fillColor("#0F172A").font("Helvetica-Bold").fontSize(12).text("Verificacao publica", 86, 600, {
-      width: pageWidth - 172,
-      align: "center",
-    });
-    doc.fillColor("#475569").font("Helvetica").fontSize(10).text(verificationUrl, 86, 620, {
-      width: pageWidth - 172,
-      align: "center",
-    });
-
-    doc.moveTo(170, 700).lineTo(425, 700).strokeColor("#94A3B8").stroke();
-    doc.fillColor("#475569").fontSize(11).text("Validacao Softinsa", 86, 710, {
-      width: pageWidth - 172,
-      align: "center",
-    });
-    doc.fillColor("#64748B").fontSize(9).text("Este certificado pode ser confirmado atraves do codigo publico de verificacao.", 76, 770, {
-      width: pageWidth - 152,
-      align: "center",
+    renderCertificatePdf(doc, {
+      consultor,
+      badge,
+      badgeName,
+      awardedAt,
+      certificateCode,
+      verificationUrl,
+      badgeImageBuffer,
     });
 
     doc.end();

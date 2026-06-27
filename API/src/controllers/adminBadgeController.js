@@ -7,6 +7,7 @@ import User from "../models/User.js";
 import ConsultorBadge from "../models/ConsultorBadge.js";
 import { v2 as cloudinary } from "cloudinary";
 import PDFDocument from "pdfkit";
+import { renderCertificatePdf } from "../services/certificateService.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -330,7 +331,7 @@ export async function adminGenerateBadgeCertificate(req, res) {
     }
 
     const [badge, consultor] = await Promise.all([
-      Badge.findByPk(badgeId),
+      Badge.findByPk(badgeId, { include: [{ model: Area, as: "area" }] }),
       User.findByPk(consultorId)
     ]);
 
@@ -350,41 +351,33 @@ export async function adminGenerateBadgeCertificate(req, res) {
     }
 
     const badgeName = badge.name || badge.title || badge.description || `Badge #${badge.id}`;
+    const awardedAt = consultorBadge.data_atribuicao
+      ? new Date(consultorBadge.data_atribuicao)
+      : new Date();
+
+    let badgeImageBuffer = null;
+    if (badge.image_url) {
+      try {
+        const imgRes = await fetch(badge.image_url);
+        if (imgRes.ok) badgeImageBuffer = Buffer.from(await imgRes.arrayBuffer());
+      } catch { /* continua sem imagem */ }
+    }
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="certificado-badge-${badge.id}.pdf"`);
 
-    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    const doc = new PDFDocument({ size: "A4", margin: 0 });
     doc.pipe(res);
 
-    doc.fontSize(26).fillColor("#244080").text("Certificado de Conclusão", { align: "center" });
-    doc.moveDown(1.5);
-
-    if (badge.image_url) {
-      try {
-        const imageRes = await fetch(badge.image_url);
-        if (imageRes.ok) {
-          const imageBuffer = Buffer.from(await imageRes.arrayBuffer());
-          const imgWidth = 180;
-          const x = (doc.page.width - imgWidth) / 2;
-          doc.image(imageBuffer, x, doc.y, { width: imgWidth });
-          doc.moveDown(2.5);
-        }
-      } catch (err) {
-        console.error("Erro ao carregar imagem do badge:", err);
-      }
-    }
-
-    doc.fontSize(14).fillColor("#2b2b2b");
-    doc.text(`Certifica-se que o Consultor ${consultor.name} concluiu`, { align: "center" });
-    doc.moveDown(0.5);
-    doc.fontSize(18).fillColor("#244080").text(`${badgeName}`, { align: "center" });
-    doc.moveDown(1.5);
-    doc.fontSize(12).fillColor("#2b2b2b").text(`Data: ${new Date().toLocaleDateString("pt-PT")}`, { align: "center" });
-
-    doc.moveDown(3);
-    doc.fontSize(12).fillColor("#6b8cae").text("______________________________", { align: "center" });
-    doc.text("Assinatura", { align: "center" });
+    renderCertificatePdf(doc, {
+      consultor,
+      badge,
+      badgeName,
+      awardedAt,
+      certificateCode: null,
+      verificationUrl: null,
+      badgeImageBuffer,
+    });
 
     doc.end();
   } catch (err) {
