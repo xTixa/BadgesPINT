@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
@@ -206,11 +207,19 @@ export default function Equipa() {
                           <div className="text-sm font-semibold text-slate-900">{b.badge}</div>
                           <div className="text-xs text-slate-500">{b.consultor} · {formatDate(b.expires_at)}</div>
                         </div>
-                        <span className="inline-flex rounded-full bg-rose-100 px-2 py-1 text-xs font-semibold text-rose-700">{b.dias} dias</span>
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${Number(b.dias) <= 15 ? "bg-rose-100 text-rose-700" : Number(b.dias) <= 30 ? "bg-orange-100 text-orange-700" : "bg-amber-100 text-amber-700"}`}>{b.dias} dias</span>
                       </li>
                     ))}
                     {!expiracoes.length && <li className="px-3 py-3 text-sm text-slate-500">Sem expirações próximas.</li>}
                   </ul>
+                  {expiracoes.length > 0 && (
+                    <Link
+                      to="/tm/expiracoes"
+                      className="mt-2 flex items-center justify-center gap-1 rounded-xl border border-slate-200 py-2 text-xs font-semibold text-[#0F62FE] hover:bg-slate-50"
+                    >
+                      Ver todas ({expiracoes.length}) <i className="bi bi-arrow-right"></i>
+                    </Link>
+                  )}
                 </SectionCard>
 
                 <SectionCard title="Timeline profissional" icon="bi-clock-history">

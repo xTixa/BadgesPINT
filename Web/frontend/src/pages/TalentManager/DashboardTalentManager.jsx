@@ -1,8 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { getTimeGreeting } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { TalentStatCard, tmPanelClass } from "./TalentManagerLayout";
+
+const POLL_INTERVAL_MS = 30_000;
+
+function requestBrowserNotificationPermission() {
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+}
+
+function showBrowserNotification(title, body) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification(title, { body, icon: "/logo.png" });
+  }
+}
 
 export default function DashboardTalentManager() {
   const [tm, setTM] = useState(null);
@@ -14,6 +29,8 @@ export default function DashboardTalentManager() {
     badgesByMonth: [],
   });
   const [loading, setLoading] = useState(true);
+  const [naoLidas, setNaoLidas] = useState(0);
+  const lastSeenIdRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -46,9 +63,38 @@ export default function DashboardTalentManager() {
     }
 
     load();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    requestBrowserNotificationPermission();
+
+    async function pollNotifications() {
+      try {
+        const res = await api.get("/api/notifications", { params: { lido: false, limit: 5 } });
+        const data = res.data?.data || [];
+        const count = res.data?.naoLidas ?? data.length;
+        setNaoLidas(count);
+
+        if (data.length > 0) {
+          const latest = data[0];
+          const latestId = latest.id;
+          if (lastSeenIdRef.current !== null && latestId !== lastSeenIdRef.current) {
+            showBrowserNotification(
+              "Nova notificação — Talent Manager",
+              latest.message || latest.title || "Tens notificações não lidas."
+            );
+          }
+          lastSeenIdRef.current = latestId;
+        }
+      } catch {
+        // silently ignore polling errors
+      }
+    }
+
+    pollNotifications();
+    const timer = window.setInterval(pollNotifications, POLL_INTERVAL_MS);
+    return () => window.clearInterval(timer);
   }, []);
 
   const summary = kpis?.summary || { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 };
@@ -64,6 +110,20 @@ export default function DashboardTalentManager() {
         { label: "Progresso", value: `${stats.progressoMedio}%` },
       ]}
     >
+      {naoLidas > 0 && (
+        <Link
+          to="/notificacoes"
+          className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 transition hover:bg-amber-100"
+        >
+          <div className="flex items-center gap-3">
+            <i className="bi bi-bell-fill text-amber-600"></i>
+            <span className="text-sm font-semibold text-amber-800">
+              Tens {naoLidas} notificaç{naoLidas === 1 ? "ão" : "ões"} não lida{naoLidas !== 1 ? "s" : ""}
+            </span>
+          </div>
+          <span className="text-xs font-semibold text-amber-700">Ver notificações →</span>
+        </Link>
+      )}
       {loading ? (
         <div className="py-10">
           <EmptyState message="A carregar dados do dashboard..." icon="bi-hourglass-split" />

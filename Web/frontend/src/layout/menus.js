@@ -26,6 +26,7 @@ export const sidebarMenus = {
       { to: "/tm/pedidos", label: "Pedidos de Badges", icon: "bi-inbox" },
       { to: "/tm/catalogo", label: "Catalogo Badges", icon: "bi-award-fill" },
       { to: "/tm/equipa", label: "Equipa", icon: "bi-person-lines-fill" },
+      { to: "/tm/expiracoes", label: "Expirações Badges", icon: "bi-calendar2-x-fill" },
       { to: "/tm/comparacao", label: "Comparar Consultores", icon: "bi-bar-chart-steps" },
       { to: "/tm/evidencias", label: "Evidencias", icon: "bi-folder-check" },
       { to: "/tm/relatorios", label: "Relatorios", icon: "bi-bar-chart-line-fill" },

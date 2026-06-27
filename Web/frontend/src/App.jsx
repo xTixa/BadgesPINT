@@ -42,6 +42,7 @@ import TalentManagerSettingsPage from "./pages/TalentManager/SettingsTM";
 import PedidosTalentManager from "./pages/TalentManager/PedidosTalentManager";
 import CatalogoBadgesTM from "./pages/TalentManager/CatalogoBadgesTM";
 import ComparacaoConsultores from "./pages/TalentManager/ComparacaoConsultores";
+import ExpiracoesBadgesTM from "./pages/TalentManager/ExpiracoesBadgesTM";
 
 // Service Line
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
@@ -140,6 +141,7 @@ function AppContent() {
           <Route path="/tm/catalogo" element={<ProtectedRoute role="talent_manager"><CatalogoBadgesTM /></ProtectedRoute>} />
           <Route path="/tm/equipa" element={<ProtectedRoute role="talent_manager"><Equipa /></ProtectedRoute>} />
           <Route path="/tm/comparacao" element={<ProtectedRoute role="talent_manager"><ComparacaoConsultores /></ProtectedRoute>} />
+          <Route path="/tm/expiracoes" element={<ProtectedRoute role="talent_manager"><ExpiracoesBadgesTM /></ProtectedRoute>} />
           <Route path="/tm/evidencias" element={<ProtectedRoute role="talent_manager"><ValidarEvidencias /></ProtectedRoute>} />
           <Route path="/tm/historico" element={<ProtectedRoute role="talent_manager"><HistoricoValidacoes /></ProtectedRoute>} />
           <Route path="/tm/relatorios" element={<ProtectedRoute role="talent_manager"><RelatoriosTalent /></ProtectedRoute>} />
