@@ -5,7 +5,7 @@ import { getEmailSignature } from "../services/mailService.js";
 
 async function loadObtainedBadges(userId) {
   return database.query(
-    `SELECT b.id, COALESCE(b.name, b.description, 'Badge #' || b.id) AS name,
+    `SELECT b.id, COALESCE(b.description, 'Badge #' || b.id) AS name,
             b.level, b.image_url, cb.data_atribuicao
      FROM consultor_badges cb
      JOIN badges b ON b.id = cb.badge_id

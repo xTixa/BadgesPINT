@@ -14,6 +14,7 @@ export const sidebarMenus = {
     footer: [
       { to: "/consultor/perfil", label: "Perfil", icon: "bi-person-fill" },
       { to: "/consultor/settings", label: "Configuracoes", icon: "bi-gear-fill" },
+      { to: "/consultor/assinatura-email", label: "Assinatura de Email", icon: "bi-envelope-paper-fill" },
     ],
   },
 
@@ -68,6 +69,7 @@ export const sidebarMenus = {
     ],
     footer: [
       { to: "/admin/configuracoes", label: "Configuracoes", icon: "bi-gear-fill" },
+      { to: "/admin/templates-email", label: "Templates de Email", icon: "bi-envelope-gear-fill" },
       { to: "/admin/avisos", label: "Informacoes/Avisos", icon: "bi-megaphone-fill" },
     ],
   },

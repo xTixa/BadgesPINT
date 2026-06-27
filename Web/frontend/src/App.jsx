@@ -30,6 +30,7 @@ import Gamification from "./pages/Consultor/Gamification";
 import HistoricoBadges from "./pages/Consultor/HistoricoBadges";
 import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
 import ConsultorSettingsPage from "./pages/Consultor/Settings";
+import EmailSignature from "./pages/Consultor/EmailSignature";
 
 // Talent Manager
 import DashboardTalentManager from "./pages/TalentManager/DashboardTalentManager";
@@ -62,6 +63,7 @@ import GestaoLearningPaths from "./pages/Admin/GestaoLearningPaths";
 import GestaoPedidosBadges from "./pages/Admin/GestaoPedidosBadges";
 import GestaoSLA from "./pages/Admin/GestaoSLA";
 import Configuracoes from "./pages/Admin/Configuracoes";
+import EmailTemplates from "./pages/Admin/EmailTemplates";
 import Avisos from "./pages/Admin/Avisos";
 import BadgeFormAdmin from "./pages/Admin/BadgeFormAdmin";
 import LearningPathFormAdmin from "./pages/Admin/LearningPathFormAdmin";
@@ -128,6 +130,7 @@ function AppContent() {
           <Route path="/consultor/historico" element={<ProtectedRoute role="consultant"><HistoricoBadges /></ProtectedRoute>} />
           <Route path="/consultor/upload" element={<ProtectedRoute role="consultant"><UploadEvidencias /></ProtectedRoute>} />
           <Route path="/consultor/settings" element={<ProtectedRoute role="consultant"><ConsultorSettingsPage /></ProtectedRoute>} />
+          <Route path="/consultor/assinatura-email" element={<ProtectedRoute role="consultant"><EmailSignature /></ProtectedRoute>} />
 
           {/* Talent Manager */}
           <Route path="/tm/dashboard" element={<ProtectedRoute role="talent_manager"><DashboardTalentManager /></ProtectedRoute>} />
@@ -162,6 +165,7 @@ function AppContent() {
           <Route path="/admin/gestao-sla" element={<ProtectedRoute role="admin"><GestaoSLA /></ProtectedRoute>} />
           <Route path="/admin/gestao-learning-paths" element={<ProtectedRoute role="admin"><GestaoLearningPaths /></ProtectedRoute>} />
           <Route path="/admin/configuracoes" element={<ProtectedRoute role="admin"><Configuracoes /></ProtectedRoute>} />
+          <Route path="/admin/templates-email" element={<ProtectedRoute role="admin"><EmailTemplates /></ProtectedRoute>} />
           <Route path="/admin/avisos" element={<ProtectedRoute role="admin"><Avisos /></ProtectedRoute>} />
           <Route path="/admin/badges/:id" element={<ProtectedRoute role="admin"><BadgeFormAdmin /></ProtectedRoute>} />
           <Route path="/admin/learning-paths/novo" element={<ProtectedRoute role="admin"><LearningPathFormAdmin /></ProtectedRoute>} />
