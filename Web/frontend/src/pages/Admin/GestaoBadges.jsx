@@ -1,4 +1,4 @@
-﻿import Sidebar from "../../layout/Sidebar";
+import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "/src/api";
@@ -20,6 +20,14 @@ export default function GestaoBadges() {
     expiry_days: null,
     image_url: ""
   });
+
+  // Estado do modal de retificação
+  const [showConsultoresModal, setShowConsultoresModal] = useState(false);
+  const [badgeSelecionado, setBadgeSelecionado] = useState(null);
+  const [consultores, setConsultores] = useState([]);
+  const [loadingConsultores, setLoadingConsultores] = useState(false);
+  const [consultoresErro, setConsultoresErro] = useState("");
+  const [retificandoId, setRetificandoId] = useState(null);
 
   const token = localStorage.getItem("token");
   const niveisBadges = ["Junior", "Intermedio", "Senior", "Especialista", "Lider"];
@@ -102,15 +110,34 @@ export default function GestaoBadges() {
     }
   };
 
-  // Gerar certificado em PDF
-  const handleGenerateCertificate = async (badge) => {
-    const consultorId = window.prompt("ID do consultor:");
-    if (!consultorId) return;
+  // Abrir modal de retificação e carregar colaboradores do badge
+  const handleAbrirRetificarCertificado = async (badge) => {
+    setBadgeSelecionado(badge);
+    setConsultores([]);
+    setConsultoresErro("");
+    setShowConsultoresModal(true);
+    setLoadingConsultores(true);
 
     try {
+      const res = await api.get(`/api/admin/badges/${badge.id}/consultores`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setConsultores(res.data);
+    } catch (err) {
+      console.error(err);
+      setConsultoresErro("Erro ao carregar colaboradores.");
+    } finally {
+      setLoadingConsultores(false);
+    }
+  };
+
+  // Retificar certificado de um colaborador específico
+  const handleRetificarCertificado = async (consultorId) => {
+    setRetificandoId(consultorId);
+    try {
       const response = await api.post(
-        `/api/admin/badges/${badge.id}/certificado`,
-        { consultorId: Number(consultorId) },
+        `/api/admin/badges/${badgeSelecionado.id}/certificado`,
+        { consultorId },
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob"
@@ -133,7 +160,22 @@ export default function GestaoBadges() {
         msg = err.response.data.error;
       }
       alert(msg);
+    } finally {
+      setRetificandoId(null);
     }
+  };
+
+  const fecharConsultoresModal = () => {
+    setShowConsultoresModal(false);
+    setBadgeSelecionado(null);
+    setConsultores([]);
+    setConsultoresErro("");
+    setRetificandoId(null);
+  };
+
+  const formatarData = (data) => {
+    if (!data) return "—";
+    return new Date(data).toLocaleDateString("pt-PT");
   };
 
   // Filtrar badges
@@ -285,7 +327,7 @@ export default function GestaoBadges() {
                         </button>
                         <button
                           className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
-                          onClick={() => handleGenerateCertificate(b)}
+                          onClick={() => handleAbrirRetificarCertificado(b)}
                         >
                           <i className="bi bi-file-earmark-pdf"></i>
                           Retificar Certificado
@@ -316,10 +358,9 @@ export default function GestaoBadges() {
         )}
       </main>
 
+      {/* Modal de edição de badge */}
       {showEditModal && badgeEditando && (
-        <div
-          className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4"
-        >
+        <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4">
           <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
               <div className="flex items-center justify-between border-b border-[#0F62FE]/15 bg-[#EFF4FF] px-5 py-4">
                 <h5 className="text-lg font-bold text-[#0F62FE]">Editar Badge</h5>
@@ -411,8 +452,106 @@ export default function GestaoBadges() {
           </div>
         </div>
       )}
+
+      {/* Modal de retificação de certificados — fluxo invertido */}
+      {showConsultoresModal && badgeSelecionado && (
+        <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4">
+          <div className="w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-xl">
+            {/* Cabeçalho */}
+            <div className="flex items-center justify-between border-b border-emerald-100 bg-emerald-50 px-5 py-4">
+              <div className="flex items-center gap-3">
+                {badgeSelecionado.image_url && (
+                  <img
+                    src={badgeSelecionado.image_url}
+                    alt={badgeSelecionado.description}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                )}
+                <div>
+                  <h5 className="text-base font-bold text-emerald-800">Retificar Certificado</h5>
+                  <p className="text-xs text-emerald-600">{badgeSelecionado.description}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="rounded-md px-2 py-1 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
+                onClick={fecharConsultoresModal}
+              >
+                <i className="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            {/* Corpo */}
+            <div className="p-5">
+              {loadingConsultores ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-10 text-slate-500">
+                  <div className="h-7 w-7 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600"></div>
+                  <p className="text-sm">A carregar colaboradores...</p>
+                </div>
+              ) : consultoresErro ? (
+                <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {consultoresErro}
+                </div>
+              ) : consultores.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-10 text-slate-400">
+                  <i className="bi bi-person-x text-3xl"></i>
+                  <p className="text-sm">Nenhum colaborador concluiu este badge.</p>
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-xl border border-slate-200">
+                  <table className="min-w-full divide-y divide-slate-100 text-sm">
+                    <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <tr>
+                        <th className="px-4 py-3">ID</th>
+                        <th className="px-4 py-3">Nome</th>
+                        <th className="px-4 py-3">Data de Conclusão</th>
+                        <th className="px-4 py-3">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      {consultores.map((c) => (
+                        <tr key={c.consultorId} className="hover:bg-slate-50">
+                          <td className="px-4 py-3 text-xs font-mono text-slate-500">{c.consultorId}</td>
+                          <td className="px-4 py-3 font-medium text-slate-800">{c.nome}</td>
+                          <td className="px-4 py-3 text-slate-600">{formatarData(c.dataConclusao)}</td>
+                          <td className="px-4 py-3">
+                            <button
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
+                              onClick={() => handleRetificarCertificado(c.consultorId)}
+                              disabled={retificandoId === c.consultorId}
+                            >
+                              {retificandoId === c.consultorId ? (
+                                <>
+                                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-emerald-400 border-t-emerald-700"></span>
+                                  A gerar...
+                                </>
+                              ) : (
+                                <>
+                                  <i className="bi bi-file-earmark-pdf"></i>
+                                  Retificar
+                                </>
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Rodapé */}
+            {!loadingConsultores && consultores.length > 0 && (
+              <div className="border-t border-slate-100 bg-slate-50 px-5 py-3">
+                <p className="text-xs text-slate-500">
+                  {consultores.length} colaborador{consultores.length !== 1 ? "es" : ""} com o badge concluído
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-

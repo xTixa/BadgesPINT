@@ -292,6 +292,33 @@ export async function adminUploadBadgeImage(req, res) {
   }
 }
 
+// LISTAR COLABORADORES QUE CONCLUÍRAM UM BADGE
+export async function adminGetBadgeConsultores(req, res) {
+  try {
+    const { badgeId } = req.params;
+
+    const registos = await ConsultorBadge.findAll({
+      where: { badge_id: badgeId, status: "obtido" },
+      include: [
+        { model: User, as: "user", attributes: ["id", "name"] }
+      ],
+      attributes: ["id", "consultor_id", "data_atribuicao"],
+      order: [["data_atribuicao", "DESC"]]
+    });
+
+    const consultores = registos.map(r => ({
+      consultorId: r.consultor_id,
+      nome: r.user?.name ?? "—",
+      dataConclusao: r.data_atribuicao
+    }));
+
+    res.json(consultores);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao listar colaboradores do badge" });
+  }
+}
+
 // 📌 GERAR CERTIFICADO PDF DO BADGE
 export async function adminGenerateBadgeCertificate(req, res) {
   try {
