@@ -40,6 +40,7 @@ import RelatoriosTalent from "./pages/TalentManager/RelatoriosTalent";
 import TalentManagerSettingsPage from "./pages/TalentManager/SettingsTM";
 import PedidosTalentManager from "./pages/TalentManager/PedidosTalentManager";
 import CatalogoBadgesTM from "./pages/TalentManager/CatalogoBadgesTM";
+import ComparacaoConsultores from "./pages/TalentManager/ComparacaoConsultores";
 
 // Service Line
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
@@ -50,6 +51,7 @@ import BadgesServiceLine from "./pages/ServiceLine/BadgesServiceLine";
 import RelatoriosServiceLine from "./pages/ServiceLine/RelatoriosServiceLine";
 import HistoricoSL from "./pages/ServiceLine/HistoricoSL";
 import GamificacaoSL from "./pages/ServiceLine/GamificacaoSL";
+import ComparacaoConsultoresSL from "./pages/ServiceLine/ComparacaoConsultoresSL";
 
 // Admin
 import DashboardAdmin from "./pages/Admin/DashboardAdmin";
@@ -132,6 +134,7 @@ function AppContent() {
           <Route path="/tm/pedidos" element={<ProtectedRoute role="talent_manager"><PedidosTalentManager /></ProtectedRoute>} />
           <Route path="/tm/catalogo" element={<ProtectedRoute role="talent_manager"><CatalogoBadgesTM /></ProtectedRoute>} />
           <Route path="/tm/equipa" element={<ProtectedRoute role="talent_manager"><Equipa /></ProtectedRoute>} />
+          <Route path="/tm/comparacao" element={<ProtectedRoute role="talent_manager"><ComparacaoConsultores /></ProtectedRoute>} />
           <Route path="/tm/evidencias" element={<ProtectedRoute role="talent_manager"><ValidarEvidencias /></ProtectedRoute>} />
           <Route path="/tm/historico" element={<ProtectedRoute role="talent_manager"><HistoricoValidacoes /></ProtectedRoute>} />
           <Route path="/tm/relatorios" element={<ProtectedRoute role="talent_manager"><RelatoriosTalent /></ProtectedRoute>} />
@@ -142,6 +145,7 @@ function AppContent() {
           <Route path="/sl/dashboard" element={<ProtectedRoute role="service_line_leader"><DashboardServiceLine /></ProtectedRoute>} />
           <Route path="/sl/pedidos" element={<ProtectedRoute role="service_line_leader"><PedidosServiceLine /></ProtectedRoute>} />
           <Route path="/sl/consultores" element={<ProtectedRoute role="service_line_leader"><ConsultoresServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/comparacao" element={<ProtectedRoute role="service_line_leader"><ComparacaoConsultoresSL /></ProtectedRoute>} />
           <Route path="/sl/badges" element={<ProtectedRoute role="service_line_leader"><BadgesServiceLine /></ProtectedRoute>} />
           <Route path="/sl/historico" element={<ProtectedRoute role="service_line_leader"><HistoricoSL /></ProtectedRoute>} />
           <Route path="/sl/gamificacao" element={<ProtectedRoute role="service_line_leader"><GamificacaoSL /></ProtectedRoute>} />

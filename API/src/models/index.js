@@ -17,6 +17,7 @@ import AuditLog from "./AuditLog.js";
 import PasswordReset from "./PasswordReset.js";
 import SLA from "./SLA.js";
 import FcmToken from "./FcmToken.js";
+import EmailTemplate from "./EmailTemplate.js";
 
 // Associations
 User.belongsTo(Area, { foreignKey: "area_id", as: "area" });
@@ -52,5 +53,6 @@ export {
   AuditLog,
   PasswordReset,
   SLA,
-  FcmToken
+  FcmToken,
+  EmailTemplate
 };

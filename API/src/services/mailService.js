@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import EmailTemplate from "../models/EmailTemplate.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 const __filename = fileURLToPath(import.meta.url);
@@ -91,7 +92,25 @@ export function getDashboardUrl(path = "/consultor") {
   return `${getFrontendUrl()}${path}`;
 }
 
-export async function sendMail({ to, subject, text, html }) {
+function renderTemplate(value, variables = {}) {
+  return String(value || "").replace(/{{\s*([a-z0-9_]+)\s*}}/gi, (_, key) =>
+    escapeHtml(variables[key] ?? "")
+  );
+}
+
+export async function sendMail({ to, subject, text, html, templateKey, variables = {} }) {
+  if (templateKey) {
+    try {
+      const template = await EmailTemplate.findByPk(templateKey);
+      if (template?.enabled) {
+        subject = renderTemplate(template.subject, variables);
+        html = renderTemplate(template.html_body, variables);
+        text = template.text_body ? renderTemplate(template.text_body, variables) : text;
+      }
+    } catch (error) {
+      console.error(`Erro ao aplicar template ${templateKey}; usado conteúdo padrão:`, error.message);
+    }
+  }
   const { transporter, from } = getTransporter();
   const info = await transporter.sendMail({ from, to, subject, text, html });
   console.info("Email enviado:", {
@@ -109,6 +128,8 @@ export async function sendPasswordResetEmail({ to, name, token }) {
   const displayName = name || "utilizador";
 
   return sendMail({
+    templateKey: "password_reset",
+    variables: { name: displayName, reset_url: resetUrl },
     to,
     subject: "Redefinir password - Badges Softinsa",
     text: [
@@ -133,6 +154,8 @@ export async function sendTemporaryPasswordEmail({ to, name, temporaryPassword }
   const displayName = name || "utilizador";
 
   return sendMail({
+    templateKey: "temporary_password",
+    variables: { name: displayName, email: to, temporary_password: temporaryPassword, login_url: loginUrl },
     to,
     subject: "Acesso a plataforma de Badges Softinsa",
     text: [
@@ -160,6 +183,8 @@ export async function sendBadgeApplicationEmail({ to, name, badgeName }) {
   const displayName = name || "consultor";
 
   return sendMail({
+    templateKey: "badge_application",
+    variables: { name: displayName, badge_name: badgeName },
     to,
     subject: "Candidatura a badge recebida - Badges Softinsa",
     text: [
@@ -184,6 +209,8 @@ export async function sendSLValidationEmail({ to, name, badgeName, consultorName
   const consultor = consultorName || "um consultor";
 
   return sendMail({
+    templateKey: "sl_validation",
+    variables: { name: displayName, badge_name: badgeName, consultant_name: consultor },
     to,
     subject: "Pedido de badge aguarda a tua aprovação - Badges Softinsa",
     text: [
@@ -206,6 +233,8 @@ export async function sendBadgeApprovedEmail({ to, name, badgeName, dashboardUrl
   const displayName = name || "consultor";
 
   return sendMail({
+    templateKey: "badge_approved",
+    variables: { name: displayName, badge_name: badgeName, dashboard_url: dashboardUrl },
     to,
     subject: "Badge aprovado - Badges Softinsa",
     text: [
@@ -231,6 +260,8 @@ export async function sendBadgeRejectedEmail({ to, name, badgeName, comment, das
   const reason = comment ? `Motivo: ${comment}` : "Consulta o detalhe do pedido para mais informacao.";
 
   return sendMail({
+    templateKey: "badge_rejected",
+    variables: { name: displayName, badge_name: badgeName, comment: comment || "", dashboard_url: dashboardUrl },
     to,
     subject: "Pedido de badge rejeitado - Badges Softinsa",
     text: [
@@ -256,6 +287,8 @@ export async function sendBadgeReturnedEmail({ to, name, badgeName, comment, das
   const reason = comment ? `Nota: ${comment}` : "Revê as evidencias e volta a submeter o pedido.";
 
   return sendMail({
+    templateKey: "badge_returned",
+    variables: { name: displayName, badge_name: badgeName, comment: comment || "", dashboard_url: dashboardUrl },
     to,
     subject: "Pedido de badge devolvido - Badges Softinsa",
     text: [
@@ -287,6 +320,8 @@ export async function sendGoalReminderEmail({ to, name, goalText, goalDeadline }
     : "brevemente";
 
   return sendMail({
+    templateKey: "goal_reminder",
+    variables: { name: displayName, goal_text: goalText || "objetivo pessoal", goal_deadline: deadline, dashboard_url: dashboardUrl },
     to,
     subject: "Lembrete de objetivo - Badges Softinsa",
     text: [
@@ -331,6 +366,8 @@ export async function sendSLAAlertEmail({ to, name, badgeName, consultorName, ho
   const displayName = name || "responsavel";
 
   return sendMail({
+    templateKey: "sla_alert",
+    variables: { name: displayName, badge_name: badgeName, consultant_name: consultorName, hours_limit: hoursLimit, workflow_status: workflowStatus },
     to,
     subject: "Alerta SLA ultrapassado - Badges Softinsa",
     text: [

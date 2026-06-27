@@ -16,6 +16,7 @@ import {
 } from "../controllers/exportController.js";
 import { runGoalReminderJob } from "../jobs/reminderJob.js";
 import { runSLAAlertJob } from "../jobs/slaAlertJob.js";
+import { listEmailTemplates, resetEmailTemplate, saveEmailTemplate } from "../controllers/emailTemplateController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -41,6 +42,9 @@ router.post("/export/pdf", exportToPDF);
 router.post("/export/preview", exportPreview);
 
 router.post("/email/test", testEmailConfig);
+router.get("/email/templates", listEmailTemplates);
+router.put("/email/templates/:key", saveEmailTemplate);
+router.delete("/email/templates/:key", resetEmailTemplate);
 router.post("/jobs/goal-reminders/run", async (req, res) => {
   try {
     res.json(await runGoalReminderJob({ daysAhead: Number(req.body?.daysAhead || 7) }));

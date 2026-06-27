@@ -13,6 +13,7 @@ import {
   exportSLReportPDF
 } from "../controllers/sLController.js";
 import { adminGenerateBadgeCertificate } from "../controllers/adminBadgeController.js";
+import { getConsultantComparison } from "../controllers/comparisonController.js";
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.get("/me", getSL);
 router.get("/estatisticas", getSLEstatisticas);
 router.get("/kpis", getSLKpis);
 router.get("/consultores", getSLConsultores);
+router.get("/comparacao", getConsultantComparison);
 router.get("/catalogo", getSLCatalogo);
 router.get("/historico", getSLHistorico);
 router.get("/relatorios", getSLRelatorio);

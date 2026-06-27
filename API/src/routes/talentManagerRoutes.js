@@ -13,6 +13,7 @@ import {
 } from "../controllers/talentManagerController.js";
 import { listEvidencesForTM, approveEvidence, rejectEvidence } from "../controllers/evidenceController.js";
 import { adminGenerateBadgeCertificate } from "../controllers/adminBadgeController.js";
+import { getConsultantComparison } from "../controllers/comparisonController.js";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use(protect(["talent_manager"]));
 router.get("/me", getTM);
 router.get("/estatisticas", getTMEstatisticas);
 router.get("/equipa", getEquipa);
+router.get("/comparacao", getConsultantComparison);
 router.get("/kpis", getTMKpis);
 router.get("/catalogo", getTMCatalogo);
 router.get("/historico", getTMHistorico);

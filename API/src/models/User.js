@@ -26,6 +26,8 @@ const User = database.define(
     rgpd_publication_accepted: { type: DataTypes.BOOLEAN, defaultValue: false },
     public_profile_enabled: { type: DataTypes.BOOLEAN, defaultValue: false },
     linkedin_sharing_enabled: { type: DataTypes.BOOLEAN, defaultValue: true },
+    email_signature_enabled: { type: DataTypes.BOOLEAN, defaultValue: false },
+    email_signature_badge_ids: { type: DataTypes.JSONB, allowNull: true },
     goal_text: { type: DataTypes.TEXT, allowNull: true },
     goal_deadline: { type: DataTypes.DATEONLY, allowNull: true },
     points_total: { type: DataTypes.INTEGER, defaultValue: 0 },

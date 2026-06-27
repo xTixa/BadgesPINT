@@ -277,8 +277,9 @@
 
 ### Não Implementado ❌
 
-1. **[BÓNUS] Métricas de comparação entre consultores** ❌
-   - Sem dashboard específico de comparação analítica entre consultores
+1. **[BÓNUS] Métricas de comparação entre consultores** ✅
+   - Dashboard comparativo para Talent Manager e Service Line Leader, limitado à respetiva equipa
+   - Compara pontos, badges, taxa de aprovação, tempo médio de validação e evolução mensal
 
 ---
 
@@ -333,7 +334,8 @@
    - FCM implementado do lado do consultor
    - TM não recebe PUSH notifications (apenas notificações em BD)
 
-2. **[BÓNUS] Métricas avançadas de comparação** ❌
+2. **[BÓNUS] Métricas avançadas de comparação** ✅
+   - Seleção de até quatro consultores, benchmark e gráficos de evolução
 
 ---
 
@@ -713,9 +715,9 @@ Nenhum — aplicação 100% funcional.
 
 ### Não Implementado ❌
 
-1. **[BÓNUS] Assinatura de email com badges** ❌
-2. **[BÓNUS] Config template de email (customizado)** ❌
-3. **[BÓNUS] Métricas de comparação entre consultores** ❌
+1. **[BÓNUS] Assinatura de email com badges** ✅
+2. **[BÓNUS] Config template de email (customizado)** ✅
+3. **[BÓNUS] Métricas de comparação entre consultores** ✅
 4. **[BÓNUS] Integração Teams/Slack** ❌
 
 ---
@@ -791,13 +793,13 @@ Nenhum — aplicação 100% funcional.
 ### **Fase 3 - FUTURO (Backlog)**
 - [ ] PUSH notifications diretas para TM e SL
 - [ ] Implementar tradução para EN/ES (i18n)
-- [ ] Templates de email customizáveis
+- [x] Templates de email customizáveis
 - [ ] SLA alerts automáticos com trigger/cron
 
 ### **Fase 4 - BÓNUS (Backlog)**
 - [ ] Teams/Slack integration
-- [ ] Métricas de comparação avançadas entre consultores
-- [ ] Assinatura de email com badges
+- [x] Métricas de comparação avançadas entre consultores
+- [x] Assinatura de email com badges
 
 ---
 
