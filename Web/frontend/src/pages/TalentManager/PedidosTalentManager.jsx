@@ -24,7 +24,7 @@ export default function PedidosTalentManager() {
         setLoading(true);
         setError("");
         const params = filtro === "all" ? {} : { status: filtro };
-        const res = await api.get("/api/admin/pedidos", { params });
+        const res = await api.get("/api/pedidos", { params });
         setPedidos(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar pedidos:", err);

@@ -28,7 +28,10 @@ const getTMAreaIds = async (tm, serviceLineId = null) => {
     const areas = await Area.findAll({ where: { service_line_id: serviceLineId }, attributes: ["id"], raw: true });
     return areas.map((area) => area.id);
   }
-  return tm?.area_id ? [tm.area_id] : [];
+  if (tm?.area_id) return [tm.area_id];
+  // TM sem área definida — acede a todas as áreas
+  const all = await Area.findAll({ attributes: ["id"], raw: true });
+  return all.map((a) => a.id);
 };
 
 const normalizeScope = (scope) => {
