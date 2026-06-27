@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "/src/api";
 import AuthShell from "./AuthShell";
+import { storeBrowserCredentials } from "../../utils/browserCredentials";
 
 export default function FirstLogin() {
   const navigate = useNavigate();
@@ -31,6 +32,16 @@ export default function FirstLogin() {
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      const pendingCredential = sessionStorage.getItem("rememberCredentialsAfterFirstLogin");
+      if (pendingCredential) {
+        try {
+          const { email, name } = JSON.parse(pendingCredential);
+          await storeBrowserCredentials({ email, password, name });
+        } finally {
+          sessionStorage.removeItem("rememberCredentialsAfterFirstLogin");
+        }
+      }
 
       alert("Password atualizada com sucesso!");
 
@@ -64,13 +75,15 @@ export default function FirstLogin() {
         text: "Usa pelo menos 6 caracteres e confirma a password antes de guardar.",
       }}
     >
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="on">
         {error && <p className="auth-message auth-message-error">{error}</p>}
 
         <div className="auth-field">
           <label>Nova password</label>
           <input
             type="password"
+            name="new-password"
+            autoComplete="new-password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -83,6 +96,8 @@ export default function FirstLogin() {
           <label>Confirmar password</label>
           <input
             type="password"
+            name="confirm-password"
+            autoComplete="new-password"
             required
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}

@@ -87,12 +87,14 @@ const SIDEBAR_LAYOUT_ROUTES = [
 
 function AppContent() {
   const location = useLocation();
+  const galleryWithSidebar = location.pathname.startsWith("/galeria")
+    && Boolean(localStorage.getItem("token") && localStorage.getItem("user"));
 
   const hideLayout = NO_LAYOUT_ROUTES.includes(location.pathname);
   const sidebarLayout =
     SIDEBAR_LAYOUT_PREFIXES.some((prefix) =>
       location.pathname.startsWith(prefix),
-    ) || SIDEBAR_LAYOUT_ROUTES.includes(location.pathname);
+    ) || SIDEBAR_LAYOUT_ROUTES.includes(location.pathname) || galleryWithSidebar;
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F2F2F2]">

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import api from "/src/api";
+import PublicGalleryShell from "../components/PublicGalleryShell";
 
 const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
@@ -44,10 +45,11 @@ export default function Galeria() {
   }, [consultores, search, selectedArea]);
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2]">
+    <PublicGalleryShell>
+    <div className="min-h-screen bg-transparent">
       {/* Hero */}
-      <section className="px-6 py-8">
-        <div className="mx-auto max-w-7xl">
+      <section className="pb-8">
+        <div className="w-full">
           <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
             <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/85 hover:text-white">
               <i className="bi bi-arrow-left"></i>Voltar ao início
@@ -78,7 +80,7 @@ export default function Galeria() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-7xl px-6 pb-12">
+      <main className="w-full pb-12">
         {/* Stats + filtro área */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex gap-4">
@@ -126,6 +128,7 @@ export default function Galeria() {
         )}
       </main>
     </div>
+    </PublicGalleryShell>
   );
 }
 

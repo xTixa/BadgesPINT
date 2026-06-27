@@ -2,6 +2,7 @@ import api from "/src/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthShell from "./AuthShell";
+import { loadBrowserCredentials, storeBrowserCredentials } from "../../utils/browserCredentials";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,17 +13,15 @@ export default function Login() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const savedLogin = localStorage.getItem("savedLogin");
-    if (!savedLogin) return;
-
-    try {
-      const parsed = JSON.parse(savedLogin);
-      setEmail(parsed.email || "");
+    let active = true;
+    localStorage.removeItem("savedLogin");
+    loadBrowserCredentials().then((credential) => {
+      if (!active || !credential) return;
+      setEmail(credential.email);
+      setPassword(credential.password);
       setRememberMe(true);
-    } catch (error) {
-      console.error("Erro ao ler dados guardados", error);
-      localStorage.removeItem("savedLogin");
-    }
+    });
+    return () => { active = false; };
   }, []);
 
   const handleLogin = async (e) => {
@@ -40,10 +39,12 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
 
-      if (rememberMe) {
-        localStorage.setItem("savedLogin", JSON.stringify({ email }));
+      if (rememberMe && firstLogin) {
+        sessionStorage.setItem("rememberCredentialsAfterFirstLogin", JSON.stringify({ email, name: user.name }));
+      } else if (rememberMe) {
+        await storeBrowserCredentials({ email, password, name: user.name });
       } else {
-        localStorage.removeItem("savedLogin");
+        sessionStorage.removeItem("rememberCredentialsAfterFirstLogin");
       }
 
       if (greeting) {
@@ -93,13 +94,15 @@ export default function Login() {
         ],
       }}
     >
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} autoComplete="on">
         {error && <p className="auth-message auth-message-error">{error}</p>}
 
         <div className="auth-field">
           <label>Email</label>
           <input
             type="email"
+            name="username"
+            autoComplete="username"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -122,6 +125,8 @@ export default function Login() {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
+              name="password"
+              autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -147,7 +152,7 @@ export default function Login() {
               onChange={(e) => setRememberMe(e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#0F62FE]"
             />
-            Lembrar email neste dispositivo
+            Guardar credenciais neste dispositivo
           </label>
         </div>
 
