@@ -81,7 +81,7 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
   };
 
   const whereText = `
-    u.area_id = ANY(:areaIds)
+    u.area_id IN (:areaIds)
     AND COALESCE(cb.created_at, cb.submitted_at, cb.data_atribuicao, NOW()) BETWEEN :start AND :end
     AND (:consultor IS NULL OR u.name ILIKE :consultor)
     AND (:badge IS NULL OR COALESCE(b.name, b.description, '') ILIKE :badge)
@@ -93,7 +93,7 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
               b.level AS detalhe, b.points::text AS pontos, a.name AS area, 'catalogo' AS situacao, NULL::timestamp AS data
        FROM badges b
        JOIN areas a ON a.id = b.area_id
-       WHERE b.area_id = ANY(:areaIds)
+       WHERE b.area_id IN (:areaIds)
          AND (:badge IS NULL OR COALESCE(b.name, b.description, '') ILIKE :badge)
        ORDER BY b.id DESC
        ${limit ? "LIMIT :limit" : ""}`,
@@ -107,7 +107,7 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
               COALESCE(u.points_total, 0)::text AS pontos, a.name AS area, 'ativo' AS situacao, u.created_at AS data
        FROM "Users" u
        LEFT JOIN areas a ON a.id = u.area_id
-       WHERE u.role = 'consultant' AND u.area_id = ANY(:areaIds)
+       WHERE u.role = 'consultant' AND u.area_id IN (:areaIds)
          AND (:consultor IS NULL OR u.name ILIKE :consultor)
        ORDER BY u.name ASC
        ${limit ? "LIMIT :limit" : ""}`,
@@ -156,6 +156,7 @@ export async function getTMEstatisticas(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm);
+    if (!areaIds.length) return res.json({ totalEquipa: 0, evidenciasPendentes: 0, progressoMedio: 0 });
 
     const totalEquipa = await User.count({
       where: { area_id: areaIds, role: "consultant" }
@@ -165,7 +166,7 @@ export async function getTMEstatisticas(req, res) {
       `SELECT COUNT(re.id)::int AS count
        FROM requirement_evidences re
        JOIN "Users" u ON u.id = re.consultor_id
-       WHERE re.status = 'pendente' AND u.area_id = ANY(:areaIds)`,
+       WHERE re.status = 'pendente' AND u.area_id IN (:areaIds)`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
     );
 
@@ -173,14 +174,14 @@ export async function getTMEstatisticas(req, res) {
       `SELECT COUNT(cb.id)::int AS count
        FROM consultor_badges cb
        JOIN "Users" u ON u.id = cb.consultor_id
-       WHERE u.area_id = ANY(:areaIds)`,
+       WHERE u.area_id IN (:areaIds)`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
     );
     const concluidosRaw = await database.query(
       `SELECT COUNT(cb.id)::int AS count
        FROM consultor_badges cb
        JOIN "Users" u ON u.id = cb.consultor_id
-       WHERE cb.status = 'obtido' AND u.area_id = ANY(:areaIds)`,
+       WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
     );
     const totalBadges = totalBadgesRaw[0]?.count || 0;
@@ -208,13 +209,15 @@ export async function getTMKpis(req, res) {
     if (!tm) return res.status(404).json({ message: "TM não encontrado" });
 
     const { serviceLineId } = req.query;
-
-    // Escopo: se serviceLineId fornecido, filtra áreas dessa SL; senão usa area_id do TM
-    let areaIds = [tm.area_id];
-    if (serviceLineId) {
-      const areas = await Area.findAll({ where: { service_line_id: serviceLineId }, attributes: ["id"], raw: true });
-      areaIds = areas.map((a) => a.id);
-    }
+    const areaIds = await getTMAreaIds(tm, serviceLineId);
+    if (!areaIds.length) return res.json({
+      summary: { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 },
+      usersByRole: [],
+      badgesByMonth: [],
+      badgesByRange: { startDate: new Date().toISOString(), endDate: new Date().toISOString(), count: 0 },
+      badgesByLearningPath: [],
+      badgesByLevel: [],
+    });
 
     const totalUsers = await User.count({ where: { area_id: areaIds } });
     const totalBadges = await Badge.count();
@@ -222,7 +225,7 @@ export async function getTMKpis(req, res) {
       `SELECT COUNT(*)::int AS count
        FROM consultor_badges cb
        JOIN "Users" u ON u.id = cb.consultor_id
-       WHERE cb.status = 'obtido' AND u.area_id = ANY(:areaIds)`,
+       WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
     );
 
@@ -237,7 +240,7 @@ export async function getTMKpis(req, res) {
       `SELECT to_char(date_trunc('month', cb.data_atribuicao), 'YYYY-MM') AS month, COUNT(*)::int AS count
        FROM consultor_badges cb
        JOIN "Users" u ON u.id = cb.consultor_id
-       WHERE cb.status = 'obtido' AND cb.data_atribuicao IS NOT NULL AND u.area_id = ANY(:areaIds)
+       WHERE cb.status = 'obtido' AND cb.data_atribuicao IS NOT NULL AND u.area_id IN (:areaIds)
        GROUP BY 1
        ORDER BY 1`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
@@ -251,7 +254,7 @@ export async function getTMKpis(req, res) {
       `SELECT COUNT(*)::int AS count
        FROM consultor_badges cb
        JOIN "Users" u ON u.id = cb.consultor_id
-       WHERE cb.status = 'obtido' AND u.area_id = ANY(:areaIds)
+       WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)
          AND cb.data_atribuicao BETWEEN :start AND :end`,
       { replacements: { areaIds, start, end }, type: QueryTypes.SELECT }
     );
@@ -264,7 +267,7 @@ export async function getTMKpis(req, res) {
        JOIN areas a ON a.id = b.area_id
        JOIN service_lines sl ON sl.id = a.service_line_id
        JOIN learning_paths lp ON lp.id = sl.learning_path_id
-       WHERE cb.status = 'obtido' AND u.area_id = ANY(:areaIds)
+       WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)
        GROUP BY lp.id, lp.name
        ORDER BY lp.name`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
@@ -275,7 +278,7 @@ export async function getTMKpis(req, res) {
        FROM consultor_badges cb
        JOIN "Users" u ON u.id = cb.consultor_id
        JOIN badges b ON b.id = cb.badge_id
-       WHERE cb.status = 'obtido' AND u.area_id = ANY(:areaIds)
+       WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)
        GROUP BY b.level
        ORDER BY b.level`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
@@ -314,6 +317,7 @@ export async function getEquipa(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm, req.query.serviceLineId);
+    if (!areaIds.length) return res.json([]);
 
     const equipa = await database.query(
       `SELECT u.id, u.name, u.email, COALESCE(u.points_total, 0) AS points_total, a.name AS area,
@@ -329,7 +333,7 @@ export async function getEquipa(req, res) {
        LEFT JOIN areas a ON a.id = u.area_id
        LEFT JOIN service_lines sl ON sl.id = a.service_line_id
        LEFT JOIN consultor_badges cb ON cb.consultor_id = u.id
-       WHERE u.role = 'consultant' AND u.area_id = ANY(:areaIds)
+       WHERE u.role = 'consultant' AND u.area_id IN (:areaIds)
        GROUP BY u.id, u.name, u.email, u.points_total, a.name, sl.name
        ORDER BY u.name`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
@@ -345,7 +349,7 @@ export async function getEquipa(req, res) {
        WHERE cb.status = 'obtido'
          AND cb.data_atribuicao IS NOT NULL
          AND b.expiry_days IS NOT NULL
-         AND u.area_id = ANY(:areaIds)
+         AND u.area_id IN (:areaIds)
          AND (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval)::date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '60 days'
        ORDER BY dias ASC`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
@@ -357,7 +361,7 @@ export async function getEquipa(req, res) {
        FROM consultor_badges cb
        JOIN badges b ON b.id = cb.badge_id
        JOIN "Users" u ON u.id = cb.consultor_id
-       WHERE u.area_id = ANY(:areaIds)
+       WHERE u.area_id IN (:areaIds)
        ORDER BY data DESC NULLS LAST`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
     );
@@ -381,6 +385,7 @@ export async function getTMCatalogo(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm, req.query.serviceLineId);
+    if (!areaIds.length) return res.json([]);
 
     const badges = await Badge.findAll({
       where: { area_id: { [Op.in]: areaIds } },
@@ -403,6 +408,7 @@ export async function getTMHistorico(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm, req.query.serviceLineId);
+    if (!areaIds.length) return res.json([]);
     const status = req.query.status && req.query.status !== "todos" ? req.query.status : null;
 
     const rows = await database.query(
@@ -415,7 +421,7 @@ export async function getTMHistorico(req, res) {
        JOIN badges b ON b.id = re.badge_id
        LEFT JOIN requirements r ON r.id = re.requirement_id
        LEFT JOIN "Users" tm ON tm.id = :tmId
-       WHERE u.area_id = ANY(:areaIds)
+       WHERE u.area_id IN (:areaIds)
          AND (:status IS NULL OR re.status = :status)
        ORDER BY re.updated_at DESC NULLS LAST`,
       { replacements: { areaIds, status, tmId: req.userId }, type: QueryTypes.SELECT }
@@ -433,6 +439,7 @@ export async function getTMRelatorio(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm, req.query.serviceLineId);
+    if (!areaIds.length) return res.json({ rows: [], totals: { total: 0 }, period: { startDate: new Date(), endDate: new Date() } });
     const filters = buildTMFilters(req.query);
     const rows = await getTMReportRows({ areaIds, scope: req.query.scope, filters, limit: 250 });
 
@@ -455,6 +462,7 @@ export async function exportTMReportExcel(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm, req.body.serviceLineId);
+    if (!areaIds.length) return res.status(400).json({ message: "Sem área definida para exportar." });
     const filters = buildTMFilters(req.body);
     const scope = normalizeScope(req.body.scope);
     const rows = await getTMReportRows({ areaIds, scope, filters });
@@ -494,6 +502,7 @@ export async function exportTMReportPDF(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm, req.body.serviceLineId);
+    if (!areaIds.length) return res.status(400).json({ message: "Sem área definida para exportar." });
     const filters = buildTMFilters(req.body);
     const scope = normalizeScope(req.body.scope);
     const rows = await getTMReportRows({ areaIds, scope, filters, limit: 120 });
