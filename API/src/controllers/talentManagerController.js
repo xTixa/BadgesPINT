@@ -337,8 +337,8 @@ export async function getEquipa(req, res) {
 
     const expiracoes = await database.query(
       `SELECT cb.consultor_id, COALESCE(b.name, b.description, 'Badge #' || b.id) AS badge,
-              (cb.data_atribuicao + (b.expiry_days || ' days')::interval)::date AS expires_at,
-              ((cb.data_atribuicao + (b.expiry_days || ' days')::interval)::date - CURRENT_DATE)::int AS dias
+              (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval)::date AS expires_at,
+              ((cb.data_atribuicao + (b.expiry_days::text || ' days')::interval)::date - CURRENT_DATE)::int AS dias
        FROM consultor_badges cb
        JOIN badges b ON b.id = cb.badge_id
        JOIN "Users" u ON u.id = cb.consultor_id
@@ -346,7 +346,7 @@ export async function getEquipa(req, res) {
          AND cb.data_atribuicao IS NOT NULL
          AND b.expiry_days IS NOT NULL
          AND u.area_id = ANY(:areaIds)
-         AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval)::date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '60 days'
+         AND (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval)::date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '60 days'
        ORDER BY dias ASC`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
     );

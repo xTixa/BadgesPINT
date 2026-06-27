@@ -700,9 +700,9 @@ export async function getBadgesExpirar(req, res) {
          COALESCE(b.description, 'Badge #' || b.id::text) AS nome,
          b.expiry_days,
          cb.data_atribuicao,
-         (cb.data_atribuicao + (b.expiry_days || ' days')::interval) AS expira_em,
+         (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval) AS expira_em,
          CEIL(EXTRACT(EPOCH FROM (
-           (cb.data_atribuicao + (b.expiry_days || ' days')::interval) - NOW()
+           (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval) - NOW()
          )) / 86400)::int AS dias_restantes
        FROM consultor_badges cb
        JOIN badges b ON b.id = cb.badge_id
@@ -710,8 +710,8 @@ export async function getBadgesExpirar(req, res) {
          AND cb.status = 'obtido'
          AND b.expiry_days IS NOT NULL
          AND cb.data_atribuicao IS NOT NULL
-         AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval) > NOW()
-         AND (cb.data_atribuicao + (b.expiry_days || ' days')::interval) <= NOW() + INTERVAL '30 days'
+         AND (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval) > NOW()
+         AND (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval) <= NOW() + INTERVAL '30 days'
        ORDER BY dias_restantes ASC`,
       { type: QueryTypes.SELECT, replacements: { consultorId: req.userId } }
     );
