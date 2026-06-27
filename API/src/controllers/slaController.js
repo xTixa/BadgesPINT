@@ -23,7 +23,30 @@ export async function getAllSLAs(req, res) {
       order: [["createdAt", "DESC"]]
     });
 
-    res.json(slas);
+    const result = await Promise.all(
+      slas.map(async (sla) => {
+        const [overduePedidos, pendingPedidos] = await Promise.all([
+          getOverduePedidosForSLA(sla),
+          getPendingPedidosForSLA(sla),
+        ]);
+
+        return {
+          id: sla.id,
+          team_id: sla.team_id,
+          teamName: sla.team?.name || `Equipa #${sla.team_id}`,
+          teamType: sla.team_type,
+          hoursLimit: sla.hours_limit,
+          notification_enabled: sla.notification_enabled,
+          email_notification: sla.email_notification,
+          push_notification: sla.push_notification,
+          status: sla.status,
+          overdue: overduePedidos.length,
+          pending: pendingPedidos.length,
+        };
+      })
+    );
+
+    res.json(result);
   } catch (err) {
     console.error("Erro ao listar SLAs:", err);
     res.status(500).json({ message: "Erro ao listar SLAs" });
@@ -171,6 +194,48 @@ async function getServiceLineIdForUser(userId) {
   if (!user?.area_id) return null;
   const area = await Area.findByPk(user.area_id, { attributes: ["id", "service_line_id"] });
   return area?.service_line_id || null;
+}
+
+async function getPendingPedidosForSLA(sla) {
+  const cutoff = new Date(Date.now() - Number(sla.hours_limit || 24) * 60 * 60 * 1000);
+
+  if (sla.team_type === "talent_manager") {
+    return ConsultorBadge.findAll({
+      where: {
+        workflow_status: "submitted",
+        submitted_at: { [Op.gt]: cutoff },
+      },
+      attributes: ["id"],
+    });
+  }
+
+  const serviceLineId = await getServiceLineIdForUser(sla.team_id);
+  if (!serviceLineId) return [];
+
+  return ConsultorBadge.findAll({
+    where: {
+      workflow_status: "em_validacao",
+      tm_validated_at: { [Op.gt]: cutoff },
+    },
+    attributes: ["id"],
+    include: [
+      {
+        model: Badge,
+        as: "badge",
+        required: true,
+        attributes: ["id"],
+        include: [
+          {
+            model: Area,
+            as: "area",
+            where: { service_line_id: serviceLineId },
+            required: true,
+            attributes: [],
+          },
+        ],
+      },
+    ],
+  });
 }
 
 async function getOverduePedidosForSLA(sla) {
