@@ -30,6 +30,8 @@ function responseFor(user, available, explicitIds) {
   const badges = selectedBadges(user, available, explicitIds);
   return {
     enabled: Boolean(user.email_signature_enabled),
+    configured: Boolean(user.email_signature_enabled)
+      || (Array.isArray(user.email_signature_badge_ids) && user.email_signature_badge_ids.length > 0),
     selected_badge_ids: badges.map((badge) => Number(badge.id)),
     available_badges: available,
     html: getEmailSignature({ user, badges }),

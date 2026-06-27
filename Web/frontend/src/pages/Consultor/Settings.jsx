@@ -1,7 +1,32 @@
 ﻿import Sidebar from "../../layout/Sidebar";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import api from "/src/api";
 
 export default function ConsultorSettingsPage() {
+  const [emailSignature, setEmailSignature] = useState({
+    configured: false,
+    enabled: false,
+    loading: true,
+  });
+
+  useEffect(() => {
+    let active = true;
+    api.get("/api/consultor/email-signature")
+      .then((response) => {
+        if (!active) return;
+        setEmailSignature({
+          configured: Boolean(response.data?.configured),
+          enabled: Boolean(response.data?.enabled),
+          loading: false,
+        });
+      })
+      .catch(() => {
+        if (active) setEmailSignature((current) => ({ ...current, loading: false }));
+      });
+    return () => { active = false; };
+  }, []);
+
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
@@ -121,7 +146,12 @@ export default function ConsultorSettingsPage() {
 
                 <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
                   <span>Assinatura de Email</span>
-                  <input type="checkbox" className="accent-[#0F62FE]" />
+                  <input
+                    type="checkbox"
+                    checked={emailSignature.enabled}
+                    readOnly
+                    className="accent-[#0F62FE]"
+                  />
                 </label>
               </div>
             </div>
@@ -138,12 +168,26 @@ export default function ConsultorSettingsPage() {
                 <span className="font-medium text-emerald-600">Ligado</span>
               </div>
 
-              <div className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
+              <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 p-4">
                 <span>Assinatura de Email</span>
 
-                <span className="font-medium text-slate-500">
-                  Não configurada
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className={`font-medium ${emailSignature.enabled ? "text-emerald-600" : "text-slate-500"}`}>
+                    {emailSignature.loading
+                      ? "A verificar..."
+                      : emailSignature.enabled
+                        ? "Ativa"
+                        : emailSignature.configured
+                          ? "Configurada (inativa)"
+                          : "Não configurada"}
+                  </span>
+                  <Link
+                    to="/consultor/assinatura-email"
+                    className="rounded-xl border border-[#0F62FE] px-3 py-1.5 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE] hover:text-white"
+                  >
+                    Gerir
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
