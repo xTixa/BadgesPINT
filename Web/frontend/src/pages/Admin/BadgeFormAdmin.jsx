@@ -110,7 +110,7 @@ export default function BadgeFormAdmin() {
       navigate("/admin/gestao-badges");
     } catch (err) {
       console.error("Erro ao guardar badge:", err);
-      alert("Erro ao guardar badge.");
+      alert(err.response?.data?.error || err.response?.data?.message || "Erro ao guardar badge.");
     } finally {
       setLoading(false);
     }
