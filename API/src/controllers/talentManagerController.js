@@ -84,17 +84,17 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
     u.area_id IN (:areaIds)
     AND COALESCE(cb.created_at, cb.submitted_at, cb.data_atribuicao, NOW()) BETWEEN :start AND :end
     AND (:consultor IS NULL OR u.name ILIKE :consultor)
-    AND (:badge IS NULL OR COALESCE(b.name, b.description, '') ILIKE :badge)
+    AND (:badge IS NULL OR b.description ILIKE :badge)
   `;
 
   if (normalized === "badges") {
     return database.query(
-      `SELECT b.id, 'badges' AS tipo, '-' AS consultor, COALESCE(b.name, b.description, 'Badge #' || b.id) AS badge,
+      `SELECT b.id, 'badges' AS tipo, '-' AS consultor, COALESCE(b.description, 'Badge #' || b.id) AS badge,
               b.level AS detalhe, b.points::text AS pontos, a.name AS area, 'catalogo' AS situacao, NULL::timestamp AS data
        FROM badges b
        JOIN areas a ON a.id = b.area_id
        WHERE b.area_id IN (:areaIds)
-         AND (:badge IS NULL OR COALESCE(b.name, b.description, '') ILIKE :badge)
+         AND (:badge IS NULL OR b.description ILIKE :badge)
        ORDER BY b.id DESC
        ${limit ? "LIMIT :limit" : ""}`,
       { replacements, type: QueryTypes.SELECT }
@@ -123,7 +123,7 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
         : "";
 
   return database.query(
-    `SELECT cb.id, :scope AS tipo, u.name AS consultor, COALESCE(b.name, b.description, 'Badge #' || b.id) AS badge,
+    `SELECT cb.id, :scope AS tipo, u.name AS consultor, COALESCE(b.description, 'Badge #' || b.id) AS badge,
             cb.workflow_status AS detalhe, COALESCE(b.points, 0)::text AS pontos, a.name AS area,
             cb.status AS situacao, COALESCE(cb.data_atribuicao, cb.submitted_at, cb.created_at) AS data,
             cb.tm_comment, cb.sl_comment, cb.rejection_reason
@@ -340,7 +340,7 @@ export async function getEquipa(req, res) {
     );
 
     const expiracoes = await database.query(
-      `SELECT cb.consultor_id, COALESCE(b.name, b.description, 'Badge #' || b.id) AS badge,
+      `SELECT cb.consultor_id, COALESCE(b.description, 'Badge #' || b.id) AS badge,
               (cb.data_atribuicao + (b.expiry_days::text || ' days')::interval)::date AS expires_at,
               ((cb.data_atribuicao + (b.expiry_days::text || ' days')::interval)::date - CURRENT_DATE)::int AS dias
        FROM consultor_badges cb
@@ -356,7 +356,7 @@ export async function getEquipa(req, res) {
     );
 
     const timeline = await database.query(
-      `SELECT cb.consultor_id, cb.id, cb.badge_id, COALESCE(b.name, b.description, 'Badge #' || b.id) AS badge,
+      `SELECT cb.consultor_id, cb.id, cb.badge_id, COALESCE(b.description, 'Badge #' || b.id) AS badge,
               cb.status, cb.workflow_status, COALESCE(cb.data_atribuicao, cb.submitted_at, cb.created_at) AS data
        FROM consultor_badges cb
        JOIN badges b ON b.id = cb.badge_id
@@ -412,7 +412,7 @@ export async function getTMHistorico(req, res) {
     const status = req.query.status && req.query.status !== "todos" ? req.query.status : null;
 
     const rows = await database.query(
-      `SELECT re.id, u.name AS consultor, COALESCE(b.name, b.description, 'Badge #' || b.id) AS badge,
+      `SELECT re.id, u.name AS consultor, COALESCE(b.description, 'Badge #' || b.id) AS badge,
               COALESCE(r.title, r.code, 'Requisito') AS requisito, re.status AS estado,
               re.notes AS observacoes, re.updated_at AS data,
               COALESCE(tm.name, 'Talent Manager') AS validador

@@ -5,7 +5,10 @@
       "Bash(node scripts/_tmp-inspect-natalia.js)",
       "Bash(node --check scripts/seed-users.js)",
       "Bash(npm run *)",
-      "Bash(node scripts/_tmp-cleanup-dupes.js)"
+      "Bash(node scripts/_tmp-cleanup-dupes.js)",
+      "Bash(node --check src/controllers/talentManagerController.js)",
+      "Bash(node --check src/controllers/exportController.js)",
+      "Bash(node scripts/_tmp-debug-equipa.js)"
     ]
   }
 }

@@ -68,7 +68,7 @@ export async function exportToExcel(req, res) {
       ];
 
       const badges = await Badge.findAll({
-        attributes: ['id', 'name', 'description', 'level', 'points', 'expiry_days', 'createdAt'],
+        attributes: ['id', 'description', 'level', 'points', 'expiry_days', 'createdAt'],
         include: [{ association: 'area', attributes: ['name'] }],
         order: [['id', 'ASC']]
       });
@@ -76,7 +76,7 @@ export async function exportToExcel(req, res) {
       badges.forEach(b => {
         badgesSheet.addRow({
           id: b.id,
-          name: b.name,
+          name: b.description,
           description: b.description,
           level: b.level,
           points: b.points,
@@ -131,7 +131,7 @@ export async function exportToExcel(req, res) {
       ];
 
       const pedidos = await database.query(
-        `SELECT cb.id, u.name as consultor, b.name as badge, cb.status, cb.created_at, cb.data_atribuicao
+        `SELECT cb.id, u.name as consultor, b.description as badge, cb.status, cb.created_at, cb.data_atribuicao
          FROM consultor_badges cb
          JOIN "Users" u ON u.id = cb.consultor_id
          JOIN badges b ON b.id = cb.badge_id
@@ -220,7 +220,7 @@ export async function exportToPDF(req, res) {
       doc.moveDown(0.5);
 
       const badges = await Badge.findAll({
-        attributes: ['id', 'name', 'level', 'points', 'expiry_days'],
+        attributes: ['id', 'description', 'level', 'points', 'expiry_days'],
         include: [{ association: 'area', attributes: ['name'] }],
         order: [['id', 'ASC']],
         limit: 100
@@ -232,7 +232,7 @@ export async function exportToPDF(req, res) {
 
       badges.forEach(b => {
         tableRows.push([
-          b.name,
+          b.description,
           b.level,
           b.points.toString(),
           b.expiry_days ? `${b.expiry_days}d` : 'Sem expiração',
@@ -250,7 +250,7 @@ export async function exportToPDF(req, res) {
       doc.moveDown(0.5);
 
       const pedidos = await database.query(
-        `SELECT cb.id, u.name as consultor, b.name as badge, cb.status, cb.created_at
+        `SELECT cb.id, u.name as consultor, b.description as badge, cb.status, cb.created_at
          FROM consultor_badges cb
          JOIN "Users" u ON u.id = cb.consultor_id
          JOIN badges b ON b.id = cb.badge_id
@@ -323,7 +323,7 @@ export async function exportPreview(req, res) {
 
     const buildBadges = async () => {
       const badges = await Badge.findAll({
-        attributes: ['id', 'name', 'description', 'level', 'points', 'expiry_days'],
+        attributes: ['id', 'description', 'level', 'points', 'expiry_days'],
         include: [{ association: 'area', attributes: ['name'] }],
         order: [['id', 'ASC']],
         limit: 5
@@ -332,7 +332,7 @@ export async function exportPreview(req, res) {
         title: 'Badges',
         columns: ['Nome', 'Nível', 'Pontos', 'Expira', 'Área'],
         rows: badges.map(b => [
-          b.name || b.description || `Badge #${b.id}`,
+          b.description || `Badge #${b.id}`,
           b.level,
           String(b.points ?? 0),
           b.expiry_days ? `${b.expiry_days}d` : 'Sem expiração',
@@ -360,7 +360,7 @@ export async function exportPreview(req, res) {
 
     const buildPedidos = async () => {
       const pedidos = await database.query(
-        `SELECT cb.id, u.name as consultor, b.name as badge, cb.status, cb.created_at
+        `SELECT cb.id, u.name as consultor, b.description as badge, cb.status, cb.created_at
          FROM consultor_badges cb
          JOIN "Users" u ON u.id = cb.consultor_id
          JOIN badges b ON b.id = cb.badge_id
