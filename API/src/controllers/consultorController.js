@@ -508,6 +508,12 @@ export async function getConsultantBadges(req, res) {
       return res.status(400).json({ message: "ID do consultor é obrigatório." });
     }
 
+    const isSelf = String(req.userId) === String(id);
+    const isManager = ["talent_manager", "service_line_leader", "admin"].includes(req.userRole);
+    if (!isSelf && !isManager) {
+      return res.status(403).json({ message: "Acesso negado." });
+    }
+
     const consultorBadges = await ConsultorBadge.findAll({
       where: { consultor_id: id },
       attributes: ["badge_id", "status", "workflow_status", "submitted_at", "data_atribuicao"],

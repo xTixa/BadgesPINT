@@ -92,15 +92,9 @@ export default function UploadEvidencias() {
 
     try {
       setPedidoStatus("");
-      const createRes = await api.post(
+      await api.post(
         "/api/admin/pedidos",
         { badge_id: Number(selectedBadgeId) },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-
-      await api.post(
-        `/api/admin/pedidos/${createRes.data.id}/submeter`,
-        {},
         { headers: { Authorization: `Bearer ${token}` } },
       );
 

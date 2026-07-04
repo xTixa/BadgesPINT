@@ -1,0 +1,820 @@
+ANÁLISE COMPLETA DA APLICAÇÃO MOBILE — BADGESPINT
+Atualizado em 29/06/2026 a partir do código existente em Mobile/mobile_app
+
+================================================================================
+0. COMO USAR ESTE DOCUMENTO
+================================================================================
+
+Este documento foi escrito para quem não domina Flutter. Primeiro apresenta a
+aplicação em linguagem simples, depois explica como tudo funciona tecnicamente e,
+no fim, descreve os ficheiros um a um. As secções 1, 2 e 16 servem como guião de
+apresentação. As restantes ajudam a responder a perguntas.
+
+Nota de rigor: “mobile_app” é o nome técnico do pacote, mas o título mostrado pela
+aplicação é “Badges Softinsa”. O projeto Flutter contém suporte para Android, iOS,
+Web, Windows, Linux e macOS. A utilização principal é mobile e apenas o perfil
+“consultant” (consultor) pode entrar nesta aplicação.
+
+
+================================================================================
+1. EXPLICAÇÃO EM 30 SEGUNDOS
+================================================================================
+
+A BadgesPINT é uma aplicação onde um consultor acompanha e demonstra as suas
+competências. O consultor entra com a sua conta, consulta o catálogo de badges,
+candidata-se a um badge, envia ficheiros que provam que cumpriu os requisitos e
+acompanha a validação. Quando obtém o badge, recebe pontos e pode descarregar ou
+partilhar o certificado. Também pode consultar o ranking, objetivos, notificações,
+badges a expirar e o seu progresso profissional.
+
+A app comunica com um servidor através de uma API REST. Guarda uma cópia dos
+dados no dispositivo para continuar a mostrar informação sem rede. Quando a
+ligação regressa, sincroniza novamente certas operações pendentes.
+
+
+================================================================================
+2. GUIÃO DE APRESENTAÇÃO (5 A 8 MINUTOS)
+================================================================================
+
+1. Problema
+   “A organização precisa de uma forma simples de os consultores descobrirem
+   competências, apresentarem provas e acompanharem a aprovação dos seus badges.”
+
+2. Solução
+   “Criámos uma aplicação Flutter para consultores. O mesmo código pode ser
+   compilado para várias plataformas e a interface adapta-se ao tamanho do ecrã.”
+
+3. Percurso principal
+   “O utilizador autentica-se, explora o catálogo, abre um badge, candidata-se,
+   desbloqueia os requisitos, envia uma evidência e acompanha o pedido até à
+   validação do Talent Manager e da Service Line.”
+
+4. Valor depois da aprovação
+   “O badge obtido aumenta os pontos, aparece no perfil e na timeline e gera um
+   certificado que pode ser descarregado, verificado por link e partilhado.”
+
+5. Dados e arquitetura
+   “A interface não fala diretamente com a API. Passa pelo controller e pelo
+   repository. O repository comunica com o servidor e com os DAOs, que guardam
+   a cópia local em SQLite. Esta separação facilita manutenção e testes.”
+
+6. Funcionamento com falhas de rede
+   “Os dados já sincronizados continuam disponíveis. Algumas ações pequenas,
+   como marcar notificações ou criar um pedido, podem ficar numa fila. O upload
+   do ficheiro de evidência necessita de Internet.”
+
+7. Notificações
+   “Firebase Cloud Messaging entrega notificações push. A app também mostra
+   alertas locais para badges a expirar e objetivos com prazo próximo.”
+
+8. Fecho
+   “O resultado junta candidatura, validação, certificados, progressão e
+   gamificação numa experiência única para o consultor.”
+
+Sugestão de demonstração:
+  Login → Dashboard → Explorar → abrir badge → Candidatar-me → Submeter evidência
+  → Histórico/Pedidos → Perfil/Certificados → Ranking → Definições.
+
+
+================================================================================
+3. DICIONÁRIO PARA LEIGOS
+================================================================================
+
+Flutter       Framework da Google usado para construir a interface.
+Dart          Linguagem em que a aplicação foi escrita.
+Widget        Peça de interface: texto, botão, cartão, página, etc.
+API REST      Conjunto de endereços do servidor para pedir ou alterar dados.
+Endpoint      Um endereço específico da API, por exemplo /api/auth/login.
+JSON          Formato de texto usado para trocar dados com o servidor.
+Token/JWT     “Passe digital” enviado depois do login para provar a identidade.
+Repository    Camada que decide onde obter ou guardar os dados.
+Controller    Estado central da área do consultor; avisa os ecrãs quando muda.
+Model         Representação de uma entidade, como Badge ou Utilizador.
+DAO           Objeto responsável por ler e escrever um tipo de dado local.
+SQLite        Pequena base de dados guardada no dispositivo.
+Cache         Cópia local de dados obtidos anteriormente.
+Sincronização Atualização da cópia local com os dados do servidor.
+Polling       Atualização automática repetida; aqui acontece a cada 20 segundos.
+Push/FCM      Mensagem enviada pelo servidor para o dispositivo através do Firebase.
+SharedPrefs   Armazenamento simples de pequenas preferências no dispositivo.
+GoRouter      Biblioteca que decide qual ecrã abrir para cada rota.
+Offline-first Estratégia em que a interface lê dados locais e tenta atualizá-los.
+
+
+================================================================================
+4. TECNOLOGIAS E DEPENDÊNCIAS
+================================================================================
+
+Base:
+  - Flutter e Dart, SDK Dart >= 3.7.0 e < 4.0.0.
+  - Material Design 3 para a interface.
+  - Versão declarada da app: 1.0.0+1.
+
+Pacotes usados:
+  - dio: pedidos HTTP e respostas da API.
+  - go_router: rotas, proteção de páginas e navegação por separadores.
+  - sqflite + path: base SQLite e construção do caminho do ficheiro.
+  - shared_preferences: sessão, credenciais lembradas e definições simples.
+  - connectivity_plus: deteta se existe uma interface de rede disponível.
+  - firebase_core + firebase_messaging: inicialização Firebase e push FCM.
+  - flutter_local_notifications: notificações mostradas pelo próprio dispositivo.
+  - file_picker: escolher evidências e o destino de certificados.
+  - path_provider: pasta de documentos da app como alternativa de download.
+  - url_launcher: abrir browser e partilha no LinkedIn.
+  - universal_html: download de PDF quando a aplicação corre no browser.
+  - cupertino_icons: conjunto adicional de ícones.
+
+Servidor por defeito: https://badgespint.onrender.com
+Pode ser substituído na compilação pela variável API_BASE_URL.
+
+
+================================================================================
+5. ARQUITETURA — QUEM FAZ O QUÊ
+================================================================================
+
+Fluxo simplificado:
+
+  Pessoa toca num botão
+          ↓
+  Página/Widget (interface)
+          ↓
+  ConsultorController (estado e coordenação)
+          ↓
+  ConsultorRepository (regras e escolha da fonte)
+       ↙                              ↘
+  ApiClient → API/servidor       DAO → SQLite/cache
+          ↓                           ↓
+      resposta       →       estado atualizado
+                                  ↓
+                      notifyListeners() redesenha a UI
+
+Camadas:
+  - Apresentação: auth/, consultor/pages/ e consultor/widgets/.
+  - Estado: consultor_controller.dart, baseado em ChangeNotifier.
+  - Domínio/dados: consultor_models.dart e consultor_repository.dart.
+  - Comunicação: api_client.dart.
+  - Sincronização: sync_service.dart e mutation_queue_service.dart.
+  - Persistência: database_helper.dart e data/local/*.dart.
+
+Padrões usados: Repository, DAO, Observer/ChangeNotifier, Singleton e uma
+abordagem offline-first. Não é MVC puro: é mais correto descrevê-la como uma
+arquitetura em camadas com Controller + Repository + DAO.
+
+
+================================================================================
+6. ARRANQUE, SESSÃO E NAVEGAÇÃO
+================================================================================
+
+Arranque em main.dart:
+  1. Prepara o Flutter.
+  2. Em plataformas que não sejam Web, abre/cria badges_pint.db.
+  3. Inicia a monitorização da conectividade.
+  4. Tenta iniciar Firebase; se falhar, a app continua sem push.
+  5. Arranca BadgesPintApp.
+
+Bootstrap em app.dart:
+  1. Carrega token e id do utilizador guardados.
+  2. Tenta sincronizar as áreas e lê a cópia local.
+  3. Inicia a fila de ações offline.
+  4. Se houver sessão, carrega o controller e valida o perfil.
+  5. Só aceita role == "consultant"; os restantes perfis são rejeitados.
+  6. Regista o token do dispositivo no serviço de notificações.
+
+Estados de autenticação:
+  login → register ou firstLogin → authenticated.
+
+Rotas públicas:
+  /boot              ecrã temporário de carregamento
+  /login             início de sessão
+  /register          criação de conta de consultor
+  /recover-password  pedido de recuperação
+  /first-login       substituição obrigatória da password temporária
+
+Separadores autenticados, cada um mantendo a sua própria pilha de navegação:
+  /app/dashboard     Dashboard
+  /app/home          Explorar catálogo
+  /app/upload        Submeter evidências
+  /app/history       Histórico
+  /app/profile       Perfil
+
+Rotas autenticadas auxiliares:
+  /ranking, /consultants/:id, /notifications, /settings e /timeline.
+
+O redirect do GoRouter impede páginas privadas sem sessão e impede voltar ao
+login depois de autenticado. Alguns ecrãs (detalhe, pedidos e gamificação) abrem
+com Navigator/MaterialPageRoute em vez de terem uma rota GoRouter própria.
+
+Sessão:
+  - O token e o id ficam em SharedPreferences.
+  - O ApiClient envia Authorization: Bearer <token> quando necessário.
+  - Cookies Set-Cookie da API também são guardados e reenviados.
+  - No logout, remove token FCM, limpa fila, cookies, token e id.
+
+
+================================================================================
+7. FLUXOS FUNCIONAIS
+================================================================================
+
+Autenticação e conta:
+  - Login com email/password e opção “lembrar credenciais”.
+  - A API devolve token, utilizador e indicador de primeiro login.
+  - Primeiro login obriga à escolha de nova password.
+  - Registo envia nome, email, área e aceitação RGPD; a password temporária é
+    enviada externamente por email pelo sistema de backend.
+  - Recuperação pede ao backend o envio do email correspondente.
+
+Candidatura a badge:
+  1. O catálogo mostra nome, descrição, área, nível e pontos.
+  2. O detalhe apresenta o badge; antes da candidatura, requisitos bloqueados.
+  3. “Candidatar-me” cria /api/pedidos e, se o pedido estiver open, submete-o.
+  4. Os requisitos ficam visíveis e surge a ação de upload.
+  5. O utilizador escolhe PDF/PNG/JPG/JPEG/DOC/DOCX, no máximo 8 MB.
+  6. O ficheiro é convertido para Base64, enviado e a URL devolvida é associada
+     ao requisito juntamente com notas.
+  7. A evidência fica pendente, aprovada ou rejeitada.
+  8. O pedido acompanha validação do Talent Manager e da Service Line.
+
+Badge obtido e certificado:
+  - O badge obtido conta para progresso, pontos, perfil e gamificação.
+  - O certificado PDF é pedido ao servidor e guardado pelo seletor de ficheiro;
+    em Web é descarregado pelo browser; se necessário usa a pasta da aplicação.
+  - Existe link público /share/badges/<id>, abertura no browser e partilha
+    LinkedIn. No perfil, a partilha depende das preferências RGPD/público/LinkedIn.
+
+Atualização:
+  - O primeiro carregamento sincroniza perfil, badges, progresso, catálogo,
+    pedidos, notificações, áreas, ranking, learning paths, certificados e alertas.
+  - A cada 20 segundos atualiza pedidos, notificações, badges, progresso, ranking,
+    learning paths, certificados e alertas.
+
+
+================================================================================
+8. ECRÃS EXPLICADOS
+================================================================================
+
+AUTENTICAÇÃO
+
+login_page.dart
+  Ecrã responsivo de login com identidade Softinsa, email, password, mostrar/
+  ocultar password, lembrar credenciais, validações, recuperação e registo.
+  Inclui um CustomPainter para o padrão visual decorativo.
+
+register_page.dart
+  Formulário de nome, email, área e RGPD. Valida os dados e chama o registo.
+
+recover_password_page.dart
+  Recolhe o email, pede a recuperação e troca o formulário por uma mensagem de
+  sucesso quando a API aceita o pedido.
+
+first_login_page.dart
+  Recolhe e confirma a nova password e conclui o primeiro acesso.
+
+ÁREA AUTENTICADA
+
+consultor_shell_page.dart
+  Moldura comum: topo com notificações/definições/logout, banner de estado de
+  sincronização e barra inferior Dashboard, Explorar, Submeter, Histórico, Perfil.
+
+dashboard_page.dart
+  Visão geral: saudação, progresso, pontos, marco dos 3 badges, objetivo, alertas
+  de expiração, próxima ação, pedidos, learning paths, conquistas, recomendações,
+  pesquisa e filtros. Alterna “Todos/Os meus”, ordena e adapta lista/grelha.
+
+home_page.dart
+  Catálogo explorável com pesquisa, filtros por área e nível, métricas e destaque
+  de badges da área preferida. Abre o detalhe do badge.
+
+badge_detail_page.dart
+  Mostra imagem/medalha, descrição, pontos, nível, área, estado e requisitos.
+  Permite candidatura, upload, copiar/abrir link público e partilhar no LinkedIn
+  quando o badge está obtido.
+
+upload_page.dart
+  Seleciona um badge já associado ao utilizador e mostra os seus requisitos.
+  Cada requisito pode ser expandido para escolher ficheiro, escrever notas e ver
+  a evidência já enviada. O upload é desativado offline.
+
+history_page.dart
+  Mostra badges obtidos/em curso, permite descarregar certificado dos obtidos e
+  apresenta também um resumo dos pedidos. É mais do que histórico de pedidos.
+
+pedidos_page.dart
+  Ecrã auxiliar com cartões detalhados e uma linha temporal por pedido: criado,
+  submetido, Talent Manager, Service Line e badge atribuído. Mostra comentários.
+
+profile_page.dart
+  Perfil próprio com avatar, dados, estatísticas, ranking, badges e certificados.
+  Permite editar nome/email/área/avatar, alterar password, descarregar certificados,
+  abrir/copiar verificação e partilhar. Abre detalhes de badges obtidos.
+
+ranking_page.dart
+  Cabeçalho, pódio dos três primeiros e lista geral com posição, pontos, badges e
+  identificação do próprio utilizador. Abre perfis públicos permitidos.
+
+consultant_profile_page.dart
+  Perfil público de outro consultor: nome, avatar, área, ranking, pontos, número de
+  badges, grelha e últimos badges. Mostra erro quando a API não autoriza/encontra.
+
+notifications_page.dart
+  Resumo e filtros Todas/Não lidas/Lidas. Marca uma ou todas como lidas. Ao abrir
+  certas notificações relacionadas com evidências/pedidos encaminha para upload.
+
+settings_page.dart
+  Nome, área, objetivo e prazo; opções locais de email/notificações/recomendações;
+  alertas de expiração e timeline; perfil público, LinkedIn, assinatura e RGPD;
+  alteração de password; e visualizador da base local para desenvolvimento.
+
+timeline_page.dart
+  Junta objetivo, progresso dos learning paths, próxima recomendação, badge a
+  expirar e certificados obtidos numa linha temporal profissional.
+
+gamification_page.dart
+  Níveis por pontos (Rookie, Explorer, Specialist, Expert, Master), progresso para
+  o próximo nível, métricas e conquistas: primeiro badge, três badges, 500 pontos
+  e Top 3. Os limites estão definidos localmente no ficheiro.
+
+badges_page.dart
+  Lista alternativa e simples do catálogo. Existe no código, mas não é usada por
+  app.dart nem por outra página no estado atual; home_page.dart cumpre esse papel.
+
+
+================================================================================
+9. MODELOS E ESTADO
+================================================================================
+
+ConsultorController guarda em memória:
+  profile, badges, badgesProgress, recommendations, expiryAlerts, ranking,
+  learningPaths, certificates, areas, catalogBadges, preferredAreaBadges,
+  pedidosStatus, notifications, badge selecionado, requirements e evidences.
+  Guarda ainda loading, estado online e número de ações pendentes.
+
+Valores calculados:
+  - badgesObtidos: badges com status “obtido”.
+  - totalPoints: pontos do perfil; se forem zero, soma os badges.
+  - globalProgress: percentagem obtidos/total.
+  - recommendations: até quatro badges ainda não obtidos, preferindo a área.
+  - rankingPosition: posição cujo consultantId coincide com o perfil.
+
+Modelos em consultor_models.dart:
+  - ConsultantUser: conta, pontos, área, localização, avatar e preferências.
+  - AreaItem: id e nome da área.
+  - BadgeItem: badge do utilizador, estado, pontos, área e expiração.
+  - CatalogBadgeItem: badge do catálogo, descrição, nível, área e imagem.
+  - BadgeProgress: requisitos totais e aprovados por badge.
+  - RequirementItem: requisito, descrição, código e imagem.
+  - EvidenceItem: evidência, requisito, estado e URL.
+  - PedidoBadgeStatus: candidatura, workflow, datas e comentários.
+  - RankingItem: pessoa e posição no ranking.
+  - PublicConsultantProfile: perfil que pode ser visto por colegas.
+  - LearningPathProgressItem: progresso numa rota de aprendizagem.
+  - CertificateItem: certificado e URL de verificação.
+  - ExpiryAlert: badge e dias até expirar.
+  - UserNotificationItem: título, mensagem e estado lido.
+  - RecommendationItem: recomendação construída localmente.
+
+
+================================================================================
+10. API — ENDPOINTS USADOS
+================================================================================
+
+Autenticação/conta:
+  POST /api/auth/login                     autenticar
+  POST /api/auth/recover-password          recuperar password
+  POST /api/auth/first-login               trocar password temporária
+  GET  /api/auth/me                        obter perfil autenticado
+  POST /api/users/register                 criar consultor
+  PUT  /api/users/<id>                     atualizar perfil
+  PUT  /api/users/<id>/password            alterar password
+
+Catálogo e badges:
+  GET  /api/areas                          áreas
+  GET  /badges                             catálogo
+  GET  /areas/<areaId>/badges              badges por área
+  GET  /badges/<badgeId>/requirements      requisitos
+  GET  /api/consultor/<id>/badges          badges do consultor
+  GET  /api/consultor/<id>/badges-progress progresso
+  GET  /api/consultor/badges/<id>/evidencias evidências
+  POST /api/consultor/evidencias/upload    upload Base64
+  POST /api/consultor/requirements/<id>/evidencias associar evidência
+  POST /api/consultor/badges/<id>/certificado gerar/obter PDF
+
+Pedidos e progressão:
+  GET/POST /api/pedidos                    listar/criar candidatura
+  POST /api/pedidos/<id>/submeter          submeter pedido aberto
+  GET  /api/consultores/ranking            ranking
+  GET  /api/consultor/learning-paths/progress learning paths
+  GET  /api/consultor/certificates         certificados
+  GET  /api/consultor/badges-expirar       alertas até 30 dias
+  GET  /api/consultor/<id>/profile         perfil público
+  PUT  /api/consultor/preferences          RGPD, público, LinkedIn e objetivo
+
+Notificações:
+  GET  /api/notifications
+  PUT  /api/notifications/<id>/read
+  PUT  /api/notifications/mark/all-read
+  POST /api/notifications/device-token
+  POST /api/notifications/device-token/remove
+
+O ApiClient considera sucesso apenas códigos 200–299, tem timeout de ligação de
+12 s e de resposta de 20 s e transforma os restantes em ApiException.
+
+
+================================================================================
+11. BASE LOCAL, SINCRONIZAÇÃO E OFFLINE
+================================================================================
+
+Base nativa: badges_pint.db, versão 3. Tabelas:
+  cache_records      JSON genérico por chave
+  sync_metadata      última tentativa, sucesso/erro e mensagem
+  pending_mutations  ações POST/PUT por enviar e número de tentativas
+  users              perfil
+  areas              áreas
+  my_badges           badges do utilizador
+  badge_progress      progresso
+  catalog_badges      catálogo
+  badges_by_area      catálogo por área
+  applications        pedidos
+  notifications       notificações
+  requirements        requisitos por badge
+  evidences           evidências por utilizador e badge
+
+As listas são substituídas dentro de uma transação e conservam a ordem em
+row_order. O JSON integral também é guardado, o que reduz mapeamentos SQL.
+
+Em Web não é usado sqflite: JsonCacheDao mantém um Map em memória. Portanto, ao
+recarregar a página, essa cache desaparece. A fila de mutações também é desativada
+em Web.
+
+Fila offline implementada para:
+  - criar pedido;
+  - associar uma evidência que já tenha URL;
+  - marcar uma ou todas as notificações como lidas.
+
+Quando a conectividade regressa, MutationQueueService reenvia em ordem. Cada ação
+falhada aumenta attempts; getAll deixa de devolver itens com 5 tentativas. O item
+continua na tabela, mas já não volta a ser processado automaticamente.
+
+Limites importantes:
+  - connectivity_plus confirma uma rede, não garante que a Internet/API responde.
+  - O upload do ficheiro exige ligação e a interface bloqueia-o offline.
+  - Outras alterações, como perfil/password/preferências, não entram na fila.
+  - A sincronização captura erros e mantém dados locais antigos, permitindo leitura.
+
+
+================================================================================
+12. NOTIFICAÇÕES, TEMA E FICHEIROS
+================================================================================
+
+Push:
+  NotificationService inicializa Firebase, pede permissão, obtém token FCM e
+  regista-o na API. Mensagens em primeiro plano geram notificação local e atualizam
+  dados. Tocar numa mensagem abre o centro de notificações. Existem canais Android
+  “badges_alerts” (alta prioridade) e “badges_sla” (máxima).
+
+Alertas locais:
+  - Um aviso reúne até três badges que expiram em 0–7 dias.
+  - Um lembrete de objetivo surge se o prazo estiver entre 0 e 30 dias.
+  - Apesar do nome “schedule”, o código usa show(): mostra o aviso no momento em
+    que a função corre, não agenda uma data futura no sistema operativo.
+
+Tema:
+  Tema claro Material 3. Azul principal #0F62FE, azul claro #00AEEF, fundo
+  #F6F9FC. app_theme.dart uniformiza barras, cartões, inputs, botões e navegação.
+  SessionStorage possui suporte para guardar themeMode, mas app.dart aplica sempre
+  AppTheme.light(); modo escuro ainda não está ligado à interface.
+
+Ficheiros:
+  Evidências aceites: pdf, png, jpg, jpeg, doc, docx; limite 8 MB na interface.
+  Certificados: PDF. Na Web usa Blob/anchor; no dispositivo usa FilePicker e depois
+  a pasta de documentos como fallback.
+
+
+================================================================================
+13. DESCRIÇÃO DE CADA FICHEIRO DE CÓDIGO DA EQUIPA
+================================================================================
+
+RAIZ E CONFIGURAÇÃO
+  Mobile/ANALISE_MOBILE.txt — este documento.
+  mobile_app/pubspec.yaml — nome, versão, SDK, dependências e asset do logótipo.
+  mobile_app/pubspec.lock — versões exatas resolvidas; garante builds repetíveis.
+  mobile_app/analysis_options.yaml — regras recomendadas do analisador Flutter.
+  mobile_app/devtools_options.yaml — opções/extensões do Flutter DevTools.
+  mobile_app/README.md — README inicial genérico do template; está desatualizado.
+  mobile_app/.gitignore — ficheiros gerados que o Git deve ignorar.
+  mobile_app/.metadata — metadados do Flutter para migração do projeto.
+  mobile_app/.flutter-plugins — registo antigo gerado dos plugins.
+  mobile_app/.flutter-plugins-dependencies — mapa gerado de plugins/plataformas.
+  mobile_app/.fvm/fvm_config.json — configuração do Flutter Version Management.
+  mobile_app/.fvm/release — referência do canal/release FVM.
+  mobile_app/.fvm/version — versão de Flutter selecionada pelo FVM.
+  mobile_app/env/dev.json — API_BASE_URL e configuração Firebase para --dart-define.
+  mobile_app/assets/images/softinsa_logo.png — logótipo usado no login.
+
+ENTRADA E APLICAÇÃO
+  lib/main.dart — inicializa BD, rede, notificações e executa a app.
+  lib/app.dart — composição global, bootstrap, sessão, rotas e login/logout.
+
+AUTENTICAÇÃO
+  lib/auth/login_page.dart — UI, validação e opção de recordar login.
+  lib/auth/register_page.dart — formulário de registo e RGPD.
+  lib/auth/recover_password_page.dart — pedido e confirmação de recuperação.
+  lib/auth/first_login_page.dart — alteração obrigatória da primeira password.
+
+CONSULTOR — NÚCLEO
+  lib/consultor/consultor_models.dart — todas as classes que convertem JSON.
+  lib/consultor/consultor_repository.dart — API, cache e regras de dados.
+  lib/consultor/consultor_controller.dart — estado, cálculos e ações da UI.
+
+CONSULTOR — PÁGINAS
+  lib/consultor/pages/consultor_shell_page.dart — moldura e navegação autenticada.
+  lib/consultor/pages/dashboard_page.dart — resumo e lista principal de badges.
+  lib/consultor/pages/home_page.dart — catálogo pesquisável e filtrável.
+  lib/consultor/pages/badge_detail_page.dart — detalhe, candidatura e partilha.
+  lib/consultor/pages/upload_page.dart — seleção e envio de evidências.
+  lib/consultor/pages/history_page.dart — badges, certificados e resumo de pedidos.
+  lib/consultor/pages/pedidos_page.dart — workflow detalhado dos pedidos.
+  lib/consultor/pages/profile_page.dart — perfil próprio e certificados.
+  lib/consultor/pages/ranking_page.dart — pódio e classificação geral.
+  lib/consultor/pages/consultant_profile_page.dart — perfil público de colega.
+  lib/consultor/pages/notifications_page.dart — centro e filtros de notificações.
+  lib/consultor/pages/settings_page.dart — preferências, conta e ferramenta de BD.
+  lib/consultor/pages/timeline_page.dart — percurso, objetivo e certificados.
+  lib/consultor/pages/gamification_page.dart — níveis e conquistas locais.
+  lib/consultor/pages/badges_page.dart — catálogo alternativo atualmente não usado.
+
+CONSULTOR — WIDGETS REUTILIZÁVEIS
+  lib/consultor/widgets/app_header.dart — cabeçalho azul com ícone e textos.
+  lib/consultor/widgets/badge_medal.dart — medalha; tenta imagem de rede e usa
+    estrela/nome como fallback. Rejeita localhost, placeholders e SVG.
+  lib/consultor/widgets/section_card.dart — cartão com título, barra e ação opcional.
+  lib/consultor/widgets/stat_card.dart — cartão acessível de métrica, valor e ícone.
+
+SERVIÇOS PARTILHADOS
+  lib/shared/app_config.dart — lê API/Firebase das variáveis de compilação.
+  lib/shared/api_client.dart — Dio, headers, cookies, bytes e erros HTTP.
+  lib/shared/session_storage.dart — token, id, tema e credenciais lembradas.
+  lib/shared/app_theme.dart — cores e ThemeData Material 3.
+  lib/shared/notification_service.dart — Firebase, FCM e notificações locais.
+  lib/shared/download_helper.dart — grava/descarrega certificados PDF.
+  lib/shared/local_database.dart — cache JSON genérica; sobrepõe parte da função
+    de JsonCacheDao e é pouco usada no fluxo atual.
+  lib/shared/db_viewer_page.dart — ferramenta que lista tabelas/linhas SQLite.
+
+CORE
+  lib/core/database/database_helper.dart — cria/migra/limpa BD e tabelas.
+  lib/core/services/connectivity_service.dart — monitoriza disponibilidade de rede.
+  lib/core/services/sync_service.dart — API → DAOs e metadados de sincronização.
+  lib/core/services/mutation_queue_service.dart — reenvia POST/PUT pendentes.
+
+ACESSO A DADOS LOCAIS
+  lib/data/local/local_table_dao.dart — operações genéricas de mapas/listas SQLite.
+  lib/data/local/json_cache_dao.dart — JSON por chave em SQLite ou memória Web.
+  lib/data/local/current_user_dao.dart — perfil do utilizador.
+  lib/data/local/area_dao.dart — áreas.
+  lib/data/local/badge_dao.dart — badges, progresso, catálogo e badges por área.
+  lib/data/local/application_dao.dart — candidaturas/pedidos.
+  lib/data/local/notification_dao.dart — notificações.
+  lib/data/local/requirement_dao.dart — requisitos por badge.
+  lib/data/local/evidence_dao.dart — evidências por utilizador/badge.
+  lib/data/local/pending_mutation_dao.dart — fila offline e tentativas.
+  lib/data/local/sync_metadata_dao.dart — sucesso/erro e hora de sincronização.
+
+TESTES
+  test/widget_test.dart — único teste; espera que o texto “Iniciar Sessao” apareça.
+  É um teste muito pequeno e depende do bootstrap assíncrono; não cobre repository,
+  controller, offline, rotas, formulários ou ecrãs principais.
+
+
+================================================================================
+14. FICHEIROS DE PLATAFORMA (UM A UM OU POR CONJUNTO EQUIVALENTE)
+================================================================================
+
+Estes ficheiros são sobretudo scaffolding gerado pelo Flutter. Não implementam as
+regras dos badges, mas permitem que o mesmo Dart arranque em cada plataforma.
+
+ANDROID
+  android/settings.gradle.kts — plugins e módulos Gradle.
+  android/build.gradle.kts — configuração Gradle geral.
+  android/gradle.properties — memória e propriedades do build.
+  android/gradlew e gradlew.bat — wrapper Gradle para Unix e Windows.
+  android/local.properties — caminhos locais do SDK/Flutter; gerado na máquina.
+  android/.gitignore — exclusões específicas Android.
+  android/gradle/wrapper/gradle-wrapper.properties — versão/distribuição Gradle.
+  android/gradle/wrapper/gradle-wrapper.jar — executável binário do wrapper.
+  android/app/build.gradle.kts — package pt.softinsa.badges, SDK, plugins Firebase,
+    Java 11 e assinatura; release ainda usa chave de debug.
+  android/app/google-services.json — identificação/configuração Firebase Android.
+  android/app/src/main/AndroidManifest.xml — activity, ícone, notificações e launcher.
+  android/app/src/debug/AndroidManifest.xml — permissões/opções adicionais de debug.
+  android/app/src/profile/AndroidManifest.xml — opções do modo profile.
+  android/app/src/main/kotlin/pt/softinsa/badges/MainActivity.kt — activity Flutter.
+  android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java —
+    liga plugins nativos; ficheiro gerado.
+  android/app/src/main/res/drawable/launch_background.xml — splash Android antigo.
+  android/app/src/main/res/drawable-v21/launch_background.xml — splash Android 5+.
+  android/app/src/main/res/values/styles.xml — temas de arranque/modo normal.
+  android/app/src/main/res/values-night/styles.xml — variante noturna desses temas.
+  mipmap-mdpi/ic_launcher.png, mipmap-hdpi/ic_launcher.png,
+  mipmap-xhdpi/ic_launcher.png, mipmap-xxhdpi/ic_launcher.png e
+  mipmap-xxxhdpi/ic_launcher.png — o mesmo ícone Android em cinco densidades.
+
+WEB
+  web/index.html — página HTML que carrega o bundle Flutter.
+  web/manifest.json — nome, cores, ícones e instalação como aplicação web.
+  web/favicon.png — pequeno ícone do separador do browser.
+  web/icons/Icon-192.png e Icon-512.png — ícones PWA normais.
+  web/icons/Icon-maskable-192.png e Icon-maskable-512.png — ícones PWA recortáveis.
+
+iOS
+  ios/.gitignore — exclusões iOS.
+  ios/Flutter/AppFrameworkInfo.plist — metadados do framework Flutter.
+  ios/Flutter/Debug.xcconfig e Release.xcconfig — configurações por modo.
+  ios/Flutter/Generated.xcconfig e flutter_export_environment.sh — caminhos e
+    variáveis gerados localmente pelo Flutter.
+  ios/Runner/AppDelegate.swift — entrada nativa iOS.
+  ios/Runner/Info.plist — nome, versões e propriedades da aplicação.
+  ios/Runner/Runner-Bridging-Header.h — ligação Swift/Objective-C.
+  ios/Runner/GeneratedPluginRegistrant.h e .m — registo gerado de plugins.
+  ios/Runner/Base.lproj/Main.storyboard — janela Flutter principal.
+  ios/Runner/Base.lproj/LaunchScreen.storyboard — ecrã de lançamento.
+  ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json — mapa de ícones.
+  Os 15 ficheiros Icon-App-*.png desse diretório — ícone iOS para cada tamanho,
+  escala e dispositivo (20, 29, 40, 60, 76, 83.5 e 1024 pontos).
+  ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json — mapa do splash.
+  LaunchImage.png, LaunchImage@2x.png e LaunchImage@3x.png — splash em três escalas.
+  LaunchImage.imageset/README.md — nota do template sobre essas imagens.
+  ios/Runner.xcodeproj/project.pbxproj — projeto e targets do Xcode.
+  ios/Runner.xcodeproj/.../Runner.xcscheme — esquema de compilação/teste.
+  ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata — workspace.
+  Os ficheiros IDEWorkspaceChecks.plist e WorkspaceSettings.xcsettings dentro de
+  project.xcworkspace — opções internas do Xcode.
+  ios/Runner.xcworkspace/contents.xcworkspacedata — workspace usado para compilar.
+  Os IDEWorkspaceChecks.plist e WorkspaceSettings.xcsettings deste workspace —
+  preferências internas do Xcode.
+  ios/RunnerTests/RunnerTests.swift — teste nativo vazio do template.
+
+macOS
+  macos/.gitignore — exclusões macOS.
+  macos/Flutter/Flutter-Debug.xcconfig e Flutter-Release.xcconfig — build Flutter.
+  macos/Flutter/GeneratedPluginRegistrant.swift — registo gerado de plugins.
+  macos/Runner/AppDelegate.swift — ciclo de vida nativo.
+  macos/Runner/MainFlutterWindow.swift — janela que aloja Flutter.
+  macos/Runner/Info.plist — metadados da aplicação.
+  macos/Runner/DebugProfile.entitlements e Release.entitlements — permissões sandbox.
+  macos/Runner/Configs/AppInfo.xcconfig — nome, identificador e copyright.
+  Debug.xcconfig, Release.xcconfig e Warnings.xcconfig — build e avisos.
+  macos/Runner/Base.lproj/MainMenu.xib — menu/janela macOS.
+  macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json — mapa de ícones.
+  app_icon_16.png, 32, 64, 128, 256, 512 e 1024 — ícone em sete resoluções.
+  macos/Runner.xcodeproj/project.pbxproj — projeto Xcode macOS.
+  macos/Runner.xcodeproj/.../Runner.xcscheme — esquema do target.
+  macos/Runner.xcodeproj/project.xcworkspace/.../IDEWorkspaceChecks.plist — checks.
+  macos/Runner.xcworkspace/contents.xcworkspacedata e o respetivo
+  IDEWorkspaceChecks.plist — workspace e preferências.
+  macos/RunnerTests/RunnerTests.swift — teste nativo vazio do template.
+
+WINDOWS
+  windows/.gitignore — exclusões Windows.
+  windows/CMakeLists.txt — configuração CMake de topo.
+  windows/flutter/CMakeLists.txt — integração do motor Flutter.
+  windows/flutter/generated_plugins.cmake — lista gerada de plugins.
+  windows/flutter/generated_plugin_registrant.h e .cc — registo nativo gerado.
+  windows/runner/CMakeLists.txt — compila o executável Runner.
+  windows/runner/main.cpp — ponto de entrada Windows.
+  windows/runner/flutter_window.h e .cpp — janela que aloja a vista Flutter.
+  windows/runner/win32_window.h e .cpp — abstração da janela Win32.
+  windows/runner/utils.h e .cpp — utilitários Windows.
+  windows/runner/resource.h — ids dos recursos.
+  windows/runner/Runner.rc — versão, ícone e recursos do executável.
+  windows/runner/runner.exe.manifest — compatibilidade e comportamento do Windows.
+  windows/runner/resources/app_icon.ico — ícone do executável.
+
+LINUX
+  linux/.gitignore — exclusões Linux.
+  linux/CMakeLists.txt — configuração CMake de topo.
+  linux/flutter/CMakeLists.txt — integração Flutter Linux.
+  linux/flutter/generated_plugins.cmake — lista gerada de plugins.
+  linux/flutter/generated_plugin_registrant.h e .cc — registo gerado de plugins.
+  linux/runner/CMakeLists.txt — build do runner.
+  linux/runner/main.cc — ponto de entrada.
+  linux/runner/my_application.h e .cc — aplicação GTK que aloja Flutter.
+
+Não se descrevem individualmente .gradle/, .kotlin/, .cxx/, build/, .dart_tool/ e
+ephemeral/: são caches, logs, binários e intermediários recriados automaticamente
+pelas ferramentas. Não são código-fonte da aplicação e não devem ser apresentados
+como trabalho funcional da equipa.
+
+
+================================================================================
+15. PONTOS FORTES, LIMITAÇÕES E RISCOS REAIS
+================================================================================
+
+Pontos fortes:
+  - Separação clara entre UI, estado, API e persistência.
+  - Código comum para várias plataformas e layout responsivo.
+  - Cache local, metadados de sync e fila para algumas ações offline.
+  - Validação de perfil consultant, proteção de rotas e timeouts HTTP.
+  - Notificações push, certificados, ranking e percurso completo de candidatura.
+  - Fallback visual quando imagens de badge não funcionam.
+
+Limitações a apresentar honestamente:
+  - Só existe um teste automatizado de interface e a cobertura é muito reduzida.
+  - “Lembrar password” guarda a password em SharedPreferences, sem armazenamento
+    seguro como Keychain/Keystore. É um risco de segurança a corrigir.
+  - Token e cookies também usam SharedPreferences; idealmente usariam secure storage.
+  - O logout limpa sessão e fila, mas não chama clearUserData(); a cache SQLite do
+    utilizador continua no dispositivo. Os dados devem ser limpos no logout ou
+    protegidos/encriptados conforme os requisitos de privacidade.
+  - app.dart aplica apenas tema claro; themeMode está preparado mas não ligado.
+  - Em Web a cache é apenas memória e não sobrevive a refresh.
+  - Offline é parcial e uploads precisam de rede.
+  - A fila deixa de repetir após cinco falhas sem mostrar uma ação de recuperação.
+  - Algumas opções das definições (email de confirmação, aprovação/rejeição,
+    sugestões e assinatura de email) são guardadas localmente, mas não controlam
+    serviços visíveis no código mobile atual.
+  - BadgeDetail permite copiar link público mesmo antes de confirmar permissões de
+    publicação; o backend deve continuar a aplicar controlo de acesso.
+  - O build Android release usa assinatura de debug e contém TODO para signing.
+  - google-services.json e env/dev.json contêm configuração de cliente. Chaves de
+    Firebase de cliente não são passwords, mas devem ter restrições no Firebase.
+  - README.md ainda é o texto genérico criado pelo Flutter.
+  - Existem caracteres portugueses mal codificados em algumas strings do código
+    (“EstÃ¡s”, “DefiniÃ§Ãµes”), que podem aparecer incorretamente na interface.
+  - badges_page.dart e parte do suporte de tema/local_database são redundantes ou
+    não usados, aumentando manutenção.
+
+Melhorias prioritárias:
+  1. Remover armazenamento da password ou migrar sessão para flutter_secure_storage.
+  2. Criar testes unitários de repository/controller/sync e testes dos fluxos.
+  3. Corrigir encoding UTF-8, README e textos sem acentos.
+  4. Implementar assinatura release e pipeline CI.
+  5. Tornar preferências realmente efetivas e mostrar falhas permanentes da fila.
+  6. Persistir cache Web (IndexedDB) se Web for requisito oficial.
+
+
+================================================================================
+16. PERGUNTAS PROVÁVEIS NA APRESENTAÇÃO
+================================================================================
+
+“Porque escolheram Flutter?”
+  Porque permite partilhar a maior parte do código entre Android, iOS, Web e
+  desktop, mantendo uma interface consistente e desenvolvimento rápido.
+
+“A app funciona sem Internet?”
+  Parcialmente. Mostra os últimos dados sincronizados e põe algumas ações em fila.
+  O upload do ficheiro e várias alterações de conta exigem ligação.
+
+“Onde ficam os dados?”
+  A fonte oficial é a API/backend. O dispositivo guarda uma cópia SQLite para
+  leitura e sincronização; preferências pequenas ficam em SharedPreferences.
+
+“Como sabe que o utilizador está autenticado?”
+  Depois do login recebe um token. Esse token acompanha os pedidos protegidos e o
+  router bloqueia páginas privadas quando não existe sessão válida.
+
+“Como a interface atualiza?”
+  O ConsultorController altera o estado e chama notifyListeners(). Os widgets que
+  escutam o controller são reconstruídos com os novos dados.
+
+“Como funciona a validação de um badge?”
+  O consultor cria e submete um pedido, associa evidências aos requisitos e vê as
+  etapas Talent Manager e Service Line. O backend é responsável pela decisão.
+
+“As recomendações usam inteligência artificial?”
+  Não no código atual. São regras simples: escolhem badges ainda não obtidos,
+  preferindo a área do consultor e limitando a quatro.
+
+“O ranking é calculado na app?”
+  Não. A API devolve posições e pontos. Em modo debug existe apenas um fallback
+  mock se o ranking falhar.
+
+“As notificações vêm de onde?”
+  Push vem de Firebase/servidor. Expiração e objetivo são notificações locais
+  construídas com os dados que a app sincronizou.
+
+“Porque usam SQLite e também SharedPreferences?”
+  SQLite é adequado a listas e dados estruturados. SharedPreferences é mais simples
+  para token e interruptores de definições; embora dados sensíveis devam migrar para
+  armazenamento seguro.
+
+“Qual é a principal dívida técnica?”
+  Segurança do armazenamento local de credenciais e falta de testes automatizados.
+
+
+================================================================================
+17. RESUMO FINAL PARA DECORAR
+================================================================================
+
+  - Flutter/Dart, Material 3, aplicação principal para consultores.
+  - Fluxo: explorar → candidatar → requisitos → evidências → validação → certificado.
+  - GoRouter protege rotas e mantém cinco separadores autenticados.
+  - ChangeNotifier gere o estado; Repository separa a UI dos dados.
+  - Dio comunica com a API; SQLite e DAOs guardam a cópia local.
+  - Sincroniza no arranque e faz polling de 20 em 20 segundos.
+  - Fila offline cobre algumas ações; upload exige Internet.
+  - Firebase gere push; notificações locais alertam expiração e objetivos.
+  - Pontos, ranking, níveis e conquistas dão a componente de gamificação.
+  - A arquitetura é sólida, mas segurança das credenciais, testes, encoding e
+    configuração de release são os próximos trabalhos prioritários.
+
+FIM

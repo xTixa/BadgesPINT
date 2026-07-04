@@ -65,6 +65,42 @@ async function notifyConsultorPedido({ pedido, titulo, mensagem, emailFactory, t
   });
 }
 
+export async function notifySLLeadersOfPendingApproval(pedido) {
+  try {
+    const badgeWithArea = await Badge.findByPk(pedido.badge_id, {
+      include: [{ model: Area, as: "area", attributes: ["id", "service_line_id"] }],
+      attributes: ["id", "description"],
+    });
+    const consultor = await User.findByPk(pedido.consultor_id, { attributes: ["id", "name"] });
+    const badgeName = badgeWithArea?.description || `Badge #${pedido.badge_id}`;
+    const consultorName = consultor?.name || "consultor";
+
+    if (badgeWithArea?.area?.service_line_id) {
+      const slLeaders = await database.query(
+        `SELECT u.id, u.name, u.email FROM "Users" u
+         JOIN areas a ON a.id = u.area_id
+         WHERE u.role = 'service_line_leader' AND a.service_line_id = :slId`,
+        { replacements: { slId: badgeWithArea.area.service_line_id }, type: QueryTypes.SELECT }
+      );
+      for (const leader of slLeaders) {
+        await createNotification({
+          titulo: "Pedido aguarda aprovação",
+          mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua aprovação.`,
+          utilizador_id: leader.id,
+          email: leader.email
+            ? {
+                to: leader.email,
+                send: () => sendSLValidationEmail({ to: leader.email, name: leader.name, badgeName, consultorName }),
+              }
+            : null,
+        });
+      }
+    }
+  } catch (notifyErr) {
+    console.error("Falha ao notificar SL leaders:", notifyErr.message);
+  }
+}
+
 async function notifyBadgeApplication(pedido) {
   const badge = await Badge.findByPk(pedido.badge_id, {
     attributes: ["id", "description"],
@@ -213,6 +249,16 @@ export async function aprovarPedido(req, res) {
       pedido.workflow_status = "fechado";
       pedido.data_atribuicao = pedido.data_atribuicao || new Date();
       pedido.rejection_reason = null;
+      if (!pedido.tm_validator_id) {
+        pedido.tm_validator_id = req.userId;
+        pedido.tm_validated_at = new Date();
+        pedido.tm_comment = pedido.tm_comment || "Aprovado diretamente por administrador (bypass de fluxo).";
+      }
+      if (!pedido.sl_validator_id) {
+        pedido.sl_validator_id = req.userId;
+        pedido.sl_validated_at = new Date();
+        pedido.sl_comment = pedido.sl_comment || "Aprovado diretamente por administrador (bypass de fluxo).";
+      }
       await pedido.save({ transaction });
 
       const [user, badge] = await Promise.all([
@@ -268,6 +314,10 @@ export async function rejeitarPedido(req, res) {
       pedido.workflow_status = "fechado";
       pedido.sl_comment = motivo || pedido.sl_comment;
       pedido.rejection_reason = motivo || pedido.rejection_reason;
+      if (!pedido.sl_validator_id) {
+        pedido.sl_validator_id = req.userId;
+        pedido.sl_validated_at = new Date();
+      }
       await pedido.save({ transaction });
     });
 
@@ -439,6 +489,10 @@ export async function tmValidarPedido(req, res) {
     const pedido = await ConsultorBadge.findByPk(id);
     if (!pedido) return res.status(404).json({ message: "Pedido não encontrado" });
 
+    if (pedido.workflow_status !== "submitted") {
+      return res.status(400).json({ message: "Apenas pedidos submetidos podem ser validados pelo Talent Manager" });
+    }
+
     pedido.workflow_status = "em_validacao";
     pedido.tm_validator_id = req.userId;
     pedido.tm_validated_at = new Date();
@@ -452,40 +506,7 @@ export async function tmValidarPedido(req, res) {
       utilizador_id: pedido.consultor_id,
     });
 
-    // Notify SL leaders of the badge's service line
-    try {
-      const badgeWithArea = await Badge.findByPk(pedido.badge_id, {
-        include: [{ model: Area, as: "area", attributes: ["id", "service_line_id"] }],
-        attributes: ["id", "description"],
-      });
-      const consultor = await User.findByPk(pedido.consultor_id, { attributes: ["id", "name"] });
-      const badgeName = badgeWithArea?.description || `Badge #${pedido.badge_id}`;
-      const consultorName = consultor?.name || "consultor";
-
-      if (badgeWithArea?.area?.service_line_id) {
-        const slLeaders = await database.query(
-          `SELECT u.id, u.name, u.email FROM "Users" u
-           JOIN areas a ON a.id = u.area_id
-           WHERE u.role = 'service_line_leader' AND a.service_line_id = :slId`,
-          { replacements: { slId: badgeWithArea.area.service_line_id }, type: QueryTypes.SELECT }
-        );
-        for (const leader of slLeaders) {
-          await createNotification({
-            titulo: "Pedido aguarda aprovação",
-            mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua aprovação.`,
-            utilizador_id: leader.id,
-            email: leader.email
-              ? {
-                  to: leader.email,
-                  send: () => sendSLValidationEmail({ to: leader.email, name: leader.name, badgeName, consultorName }),
-                }
-              : null,
-          });
-        }
-      }
-    } catch (notifyErr) {
-      console.error("Falha ao notificar SL leaders:", notifyErr.message);
-    }
+    await notifySLLeadersOfPendingApproval(pedido);
 
     return res.json(pedido);
   } catch (err) {
@@ -508,6 +529,10 @@ export async function tmDevolverPedido(req, res) {
 
     const pedido = await ConsultorBadge.findByPk(id);
     if (!pedido) return res.status(404).json({ message: "Pedido não encontrado" });
+
+    if (pedido.workflow_status !== "submitted") {
+      return res.status(400).json({ message: "Apenas pedidos submetidos podem ser devolvidos pelo Talent Manager" });
+    }
 
     pedido.workflow_status = "open";
     pedido.tm_validator_id = req.userId;
@@ -551,11 +576,21 @@ export async function slAprovarPedido(req, res) {
     const hasAccess = await ensureSLAccess(pedido, slServiceLineId);
     if (!hasAccess) return res.status(403).json({ message: "Acesso negado" });
 
+    if (pedido.workflow_status !== "em_validacao") {
+      return res.status(400).json({ message: "Apenas pedidos validados pelo Talent Manager podem ser aprovados" });
+    }
+
     await database.transaction(async (transaction) => {
       pedido = await ConsultorBadge.findByPk(id, { transaction });
       if (!pedido) {
         const error = new Error("Pedido não encontrado");
         error.statusCode = 404;
+        throw error;
+      }
+
+      if (pedido.workflow_status !== "em_validacao") {
+        const error = new Error("Apenas pedidos validados pelo Talent Manager podem ser aprovados");
+        error.statusCode = 400;
         throw error;
       }
 
@@ -615,11 +650,21 @@ export async function slRejeitarPedido(req, res) {
     const hasAccess = await ensureSLAccess(pedido, slServiceLineId);
     if (!hasAccess) return res.status(403).json({ message: "Acesso negado" });
 
+    if (pedido.workflow_status !== "em_validacao") {
+      return res.status(400).json({ message: "Apenas pedidos validados pelo Talent Manager podem ser rejeitados" });
+    }
+
     await database.transaction(async (transaction) => {
       pedido = await ConsultorBadge.findByPk(id, { transaction });
       if (!pedido) {
         const error = new Error("Pedido não encontrado");
         error.statusCode = 404;
+        throw error;
+      }
+
+      if (pedido.workflow_status !== "em_validacao") {
+        const error = new Error("Apenas pedidos validados pelo Talent Manager podem ser rejeitados");
+        error.statusCode = 400;
         throw error;
       }
 
@@ -670,11 +715,21 @@ export async function slDevolverPedido(req, res) {
     const hasAccess = await ensureSLAccess(pedido, slServiceLineId);
     if (!hasAccess) return res.status(403).json({ message: "Acesso negado" });
 
+    if (pedido.workflow_status !== "em_validacao") {
+      return res.status(400).json({ message: "Apenas pedidos validados pelo Talent Manager podem ser devolvidos pela Service Line" });
+    }
+
     await database.transaction(async (transaction) => {
       pedido = await ConsultorBadge.findByPk(id, { transaction });
       if (!pedido) {
         const error = new Error("Pedido não encontrado");
         error.statusCode = 404;
+        throw error;
+      }
+
+      if (pedido.workflow_status !== "em_validacao") {
+        const error = new Error("Apenas pedidos validados pelo Talent Manager podem ser devolvidos pela Service Line");
+        error.statusCode = 400;
         throw error;
       }
 

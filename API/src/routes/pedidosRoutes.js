@@ -35,10 +35,10 @@ router.post("/", rolesMiddleware(["consultant"]), criarPedido);
 // Submeter pedido (Open -> Submitted)
 router.post("/:id/submeter", rolesMiddleware(["consultant"]), submeterPedido);
 
-// Aprovar pedido (admin/TM/SL)
+// Aprovar pedido diretamente (apenas admin - bypass de fluxo TM/SL)
 router.post("/:id/aprovar", rolesMiddleware(["admin"]), aprovarPedido);
 
-// Rejeitar pedido (admin/TM/SL)
+// Rejeitar pedido diretamente (apenas admin - bypass de fluxo TM/SL)
 router.post("/:id/rejeitar", rolesMiddleware(["admin"]), rejeitarPedido);
 
 // Workflow Talent Manager

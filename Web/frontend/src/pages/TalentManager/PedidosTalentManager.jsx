@@ -89,7 +89,7 @@ export default function PedidosTalentManager() {
       label: "Validacao TM",
       date: pedido.updated_at,
       detail: pedido.tm_comment || "Sem comentario do Talent Manager.",
-      done: ["em_validacao", "sl_aprovado", "sl_rejeitado", "closed"].includes(pedido.workflow_status),
+      done: ["em_validacao", "fechado"].includes(pedido.workflow_status),
     },
     {
       label: "Decisao final",

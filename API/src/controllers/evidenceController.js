@@ -4,6 +4,7 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import Badge from "../models/Badge.js";
 import User from "../models/User.js";
 import { createNotification } from "../services/notificationService.js";
+import { notifySLLeadersOfPendingApproval } from "./pedidosController.js";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -28,6 +29,10 @@ function safePublicId(fileName) {
 
 export async function uploadEvidenceFile(req, res) {
   try {
+    if (req.userRole !== "consultant") {
+      return res.status(403).json({ error: "Apenas consultores podem enviar ficheiros de evidência" });
+    }
+
     const { file, fileName } = req.body;
 
     if (!file || typeof file !== "string") {
@@ -65,6 +70,10 @@ export async function submitEvidence(req, res) {
       return res.status(401).json({ error: "Utilizador não autenticado" });
     }
 
+    if (req.userRole !== "consultant") {
+      return res.status(403).json({ error: "Apenas consultores podem submeter evidências" });
+    }
+
     if (!evidence_url) {
       return res.status(400).json({ error: "URL da evidência é obrigatória" });
     }
@@ -97,6 +106,10 @@ export async function getConsultorEvidencesByBadge(req, res) {
 
     if (!consultorId) {
       return res.status(401).json({ error: "Utilizador não autenticado" });
+    }
+
+    if (req.userRole !== "consultant") {
+      return res.status(403).json({ error: "Apenas consultores podem consultar as suas evidências" });
     }
 
     const evidences = await RequirementEvidence.findAll({
@@ -137,7 +150,11 @@ export async function listEvidencesForTM(req, res) {
   }
 }
 
-async function finalizeBadgeIfComplete(consultorId, badgeId) {
+// Quando o Talent Manager aprova a última evidência pendente de um badge, o
+// pedido segue para "em_validacao" à espera da aprovação final do Service
+// Line Leader — nunca atribui o badge diretamente, para respeitar o fluxo
+// consultor -> talent manager -> service line leader.
+async function finalizeBadgeIfComplete(consultorId, badgeId, tmValidatorId) {
   const totalReqs = await Requirement.count({ where: { badge_id: badgeId } });
   if (!totalReqs) return;
 
@@ -153,27 +170,29 @@ async function finalizeBadgeIfComplete(consultorId, badgeId) {
     where: { consultor_id: consultorId, badge_id: badgeId }
   });
 
-  const wasObtained = consultorBadge?.status === "obtido";
+  // Já decidido pelo Service Line Leader (obtido ou rejeitado) — não reabrir
+  if (consultorBadge?.workflow_status === "fechado") return;
 
+  const now = new Date();
   if (!consultorBadge) {
     consultorBadge = await ConsultorBadge.create({
       consultor_id: consultorId,
       badge_id: badgeId,
-      status: "obtido",
-      data_atribuicao: new Date()
+      status: "pendente",
+      workflow_status: "em_validacao",
+      submitted_at: now,
+      tm_validator_id: tmValidatorId,
+      tm_validated_at: now,
     });
-  } else if (!wasObtained) {
-    consultorBadge.status = "obtido";
-    consultorBadge.data_atribuicao = new Date();
+  } else {
+    consultorBadge.workflow_status = "em_validacao";
+    consultorBadge.submitted_at = consultorBadge.submitted_at || now;
+    consultorBadge.tm_validator_id = tmValidatorId;
+    consultorBadge.tm_validated_at = now;
     await consultorBadge.save();
   }
 
-  const badge = await Badge.findByPk(badgeId);
-  const user = await User.findByPk(consultorId);
-  if (badge && user && !wasObtained) {
-    user.points_total = (user.points_total || 0) + (badge.points || 0);
-    await user.save();
-  }
+  await notifySLLeadersOfPendingApproval(consultorBadge);
 }
 
 export async function approveEvidence(req, res) {
@@ -189,7 +208,7 @@ export async function approveEvidence(req, res) {
     evidence.status = "aprovado";
     await evidence.save();
 
-    await finalizeBadgeIfComplete(evidence.consultor_id, evidence.badge_id);
+    await finalizeBadgeIfComplete(evidence.consultor_id, evidence.badge_id, req.userId);
 
     try {
       const [reqItem, badge] = await Promise.all([
