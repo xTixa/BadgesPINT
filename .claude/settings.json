@@ -47,7 +47,27 @@
       "Bash(curl -s -i http://localhost:3000/health)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"nao-existe@test.com\",\"password\":\"errado123\"}')",
       "Bash(curl -s -i -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"a@a.com\",\"password\":\"x\"}')",
-      "Bash(pkill -f \"node src/server.js\")"
+      "Bash(pkill -f \"node src/server.js\")",
+      "Bash(node --check src/controllers/LearningPathController.js)",
+      "Bash(node --check src/routes/LearningPathRoutes.js)",
+      "Bash(curl -s http://localhost:3000/learning-paths)",
+      "Bash(curl -s http://localhost:3000/learning-paths/1)",
+      "Bash(curl -s -i -X POST http://localhost:3000/learning-paths -H \"Content-Type: application/json\" -d '{\"name\":\"test\"}')",
+      "Bash(netstat -ano)",
+      "Bash(curl -sv http://localhost:3000/learning-paths/1)",
+      "Bash(curl -s http://localhost:3000/learning-paths/1/tree)",
+      "Bash(curl -s http://localhost:3000/learning-paths/1/service-lines)",
+      "Bash(powershell -Command \"Get-Process -Id 25916 | Select-Object Id,StartTime,Path\")",
+      "Bash(pkill -9 -f \"server.js\")",
+      "Bash(node src/server.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/learning-paths/1)",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique\")",
+      "Bash(powershell -Command \"Get-Process -Id 25916 | Select-Object Id,StartTime\")",
+      "Bash(powershell -Command \"Get-Date\")",
+      "Bash(powershell -Command \"Stop-Process -Id 25916 -Force\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue\")",
+      "Bash(curl -s -i -X PUT http://localhost:3000/learning-paths/1 -H \"Content-Type: application/json\" -d '{\"name\":\"test\"}')",
+      "Bash(powershell -Command 'Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }')"
     ]
   }
 }

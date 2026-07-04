@@ -1,39 +1,44 @@
-﻿import Sidebar from "../../layout/Sidebar";
-import { useMemo, useState } from "react";
+import Sidebar from "../../layout/Sidebar";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import api from "/src/api";
 import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
-const baseData = [
-  { id: 1, nome: "Web Development Mastery", badges: 8, duracaoMeses: 6, publico: "Consultores", ativo: true },
-  { id: 2, nome: "Cloud Engineering", badges: 6, duracaoMeses: 5, publico: "Service Line", ativo: true },
-  { id: 3, nome: "Data Analytics", badges: 5, duracaoMeses: 4, publico: "Consultores", ativo: false },
-  { id: 4, nome: "DevOps Excellence", badges: 7, duracaoMeses: 6, publico: "Talent Manager", ativo: true },
-];
-
 export default function GestaoLearningPaths() {
-  const [lista, setLista] = useState(baseData);
+  const [lista, setLista] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [busca, setBusca] = useState("");
-  const [filtroAtivo, setFiltroAtivo] = useState("todos");
+
+  const fetchLearningPaths = () => {
+    setLoading(true);
+    setError(null);
+    api
+      .get("/learning-paths")
+      .then(({ data }) => setLista(data))
+      .catch(() => setError("Não foi possível carregar os Learning Paths."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchLearningPaths();
+  }, []);
 
   const filtrados = useMemo(() => {
-    return lista.filter((lp) => {
-      const matchTexto = lp.nome.toLowerCase().includes(busca.toLowerCase());
-      const matchEstado =
-        filtroAtivo === "todos" ? true : filtroAtivo === "ativos" ? lp.ativo : !lp.ativo;
-      return matchTexto && matchEstado;
-    });
-  }, [lista, busca, filtroAtivo]);
+    return lista.filter((lp) => lp.name.toLowerCase().includes(busca.toLowerCase()));
+  }, [lista, busca]);
 
   const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtrados);
 
-  const toggleEstado = (id) => {
-    setLista((prev) => prev.map((lp) => (lp.id === id ? { ...lp, ativo: !lp.ativo } : lp)));
-  };
-
-  const remover = (id) => {
+  const remover = async (id) => {
     if (!window.confirm("Apagar este Learning Path?")) return;
-    setLista((prev) => prev.filter((lp) => lp.id !== id));
+    try {
+      await api.delete(`/learning-paths/${id}`);
+      setLista((prev) => prev.filter((lp) => lp.id !== id));
+    } catch (err) {
+      window.alert(err.response?.data?.error || "Erro ao apagar Learning Path.");
+    }
   };
 
   return (
@@ -48,7 +53,7 @@ export default function GestaoLearningPaths() {
               <p className="mb-2 text-sm font-medium text-white/80">Painel de administracao</p>
               <h1 className="text-3xl font-bold text-white">Gestao de Learning Paths</h1>
               <p className="mt-2 max-w-2xl text-white/85">
-                Criar, ativar, desativar e organizar percursos de evolucao.
+                Criar e organizar os percursos de evolucao.
               </p>
             </div>
 
@@ -61,17 +66,14 @@ export default function GestaoLearningPaths() {
           </div>
         </section>
 
-        <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          {[{ label: "Ativos", valor: lista.filter((lp) => lp.ativo).length }, { label: "Inativos", valor: lista.filter((lp) => !lp.ativo).length }, { label: "Total Badges", valor: lista.reduce((acc, lp) => acc + lp.badges, 0) }].map((card) => (
-            <div key={card.label} className="rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{card.label}</p>
-              <h4 className="mt-1 text-2xl font-bold text-[#0F62FE]">{card.valor}</h4>
-            </div>
-          ))}
-        </div>
+        {error && (
+          <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+            {error}
+          </div>
+        )}
 
         <section className="mb-4 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <div className="mb-3 max-w-md">
+          <div className="max-w-md">
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Pesquisar</label>
             <div className="relative">
               <i className="bi bi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -83,99 +85,53 @@ export default function GestaoLearningPaths() {
               />
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-          <button
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-              filtroAtivo === "todos"
-                ? "bg-[#0F62FE] text-white"
-                : "bg-[#0F62FE]/10 text-[#0F62FE] hover:bg-[#0F62FE]/15"
-            }`}
-            onClick={() => setFiltroAtivo("todos")}
-          >
-            Todos
-          </button>
-          <button
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-              filtroAtivo === "ativos"
-                ? "bg-emerald-600 text-white"
-                : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-            }`}
-            onClick={() => setFiltroAtivo("ativos")}
-          >
-            Ativos
-          </button>
-          <button
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-              filtroAtivo === "inativos"
-                ? "bg-slate-700 text-white"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-            }`}
-            onClick={() => setFiltroAtivo("inativos")}
-          >
-            Inativos
-          </button>
-          </div>
         </section>
 
         <div className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <tr>
-                <SortableTh label="Nome" sortKey="nome" accessor={(l) => l.nome} sortConfig={sortConfig} onSort={requestSort} />
-                <SortableTh label="Badges" sortKey="badges" accessor={(l) => l.badges} sortConfig={sortConfig} onSort={requestSort} />
-                <SortableTh label="Duração" sortKey="duracaoMeses" accessor={(l) => l.duracaoMeses} sortConfig={sortConfig} onSort={requestSort} />
-                <SortableTh label="Público" sortKey="publico" accessor={(l) => l.publico} sortConfig={sortConfig} onSort={requestSort} />
-                <SortableTh label="Estado" sortKey="ativo" accessor={(l) => (l.ativo ? 1 : 0)} sortConfig={sortConfig} onSort={requestSort} />
-                <th className="px-4 py-3 text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              {ordenados.map((l) => (
-                <tr key={l.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-semibold text-slate-800">{l.nome}</td>
-                  <td className="px-4 py-3">{l.badges}</td>
-                  <td className="px-4 py-3">{l.duracaoMeses} meses</td>
-                  <td className="px-4 py-3">{l.publico}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${l.ativo ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>
-                      {l.ativo ? "Ativo" : "Inativo"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex flex-wrap justify-end gap-2">
-                      <button
-                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
-                        onClick={() => toggleEstado(l.id)}
-                      >
-                        {l.ativo ? "Desativar" : "Ativar"}
-                      </button>
-                      <Link
-                        to={`/admin/learning-paths/${l.id}`}
-                        className="rounded-lg border border-[#0F62FE]/30 px-3 py-1.5 text-xs font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
-                      >
-                        Editar
-                      </Link>
-                      <button
-                        className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
-                        onClick={() => remover(l.id)}
-                      >
-                        Apagar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {!filtrados.length && (
+          {loading ? (
+            <p className="py-10 text-center text-sm text-slate-500">A carregar...</p>
+          ) : (
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
-                  <td colSpan="6" className="px-4 py-6 text-center text-sm text-slate-500">Sem resultados para os filtros atuais.</td>
+                  <SortableTh label="Nome" sortKey="name" accessor={(l) => l.name} sortConfig={sortConfig} onSort={requestSort} />
+                  <th className="px-4 py-3">Descrição</th>
+                  <th className="px-4 py-3 text-right">Ações</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {ordenados.map((l) => (
+                  <tr key={l.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-semibold text-slate-800">{l.name}</td>
+                    <td className="px-4 py-3 text-slate-600">{l.description || "—"}</td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Link
+                          to={`/admin/learning-paths/${l.id}`}
+                          className="rounded-lg border border-[#0F62FE]/30 px-3 py-1.5 text-xs font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+                        >
+                          Editar
+                        </Link>
+                        <button
+                          className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
+                          onClick={() => remover(l.id)}
+                        >
+                          Apagar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {!ordenados.length && (
+                  <tr>
+                    <td colSpan="3" className="px-4 py-6 text-center text-sm text-slate-500">Sem resultados.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </main>
     </div>
   );
 }
-
-
