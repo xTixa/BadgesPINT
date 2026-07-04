@@ -136,13 +136,13 @@ export default function NotificacoesPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 xs:grid-cols-3">
               {[
                 { label: "Total", value: meta.total },
                 { label: "Nao lidas", value: meta.naoLidas },
                 { label: "Nesta pagina", value: stats.totalPagina },
               ].map((item) => (
-                <div key={item.label} className="min-w-[96px] rounded-2xl bg-white/10 p-4 text-center backdrop-blur-sm">
+                <div key={item.label} className="rounded-2xl bg-white/10 p-4 text-center backdrop-blur-sm">
                   <div className="text-2xl font-bold">{item.value}</div>
                   <div className="text-xs text-white/80">{item.label}</div>
                 </div>

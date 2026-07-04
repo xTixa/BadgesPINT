@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "/src/api";
 import PublicGalleryShell from "../components/PublicGalleryShell";
+import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
-const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+const PLACEHOLDER = avatarPlaceholder;
 const LEVEL_COLOR = {
   Junior: "bg-emerald-100 text-emerald-700",
   Intermedio: "bg-blue-100 text-blue-700",

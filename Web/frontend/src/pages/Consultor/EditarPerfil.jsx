@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "/src/api";
+import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
 export default function EditarPerfil() {
   const navigate = useNavigate();
@@ -197,7 +198,7 @@ export default function EditarPerfil() {
           <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <div className="text-center">
               <img
-                src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                src={user.avatar_url || avatarPlaceholder}
                 alt="Perfil"
                 className="mx-auto mb-4 h-24 w-24 rounded-3xl border-4 border-[#0F62FE]/10"
               />

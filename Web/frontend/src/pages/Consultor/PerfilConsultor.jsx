@@ -1,8 +1,9 @@
 import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
 import api from "/src/api";
+import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
-const PLACEHOLDER_IMG = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+const PLACEHOLDER_IMG = avatarPlaceholder;
 
 const ROLE_LABEL = {
   consultant: "Consultor",

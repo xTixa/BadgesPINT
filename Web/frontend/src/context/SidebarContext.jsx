@@ -5,11 +5,11 @@ const SidebarContext = createContext();
 export function SidebarProvider({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   useEffect(() => {
     const onResize = () => {
-      const mobile = window.innerWidth < 992;
+      const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
 
       if (!mobile) {

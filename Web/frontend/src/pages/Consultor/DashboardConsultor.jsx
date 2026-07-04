@@ -4,8 +4,9 @@ import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import BadgeCelebration, { getCelebratedIds, markAsCelebrated } from "../../components/BadgeCelebration";
 import { getTimeGreeting } from "../../utils/greeting";
+import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
-const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+const PLACEHOLDER = avatarPlaceholder;
 
 function getAlertBadgeName(alert) {
   return alert?.nome || alert?.name || alert?.badge_name || "este badge";
@@ -164,7 +165,7 @@ export default function DashboardConsultor() {
                 <i className="bi bi-stars"></i>Ver gamification
               </Link>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 xs:grid-cols-3">
               <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
                 <div className="text-2xl font-bold">{progresso}%</div>
                 <div className="text-xs text-white/80">Progresso</div>

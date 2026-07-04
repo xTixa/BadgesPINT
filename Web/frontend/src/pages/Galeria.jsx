@@ -2,8 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import api from "/src/api";
 import PublicGalleryShell from "../components/PublicGalleryShell";
+import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
-const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+const PLACEHOLDER = avatarPlaceholder;
 
 const LEVEL_COLOR = {
   Junior:       "bg-emerald-100 text-emerald-700",
@@ -133,7 +134,6 @@ export default function Galeria() {
 }
 
 function ConsultorCard({ consultor: c }) {
-  const PLACEHOLDER = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(15,98,254,0.14)]">
       {/* Cabeçalho */}

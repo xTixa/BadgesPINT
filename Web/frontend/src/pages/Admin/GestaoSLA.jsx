@@ -245,7 +245,7 @@ export default function GestaoSLA() {
           )}
 
           {checkResult && (
-            <div className="mt-4 grid grid-cols-3 gap-3">
+            <div className="mt-4 grid grid-cols-1 gap-3 xs:grid-cols-3">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
                 <p className="text-xl font-bold text-[#0F62FE]">{checkResult.slas_checked}</p>
                 <p className="mt-0.5 text-xs text-slate-500">SLAs verificados</p>

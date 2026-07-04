@@ -23,7 +23,12 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "PowerShell(git push origin main 2>&1)"
+      "PowerShell(git push origin main 2>&1)",
+      "Bash(cat Web/frontend/tailwind.config.js)",
+      "Bash(cat Web/frontend/tailwind.config.cjs)",
+      "Bash(grep -o \"^CLOUDINARY_[A-Z_]*\" API/.env)",
+      "Bash(grep -c \"CLOUDINARY\" API/.env)",
+      "Bash(node --check src/context/SidebarContext.jsx)"
     ]
   }
 }

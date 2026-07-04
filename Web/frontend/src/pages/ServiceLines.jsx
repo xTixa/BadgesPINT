@@ -88,7 +88,7 @@ export default function ServiceLines() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 xs:grid-cols-3">
                 {stats.map(([label, value]) => (
                   <div key={label} className="rounded-xl bg-white px-3 py-3 text-center">
                     <p className="text-xs font-bold uppercase text-slate-500">{label}</p>
