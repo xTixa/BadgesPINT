@@ -8,7 +8,22 @@
       "Bash(node scripts/_tmp-cleanup-dupes.js)",
       "Bash(node --check src/controllers/talentManagerController.js)",
       "Bash(node --check src/controllers/exportController.js)",
-      "Bash(node scripts/_tmp-debug-equipa.js)"
+      "Bash(node scripts/_tmp-debug-equipa.js)",
+      "Bash(grep -rn \"VITE_API_BASE_URL\" Web/frontend --include=\"*.env*\" --include=\"*.json\" -l)",
+      "Bash(find Web/frontend -maxdepth 1 -name \".env*\" -o -maxdepth 1 -name \"vercel.json\")",
+      "Bash(node --check src/routes/index.js)",
+      "Bash(GOAL_REMINDER_JOB_ENABLED=false SLA_ALERT_JOB_ENABLED=false PORT=3999 node src/server.js)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:3999/)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s -w '\\\\nHTTP_STATUS:%{http_code}\\\\n' -X POST http://127.0.0.1:3999/api/admin/pedidos/64/tm/validar -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Content-Type: application/json' -d '{\"comment\":\"teste rota corrigida\"}')",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 3999 -State Listen | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 408 -Force\")",
+      "Bash(curl -s -o /dev/null -w \"server after kill: %{http_code}\\\\n\" http://127.0.0.1:3999/ --max-time 2)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "PowerShell(git push origin main 2>&1)"
     ]
   }
 }
