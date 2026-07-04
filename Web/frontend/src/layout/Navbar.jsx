@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import NotificationCenter from "../components/NotificationCenter";
 import logo from "/src/assets/logo.png";
+import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -47,14 +48,27 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (!stored) return;
-    try {
-      setUser(JSON.parse(stored));
-    } catch {
-      localStorage.removeItem("user");
-      setUser(null);
-    }
+    const loadUser = () => {
+      const stored = localStorage.getItem("user");
+      if (!stored) {
+        setUser(null);
+        return;
+      }
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem("user");
+        setUser(null);
+      }
+    };
+
+    loadUser();
+    window.addEventListener("user:updated", loadUser);
+    window.addEventListener("storage", loadUser);
+    return () => {
+      window.removeEventListener("user:updated", loadUser);
+      window.removeEventListener("storage", loadUser);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -179,7 +193,11 @@ export default function Navbar() {
                     aria-label="Abrir menu da conta"
                     className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#0F62FE]/20 bg-white px-3 py-2 font-semibold text-slate-800 shadow-sm transition hover:border-[#0F62FE] focus-visible:ring-2 focus-visible:ring-[#0F62FE]/30"
                   >
-                    <i className="bi bi-person-circle text-lg text-[#0F62FE]"></i>
+                    <img
+                      src={user.avatar_url || avatarPlaceholder}
+                      alt=""
+                      className="h-6 w-6 rounded-full object-cover"
+                    />
                     {firstName}
                     <i
                       className={`bi ${dropdownOpen ? "bi-chevron-up" : "bi-chevron-down"} text-xs text-slate-500`}

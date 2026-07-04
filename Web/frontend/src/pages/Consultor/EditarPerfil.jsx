@@ -93,6 +93,7 @@ export default function EditarPerfil() {
       // Atualizar localStorage
       const updatedUser = { ...user, ...(response.data?.user || payload) };
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      window.dispatchEvent(new Event("user:updated"));
       setUser(updatedUser);
 
       alert("Perfil atualizado com sucesso!");
@@ -140,6 +141,7 @@ export default function EditarPerfil() {
 
       const updatedUser = { ...user, avatar_url: response.data.avatar_url };
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      window.dispatchEvent(new Event("user:updated"));
       setUser(updatedUser);
     } catch (error) {
       console.error("Erro ao enviar foto de perfil:", error);
