@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT\\\\ff6cb5c1-ff48-4e1f-ab73-2795e8ee4a85\\\\scratchpad\\\\inspect-natalia.js\")",
+      "Bash(node scripts/_tmp-inspect-natalia.js)",
+      "Bash(node --check scripts/seed-users.js)",
+      "Bash(npm run *)",
+      "Bash(node scripts/_tmp-cleanup-dupes.js)"
+    ]
+  }
+}

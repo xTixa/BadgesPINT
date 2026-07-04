@@ -156,26 +156,20 @@ async function main() {
       const slAreas = areasBySL[sl.id] || [];
       if (slAreas.length === 0) continue;
 
-      // Leader principal
-      const name1 = randomName();
-      const r1 = await createUser({
-        name: name1,
-        email: nameToEmail(name1),
-        role: "service_line_leader",
-        area_id: slAreas[0].id,
-      });
-      log(r1, "service_line_leader");
+      const areaIds = slAreas.map((a) => a.id);
+      const targetCount = slAreas.length >= 4 ? 2 : 1;
+      const existingCount = await User.count({ where: { role: "service_line_leader", area_id: areaIds } });
 
-      // Se a SL tem 4+ áreas, adiciona um segundo leader
-      if (slAreas.length >= 4) {
-        const name2 = randomName();
-        const r2 = await createUser({
-          name: name2,
-          email: nameToEmail(name2),
+      for (let i = existingCount; i < targetCount; i++) {
+        const name = randomName();
+        const areaForThis = i === 0 ? slAreas[0].id : slAreas[Math.floor(slAreas.length / 2)].id;
+        const r = await createUser({
+          name,
+          email: nameToEmail(name),
           role: "service_line_leader",
-          area_id: slAreas[Math.floor(slAreas.length / 2)].id,
+          area_id: areaForThis,
         });
-        log(r2, "service_line_leader");
+        log(r, "service_line_leader");
       }
     }
 
@@ -187,31 +181,34 @@ async function main() {
       const slAreas = areasBySL[sl.id] || [];
       if (slAreas.length === 0) continue;
 
-      // 2 TMs por SL, cada um associado a uma área diferente
-      const tmCount = Math.min(2, slAreas.length);
-      for (let i = 0; i < tmCount; i++) {
+      const areaIds = slAreas.map((a) => a.id);
+      const targetCount = Math.min(2, slAreas.length);
+      const existingCount = await User.count({ where: { role: "talent_manager", area_id: areaIds } });
+
+      for (let i = existingCount; i < targetCount; i++) {
         const name = randomName();
         const r = await createUser({
           name,
           email: nameToEmail(name),
           role: "talent_manager",
-          area_id: slAreas[i].id,
+          area_id: slAreas[i % slAreas.length].id,
         });
         log(r, "talent_manager");
       }
     }
 
     // -----------------------------------------------------------------------
-    // CONSULTORES — 5 por área (no máximo 40 no total)
+    // CONSULTORES — garante um mínimo de 5 consultores em cada área
     // -----------------------------------------------------------------------
     console.log("\n── Consultores ─────────────────────────────────────────────────");
-    const maxConsultores = 40;
-    let consultoresCreated = 0;
+    const minPorArea = 5;
 
     for (const area of areas) {
-      if (consultoresCreated >= maxConsultores) break;
-      const perArea = Math.min(5, maxConsultores - consultoresCreated);
-      for (let i = 0; i < perArea; i++) {
+      const existentesNaArea = await User.count({ where: { role: "consultant", area_id: area.id } });
+      const emFalta = minPorArea - existentesNaArea;
+      if (emFalta <= 0) continue;
+
+      for (let i = 0; i < emFalta; i++) {
         const name = randomName();
         const r = await createUser({
           name,
@@ -220,7 +217,6 @@ async function main() {
           area_id: area.id,
         });
         log(r, "consultant");
-        if (r.created) consultoresCreated++;
       }
     }
 
