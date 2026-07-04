@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slActionClass } from "./ServiceLineLayout";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 export default function BadgesServiceLine() {
   const [badges, setBadges] = useState([]);
@@ -37,6 +39,8 @@ export default function BadgesServiceLine() {
     const text = `${badge.name || ""} ${badge.description || ""} ${badge.area?.name || ""} ${badge.level || ""}`.toLowerCase();
     return text.includes(search.toLowerCase()) && (level === "todos" || badge.level === level);
   }), [badges, search, level]);
+
+  const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtered);
   const totalPoints = badges.reduce((acc, badge) => acc + Number(badge.points || 0), 0);
   const premiumCount = badges.filter((badge) => Number(badge.points || 0) >= 200 || badge.level === "Especialista" || badge.level === "Lider").length;
 
@@ -76,17 +80,17 @@ export default function BadgesServiceLine() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                    <th className="px-3 py-2 text-left font-semibold">Nível</th>
-                    <th className="px-3 py-2 text-left font-semibold">Área</th>
-                    <th className="px-3 py-2 text-left font-semibold">Pontos</th>
+                    <SortableTh label="Badge" sortKey="name" accessor={(b) => b.name || b.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Nível" sortKey="level" accessor={(b) => b.level || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Área" sortKey="area" accessor={(b) => b.area?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Pontos" sortKey="points" accessor={(b) => Number(b.points || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                     <th className="px-3 py-2 text-left font-semibold">Tipo</th>
                     <th className="px-3 py-2 text-left font-semibold">Requisitos</th>
                     <th className="px-3 py-2 text-right font-semibold">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {filtered.map((badge) => {
+                  {ordenados.map((badge) => {
                     const isPremium = Number(badge.points || 0) >= 200 || badge.level === "Especialista" || badge.level === "Lider";
                     return (
                       <tr key={badge.id}>

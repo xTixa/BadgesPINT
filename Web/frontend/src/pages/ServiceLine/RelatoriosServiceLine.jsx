@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 const scopes = [
   { value: "pedidos", label: "Pedidos" },
@@ -51,6 +53,8 @@ export default function RelatoriosServiceLine() {
     aprovados: rows.filter((r) => r.situacao === "obtido" || r.situacao === "aprovado").length,
     rejeitados: rows.filter((r) => r.situacao === "rejeitado").length,
   }), [rows]);
+
+  const { sortedItems: rowsOrdenados, sortConfig, requestSort } = useSortableData(rows);
 
   const exportar = async (formato) => {
     try {
@@ -110,15 +114,15 @@ export default function RelatoriosServiceLine() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <th className="px-3 py-2 text-left font-semibold">Tipo</th>
-                    <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                    <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                    <th className="px-3 py-2 text-left font-semibold">Situação</th>
-                    <th className="px-3 py-2 text-left font-semibold">Data</th>
+                    <SortableTh label="Tipo" sortKey="tipo" accessor={(r) => r.tipo || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Consultor" sortKey="consultor" accessor={(r) => r.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Badge" sortKey="badge" accessor={(r) => r.badge || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Situação" sortKey="situacao" accessor={(r) => r.situacao || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Data" sortKey="data" accessor={(r) => (r.data ? new Date(r.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {rows.map((row) => (
+                  {rowsOrdenados.map((row) => (
                     <tr key={`${row.tipo}-${row.id}`}>
                       <td className="px-3 py-2">{row.tipo}</td>
                       <td className="px-3 py-2">{row.consultor}</td>

@@ -4,6 +4,8 @@ import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import AdminHero from "../../components/ui/AdminHero";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 const roleLabels = {
   admin: "Administrador",
@@ -321,6 +323,8 @@ export default function GestaoUtilizadores() {
     return areaById.get(Number(areaId)) || areaId || "N/D";
   }
 
+  const { sortedItems: usersOrdenados, sortConfig, requestSort } = useSortableData(filteredUsers);
+
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
@@ -594,16 +598,16 @@ export default function GestaoUtilizadores() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th className="px-4 py-3">Utilizador</th>
-                    <th className="px-4 py-3">Email</th>
-                    <th className="px-4 py-3">Perfil</th>
-                    <th className="px-4 py-3">Area</th>
-                    <th className="px-4 py-3 text-right">Pontos</th>
+                    <SortableTh label="Utilizador" sortKey="name" accessor={(u) => u.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Email" sortKey="email" accessor={(u) => u.email || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Perfil" sortKey="role" accessor={(u) => u.role || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Area" sortKey="area" accessor={(u) => getAreaName(u.area_id)} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Pontos" sortKey="points_total" accessor={(u) => Number(u.points_total || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-right" />
                     <th className="px-4 py-3 text-right">Acoes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {filteredUsers.map((user, index) => (
+                  {usersOrdenados.map((user, index) => (
                     <tr
                       key={user.id}
                       className={index % 2 === 0 ? "bg-white" : "bg-slate-50/50"}

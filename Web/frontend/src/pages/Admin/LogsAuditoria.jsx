@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 export default function LogsAuditoria() {
   const { isMobile, isTablet } = useWindowSize();
@@ -17,6 +19,8 @@ export default function LogsAuditoria() {
     total: 0,
     pages: 0,
   });
+
+  const { sortedItems: logsOrdenados, sortConfig, requestSort } = useSortableData(logs);
 
   const actionOptions = [
     { value: "CREATE", label: "Criar" },
@@ -330,18 +334,18 @@ export default function LogsAuditoria() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-[#0F62FE]/5">
                 <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <th className="px-4 py-3">Data</th>
-                  <th className="px-4 py-3">Utilizador</th>
-                  <th className="px-4 py-3">Ação</th>
-                  <th className="px-4 py-3">Entidade</th>
-                  <th className="px-4 py-3">Status</th>
+                  <SortableTh label="Data" sortKey="createdAt" accessor={(l) => (l.createdAt ? new Date(l.createdAt).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label="Utilizador" sortKey="user" accessor={(l) => l.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label="Ação" sortKey="action" accessor={(l) => l.action || ""} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label="Entidade" sortKey="entity" accessor={(l) => l.entity || ""} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label="Status" sortKey="status" accessor={(l) => l.status || ""} sortConfig={sortConfig} onSort={requestSort} />
                   <th className="px-4 py-3">Descrição</th>
                   <th className="px-4 py-3">IP</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {logs.length > 0 ? (
-                  logs.map((log, index) => (
+                {logsOrdenados.length > 0 ? (
+                  logsOrdenados.map((log, index) => (
                     <tr
                       key={log.id}
                       className={

@@ -4,6 +4,8 @@ import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { TalentStatCard } from "./TalentManagerLayout";
+import SortableTh from "/src/components/ui/SortableTh";
+import { useSortableData } from "/src/hooks/useSortableData";
 
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString("pt-PT") : "-");
 
@@ -51,6 +53,9 @@ export default function Equipa() {
     () => consultores.filter((c) => String(c.name || "").toLowerCase().includes(filtroNome.toLowerCase())),
     [consultores, filtroNome]
   );
+
+  const { sortedItems: consultoresOrdenados, sortConfig, requestSort } = useSortableData(filtrados);
+  const { sortedItems: catalogoOrdenado, sortConfig: catalogoSortConfig, requestSort: requestCatalogoSort } = useSortableData(catalogo);
 
   const mediaPontos = consultores.length
     ? Math.round(consultores.reduce((acc, c) => acc + Number(c.points_total || 0), 0) / consultores.length)
@@ -151,18 +156,18 @@ export default function Equipa() {
                     <table className="min-w-full divide-y divide-slate-200 text-sm">
                       <thead className="bg-slate-100 text-slate-700">
                         <tr>
-                          <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                          <th className="px-3 py-2 text-left font-semibold">Email</th>
-                          <th className="px-3 py-2 text-left font-semibold">Area</th>
-                          <th className="px-3 py-2 text-left font-semibold">Pontos</th>
-                          <th className="px-3 py-2 text-left font-semibold">Obtidos</th>
-                          <th className="px-3 py-2 text-left font-semibold">Pendentes</th>
-                          <th className="px-3 py-2 text-left font-semibold">Progresso</th>
+                          <SortableTh label="Consultor" sortKey="name" accessor={(c) => c.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label="Email" sortKey="email" accessor={(c) => c.email || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label="Area" sortKey="area" accessor={(c) => c.area || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label="Pontos" sortKey="points_total" accessor={(c) => Number(c.points_total || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label="Obtidos" sortKey="badges_obtidos" accessor={(c) => Number(c.badges_obtidos || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label="Pendentes" sortKey="badges_pendentes" accessor={(c) => Number(c.badges_pendentes || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label="Progresso" sortKey="progresso" accessor={(c) => Number(c.progresso || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                           <th className="px-3 py-2 text-right font-semibold">Timeline</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                        {filtrados.map((c) => (
+                        {consultoresOrdenados.map((c) => (
                           <tr key={c.id}>
                             <td className="px-3 py-2 font-semibold text-slate-900">{c.name}</td>
                             <td className="px-3 py-2 text-slate-500">{c.email}</td>
@@ -269,15 +274,15 @@ export default function Equipa() {
                 <table className="min-w-full divide-y divide-slate-200 text-sm">
                   <thead className="bg-slate-100 text-slate-700">
                     <tr>
-                      <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                      <th className="px-3 py-2 text-left font-semibold">Nivel</th>
-                      <th className="px-3 py-2 text-left font-semibold">Area</th>
-                      <th className="px-3 py-2 text-left font-semibold">Pontos</th>
+                      <SortableTh label="Badge" sortKey="name" accessor={(b) => b.name || b.description || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
+                      <SortableTh label="Nivel" sortKey="level" accessor={(b) => b.level || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
+                      <SortableTh label="Area" sortKey="area" accessor={(b) => b.area?.name || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
+                      <SortableTh label="Pontos" sortKey="points" accessor={(b) => Number(b.points || 0)} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
                       <th className="px-3 py-2 text-left font-semibold">Requisitos</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                    {catalogo.map((badge) => (
+                    {catalogoOrdenado.map((badge) => (
                       <tr key={badge.id}>
                         <td className="px-3 py-2">
                           <div className="font-semibold text-slate-900">{badge.name || badge.description || `Badge #${badge.id}`}</div>

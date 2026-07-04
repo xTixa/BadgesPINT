@@ -3,6 +3,8 @@ import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { TalentStatCard } from "./TalentManagerLayout";
+import SortableTh from "/src/components/ui/SortableTh";
+import { useSortableData } from "/src/hooks/useSortableData";
 
 const normalizeEstado = (estado) => {
   if (estado === "aprovado") return "Aprovado";
@@ -48,6 +50,8 @@ export default function HistoricoValidacoes() {
       return texto.includes(filtroTexto.toLowerCase());
     });
   }, [historico, filtroTexto]);
+
+  const { sortedItems: resultadosOrdenados, sortConfig, requestSort } = useSortableData(resultados);
 
   const totals = {
     todos: historico.length,
@@ -121,17 +125,17 @@ export default function HistoricoValidacoes() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                    <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                    <th className="px-3 py-2 text-left font-semibold">Requisito</th>
-                    <th className="px-3 py-2 text-left font-semibold">Estado</th>
-                    <th className="px-3 py-2 text-left font-semibold">Data</th>
-                    <th className="px-3 py-2 text-left font-semibold">Validador</th>
+                    <SortableTh label="Consultor" sortKey="consultor" accessor={(i) => i.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Badge" sortKey="badge" accessor={(i) => i.badge || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Requisito" sortKey="requisito" accessor={(i) => i.requisito || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Estado" sortKey="estado" accessor={(i) => i.estado || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Data" sortKey="data" accessor={(i) => (i.data ? new Date(i.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label="Validador" sortKey="validador" accessor={(i) => i.validador || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                     <th className="px-3 py-2 text-left font-semibold">Observações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {resultados.map((item) => (
+                  {resultadosOrdenados.map((item) => (
                     <tr key={item.id}>
                       <td className="px-3 py-2 font-semibold text-slate-900">{item.consultor}</td>
                       <td className="px-3 py-2">{item.badge}</td>

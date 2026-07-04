@@ -3,6 +3,8 @@ import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { tmActionClass, tmPrimaryActionClass } from "./TalentManagerLayout";
+import SortableTh from "/src/components/ui/SortableTh";
+import { useSortableData } from "/src/hooks/useSortableData";
 
 export default function ValidarEvidencias() {
   const [filtro, setFiltro] = useState("pendente");
@@ -15,6 +17,8 @@ export default function ValidarEvidencias() {
     () => evidencias.filter((e) => (filtro === "todas" ? true : e.status === filtro)),
     [evidencias, filtro],
   );
+
+  const { sortedItems: filtradasOrdenadas, sortConfig, requestSort } = useSortableData(filtradas);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -137,17 +141,17 @@ export default function ValidarEvidencias() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-100 text-slate-700">
                 <tr>
-                  <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                  <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                  <th className="px-3 py-2 text-left font-semibold">Requisito</th>
-                  <th className="px-3 py-2 text-left font-semibold">Data</th>
+                  <SortableTh label="Consultor" sortKey="consultor" accessor={(e) => e.consultor?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Badge" sortKey="badge" accessor={(e) => e.badge?.name || e.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Requisito" sortKey="requirement" accessor={(e) => e.requirement?.title || e.requirement?.code || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Data" sortKey="created_at" accessor={(e) => (e.created_at ? new Date(e.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   <th className="px-3 py-2 text-left font-semibold">Ficheiro</th>
-                  <th className="px-3 py-2 text-left font-semibold">Estado</th>
+                  <SortableTh label="Estado" sortKey="status" accessor={(e) => e.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   <th className="px-3 py-2 text-right font-semibold">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                {filtradas.map((e) => (
+                {filtradasOrdenadas.map((e) => (
                   <tr key={e.id}>
                     <td className="px-3 py-2">{e.consultor?.name}</td>
                     <td className="px-3 py-2">{e.badge?.name || e.badge?.description}</td>

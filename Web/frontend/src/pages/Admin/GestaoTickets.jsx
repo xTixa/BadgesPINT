@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import Sidebar from "../../layout/Sidebar";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 export default function GestaoTickets() {
   const { isMobile } = useWindowSize();
   const [tickets, setTickets] = useState([]);
+  const { sortedItems: ticketsOrdenados, sortConfig, requestSort } = useSortableData(tickets);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filtroStatus, setFiltroStatus] = useState("");
@@ -265,16 +268,16 @@ export default function GestaoTickets() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th className="px-4 py-3">Título</th>
-                    <th className="px-4 py-3">Utilizador</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Prioridade</th>
-                    <th className="px-4 py-3">Data</th>
+                    <SortableTh label="Título" sortKey="titulo" accessor={(t) => t.titulo} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Utilizador" sortKey="utilizador" accessor={(t) => t.utilizador?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Status" sortKey="status" accessor={(t) => t.status} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Prioridade" sortKey="prioridade" accessor={(t) => t.prioridade} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Data" sortKey="createdAt" accessor={(t) => (t.createdAt ? new Date(t.createdAt).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
                     <th className="px-4 py-3">Ação</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {tickets.map((ticket, idx) => (
+                  {ticketsOrdenados.map((ticket, idx) => (
                     <tr
                       key={ticket.id}
                       className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}

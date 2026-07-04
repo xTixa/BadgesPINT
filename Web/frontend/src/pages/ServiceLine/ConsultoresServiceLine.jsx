@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slActionClass } from "./ServiceLineLayout";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 export default function ConsultoresServiceLine() {
   const [consultores, setConsultores] = useState([]);
@@ -38,6 +40,8 @@ export default function ConsultoresServiceLine() {
     () => consultores.filter((c) => `${c.name} ${c.email} ${c.area}`.toLowerCase().includes(search.toLowerCase())),
     [consultores, search],
   );
+
+  const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtrados);
 
   const mediaPontos = consultores.length ? Math.round(consultores.reduce((acc, c) => acc + Number(c.points_total || 0), 0) / consultores.length) : 0;
   const mediaBadges = consultores.length ? Math.round(consultores.reduce((acc, c) => acc + Number(c.badges_obtidos || 0), 0) / consultores.length) : 0;
@@ -92,16 +96,16 @@ export default function ConsultoresServiceLine() {
                   <thead className="bg-slate-100 text-slate-700">
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">#</th>
-                      <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                      <th className="px-3 py-2 text-left font-semibold">Área</th>
-                      <th className="px-3 py-2 text-left font-semibold">Pontos</th>
-                      <th className="px-3 py-2 text-left font-semibold">Badges</th>
-                      <th className="px-3 py-2 text-left font-semibold">Progresso</th>
+                      <SortableTh label="Consultor" sortKey="name" accessor={(c) => c.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                      <SortableTh label="Área" sortKey="area" accessor={(c) => c.area || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                      <SortableTh label="Pontos" sortKey="points_total" accessor={(c) => Number(c.points_total || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                      <SortableTh label="Badges" sortKey="badges_obtidos" accessor={(c) => Number(c.badges_obtidos || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                      <SortableTh label="Progresso" sortKey="progresso" accessor={(c) => Number(c.progresso || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                       <th className="px-3 py-2 text-right font-semibold">Timeline</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                    {filtrados.map((c) => (
+                    {ordenados.map((c) => (
                       <tr key={c.id}>
                         <td className="px-3 py-2 font-bold text-[#0F62FE]">{c.ranking}</td>
                         <td className="px-3 py-2"><div className="font-semibold text-slate-900">{c.name}</div><div className="text-xs text-slate-500">{c.email}</div></td>

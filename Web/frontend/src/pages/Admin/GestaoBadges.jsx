@@ -2,6 +2,8 @@ import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "/src/api";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 export default function GestaoBadges() {
   const [badges, setBadges] = useState([]);
@@ -186,6 +188,8 @@ export default function GestaoBadges() {
     return matchFiltro && matchArea && matchNivel;
   });
 
+  const { sortedItems: badgesOrdenados, sortConfig, requestSort } = useSortableData(badgesFiltrados);
+
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
@@ -269,17 +273,17 @@ export default function GestaoBadges() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th className="px-4 py-3">Nome</th>
-                    <th className="px-4 py-3">Nível</th>
-                    <th className="px-4 py-3">Área</th>
-                    <th className="px-4 py-3">Pontos</th>
-                    <th className="px-4 py-3">Expiração (dias)</th>
+                    <SortableTh label="Nome" sortKey="description" accessor={(b) => b.description} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Nível" sortKey="level" accessor={(b) => niveisBadges.indexOf(b.level)} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Área" sortKey="area" accessor={(b) => b.area?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Pontos" sortKey="points" accessor={(b) => b.points} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Expiração (dias)" sortKey="expiry_days" accessor={(b) => b.expiry_days ?? Infinity} sortConfig={sortConfig} onSort={requestSort} />
                     <th className="px-4 py-3">Ações</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {badgesFiltrados.map((b) => (
+                  {badgesOrdenados.map((b) => (
                     <tr key={b.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">

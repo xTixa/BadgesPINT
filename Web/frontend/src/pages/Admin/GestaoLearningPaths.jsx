@@ -1,6 +1,8 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 const baseData = [
   { id: 1, nome: "Web Development Mastery", badges: 8, duracaoMeses: 6, publico: "Consultores", ativo: true },
@@ -22,6 +24,8 @@ export default function GestaoLearningPaths() {
       return matchTexto && matchEstado;
     });
   }, [lista, busca, filtroAtivo]);
+
+  const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtrados);
 
   const toggleEstado = (id) => {
     setLista((prev) => prev.map((lp) => (lp.id === id ? { ...lp, ativo: !lp.ativo } : lp)));
@@ -117,16 +121,16 @@ export default function GestaoLearningPaths() {
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-4 py-3">Nome</th>
-                <th className="px-4 py-3">Badges</th>
-                <th className="px-4 py-3">Duração</th>
-                <th className="px-4 py-3">Público</th>
-                <th className="px-4 py-3">Estado</th>
+                <SortableTh label="Nome" sortKey="nome" accessor={(l) => l.nome} sortConfig={sortConfig} onSort={requestSort} />
+                <SortableTh label="Badges" sortKey="badges" accessor={(l) => l.badges} sortConfig={sortConfig} onSort={requestSort} />
+                <SortableTh label="Duração" sortKey="duracaoMeses" accessor={(l) => l.duracaoMeses} sortConfig={sortConfig} onSort={requestSort} />
+                <SortableTh label="Público" sortKey="publico" accessor={(l) => l.publico} sortConfig={sortConfig} onSort={requestSort} />
+                <SortableTh label="Estado" sortKey="ativo" accessor={(l) => (l.ativo ? 1 : 0)} sortConfig={sortConfig} onSort={requestSort} />
                 <th className="px-4 py-3 text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
-              {filtrados.map((l) => (
+              {ordenados.map((l) => (
                 <tr key={l.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-semibold text-slate-800">{l.nome}</td>
                   <td className="px-4 py-3">{l.badges}</td>

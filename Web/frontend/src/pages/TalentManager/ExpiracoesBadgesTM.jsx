@@ -76,6 +76,8 @@ export default function ExpiracoesBadgesTM() {
       if (sortKey === "dias") cmp = Number(a.dias) - Number(b.dias);
       else if (sortKey === "consultor") cmp = a.consultor.localeCompare(b.consultor);
       else if (sortKey === "badge") cmp = a.badge.localeCompare(b.badge);
+      else if (sortKey === "area") cmp = (a.area || "").localeCompare(b.area || "");
+      else if (sortKey === "expires_at") cmp = new Date(a.expires_at || 0) - new Date(b.expires_at || 0);
       return sortAsc ? cmp : -cmp;
     });
 
@@ -158,8 +160,16 @@ export default function ExpiracoesBadgesTM() {
                       Consultor
                     </SortButton>
                   </th>
-                  <th className="px-5 py-3 font-semibold text-slate-500">Área</th>
-                  <th className="px-5 py-3 font-semibold text-slate-500">Expira em</th>
+                  <th className="px-5 py-3 font-semibold">
+                    <SortButton sortKey="area" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
+                      Área
+                    </SortButton>
+                  </th>
+                  <th className="px-5 py-3 font-semibold">
+                    <SortButton sortKey="expires_at" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
+                      Expira em
+                    </SortButton>
+                  </th>
                   <th className="px-5 py-3 font-semibold">
                     <SortButton sortKey="dias" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
                       Dias restantes

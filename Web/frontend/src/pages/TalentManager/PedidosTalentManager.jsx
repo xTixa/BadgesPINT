@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { tmActionClass, tmPrimaryActionClass } from "./TalentManagerLayout";
+import SortableTh from "/src/components/ui/SortableTh";
+import { useSortableData } from "/src/hooks/useSortableData";
 
 const statusMap = {
   pendente: { label: "Pendente", className: "bg-amber-100 text-amber-700" },
@@ -48,6 +50,8 @@ export default function PedidosTalentManager() {
     }),
     [pedidos],
   );
+
+  const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidos);
 
   const validar = async (id) => {
     const comment = window.prompt("Comentario (opcional):") || "";
@@ -142,17 +146,17 @@ export default function PedidosTalentManager() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-100 text-slate-700">
                 <tr>
-                  <th className="px-3 py-2 text-left font-semibold">Consultor</th>
-                  <th className="px-3 py-2 text-left font-semibold">Badge</th>
-                  <th className="px-3 py-2 text-left font-semibold">Nivel</th>
-                  <th className="px-3 py-2 text-left font-semibold">Estado</th>
-                  <th className="px-3 py-2 text-left font-semibold">Workflow</th>
-                  <th className="px-3 py-2 text-left font-semibold">Data</th>
+                  <SortableTh label="Consultor" sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Badge" sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Nivel" sortKey="level" accessor={(p) => p.badge?.level || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Estado" sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Workflow" sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label="Data" sortKey="created_at" accessor={(p) => (p.created_at ? new Date(p.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   <th className="px-3 py-2 text-right font-semibold">Acoes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                {pedidos.map((pedido) => {
+                {pedidosOrdenados.map((pedido) => {
                   const status = statusMap[pedido.status] || statusMap.pendente;
                   return (
                     <tr key={pedido.id}>

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import EmptyState from "../../components/ui/EmptyState";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 const roleLabels = {
   admin: "Admin",
@@ -132,6 +134,7 @@ export default function GestaoPedidosBadges() {
           tmComment: p.tm_comment || "",
           slComment: p.sl_comment || "",
           dataPedido: formatDate(p.created_at),
+          dataPedidoRaw: p.created_at,
           dataAtribuicao: formatDate(p.data_atribuicao),
         }));
 
@@ -164,6 +167,8 @@ export default function GestaoPedidosBadges() {
     () => pedidos.filter((p) => filtro === "all" || p.status === filtro),
     [pedidos, filtro],
   );
+
+  const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidosFiltrados);
 
   const filterOptions = [
     { value: "all", label: "Todos", count: stats.total, icon: "bi-inboxes" },
@@ -547,29 +552,20 @@ export default function GestaoPedidosBadges() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-100">
-                <thead className="bg-slate-50">
+                <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
                   <tr>
-                    {[
-                      "Utilizador",
-                      "Badge",
-                      "Nivel",
-                      "Status",
-                      "Workflow",
-                      "Data",
-                      "Acoes",
-                    ].map((header) => (
-                      <th
-                        key={header}
-                        className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
-                      >
-                        {header}
-                      </th>
-                    ))}
+                    <SortableTh label="Utilizador" sortKey="userName" accessor={(p) => p.userName} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Badge" sortKey="badgeName" accessor={(p) => p.badgeName} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Nivel" sortKey="badgeLevel" accessor={(p) => p.badgeLevel} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Status" sortKey="status" accessor={(p) => p.status} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Workflow" sortKey="workflowStatus" accessor={(p) => p.workflowStatus} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Data" sortKey="dataPedidoRaw" accessor={(p) => (p.dataPedidoRaw ? new Date(p.dataPedidoRaw).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
+                    <th className="px-4 py-3 text-left">Acoes</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {pedidosFiltrados.map((pedido) => {
+                  {pedidosOrdenados.map((pedido) => {
                     const status = statusMeta(pedido.status);
                     const workflow = workflowMeta(pedido.workflowStatus);
 

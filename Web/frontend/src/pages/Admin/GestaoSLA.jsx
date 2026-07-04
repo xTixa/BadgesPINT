@@ -1,6 +1,8 @@
 import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState, useCallback } from "react";
 import api from "/src/api";
+import SortableTh from "../../components/ui/SortableTh";
+import { useSortableData } from "../../hooks/useSortableData";
 
 export default function GestaoSLA() {
   const [slas, setSlas] = useState([]);
@@ -163,6 +165,8 @@ export default function GestaoSLA() {
     return true;
   });
 
+  const { sortedItems: slasOrdenados, sortConfig, requestSort } = useSortableData(slasFiltrados);
+
   const teamTypeBadgeClass = (teamType) =>
     teamType === "talent_manager"
       ? "bg-cyan-100 text-cyan-700"
@@ -296,18 +300,18 @@ export default function GestaoSLA() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th className="px-4 py-3">Equipa</th>
-                    <th className="px-4 py-3">Tipo</th>
-                    <th className="px-4 py-3">Limite de Horas</th>
-                    <th className="px-4 py-3">Atrasados</th>
-                    <th className="px-4 py-3">Pendentes</th>
+                    <SortableTh label="Equipa" sortKey="teamName" accessor={(s) => s.teamName} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Tipo" sortKey="teamType" accessor={(s) => s.teamType} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Limite de Horas" sortKey="hoursLimit" accessor={(s) => s.hoursLimit} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Atrasados" sortKey="overdue" accessor={(s) => s.overdue} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label="Pendentes" sortKey="pending" accessor={(s) => s.pending} sortConfig={sortConfig} onSort={requestSort} />
                     <th className="px-4 py-3">Alertas</th>
                     <th className="px-4 py-3">Ações</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {slasFiltrados.map((sla) => (
+                  {slasOrdenados.map((sla) => (
                     <tr key={sla.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <p className="font-semibold text-slate-800">{sla.teamName}</p>
