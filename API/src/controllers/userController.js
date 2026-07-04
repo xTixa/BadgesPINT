@@ -2,12 +2,20 @@ import User from "../models/User.js";
 import Area from "../models/Area.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { v2 as cloudinary } from "cloudinary";
 import {
   getMailErrorDetails,
   isEmailConfigured,
   sendTemporaryPasswordEmail,
   shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 const generateTemporaryPassword = () => crypto.randomBytes(6).toString("base64url");
 
@@ -194,6 +202,41 @@ export const updateProfile = async (req, res) => {
   } catch (err) {
     console.error("Erro ao atualizar perfil:", err);
     res.status(500).json({ message: "Erro ao atualizar perfil" });
+  }
+};
+
+// Upload da foto de perfil do proprio utilizador
+export const uploadAvatar = async (req, res) => {
+  try {
+    const { image } = req.body;
+    const requestingUserId = req.userId;
+
+    if (!image || typeof image !== "string") {
+      return res.status(400).json({ message: "Imagem é obrigatória" });
+    }
+
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return res.status(500).json({ message: "Credenciais Cloudinary não definidas" });
+    }
+
+    const user = await User.findByPk(requestingUserId);
+    if (!user) {
+      return res.status(404).json({ message: "Utilizador não encontrado" });
+    }
+
+    const uploadResult = await cloudinary.uploader.upload(image, {
+      folder: "avatars",
+      resource_type: "image",
+      transformation: [{ width: 400, height: 400, crop: "fill", gravity: "face" }],
+    });
+
+    user.avatar_url = uploadResult.secure_url;
+    await user.save();
+
+    res.json({ avatar_url: user.avatar_url });
+  } catch (err) {
+    console.error("Erro ao enviar foto de perfil:", err);
+    res.status(500).json({ message: "Erro ao enviar foto de perfil" });
   }
 };
 

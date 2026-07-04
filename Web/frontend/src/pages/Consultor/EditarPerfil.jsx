@@ -11,6 +11,8 @@ export default function EditarPerfil() {
   const [areas, setAreas] = useState([]);
   const [user, setUser] = useState(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -106,6 +108,48 @@ export default function EditarPerfil() {
     }
   };
 
+  const readFileAsDataUrl = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setAvatarError("Seleciona um ficheiro de imagem.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+      setAvatarError("A imagem deve ter no máximo 3 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    try {
+      setAvatarUploading(true);
+      setAvatarError("");
+      const image = await readFileAsDataUrl(file);
+      const response = await api.post("/api/users/avatar", { image });
+
+      const updatedUser = { ...user, avatar_url: response.data.avatar_url };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    } catch (error) {
+      console.error("Erro ao enviar foto de perfil:", error);
+      setAvatarError(error.response?.data?.message || "Erro ao enviar foto de perfil.");
+    } finally {
+      setAvatarUploading(false);
+      event.target.value = "";
+    }
+  };
+
   const handleChangePassword = async (e) => {
     e.preventDefault();
 
@@ -197,11 +241,38 @@ export default function EditarPerfil() {
           {/* PERFIL */}
           <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <div className="text-center">
-              <img
-                src={user.avatar_url || avatarPlaceholder}
-                alt="Perfil"
-                className="mx-auto mb-4 h-24 w-24 rounded-3xl border-4 border-[#0F62FE]/10"
-              />
+              <div className="relative mx-auto mb-4 h-24 w-24">
+                <img
+                  src={user.avatar_url || avatarPlaceholder}
+                  alt="Perfil"
+                  className="h-24 w-24 rounded-3xl border-4 border-[#0F62FE]/10 object-cover"
+                />
+
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute -bottom-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#0F62FE] text-white shadow-md transition hover:bg-[#16558C]"
+                  title="Alterar foto de perfil"
+                >
+                  {avatarUploading ? (
+                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                  ) : (
+                    <i className="bi bi-camera-fill text-sm"></i>
+                  )}
+                </label>
+
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                  disabled={avatarUploading}
+                />
+              </div>
+
+              {avatarError && (
+                <p className="mb-3 text-xs font-medium text-rose-600">{avatarError}</p>
+              )}
 
               <h3 className="text-xl font-bold text-slate-900">{user.name}</h3>
 

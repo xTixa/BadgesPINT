@@ -28,7 +28,9 @@
       "Bash(cat Web/frontend/tailwind.config.cjs)",
       "Bash(grep -o \"^CLOUDINARY_[A-Z_]*\" API/.env)",
       "Bash(grep -c \"CLOUDINARY\" API/.env)",
-      "Bash(node --check src/context/SidebarContext.jsx)"
+      "Bash(node --check src/context/SidebarContext.jsx)",
+      "Bash(node --check src/controllers/userController.js)",
+      "Bash(node --check src/routes/userRoutes.js)"
     ]
   }
 }
