@@ -34,7 +34,9 @@ export const sidebarMenus = {
       { to: "/tm/avisos", label: "Informacoes/Avisos", icon: "bi-megaphone-fill" },
       { to: "/faq", label: "Ajuda / FAQ", icon: "bi-question-circle-fill" },
     ],
-    footer: [],
+    footer: [
+      { to: "/tm/settings", label: "Perfil / Configurações", icon: "bi-gear-fill" },
+    ],
   },
 
   service_line_leader: {
@@ -52,7 +54,9 @@ export const sidebarMenus = {
       { to: "/sl/avisos", label: "Informacoes/Avisos", icon: "bi-megaphone-fill" },
       { to: "/faq", label: "Ajuda / FAQ", icon: "bi-question-circle-fill" },
     ],
-    footer: [],
+    footer: [
+      { to: "/sl/settings", label: "Perfil / Configurações", icon: "bi-gear-fill" },
+    ],
   },
 
   admin: {

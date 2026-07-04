@@ -1,4 +1,5 @@
 import ServiceLineLayout, { slPanelClass, slPrimaryActionClass } from "./ServiceLineLayout";
+import ProfileEditor from "../../components/ProfileEditor";
 
 export default function ServiceLineSettingsPage() {
   return (
@@ -6,6 +7,11 @@ export default function ServiceLineSettingsPage() {
       title="Configuracoes"
       subtitle="Define preferencias operacionais da tua area de Service Line."
     >
+      <div className="mb-6">
+        <h2 className="mb-3 text-lg font-bold text-slate-900">Perfil</h2>
+        <ProfileEditor />
+      </div>
+
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <section className={slPanelClass}>
           <h2 className="mb-4 text-lg font-bold text-slate-900">Notificacoes</h2>

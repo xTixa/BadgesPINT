@@ -1,5 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useState } from "react";
+import ProfileEditor from "../../components/ProfileEditor";
 
 export default function TalentManagerSettingsPage() {
   const [settings, setSettings] = useState({
@@ -28,6 +29,11 @@ export default function TalentManagerSettingsPage() {
         <div className="mb-4 rounded-2xl bg-[#16558C] p-4 text-white shadow-sm">
           <h3 className="mb-1 text-xl font-bold sm:text-2xl">Definições do Talent Manager</h3>
           <p className="m-0 text-sm text-white/80 sm:text-base">Personaliza notificações, relatórios e preferências de trabalho.</p>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="mb-3 text-lg font-bold text-slate-900">Perfil</h3>
+          <ProfileEditor />
         </div>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
