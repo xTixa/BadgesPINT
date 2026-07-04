@@ -12,6 +12,7 @@ import {
   sendSLValidationEmail,
 } from "../services/mailService.js";
 import { createNotification } from "../services/notificationService.js";
+import { createAuditLog } from "./auditLogController.js";
 
 async function getServiceLineIdForUser(userId) {
   const user = await User.findByPk(userId);
@@ -279,6 +280,15 @@ export async function aprovarPedido(req, res) {
       emailFactory: sendBadgeApprovedEmail,
     });
 
+    await createAuditLog(req, res, {
+      action: "APROVAR_PEDIDO",
+      entity: "ConsultorBadge",
+      userId: req.userId,
+      entityId: pedido.id,
+      description: `Pedido de badge #${pedido.badge_id} aprovado para consultor #${pedido.consultor_id}`,
+      newValues: { status: pedido.status, workflow_status: pedido.workflow_status },
+    });
+
     res.json({
       message: "Pedido aprovado com sucesso",
       pedido
@@ -326,6 +336,15 @@ export async function rejeitarPedido(req, res) {
       titulo: "Pedido rejeitado",
       mensagem: motivo ? `O teu pedido foi rejeitado. Motivo: ${motivo}` : "O teu pedido foi rejeitado.",
       emailFactory: (payload) => sendBadgeRejectedEmail({ ...payload, comment: motivo }),
+    });
+
+    await createAuditLog(req, res, {
+      action: "REJEITAR_PEDIDO",
+      entity: "ConsultorBadge",
+      userId: req.userId,
+      entityId: pedido.id,
+      description: `Pedido de badge #${pedido.badge_id} rejeitado para consultor #${pedido.consultor_id}${motivo ? `: ${motivo}` : ""}`,
+      newValues: { status: pedido.status, workflow_status: pedido.workflow_status },
     });
 
     res.json({
@@ -508,6 +527,15 @@ export async function tmValidarPedido(req, res) {
 
     await notifySLLeadersOfPendingApproval(pedido);
 
+    await createAuditLog(req, res, {
+      action: "TM_VALIDAR_PEDIDO",
+      entity: "ConsultorBadge",
+      userId: req.userId,
+      entityId: pedido.id,
+      description: `Talent Manager validou pedido de badge #${pedido.badge_id} do consultor #${pedido.consultor_id}`,
+      newValues: { workflow_status: pedido.workflow_status },
+    });
+
     return res.json(pedido);
   } catch (err) {
     console.error("Erro TM validar pedido:", err);
@@ -548,6 +576,15 @@ export async function tmDevolverPedido(req, res) {
         ? `O teu pedido precisa de retificacao. Motivo: ${comment}`
         : "O teu pedido precisa de retificacao. Reve as evidencias e volta a submeter.",
       emailFactory: (payload) => sendBadgeReturnedEmail({ ...payload, comment }),
+    });
+
+    await createAuditLog(req, res, {
+      action: "TM_DEVOLVER_PEDIDO",
+      entity: "ConsultorBadge",
+      userId: req.userId,
+      entityId: pedido.id,
+      description: `Talent Manager devolveu pedido de badge #${pedido.badge_id} do consultor #${pedido.consultor_id}${comment ? `: ${comment}` : ""}`,
+      newValues: { workflow_status: pedido.workflow_status },
     });
 
     return res.json(pedido);
@@ -621,6 +658,15 @@ export async function slAprovarPedido(req, res) {
       emailFactory: sendBadgeApprovedEmail,
     });
 
+    await createAuditLog(req, res, {
+      action: "SL_APROVAR_PEDIDO",
+      entity: "ConsultorBadge",
+      userId: req.userId,
+      entityId: pedido.id,
+      description: `Service Line Leader aprovou pedido de badge #${pedido.badge_id} do consultor #${pedido.consultor_id}`,
+      newValues: { status: pedido.status, workflow_status: pedido.workflow_status },
+    });
+
     return res.json(pedido);
   } catch (err) {
     if (err.statusCode) {
@@ -686,6 +732,15 @@ export async function slRejeitarPedido(req, res) {
       emailFactory: (payload) => sendBadgeRejectedEmail({ ...payload, comment }),
     });
 
+    await createAuditLog(req, res, {
+      action: "SL_REJEITAR_PEDIDO",
+      entity: "ConsultorBadge",
+      userId: req.userId,
+      entityId: pedido.id,
+      description: `Service Line Leader rejeitou pedido de badge #${pedido.badge_id} do consultor #${pedido.consultor_id}${comment ? `: ${comment}` : ""}`,
+      newValues: { status: pedido.status, workflow_status: pedido.workflow_status },
+    });
+
     return res.json(pedido);
   } catch (err) {
     if (err.statusCode) {
@@ -749,6 +804,15 @@ export async function slDevolverPedido(req, res) {
         ? `O teu pedido foi devolvido pela Service Line para retificacao. Motivo: ${comment}`
         : "O teu pedido foi devolvido pela Service Line para retificacao.",
       emailFactory: (payload) => sendBadgeReturnedEmail({ ...payload, comment }),
+    });
+
+    await createAuditLog(req, res, {
+      action: "SL_DEVOLVER_PEDIDO",
+      entity: "ConsultorBadge",
+      userId: req.userId,
+      entityId: pedido.id,
+      description: `Service Line Leader devolveu pedido de badge #${pedido.badge_id} do consultor #${pedido.consultor_id}${comment ? `: ${comment}` : ""}`,
+      newValues: { status: pedido.status, workflow_status: pedido.workflow_status },
     });
 
     return res.json(pedido);

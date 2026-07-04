@@ -9,6 +9,7 @@ import {
   sendTemporaryPasswordEmail,
   shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
+import { getPasswordPolicyError } from "../utils/passwordPolicy.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -264,8 +265,9 @@ export const changePassword = async (req, res) => {
     }
 
     // Validar nova password
-    if (!newPassword || newPassword.length < 6) {
-      return res.status(400).json({ message: "Nova password deve ter pelo menos 6 caracteres" });
+    const passwordError = getPasswordPolicyError(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
     }
 
     // Atualizar password

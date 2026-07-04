@@ -7,6 +7,20 @@ export default function Sidebar({ user }) {
   const { collapsed, setCollapsed, mobileOpen, setMobileOpen, isMobile } =
     useSidebar();
 
+  const expandedWidth = "270px";
+  const collapsedWidth = "88px";
+
+  useEffect(() => {
+    const width = collapsed ? collapsedWidth : expandedWidth;
+    document.documentElement.style.setProperty("--sidebar-width", width);
+    return () => {
+      document.documentElement.style.setProperty(
+        "--sidebar-width",
+        expandedWidth,
+      );
+    };
+  }, [collapsed]);
+
   if (!user) return null;
 
   const roleAliasMap = {
@@ -28,8 +42,6 @@ export default function Sidebar({ user }) {
     return null;
   }
 
-  const expandedWidth = "270px";
-  const collapsedWidth = "88px";
   const asideWidth = isMobile
     ? "w-[270px]"
     : collapsed
@@ -40,17 +52,6 @@ export default function Sidebar({ user }) {
       ? "translate-x-0"
       : "-translate-x-full"
     : "translate-x-0";
-
-  useEffect(() => {
-    const width = collapsed ? collapsedWidth : expandedWidth;
-    document.documentElement.style.setProperty("--sidebar-width", width);
-    return () => {
-      document.documentElement.style.setProperty(
-        "--sidebar-width",
-        expandedWidth,
-      );
-    };
-  }, [collapsed]);
 
   const navItemClass = ({ isActive }) =>
     `group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${

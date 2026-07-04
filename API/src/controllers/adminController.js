@@ -13,6 +13,7 @@ import {
   sendTemporaryPasswordEmail,
   shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
+import { createAuditLog } from "./auditLogController.js";
 
 const generateTemporaryPassword = () => crypto.randomBytes(6).toString("base64url");
 
@@ -235,6 +236,15 @@ export async function createUser(req, res) {
       });
     }
 
+    await createAuditLog(req, res, {
+      action: "CRIAR_UTILIZADOR",
+      entity: "User",
+      userId: req.userId,
+      entityId: newUser.id,
+      description: `Utilizador #${newUser.id} (${newUser.email}) criado com role ${newUser.role}`,
+      newValues: { name: newUser.name, email: newUser.email, role: newUser.role, area_id: newUser.area_id },
+    });
+
     res.status(201).json({
       message: emailStatus.emailQueued
         ? "Utilizador criado com sucesso. O email com a password temporaria esta a ser enviado."
@@ -275,6 +285,8 @@ export async function updateUser(req, res) {
       }
     }
 
+    const oldValues = { name: user.name, email: user.email, role: user.role, area_id: user.area_id };
+
     // Atualizar campos
     if (name) user.name = name;
     if (email) user.email = email;
@@ -286,6 +298,16 @@ export async function updateUser(req, res) {
     if (password) user.password_hash = await bcryptjs.hash(password, 10);
 
     await user.save();
+
+    await createAuditLog(req, res, {
+      action: "ATUALIZAR_UTILIZADOR",
+      entity: "User",
+      userId: req.userId,
+      entityId: user.id,
+      description: `Utilizador #${user.id} (${user.email}) atualizado`,
+      oldValues,
+      newValues: { name: user.name, email: user.email, role: user.role, area_id: user.area_id },
+    });
 
     res.json({
       id: user.id,
@@ -313,7 +335,17 @@ export async function deleteUser(req, res) {
       return res.status(404).json({ message: "Utilizador não encontrado" });
     }
 
+    const oldValues = { name: user.name, email: user.email, role: user.role, area_id: user.area_id };
     await user.destroy();
+
+    await createAuditLog(req, res, {
+      action: "ELIMINAR_UTILIZADOR",
+      entity: "User",
+      userId: req.userId,
+      entityId: id,
+      description: `Utilizador #${id} (${oldValues.email}) eliminado`,
+      oldValues,
+    });
 
     res.json({ message: "Utilizador removido com sucesso" });
 

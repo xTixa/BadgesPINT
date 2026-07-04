@@ -1,5 +1,4 @@
 import { useLocation } from "react-router-dom";
-import { useSidebar } from "../context/SidebarContext";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
@@ -10,14 +9,11 @@ const SIDEBAR_ROUTES = ["/consultor", "/tm", "/sl", "/admin"];
 
 export default function Layout({ children, user }) {
   const location = useLocation();
-  const { collapsed } = useSidebar();
 
   const hideLayout = NO_LAYOUT_ROUTES.includes(location.pathname);
   const hasSidebar =
     !hideLayout &&
     SIDEBAR_ROUTES.some((prefix) => location.pathname.startsWith(prefix));
-
-  const sidebarWidth = collapsed ? "88px" : "270px";
 
   if (hideLayout) {
     return <>{children}</>;

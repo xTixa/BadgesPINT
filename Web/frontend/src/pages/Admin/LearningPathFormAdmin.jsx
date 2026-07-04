@@ -1,366 +1,168 @@
-﻿import React, { useState, useEffect } from "react";
-import api from "/src/api";
-import { useWindowSize } from "../../hooks/useWindowSize";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import Sidebar from "../../layout/Sidebar";
 
-export default function GestaoTickets() {
-  const { isMobile } = useWindowSize();
-  const [tickets, setTickets] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [filtroStatus, setFiltroStatus] = useState("");
-  const [filtroPrioridade, setFiltroPrioridade] = useState("");
-  const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ total: 0, pages: 0 });
-  const [ticketSelecionado, setTicketSelecionado] = useState(null);
-  const [respostaAdmin, setRespostaAdmin] = useState("");
-  const [novoStatus, setNovoStatus] = useState("");
+export default function LearningPathFormAdmin() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isNovo = id === "novo";
 
-  const statusOptions = [
-    { value: "aberto", label: "🔵 Aberto" },
-    { value: "em_analise", label: "🟡 Em Análise" },
-    { value: "resolvido", label: "🟢 Resolvido" },
-    { value: "fechado", label: "⚪ Fechado" },
-  ];
-
-  const prioridadeOptions = [
-    { value: "baixa", label: "🟢 Baixa" },
-    { value: "media", label: "🟡 Média" },
-    { value: "alta", label: "🔴 Alta" },
-    { value: "critica", label: "🔴🔴 Crítica" },
-  ];
+  const [form, setForm] = useState({
+    nome: "",
+    descricao: "",
+    duracaoMeses: 3,
+    numBadges: 0,
+    publico: "Consultores",
+    ativo: true,
+  });
 
   useEffect(() => {
-    fetchTickets();
-    fetchStats();
-  }, [page, filtroStatus, filtroPrioridade]);
-
-  const fetchTickets = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const query = new URLSearchParams({
-        page,
-        limit: 15,
-        ...(filtroStatus && { status: filtroStatus }),
-        ...(filtroPrioridade && { prioridade: filtroPrioridade }),
+    if (!isNovo) {
+      setForm({
+        nome: "Web Development Mastery",
+        descricao: "Percurso completo para desenvolvimento web full stack.",
+        duracaoMeses: 6,
+        numBadges: 8,
+        publico: "Consultores",
+        ativo: true,
       });
-
-      const response = await api.get(
-        `/api/tickets?${query}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setTickets(response.data.data);
-      setPagination({
-        total: response.data.total,
-        pages: response.data.pages,
-      });
-    } catch (error) {
-      console.error("Erro ao carregar tickets:", error);
-    } finally {
-      setLoading(false);
     }
+  }, [isNovo]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const fetchStats = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await api.get(
-        "/api/tickets/stats/estatisticas",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const data = response.data?.data || {};
-      setStats({
-        total: data.total || 0,
-        porStatus: {
-          abertos: data.abertos || 0,
-          resolvidos: data.resolvidos || 0,
-        },
-        porPrioridade: [
-          { prioridade: "critica", count: data.criticos || 0 },
-        ],
-      });
-    } catch (error) {
-      console.error("Erro ao carregar estatísticas:", error);
-    }
-  };
-
-  const handleAtualizarTicket = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await api.put(
-        `/api/tickets/${ticketSelecionado.id}`,
-        {
-          status: novoStatus || ticketSelecionado.status,
-          resposta_admin: respostaAdmin,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setTicketSelecionado(null);
-      setRespostaAdmin("");
-      setNovoStatus("");
-      fetchTickets();
-      fetchStats();
-    } catch (error) {
-      console.error("Erro ao atualizar ticket:", error);
-    }
-  };
-
-  const getStatusBadge = (status) => {
-    const statusMap = {
-      aberto: { className: "bg-blue-100 text-blue-700", label: "🔵 Aberto" },
-      em_analise: { className: "bg-amber-100 text-amber-700", label: "🟡 Em Análise" },
-      resolvido: { className: "bg-emerald-100 text-emerald-700", label: "🟢 Resolvido" },
-      fechado: { className: "bg-slate-100 text-slate-700", label: "⚪ Fechado" },
-    };
-    const s = statusMap[status] || { className: "bg-slate-100 text-slate-700", label: status };
-    return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${s.className}`}>{s.label}</span>;
-  };
-
-  const getPriorityColor = (priority) => {
-    const colors = {
-      baixa: "#10b981",
-      media: "#f59e0b",
-      alta: "#ef4444",
-      critica: "#dc2626",
-    };
-    return colors[priority] || "#04C4D9";
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate("/admin/learning-paths");
   };
 
   return (
-    <div className="px-4 py-4 sm:px-5 md:px-6">
-      <div className="mb-8">
-        <h2 className={`flex items-center gap-2 font-bold text-slate-800 ${isMobile ? "text-2xl" : "text-3xl"}`}>
-          <i className="bi bi-ticket text-indigo-500"></i>
-          Gestão de Tickets
-        </h2>
-      </div>
+    <div className="admin-shell">
+      <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      {stats && (
-        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total</div>
-            <div className="mt-1 text-3xl font-bold text-slate-800">{stats.total}</div>
+      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
+          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+          <div className="relative z-10">
+            <p className="mb-2 text-sm font-medium text-white/80">Painel de administração</p>
+            <h1 className="text-3xl font-bold text-white">
+              {isNovo ? "Criar Learning Path" : "Editar Learning Path"}
+            </h1>
+            <p className="mt-2 max-w-2xl text-white/85">
+              Define o nome, duração e badges associados a este percurso.
+            </p>
           </div>
+        </section>
 
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Abertos</div>
-            <div className="mt-1 text-3xl font-bold text-blue-600">{stats.porStatus?.abertos ?? stats.abertos ?? 0}</div>
-          </div>
-
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resolvidos</div>
-            <div className="mt-1 text-3xl font-bold text-emerald-600">{stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}</div>
-          </div>
-
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Críticos</div>
-            <div className="mt-1 text-3xl font-bold text-rose-600">
-              {stats.porPrioridade?.find((p) => p.prioridade === "critica")?.count ?? stats.criticos ?? 0}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="mb-8 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-              value={filtroStatus}
-              onChange={(e) => {
-                setFiltroStatus(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Todos os Status</option>
-              {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="md:col-span-5">
-            <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-              value={filtroPrioridade}
-              onChange={(e) => {
-                setFiltroPrioridade(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Todas as Prioridades</option>
-              {prioridadeOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="md:col-span-2">
-            <button
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-              onClick={() => {
-                setFiltroStatus("");
-                setFiltroPrioridade("");
-                setPage(1);
-              }}
-            >
-              <i className="bi bi-arrow-clockwise"></i> Limpar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-        {!isMobile ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-4 py-3">Título</th>
-                  <th className="px-4 py-3">Utilizador</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Prioridade</th>
-                  <th className="px-4 py-3">Data</th>
-                  <th className="px-4 py-3">Ação</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {tickets.map((ticket, idx) => (
-                  <tr key={ticket.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
-                    <td className="px-4 py-3 font-semibold text-slate-800">{ticket.titulo}</td>
-                    <td className="px-4 py-3 text-slate-700">{ticket.utilizador?.name}</td>
-                    <td className="px-4 py-3">{getStatusBadge(ticket.status)}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
-                        style={{
-                          backgroundColor: `${getPriorityColor(ticket.prioridade)}20`,
-                          color: getPriorityColor(ticket.prioridade),
-                        }}
-                      >
-                        {ticket.prioridade}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-500">
-                      {new Date(ticket.createdAt).toLocaleDateString("pt-PT")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        className="inline-flex items-center gap-1 rounded-lg bg-indigo-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-800"
-                        onClick={() => {
-                          setTicketSelecionado(ticket);
-                          setNovoStatus(ticket.status);
-                        }}
-                      >
-                        <i className="bi bi-pencil"></i> Editar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="space-y-3 p-4">
-            {tickets.length === 0 ? (
-              <p className="py-6 text-center text-sm text-slate-500">Sem tickets para mostrar.</p>
-            ) : (
-              tickets.map((ticket) => (
-                <button
-                  key={ticket.id}
-                  type="button"
-                  className="w-full rounded-xl border border-slate-200 p-3 text-left"
-                  onClick={() => {
-                    setTicketSelecionado(ticket);
-                    setNovoStatus(ticket.status);
-                  }}
-                >
-                  <p className="font-semibold text-slate-800">{ticket.titulo}</p>
-                  <p className="mt-1 text-xs text-slate-500">{ticket.utilizador?.name}</p>
-                  <div className="mt-2 flex items-center justify-between">
-                    {getStatusBadge(ticket.status)}
-                    <span className="text-xs text-slate-500">{new Date(ticket.createdAt).toLocaleDateString("pt-PT")}</span>
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-
-      {ticketSelecionado && (
-        <div
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4"
-          onClick={() => setTicketSelecionado(null)}
-        >
-          <div
-            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 sm:p-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="mb-6 text-2xl font-bold text-slate-800">
-              {ticketSelecionado.titulo}
-            </h3>
-
-            <div className="mb-5">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">
-                Novo Status
+        <div className="rounded-3xl border border-[#0F62FE]/10 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Nome do Learning Path
               </label>
-              <select
-                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                value={novoStatus}
-                onChange={(e) => setNovoStatus(e.target.value)}
-              >
-                {statusOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mb-5">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">
-                Resposta/Notas do Administrador
-              </label>
-              <textarea
-                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                value={respostaAdmin}
-                onChange={(e) => setRespostaAdmin(e.target.value)}
-                placeholder="Escreva sua resposta aqui..."
-                rows={6}
+              <input
+                type="text"
+                name="nome"
+                value={form.nome}
+                onChange={handleChange}
+                required
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
               />
             </div>
 
-            <div className="flex gap-2">
-              <button
-                className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
-                onClick={handleAtualizarTicket}
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Descrição
+              </label>
+              <textarea
+                name="descricao"
+                value={form.descricao}
+                onChange={handleChange}
+                rows={3}
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Duração (meses)
+                </label>
+                <input
+                  type="number"
+                  name="duracaoMeses"
+                  value={form.duracaoMeses}
+                  onChange={handleChange}
+                  min="1"
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Número de Badges
+                </label>
+                <input
+                  type="number"
+                  name="numBadges"
+                  value={form.numBadges}
+                  onChange={handleChange}
+                  min="0"
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Público-alvo
+              </label>
+              <select
+                name="publico"
+                value={form.publico}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
               >
-                <i className="bi bi-check"></i> Atualizar
-              </button>
+                <option value="Consultores">Consultores</option>
+                <option value="Talent Manager">Talent Manager</option>
+                <option value="Service Line">Service Line</option>
+              </select>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <input
+                type="checkbox"
+                name="ativo"
+                checked={form.ativo}
+                onChange={handleChange}
+                className="h-4 w-4 rounded border-slate-300 text-[#0F62FE] focus:ring-[#0F62FE]/30"
+              />
+              Learning Path ativo
+            </label>
+
+            <div className="flex justify-end gap-2 pt-2">
               <button
-                className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                onClick={() => setTicketSelecionado(null)}
+                type="button"
+                onClick={() => navigate("/admin/learning-paths")}
+                className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
               >
                 Cancelar
               </button>
+              <button
+                type="submit"
+                className="rounded-xl bg-[#0F62FE] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0F52D4]"
+              >
+                Guardar
+              </button>
             </div>
-          </div>
+          </form>
         </div>
-      )}
+      </main>
     </div>
   );
 }
-

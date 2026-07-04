@@ -5,16 +5,8 @@ export default function Logout() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    const token = localStorage.getItem("token");
-
     // Tentar registar no backend, mas não bloquear UX
-    axios
-      .post(
-        "/api/auth/logout",
-        {},
-        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
-      )
-      .catch(() => {});
+    api.post("/api/auth/logout").catch(() => {});
 
     localStorage.removeItem("user");
     localStorage.removeItem("token");

@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 
 import database from "./config/database.js";
@@ -45,6 +46,7 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
+app.use(helmet());
 app.use(cors(corsOptions));
 
 // Redirecionar HTTP → HTTPS em produção (Render define x-forwarded-proto)

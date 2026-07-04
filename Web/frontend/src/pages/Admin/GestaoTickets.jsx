@@ -263,7 +263,9 @@ export default function GestaoTickets() {
         </div>
 
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-          {!isMobile ? (
+          {loading ? (
+            <p className="py-10 text-center text-sm text-slate-500">A carregar tickets...</p>
+          ) : !isMobile ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">

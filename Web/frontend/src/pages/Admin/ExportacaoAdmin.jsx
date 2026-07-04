@@ -36,36 +36,6 @@ export default function ExportacaoAdmin() {
     return { start, end };
   };
 
-  const getScopeLabel = (value) => {
-    switch (value) {
-      case "todos":
-        return "Todos os dados";
-      case "users":
-        return "Utilizadores";
-      case "badges":
-        return "Badges";
-      case "pedidos":
-        return "Pedidos";
-      default:
-        return "—";
-    }
-  };
-
-  const getRangeLabel = (value) => {
-    switch (value) {
-      case "ultima-semana":
-        return "Última semana";
-      case "ultimo-mes":
-        return "Último mês";
-      case "ultimo-trimestre":
-        return "Último trimestre";
-      case "ano-atual":
-        return "Ano atual";
-      default:
-        return "—";
-    }
-  };
-
   const handleExport = async () => {
     if (!scope) {
       setError("Por favor, selecione um Âmbito de exportação.");
@@ -153,9 +123,6 @@ export default function ExportacaoAdmin() {
       value: "pedidos",
     },
   ];
-
-  const { start: previewStart, end: previewEnd } = getDateRange();
-  const previewFile = `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`;
 
   return (
     <div className="flex min-h-screen bg-slate-100">

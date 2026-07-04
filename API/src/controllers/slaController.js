@@ -6,6 +6,7 @@ import Area from "../models/Area.js";
 import { Op } from "sequelize";
 import { sendSLAAlertEmail } from "../services/mailService.js";
 import { createUniqueNotification } from "../services/notificationService.js";
+import { createAuditLog } from "./auditLogController.js";
 
 /**
  * Listar todos os SLAs
@@ -108,6 +109,15 @@ export async function createSLA(req, res) {
       status: "active"
     });
 
+    await createAuditLog(req, res, {
+      action: "CRIAR_SLA",
+      entity: "SLA",
+      userId: req.userId,
+      entityId: sla.id,
+      description: `SLA criado para equipa #${sla.team_id} (${sla.team_type})`,
+      newValues: sla.toJSON(),
+    });
+
     res.status(201).json(sla);
   } catch (err) {
     console.error("Erro ao criar SLA:", err);
@@ -128,12 +138,24 @@ export async function updateSLA(req, res) {
       return res.status(404).json({ message: "SLA não encontrado" });
     }
 
+    const oldValues = sla.toJSON();
+
     await sla.update({
       hours_limit: hours_limit !== undefined ? hours_limit : sla.hours_limit,
       notification_enabled: notification_enabled !== undefined ? notification_enabled : sla.notification_enabled,
       email_notification: email_notification !== undefined ? email_notification : sla.email_notification,
       push_notification: push_notification !== undefined ? push_notification : sla.push_notification,
       status: status || sla.status
+    });
+
+    await createAuditLog(req, res, {
+      action: "ATUALIZAR_SLA",
+      entity: "SLA",
+      userId: req.userId,
+      entityId: sla.id,
+      description: `SLA #${sla.id} (equipa #${sla.team_id}) atualizado`,
+      oldValues,
+      newValues: sla.toJSON(),
     });
 
     res.json(sla);
@@ -155,7 +177,17 @@ export async function deleteSLA(req, res) {
       return res.status(404).json({ message: "SLA não encontrado" });
     }
 
+    const oldValues = sla.toJSON();
     await sla.destroy();
+
+    await createAuditLog(req, res, {
+      action: "ELIMINAR_SLA",
+      entity: "SLA",
+      userId: req.userId,
+      entityId: id,
+      description: `SLA #${id} (equipa #${oldValues.team_id}) eliminado`,
+      oldValues,
+    });
 
     res.json({ message: "SLA deletado com sucesso" });
   } catch (err) {

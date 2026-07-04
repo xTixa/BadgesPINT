@@ -5,6 +5,8 @@ import Badge from "../models/Badge.js";
 import User from "../models/User.js";
 import { createNotification } from "../services/notificationService.js";
 import { notifySLLeadersOfPendingApproval } from "./pedidosController.js";
+import { createAuditLog } from "./auditLogController.js";
+import { getTMAreaIds } from "./talentManagerController.js";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -27,6 +29,28 @@ function safePublicId(fileName) {
   return safe || undefined;
 }
 
+const MAX_EVIDENCE_FILE_BYTES = 3 * 1024 * 1024; // 3MB
+const ALLOWED_EVIDENCE_FORMATS = ["jpg", "jpeg", "png", "webp", "pdf"];
+
+export function estimateBase64Bytes(fileValue) {
+  const base64Part = fileValue.includes(",") ? fileValue.split(",").pop() : fileValue;
+  const padding = (base64Part.match(/=+$/) || [""])[0].length;
+  return Math.floor((base64Part.length * 3) / 4) - padding;
+}
+
+export function isTrustedCloudinaryUrl(url) {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  if (!cloudName) return false;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return false;
+    if (parsed.hostname !== "res.cloudinary.com") return false;
+    return parsed.pathname.startsWith(`/${cloudName}/`);
+  } catch {
+    return false;
+  }
+}
+
 export async function uploadEvidenceFile(req, res) {
   try {
     if (req.userRole !== "consultant") {
@@ -39,15 +63,32 @@ export async function uploadEvidenceFile(req, res) {
       return res.status(400).json({ error: "Ficheiro e obrigatorio" });
     }
 
+    if (estimateBase64Bytes(file) > MAX_EVIDENCE_FILE_BYTES) {
+      return res.status(413).json({
+        error: `Ficheiro demasiado grande. Tamanho máximo: ${MAX_EVIDENCE_FILE_BYTES / (1024 * 1024)}MB`,
+      });
+    }
+
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
       return res.status(500).json({ error: "Credenciais Cloudinary nao definidas" });
     }
 
-    const uploadResult = await cloudinary.uploader.upload(file, {
-      folder: "evidencias",
-      resource_type: "auto",
-      public_id: `${safePublicId(fileName) || "evidencia"}-${Date.now()}`,
-    });
+    let uploadResult;
+    try {
+      uploadResult = await cloudinary.uploader.upload(file, {
+        folder: "evidencias",
+        resource_type: "auto",
+        allowed_formats: ALLOWED_EVIDENCE_FORMATS,
+        public_id: `${safePublicId(fileName) || "evidencia"}-${Date.now()}`,
+      });
+    } catch (uploadErr) {
+      if (uploadErr?.message?.includes("format")) {
+        return res.status(400).json({
+          error: `Formato de ficheiro não permitido. Formatos aceites: ${ALLOWED_EVIDENCE_FORMATS.join(", ")}`,
+        });
+      }
+      throw uploadErr;
+    }
 
     return res.json({
       url: uploadResult.secure_url,
@@ -76,6 +117,10 @@ export async function submitEvidence(req, res) {
 
     if (!evidence_url) {
       return res.status(400).json({ error: "URL da evidência é obrigatória" });
+    }
+
+    if (!isTrustedCloudinaryUrl(evidence_url)) {
+      return res.status(400).json({ error: "URL da evidência inválida. Utilize o upload da plataforma." });
     }
 
     const requirement = await Requirement.findByPk(requirementId);
@@ -133,10 +178,13 @@ export async function listEvidencesForTM(req, res) {
     const { status } = req.query;
     const where = status && status !== "todas" ? { status } : {};
 
+    const tm = await User.findByPk(req.userId);
+    const areaIds = await getTMAreaIds(tm);
+
     const evidences = await RequirementEvidence.findAll({
       where,
       include: [
-        { model: User, as: "consultor", attributes: ["id", "name", "email"] },
+        { model: User, as: "consultor", attributes: ["id", "name", "email"], where: { area_id: areaIds }, required: true },
         { model: Badge, as: "badge", attributes: ["id", "description", "level"] },
         { model: Requirement, as: "requirement", attributes: ["id", "title", "code"] }
       ],
@@ -225,6 +273,15 @@ export async function approveEvidence(req, res) {
       console.error("Erro ao criar notificação:", err);
     }
 
+    await createAuditLog(req, res, {
+      action: "APROVAR_EVIDENCIA",
+      entity: "RequirementEvidence",
+      userId: req.userId,
+      entityId: evidence.id,
+      description: `Evidência #${evidence.id} do requisito #${evidence.requirement_id} aprovada para consultor #${evidence.consultor_id}`,
+      newValues: { status: evidence.status },
+    });
+
     return res.json(evidence);
   } catch (err) {
     console.error("Erro ao aprovar evidência:", err);
@@ -259,6 +316,15 @@ export async function rejectEvidence(req, res) {
     } catch (err) {
       console.error("Erro ao criar notificação:", err);
     }
+
+    await createAuditLog(req, res, {
+      action: "REJEITAR_EVIDENCIA",
+      entity: "RequirementEvidence",
+      userId: req.userId,
+      entityId: evidence.id,
+      description: `Evidência #${evidence.id} do requisito #${evidence.requirement_id} rejeitada para consultor #${evidence.consultor_id}`,
+      newValues: { status: evidence.status },
+    });
 
     return res.json(evidence);
   } catch (err) {

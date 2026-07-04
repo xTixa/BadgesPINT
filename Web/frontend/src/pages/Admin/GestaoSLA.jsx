@@ -201,6 +201,12 @@ export default function GestaoSLA() {
           </div>
         </section>
 
+        {error && (
+          <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+            {error}
+          </div>
+        )}
+
         {/* Painel de disparo automático */}
         <section className="mb-6 overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

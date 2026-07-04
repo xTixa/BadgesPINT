@@ -6,6 +6,7 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import Badge from "../models/Badge.js";
 import PasswordReset from "../models/PasswordReset.js";
 import { createAuditLog } from "./auditLogController.js";
+import { getPasswordPolicyError } from "../utils/passwordPolicy.js";
 import {
   getMailErrorDetails,
   isEmailConfigured,
@@ -113,8 +114,9 @@ export const updatePassword = async (req, res) => {
       return res.status(401).json({ message: "Token inválido" });
     }
 
-    if (!newPassword || newPassword.length < 6) {
-      return res.status(400).json({ message: "Nova password deve ter pelo menos 6 caracteres." });
+    const passwordError = getPasswordPolicyError(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
     }
 
     const hash = await bcrypt.hash(newPassword, 10);
@@ -297,8 +299,9 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Token e nova password são obrigatórios." });
     }
 
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: "Password deve ter pelo menos 6 caracteres." });
+    const passwordError = getPasswordPolicyError(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
     }
 
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");

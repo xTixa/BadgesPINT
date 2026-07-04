@@ -17,16 +17,6 @@ export default function Navbar() {
     { to: "/areas", label: "Áreas" },
   ];
 
-  const roleLabelMap = {
-    consultant: "Consultor",
-    consultor: "Consultor",
-    talent_manager: "Talent Manager",
-    talentManager: "Talent Manager",
-    service_line_leader: "Service Line Leader",
-    serviceLine: "Service Line Leader",
-    admin: "Administrador",
-  };
-
   const roleDashboardMap = {
     consultant: "/dashboard",
     consultor: "/dashboard",
@@ -102,7 +92,6 @@ export default function Navbar() {
   }, []);
 
   const firstName = user?.name?.trim()?.split(" ")?.[0] || "Conta";
-  const roleLabel = roleLabelMap[user?.role] || "Utilizador";
   const dashboardPath = roleDashboardMap[user?.role] || "/";
   const settingsPath = roleSettingsMap[user?.role] || "/";
   const isConsultor = user?.role === "consultant" || user?.role === "consultor";

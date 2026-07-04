@@ -30,7 +30,24 @@
       "Bash(grep -c \"CLOUDINARY\" API/.env)",
       "Bash(node --check src/context/SidebarContext.jsx)",
       "Bash(node --check src/controllers/userController.js)",
-      "Bash(node --check src/routes/userRoutes.js)"
+      "Bash(node --check src/routes/userRoutes.js)",
+      "Bash(npm install *)",
+      "Bash(node --check src/server.js)",
+      "Bash(node --check src/routes/authRoutes.js)",
+      "Bash(node --check src/controllers/authController.js)",
+      "Bash(node --check src/utils/passwordPolicy.js)",
+      "Bash(node --check src/controllers/adminBadgeController.js)",
+      "Bash(node --check src/controllers/adminController.js)",
+      "Bash(node --check src/controllers/slaController.js)",
+      "Bash(npm test *)",
+      "Bash(node --test \"tests\")",
+      "Bash(node --test)",
+      "Bash(node --test \"tests/*.test.js\")",
+      "Bash(curl -s http://localhost:4000/health)",
+      "Bash(curl -s -i http://localhost:3000/health)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"nao-existe@test.com\",\"password\":\"errado123\"}')",
+      "Bash(curl -s -i -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"a@a.com\",\"password\":\"x\"}')",
+      "Bash(pkill -f \"node src/server.js\")"
     ]
   }
 }

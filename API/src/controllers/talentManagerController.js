@@ -23,7 +23,7 @@ const buildMonthlySeries = (rows, start, end) => {
   return result;
 };
 
-const getTMAreaIds = async (tm, serviceLineId = null) => {
+export const getTMAreaIds = async (tm, serviceLineId = null) => {
   if (serviceLineId) {
     const areas = await Area.findAll({ where: { service_line_id: serviceLineId }, attributes: ["id"], raw: true });
     return areas.map((area) => area.id);

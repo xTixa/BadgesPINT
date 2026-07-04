@@ -36,8 +36,6 @@ export default function Configuracoes() {
   const inputClass =
     "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10";
 
-  const cardClass = "rounded-3xl border border-slate-200 bg-slate-50 p-6";
-
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />

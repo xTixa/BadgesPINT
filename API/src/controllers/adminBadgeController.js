@@ -8,6 +8,7 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import { v2 as cloudinary } from "cloudinary";
 import PDFDocument from "pdfkit";
 import { renderCertificatePdf } from "../services/certificateService.js";
+import { createAuditLog } from "./auditLogController.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -127,6 +128,15 @@ export async function adminCreateBadge(req, res) {
       ]
     });
 
+    await createAuditLog(req, res, {
+      action: "CRIAR_BADGE",
+      entity: "Badge",
+      userId: req.userId,
+      entityId: newBadge.id,
+      description: `Badge #${newBadge.id} criado`,
+      newValues: badgeData,
+    });
+
     res.status(201).json(created);
   } catch (err) {
     console.error(err);
@@ -149,6 +159,7 @@ export async function adminUpdateBadge(req, res) {
       return res.status(404).json({ message: "Badge não encontrado" });
     }
 
+    const oldValues = badge.toJSON();
     await badge.update(badgeData);
 
     if (Array.isArray(requirements)) {
@@ -181,6 +192,16 @@ export async function adminUpdateBadge(req, res) {
       ]
     });
 
+    await createAuditLog(req, res, {
+      action: "ATUALIZAR_BADGE",
+      entity: "Badge",
+      userId: req.userId,
+      entityId: badge.id,
+      description: `Badge #${badge.id} atualizado`,
+      oldValues,
+      newValues: badgeData,
+    });
+
     res.json(updated);
   } catch (err) {
     console.error(err);
@@ -199,10 +220,21 @@ export async function adminDeleteBadge(req, res) {
   try {
     const id = req.params.id;
 
+    const badge = await Badge.findByPk(id);
+
     await BadgeLesson.destroy({ where: { badge_id: id } });
     await BadgeSection.destroy({ where: { badge_id: id } });
     await Requirement.destroy({ where: { badge_id: id } });
     await Badge.destroy({ where: { id } });
+
+    await createAuditLog(req, res, {
+      action: "ELIMINAR_BADGE",
+      entity: "Badge",
+      userId: req.userId,
+      entityId: id,
+      description: `Badge #${id} eliminado`,
+      oldValues: badge ? badge.toJSON() : null,
+    });
 
     res.json({ message: "Badge eliminado com sucesso" });
 
