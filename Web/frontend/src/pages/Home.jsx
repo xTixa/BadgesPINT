@@ -4,11 +4,18 @@ import api from "../api";
 import BadgeCard from "../components/BadgeCard";
 import LearningPathCard from "../components/LearningPathCard";
 
-const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
+const getBadgeName = (badge) =>
+  badge?.name || badge?.nome || badge?.title || "Badge";
 const getBadgeArea = (badge) =>
-  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "Competencia";
-const getBadgeLevel = (badge) => badge?.level || badge?.nivel || badge?.level_name || "Nivel";
-const getBadgePoints = (badge) => Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
+  badge?.area?.name ||
+  badge?.area?.nome ||
+  badge?.area_name ||
+  badge?.area ||
+  "Competencia";
+const getBadgeLevel = (badge) =>
+  badge?.level || badge?.nivel || badge?.level_name || "Nivel";
+const getBadgePoints = (badge) =>
+  Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
 
 const normalizeText = (value) =>
   String(value || "")
@@ -44,8 +51,12 @@ export default function Home() {
           api.get("/learning-paths"),
         ]);
 
-        setBadges(Array.isArray(badgesResponse.data) ? badgesResponse.data : []);
-        setLearningPaths(Array.isArray(pathsResponse.data) ? pathsResponse.data : []);
+        setBadges(
+          Array.isArray(badgesResponse.data) ? badgesResponse.data : [],
+        );
+        setLearningPaths(
+          Array.isArray(pathsResponse.data) ? pathsResponse.data : [],
+        );
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
         setError("Nao foi possivel carregar os dados da pagina inicial.");
@@ -75,15 +86,17 @@ export default function Home() {
       [...badges]
         .sort((a, b) => getBadgePoints(b) - getBadgePoints(a))
         .slice(0, 6),
-    [badges]
+    [badges],
   );
 
   const starterBadges = useMemo(
     () =>
       badges
-        .filter((badge) => normalizeText(getBadgeLevel(badge)).includes("junior"))
+        .filter((badge) =>
+          normalizeText(getBadgeLevel(badge)).includes("junior"),
+        )
         .slice(0, 4),
-    [badges]
+    [badges],
   );
 
   const handleSearch = (event) => {
@@ -106,9 +119,10 @@ export default function Home() {
             <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl">
               Aprende, candidata-te e prova o teu crescimento com badges.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/82">
-              Explora percursos por area, escolhe badges alinhados com a tua carreira
-              e acompanha a validacao das tuas competencias numa experiencia moderna.
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white">
+              Explora percursos por area, escolhe badges alinhados com a tua
+              carreira e acompanha a validacao das tuas competencias numa
+              experiencia moderna.
             </p>
 
             <form
@@ -139,8 +153,12 @@ export default function Home() {
                 <p className="mt-1 text-xs font-medium text-white/70">Badges</p>
               </div>
               <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-extrabold">{learningPaths.length}</p>
-                <p className="mt-1 text-xs font-medium text-white/70">Percursos</p>
+                <p className="text-2xl font-extrabold">
+                  {learningPaths.length}
+                </p>
+                <p className="mt-1 text-xs font-medium text-white/70">
+                  Percursos
+                </p>
               </div>
               <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
                 <p className="text-2xl font-extrabold">{categories.length}</p>
@@ -152,9 +170,13 @@ export default function Home() {
           <aside className="rounded-3xl border border-white/15 bg-white/10 p-5 shadow-2xl backdrop-blur">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-[#BFEFFF]">A tua jornada</p>
+                <p className="text-sm font-semibold text-[#BFEFFF]">
+                  A tua jornada
+                </p>
                 <h2 className="text-2xl font-bold">
-                  {user ? `Ola, ${user.name?.split(" ")[0] || "consultor"}` : "Comeca por aqui"}
+                  {user
+                    ? `Ola, ${user.name?.split(" ")[0] || "consultor"}`
+                    : "Comeca por aqui"}
                 </h2>
               </div>
               <i className="bi bi-mortarboard text-3xl text-[#BFEFFF]"></i>
@@ -162,11 +184,20 @@ export default function Home() {
 
             <div className="space-y-3">
               {[
-                ["Escolhe uma area", "Filtra competencias pelo teu foco profissional."],
-                ["Candidata-te", "Envia o pedido e fica com o workflow registado."],
+                [
+                  "Escolhe uma area",
+                  "Filtra competencias pelo teu foco profissional.",
+                ],
+                [
+                  "Candidata-te",
+                  "Envia o pedido e fica com o workflow registado.",
+                ],
                 ["Submete evidencias", "Mostra trabalho real para validacao."],
               ].map(([title, text], index) => (
-                <div key={title} className="flex gap-3 rounded-2xl bg-white p-4 text-slate-900">
+                <div
+                  key={title}
+                  className="flex gap-3 rounded-2xl bg-white p-4 text-slate-900"
+                >
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0F62FE]/10 text-sm font-bold text-[#0F62FE]">
                     {index + 1}
                   </div>
@@ -204,23 +235,25 @@ export default function Home() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {(loading ? Array.from({ length: 6 }) : categories).map((category, index) => (
-              <Link
-                key={category?.name || index}
-                to={`/badges?q=${encodeURIComponent(category?.name || "")}`}
-                className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#0F62FE]/40 hover:shadow-lg"
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10 text-[#0F62FE]">
-                  <i className="bi bi-grid-1x2-fill text-xl"></i>
-                </div>
-                <h3 className="text-lg font-bold text-slate-950">
-                  {category?.name || "A carregar..."}
-                </h3>
-                <p className="mt-1 text-sm text-slate-500">
-                  {category?.count || 0} badges disponiveis
-                </p>
-              </Link>
-            ))}
+            {(loading ? Array.from({ length: 6 }) : categories).map(
+              (category, index) => (
+                <Link
+                  key={category?.name || index}
+                  to={`/badges?q=${encodeURIComponent(category?.name || "")}`}
+                  className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#0F62FE]/40 hover:shadow-lg"
+                >
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10 text-[#0F62FE]">
+                    <i className="bi bi-grid-1x2-fill text-xl"></i>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-950">
+                    {category?.name || "A carregar..."}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {category?.count || 0} badges disponiveis
+                  </p>
+                </Link>
+              ),
+            )}
           </div>
         </section>
 
@@ -287,10 +320,12 @@ export default function Home() {
                 <p className="text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
                   Comecar com baixo risco
                 </p>
-                <h2 className="mt-2 text-3xl font-extrabold">Badges Junior para arrancar</h2>
+                <h2 className="mt-2 text-3xl font-extrabold">
+                  Badges Junior para arrancar
+                </h2>
                 <p className="mt-3 text-white/70">
-                  Ideal para criares tracao, perceberes o processo de candidatura e
-                  comecares a construir historico.
+                  Ideal para criares tracao, perceberes o processo de
+                  candidatura e comecares a construir historico.
                 </p>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -300,9 +335,13 @@ export default function Home() {
                     to={`/badges/${badge.id}`}
                     className="rounded-2xl bg-white p-4 text-slate-950 transition hover:-translate-y-1"
                   >
-                    <p className="text-sm font-semibold text-[#0F62FE]">{getBadgeArea(badge)}</p>
+                    <p className="text-sm font-semibold text-[#0F62FE]">
+                      {getBadgeArea(badge)}
+                    </p>
                     <h3 className="mt-1 font-bold">{getBadgeName(badge)}</h3>
-                    <p className="mt-2 text-sm text-slate-500">{getBadgePoints(badge)} pontos</p>
+                    <p className="mt-2 text-sm text-slate-500">
+                      {getBadgePoints(badge)} pontos
+                    </p>
                   </Link>
                 ))}
               </div>
