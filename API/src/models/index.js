@@ -18,6 +18,7 @@ import PasswordReset from "./PasswordReset.js";
 import SLA from "./SLA.js";
 import FcmToken from "./FcmToken.js";
 import EmailTemplate from "./EmailTemplate.js";
+import PlatformSetting from "./PlatformSetting.js";
 
 // Associations
 User.belongsTo(Area, { foreignKey: "area_id", as: "area" });
@@ -54,5 +55,6 @@ export {
   PasswordReset,
   SLA,
   FcmToken,
-  EmailTemplate
+  EmailTemplate,
+  PlatformSetting
 };

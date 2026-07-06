@@ -137,6 +137,33 @@ export async function getSL(req, res) {
   }
 }
 
+export async function getSlPreferences(req, res) {
+  try {
+    const sl = await User.findByPk(req.userId, { attributes: ["id", "sl_preferences"] });
+    if (!sl) return res.status(404).json({ message: "Service Line Leader nao encontrado" });
+
+    res.json(sl.sl_preferences || {});
+  } catch (err) {
+    console.error("Erro ao obter preferencias do SL:", err);
+    res.status(500).json({ message: "Erro ao obter preferencias" });
+  }
+}
+
+export async function updateSlPreferences(req, res) {
+  try {
+    const sl = await User.findByPk(req.userId);
+    if (!sl) return res.status(404).json({ message: "Service Line Leader nao encontrado" });
+
+    sl.sl_preferences = req.body || {};
+    await sl.save();
+
+    res.json(sl.sl_preferences);
+  } catch (err) {
+    console.error("Erro ao guardar preferencias do SL:", err);
+    res.status(500).json({ message: "Erro ao guardar preferencias" });
+  }
+}
+
 export async function getSLEstatisticas(req, res) {
   try {
     const { user: sl, areaIds } = await getSLAreaIds(req.userId);

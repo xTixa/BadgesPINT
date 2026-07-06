@@ -17,6 +17,7 @@ import {
 import { runGoalReminderJob } from "../jobs/reminderJob.js";
 import { runSLAAlertJob } from "../jobs/slaAlertJob.js";
 import { listEmailTemplates, resetEmailTemplate, saveEmailTemplate } from "../controllers/emailTemplateController.js";
+import { getPlatformSettings, updatePlatformSettings } from "../controllers/platformSettingsController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -24,6 +25,10 @@ const router = Router();
 
 // Tudo no Admin requer autenticação
 router.use(protect(["admin"]));
+
+// Definições globais da plataforma
+router.get("/settings", getPlatformSettings);
+router.put("/settings", updatePlatformSettings);
 
 // Dashboard
 router.get("/stats", getAdminStats);

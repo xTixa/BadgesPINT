@@ -36,6 +36,7 @@ const User = database.define(
     points_total: { type: DataTypes.INTEGER, defaultValue: 0 },
     last_login: { type: DataTypes.DATE, allowNull: true },
     tm_preferences: { type: DataTypes.JSONB, allowNull: true },
+    sl_preferences: { type: DataTypes.JSONB, allowNull: true },
   },
   {
     tableName: "Users",

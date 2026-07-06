@@ -1,11 +1,22 @@
 ﻿import Sidebar from "../../layout/Sidebar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "/src/api";
 
 export default function Configuracoes() {
+  const currentUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || {};
+    } catch {
+      return {};
+    }
+  })();
+
   const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  const [changingPassword, setChangingPassword] = useState(false);
   const [gamificationData, setGamificationData] = useState({
     pointsPerBadge: 100,
     canExpire: false,
@@ -21,9 +32,87 @@ export default function Configuracoes() {
     rgpdText: "",
   });
   const [activeTab, setActiveTab] = useState("security");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState("");
 
-  const handleSave = () => {
-    alert("Configurações guardadas com sucesso!");
+  useEffect(() => {
+    let active = true;
+
+    api
+      .get("/api/admin/settings")
+      .then((res) => {
+        if (!active || !res.data) return;
+        setGamificationData({
+          pointsPerBadge: res.data.points_per_badge,
+          canExpire: res.data.badges_can_expire,
+          defaultSLA: res.data.default_sla_days,
+        });
+        setNotificationSettings({
+          email: res.data.notify_email,
+          push: res.data.notify_push,
+          teams: res.data.notify_teams,
+        });
+        setPrivacySettings({
+          publicGallery: res.data.public_gallery_enabled,
+          rgpdText: res.data.rgpd_consent_text || "",
+        });
+      })
+      .catch((err) => console.error("Erro ao carregar definições da plataforma:", err))
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleChangePassword = async () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword) {
+      return alert("Preencha a password atual e a nova password.");
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      return alert("As passwords novas não coincidem.");
+    }
+
+    try {
+      setChangingPassword(true);
+      await api.put(`/api/users/${currentUser.id}/password`, {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      alert("Password alterada com sucesso!");
+      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      console.error("Erro ao alterar password:", err);
+      alert(err.response?.data?.message || "Erro ao alterar password.");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setFeedback("");
+      await api.put("/api/admin/settings", {
+        points_per_badge: gamificationData.pointsPerBadge,
+        badges_can_expire: gamificationData.canExpire,
+        default_sla_days: gamificationData.defaultSLA,
+        notify_email: notificationSettings.email,
+        notify_push: notificationSettings.push,
+        notify_teams: notificationSettings.teams,
+        public_gallery_enabled: privacySettings.publicGallery,
+        rgpd_consent_text: privacySettings.rgpdText,
+      });
+      setFeedback("Configurações guardadas com sucesso!");
+    } catch (err) {
+      console.error("Erro ao guardar definições da plataforma:", err);
+      setFeedback("Não foi possível guardar as configurações.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const tabs = [
@@ -88,6 +177,25 @@ export default function Configuracoes() {
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-slate-700">
+                        Password Atual
+                      </label>
+
+                      <input
+                        type="password"
+                        placeholder="Digite a password atual"
+                        value={passwordData.currentPassword}
+                        onChange={(e) =>
+                          setPasswordData({
+                            ...passwordData,
+                            currentPassword: e.target.value,
+                          })
+                        }
+                        className={inputClass}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-700">
                         Nova Password
                       </label>
 
@@ -126,9 +234,13 @@ export default function Configuracoes() {
                   </div>
 
                   <div className="mt-6">
-                    <button className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-md transition hover:scale-[1.02]">
+                    <button
+                      onClick={handleChangePassword}
+                      disabled={changingPassword}
+                      className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-md transition hover:scale-[1.02] disabled:opacity-60"
+                    >
                       <i className="bi bi-check-circle me-2"></i>
-                      Alterar Password
+                      {changingPassword ? "A alterar..." : "Alterar Password"}
                     </button>
                   </div>
                 </div>
@@ -424,13 +536,15 @@ export default function Configuracoes() {
             )}
           </div>
 
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex items-center justify-end gap-4">
+            {feedback && <span className="text-sm text-slate-600">{feedback}</span>}
             <button
               onClick={handleSave}
-              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02]"
+              disabled={loading || saving}
+              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] disabled:opacity-60"
             >
               <i className="bi bi-check-circle me-2"></i>
-              Guardar Alterações
+              {saving ? "A guardar..." : "Guardar Alterações"}
             </button>
           </div>
         </div>
