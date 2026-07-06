@@ -99,7 +99,9 @@
       "Bash(curl -s -o /dev/null -w \"api: %{http_code}\\\\n\" http://localhost:3000/health)",
       "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"guilherme@softinsa.pt\",\"password\":\"Password123\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
       "Bash(node viewport-shots.js)",
-      "Bash(powershell -Command \"Stop-Process -Id 28160 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 5604 -Force -ErrorAction SilentlyContinue\")"
+      "Bash(powershell -Command \"Stop-Process -Id 28160 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 5604 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(node inspect-sl-dash.js)",
+      "Bash(powershell -Command \"Stop-Process -Id 9536 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 25884 -Force -ErrorAction SilentlyContinue\")"
     ]
   }
 }
