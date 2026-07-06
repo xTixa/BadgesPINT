@@ -62,7 +62,7 @@ export default function GestaoBadges() {
     }
 
     loadData();
-  }, []);
+  }, [token]);
 
   // Abrir modal de edição
   const handleEditBadge = (badge) => {

@@ -10,6 +10,14 @@ import {
   shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
 import { getPasswordPolicyError } from "../utils/passwordPolicy.js";
+import { applyRgpdConsent } from "../utils/rgpd.js";
+import ConsultorBadge from "../models/ConsultorBadge.js";
+import RequirementEvidence from "../models/RequirementEvidence.js";
+import LessonProgress from "../models/LessonProgress.js";
+import Notification from "../models/Notification.js";
+import Ticket from "../models/Ticket.js";
+import AuditLog from "../models/AuditLog.js";
+import { createAuditLog } from "./auditLogController.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -62,15 +70,16 @@ export const registerConsultant = async (req, res) => {
     const generatedPassword = generateTemporaryPassword();
     const hash = await bcrypt.hash(generatedPassword, 10);
 
-    const newUser = await User.create({
+    const newUser = User.build({
       name: nome,
       email,
       password_hash: hash,
       role: "consultant",
       area_id: selectedArea.id,
       points_total: 0,
-      rgpd_publication_accepted: true,
     });
+    applyRgpdConsent(newUser, true);
+    await newUser.save();
 
     const emailStatus = isEmailConfigured()
       ? { emailSent: false, emailQueued: true }
@@ -114,6 +123,7 @@ export async function getAllUsers(req, res) {
   try {
     const users = await User.findAll({
       attributes: ["id", "name", "email", "role", "area_id", "avatar_url", "points_total"],
+      where: { anonymized_at: null },
       order: [["id", "ASC"]],
     });
 
@@ -165,7 +175,7 @@ export const updateProfile = async (req, res) => {
     if (area_id !== undefined) user.area_id = area_id || null;
     if (avatar_url !== undefined) user.avatar_url = avatar_url || null;
     if (rgpd_publication_accepted !== undefined) {
-      user.rgpd_publication_accepted = rgpd_publication_accepted === true;
+      applyRgpdConsent(user, rgpd_publication_accepted === true);
     }
     if (public_profile_enabled !== undefined) {
       user.public_profile_enabled = public_profile_enabled === true;
@@ -194,6 +204,8 @@ export const updateProfile = async (req, res) => {
         avatar_url: user.avatar_url,
         points_total: user.points_total || 0,
         rgpd_publication_accepted: user.rgpd_publication_accepted,
+        rgpd_consent_version: user.rgpd_consent_version,
+        rgpd_consent_at: user.rgpd_consent_at,
         public_profile_enabled: user.public_profile_enabled,
         linkedin_sharing_enabled: user.linkedin_sharing_enabled,
         goal_text: user.goal_text,
@@ -282,5 +294,67 @@ export const changePassword = async (req, res) => {
   } catch (err) {
     console.error("Erro ao alterar password:", err);
     res.status(500).json({ message: "Erro ao alterar password" });
+  }
+};
+
+// Exportação dos dados pessoais do utilizador (portabilidade RGPD).
+// Só o próprio ou um admin podem pedir a exportação.
+export const exportUserData = async (req, res) => {
+  try {
+    const targetId = parseInt(req.params.id, 10);
+    const requestingUserId = req.userId;
+
+    if (!Number.isInteger(targetId)) {
+      return res.status(400).json({ message: "Identificador inválido" });
+    }
+
+    if (targetId !== requestingUserId && req.userRole !== "admin") {
+      return res.status(403).json({ message: "Não pode exportar dados de outro utilizador" });
+    }
+
+    const user = await User.findByPk(targetId, {
+      attributes: [
+        "id", "name", "email", "role", "area_id", "avatar_url", "points_total",
+        "rgpd_publication_accepted", "rgpd_consent_version", "rgpd_consent_at",
+        "public_profile_enabled", "linkedin_sharing_enabled",
+        "goal_text", "goal_deadline", "last_login", "createdAt", "updatedAt",
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilizador não encontrado" });
+    }
+
+    const [consultorBadges, evidences, lessonProgress, notifications, tickets, auditLogs] = await Promise.all([
+      ConsultorBadge.findAll({ where: { consultor_id: targetId } }),
+      RequirementEvidence.findAll({ where: { consultor_id: targetId } }),
+      LessonProgress.findAll({ where: { consultor_id: targetId } }),
+      Notification.findAll({ where: { utilizador_id: targetId } }),
+      Ticket.findAll({ where: { utilizador_id: targetId } }),
+      AuditLog.findAll({ where: { userId: targetId }, order: [["createdAt", "DESC"]], limit: 500 }),
+    ]);
+
+    await createAuditLog(req, res, {
+      action: "EXPORTAR_DADOS_PESSOAIS",
+      entity: "User",
+      userId: req.userId,
+      entityId: targetId,
+      description: `Exportação de dados pessoais (RGPD) do utilizador #${targetId} pedida por #${req.userId}`,
+    });
+
+    res.setHeader("Content-Disposition", `attachment; filename="dados-pessoais-${targetId}.json"`);
+    res.json({
+      exportedAt: new Date().toISOString(),
+      profile: user,
+      consultorBadges,
+      evidences,
+      lessonProgress,
+      notifications,
+      tickets,
+      auditLogs,
+    });
+  } catch (err) {
+    console.error("Erro ao exportar dados pessoais:", err);
+    res.status(500).json({ message: "Erro ao exportar dados pessoais" });
   }
 };

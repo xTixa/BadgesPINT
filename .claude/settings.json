@@ -67,7 +67,32 @@
       "Bash(powershell -Command \"Stop-Process -Id 25916 -Force\")",
       "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue\")",
       "Bash(curl -s -i -X PUT http://localhost:3000/learning-paths/1 -H \"Content-Type: application/json\" -d '{\"name\":\"test\"}')",
-      "Bash(powershell -Command 'Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }')"
+      "Bash(powershell -Command 'Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }')",
+      "Bash(ls -la \"/c/Users/patri/.claude/projects/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/memory/\")",
+      "Read(//c/Users/patri/.claude/projects/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/memory//**)",
+      "Bash(node --test tests/*.test.js)",
+      "Bash(powershell -Command \"Stop-Process -Id 15000 -Force\")",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(find . -path ./node_modules -prune -o -iname \"SKILL.md\" -print)",
+      "Bash(ls -la .claude/skills)",
+      "Bash(chromium-cli --help)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(node scripts/qa-manual-workflow-setup.js)",
+      "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")",
+      "Bash(mkdir -p /tmp/qa-test)",
+      "Bash(mkdir -p \"/c/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/ead4c641-73a0-428c-be4e-b25a457f2e68/scratchpad/qa-test\")",
+      "Read(//c/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/ead4c641-73a0-428c-be4e-b25a457f2e68/scratchpad/**)",
+      "Bash(npm init *)",
+      "Read(//c/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/ead4c641-73a0-428c-be4e-b25a457f2e68/scratchpad/qa-test/**)",
+      "Bash(npx playwright *)",
+      "Bash(ls \"C:/Users/patri/AppData/Local/ms-playwright/\" 2>/dev/null)",
+      "Read(//c/Users/patri/AppData/Local/ms-playwright/**)",
+      "Bash(node workflow.js)",
+      "Bash(tail -100 /tmp/api.log)",
+      "Bash(cd \"/e/IPV/E.I/2Ano2Sem/PINT2526/BadgesPINT/API/src\" && grep -rn \"where:\" controllers/*.js | grep -v \"required\" > /tmp/wherelines.txt; wc -l /tmp/wherelines.txt)",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(powershell -Command \"Stop-Process -Id 10756 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 6304 -Force -ErrorAction SilentlyContinue\")"
     ]
   }
 }

@@ -142,13 +142,20 @@ export async function getAllPedidos(req, res) {
       where.consultor_id = req.userId;
     }
 
-    let badgeAreaFilter = null;
+    let badgeWhere = null;
     if (req.userRole === "service_line_leader") {
       const slServiceLineId = await getServiceLineIdForUser(req.userId);
       if (!slServiceLineId) {
         return res.status(403).json({ message: "Service Line não associada ao utilizador" });
       }
-      badgeAreaFilter = { service_line_id: slServiceLineId };
+      const areas = await Area.findAll({
+        where: { service_line_id: slServiceLineId },
+        attributes: ["id"],
+        raw: true,
+      });
+      // area_id: [] faria o Sequelize gerar "IN ()" (SQL invalido) — [-1] garante
+      // zero resultados em vez de devolver pedidos de todas as areas.
+      badgeWhere = { area_id: areas.length ? areas.map((a) => a.id) : [-1] };
     }
 
     const pedidos = await ConsultorBadge.findAll({
@@ -171,16 +178,18 @@ export async function getAllPedidos(req, res) {
       ],
       where,
       include: [
-        { 
-          model: User, 
+        {
+          model: User,
           as: "user",
           attributes: ["id", "name", "email"]
         },
-        { 
-          model: Badge, 
+        {
+          model: Badge,
           as: "badge",
           attributes: ["id", "description", "level", "points", "area_id"],
-          include: badgeAreaFilter ? [{ model: Area, as: "area", where: badgeAreaFilter, attributes: ["id", "service_line_id"] }] : []
+          where: badgeWhere || undefined,
+          required: Boolean(badgeWhere),
+          include: [{ model: Area, as: "area", attributes: ["id", "service_line_id"] }]
         }
       ],
       order: [["created_at", "DESC"]]

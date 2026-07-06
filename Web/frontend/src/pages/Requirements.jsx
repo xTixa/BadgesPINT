@@ -154,7 +154,7 @@ export default function Requirements() {
     return () => {
       active = false;
     };
-  }, [id, user?.role]);
+  }, [id, user]);
 
   const imageUrl = badge?.image_url || badge?.imageUrl || "";
   const badgeName = getBadgeName(badge);

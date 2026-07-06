@@ -157,6 +157,7 @@ export async function getAllUsers(req, res) {
   try {
     const users = await User.findAll({
       attributes: ["id", "name", "email", "role", "area_id", "points_total", "createdAt", "updatedAt"],
+      where: { anonymized_at: null },
       order: [["id", "ASC"]]
     });
 
@@ -324,7 +325,10 @@ export async function updateUser(req, res) {
 }
 
 /**
- * Apagar utilizador
+ * Apagar utilizador — anonimização (RGPD) em vez de hard delete: os
+ * registos ligados (badges, evidências, tickets, auditoria) mantêm-se para
+ * integridade referencial e histórico/estatísticas, mas deixam de conter
+ * dados pessoais identificáveis.
  */
 export async function deleteUser(req, res) {
   try {
@@ -335,19 +339,36 @@ export async function deleteUser(req, res) {
       return res.status(404).json({ message: "Utilizador não encontrado" });
     }
 
+    if (user.anonymized_at) {
+      return res.status(400).json({ message: "Utilizador já foi removido/anonimizado" });
+    }
+
     const oldValues = { name: user.name, email: user.email, role: user.role, area_id: user.area_id };
-    await user.destroy();
+    const randomPassword = crypto.randomBytes(32).toString("hex");
+
+    await user.update({
+      name: "Utilizador removido",
+      email: `utilizador-removido-${user.id}@anonimizado.local`,
+      password_hash: await bcryptjs.hash(randomPassword, 10),
+      avatar_url: null,
+      goal_text: null,
+      goal_deadline: null,
+      public_profile_enabled: false,
+      linkedin_sharing_enabled: false,
+      rgpd_publication_accepted: false,
+      anonymized_at: new Date(),
+    });
 
     await createAuditLog(req, res, {
-      action: "ELIMINAR_UTILIZADOR",
+      action: "ANONIMIZAR_UTILIZADOR",
       entity: "User",
       userId: req.userId,
       entityId: id,
-      description: `Utilizador #${id} (${oldValues.email}) eliminado`,
+      description: `Utilizador #${id} (${oldValues.email}) anonimizado (RGPD) em vez de eliminado`,
       oldValues,
     });
 
-    res.json({ message: "Utilizador removido com sucesso" });
+    res.json({ message: "Utilizador removido (anonimizado) com sucesso" });
 
   } catch (err) {
     console.error("Erro ao apagar user:", err);

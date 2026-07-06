@@ -9,7 +9,9 @@ import {
   getTMHistorico,
   getTMRelatorio,
   exportTMReportExcel,
-  exportTMReportPDF
+  exportTMReportPDF,
+  getTmPreferences,
+  updateTmPreferences
 } from "../controllers/talentManagerController.js";
 import { listEvidencesForTM, approveEvidence, rejectEvidence } from "../controllers/evidenceController.js";
 import { adminGenerateBadgeCertificate } from "../controllers/adminBadgeController.js";
@@ -20,6 +22,8 @@ const router = Router();
 router.use(protect(["talent_manager"]));
 
 router.get("/me", getTM);
+router.get("/preferences", getTmPreferences);
+router.put("/preferences", updateTmPreferences);
 router.get("/estatisticas", getTMEstatisticas);
 router.get("/equipa", getEquipa);
 router.get("/comparacao", getConsultantComparison);

@@ -290,6 +290,15 @@ async function getOverduePedidosForSLA(sla) {
   const serviceLineId = await getServiceLineIdForUser(sla.team_id);
   if (!serviceLineId) return [];
 
+  const areas = await Area.findAll({
+    where: { service_line_id: serviceLineId },
+    attributes: ["id"],
+    raw: true,
+  });
+  // area_id: [] geraria "IN ()" (SQL invalido) — [-1] devolve zero resultados
+  // em vez de (por causa de um `where` aninhado sem `required`) todas as areas.
+  const areaIds = areas.length ? areas.map((a) => a.id) : [-1];
+
   return ConsultorBadge.findAll({
     where: {
       workflow_status: "em_validacao",
@@ -300,7 +309,9 @@ async function getOverduePedidosForSLA(sla) {
         model: Badge,
         as: "badge",
         attributes: ["id", "description", "area_id"],
-        include: [{ model: Area, as: "area", where: { service_line_id: serviceLineId }, attributes: ["id", "service_line_id"] }],
+        where: { area_id: areaIds },
+        required: true,
+        include: [{ model: Area, as: "area", attributes: ["id", "service_line_id"] }],
       },
       { model: User, as: "user", attributes: ["id", "name", "email"] },
     ],

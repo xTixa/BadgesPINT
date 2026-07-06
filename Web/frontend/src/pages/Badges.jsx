@@ -144,7 +144,7 @@ export default function Badges() {
     return () => {
       active = false;
     };
-  }, [canApply]);
+  }, [canApply, user]);
 
   const levels = useMemo(
     () =>
@@ -186,7 +186,7 @@ export default function Badges() {
       if (sortBy === "level") return getBadgeLevel(a).localeCompare(getBadgeLevel(b), "pt");
       return getBadgePoints(b) - getBadgePoints(a) || getBadgeName(a).localeCompare(getBadgeName(b), "pt");
     });
-  }, [badges, search, selectedArea, selectedLevel, sortBy]);
+  }, [badges, search, selectedArea, selectedLevel, sortBy, premiumOnly]);
 
   const totalPoints = useMemo(
     () => badges.reduce((sum, badge) => sum + getBadgePoints(badge), 0),

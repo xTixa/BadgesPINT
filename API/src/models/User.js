@@ -24,6 +24,9 @@ const User = database.define(
     area_id: { type: DataTypes.INTEGER, allowNull: true },
     avatar_url: { type: DataTypes.TEXT, allowNull: true },
     rgpd_publication_accepted: { type: DataTypes.BOOLEAN, defaultValue: false },
+    rgpd_consent_version: { type: DataTypes.STRING(20), allowNull: true },
+    rgpd_consent_at: { type: DataTypes.DATE, allowNull: true },
+    anonymized_at: { type: DataTypes.DATE, allowNull: true },
     public_profile_enabled: { type: DataTypes.BOOLEAN, defaultValue: false },
     linkedin_sharing_enabled: { type: DataTypes.BOOLEAN, defaultValue: true },
     email_signature_enabled: { type: DataTypes.BOOLEAN, defaultValue: false },
@@ -32,6 +35,7 @@ const User = database.define(
     goal_deadline: { type: DataTypes.DATEONLY, allowNull: true },
     points_total: { type: DataTypes.INTEGER, defaultValue: 0 },
     last_login: { type: DataTypes.DATE, allowNull: true },
+    tm_preferences: { type: DataTypes.JSONB, allowNull: true },
   },
   {
     tableName: "Users",

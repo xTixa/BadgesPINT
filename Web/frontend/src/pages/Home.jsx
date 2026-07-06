@@ -150,19 +150,19 @@ export default function Home() {
             <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 xs:grid-cols-3">
               <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
                 <p className="text-2xl font-extrabold">{badges.length}</p>
-                <p className="mt-1 text-xs font-medium text-white/70">Badges</p>
+                <p className="mt-1 text-xs font-medium text-white">Badges</p>
               </div>
               <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
                 <p className="text-2xl font-extrabold">
                   {learningPaths.length}
                 </p>
-                <p className="mt-1 text-xs font-medium text-white/70">
+                <p className="mt-1 text-xs font-medium text-white">
                   Percursos
                 </p>
               </div>
               <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
                 <p className="text-2xl font-extrabold">{categories.length}</p>
-                <p className="mt-1 text-xs font-medium text-white/70">Areas</p>
+                <p className="mt-1 text-xs font-medium text-white">Areas</p>
               </div>
             </div>
           </div>

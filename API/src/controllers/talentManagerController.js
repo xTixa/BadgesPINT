@@ -151,6 +151,33 @@ export async function getTM(req, res) {
   }
 }
 
+export async function getTmPreferences(req, res) {
+  try {
+    const tm = await User.findByPk(req.userId, { attributes: ["id", "tm_preferences"] });
+    if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
+
+    res.json(tm.tm_preferences || {});
+  } catch (err) {
+    console.error("Erro ao obter preferencias do TM:", err);
+    res.status(500).json({ message: "Erro ao obter preferencias" });
+  }
+}
+
+export async function updateTmPreferences(req, res) {
+  try {
+    const tm = await User.findByPk(req.userId);
+    if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
+
+    tm.tm_preferences = req.body || {};
+    await tm.save();
+
+    res.json(tm.tm_preferences);
+  } catch (err) {
+    console.error("Erro ao guardar preferencias do TM:", err);
+    res.status(500).json({ message: "Erro ao guardar preferencias" });
+  }
+}
+
 export async function getTMEstatisticas(req, res) {
   try {
     const tm = await User.findByPk(req.userId);

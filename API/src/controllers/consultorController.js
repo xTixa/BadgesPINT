@@ -11,6 +11,7 @@ import { renderCertificatePdf } from "../services/certificateService.js";
 import database from "../config/database.js";
 import { QueryTypes } from "sequelize";
 import crypto from "crypto";
+import { applyRgpdConsent } from "../utils/rgpd.js";
 
 function publicBaseUrl(req) {
   return (
@@ -177,7 +178,7 @@ export async function updateConsultorPreferences(req, res) {
     } = req.body;
 
     if (rgpd_publication_accepted !== undefined) {
-      user.rgpd_publication_accepted = rgpd_publication_accepted === true;
+      applyRgpdConsent(user, rgpd_publication_accepted === true);
     }
     if (public_profile_enabled !== undefined) {
       user.public_profile_enabled = public_profile_enabled === true;
@@ -197,6 +198,8 @@ export async function updateConsultorPreferences(req, res) {
 
     res.json({
       rgpd_publication_accepted: user.rgpd_publication_accepted,
+      rgpd_consent_version: user.rgpd_consent_version,
+      rgpd_consent_at: user.rgpd_consent_at,
       public_profile_enabled: user.public_profile_enabled,
       linkedin_sharing_enabled: user.linkedin_sharing_enabled,
       goal_text: user.goal_text,

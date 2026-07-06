@@ -29,6 +29,10 @@ export const login = async (req, res) => {
       return res.status(404).json({ message: "Utilizador não encontrado" });
     }
 
+    if (user.anonymized_at) {
+      return res.status(401).json({ message: "Esta conta foi desativada" });
+    }
+
     const looksLikeBcryptHash = /^\$2[aby]\$\d{2}\$/.test(user.password_hash || "");
     let match = false;
 

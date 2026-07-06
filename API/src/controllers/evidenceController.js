@@ -38,6 +38,37 @@ export function estimateBase64Bytes(fileValue) {
   return Math.floor((base64Part.length * 3) / 4) - padding;
 }
 
+// Assinaturas binárias (magic bytes) dos formatos aceites — validação real
+// do conteúdo em vez de confiar na extensão do nome do ficheiro ou num
+// Content-Type declarado pelo cliente, que podem ser falsificados.
+const FILE_SIGNATURES = [
+  { format: "jpg", check: (buf) => buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff },
+  {
+    format: "png",
+    check: (buf) => buf.slice(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+  },
+  {
+    format: "webp",
+    check: (buf) => buf.slice(0, 4).toString("ascii") === "RIFF" && buf.slice(8, 12).toString("ascii") === "WEBP",
+  },
+  { format: "pdf", check: (buf) => buf.slice(0, 5).toString("ascii") === "%PDF-" },
+];
+
+export function detectFileFormat(fileValue) {
+  if (!fileValue || typeof fileValue !== "string") return null;
+  const base64Part = (fileValue.includes(",") ? fileValue.split(",").pop() : fileValue).trim();
+
+  let buf;
+  try {
+    buf = Buffer.from(base64Part.slice(0, 32), "base64");
+  } catch {
+    return null;
+  }
+
+  const match = FILE_SIGNATURES.find(({ check }) => check(buf));
+  return match ? match.format : null;
+}
+
 export function isTrustedCloudinaryUrl(url) {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   if (!cloudName) return false;
@@ -66,6 +97,13 @@ export async function uploadEvidenceFile(req, res) {
     if (estimateBase64Bytes(file) > MAX_EVIDENCE_FILE_BYTES) {
       return res.status(413).json({
         error: `Ficheiro demasiado grande. Tamanho máximo: ${MAX_EVIDENCE_FILE_BYTES / (1024 * 1024)}MB`,
+      });
+    }
+
+    const detectedFormat = detectFileFormat(file);
+    if (!detectedFormat || !ALLOWED_EVIDENCE_FORMATS.includes(detectedFormat)) {
+      return res.status(400).json({
+        error: `Conteúdo do ficheiro não corresponde a um formato permitido. Formatos aceites: ${ALLOWED_EVIDENCE_FORMATS.join(", ")}`,
       });
     }
 

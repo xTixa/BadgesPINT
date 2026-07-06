@@ -2,6 +2,17 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "/src/api";
 
+const MAX_EVIDENCE_FILE_BYTES = 3 * 1024 * 1024;
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function UploadEvidencias() {
   const [badges, setBadges] = useState([]);
   const [selectedBadgeId, setSelectedBadgeId] = useState("");
@@ -67,21 +78,28 @@ export default function UploadEvidencias() {
     loadRequirements();
   }, [selectedBadgeId]);
 
-  const handleSubmitEvidence = async (requirementId, evidenceUrl, notes) => {
+  const handleSubmitEvidence = async (requirementId, file, notes) => {
     const token = localStorage.getItem("token");
     if (!token) return alert("Sem token. Faz login novamente.");
 
     try {
+      const fileDataUrl = await readFileAsDataUrl(file);
+      const uploadRes = await api.post(
+        "/api/consultor/evidencias/upload",
+        { file: fileDataUrl, fileName: file.name },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
       const res = await api.post(
         `/api/consultor/requirements/${requirementId}/evidencias`,
-        { evidence_url: evidenceUrl, notes },
+        { evidence_url: uploadRes.data.url, notes },
         { headers: { Authorization: `Bearer ${token}` } },
       );
 
       setEvidences((prev) => [res.data, ...prev]);
     } catch (err) {
       console.error("Erro ao submeter evidência:", err);
-      alert("Erro ao submeter evidência.");
+      alert(err.response?.data?.error || "Erro ao submeter evidência.");
     }
   };
 
@@ -235,16 +253,28 @@ export default function UploadEvidencias() {
 }
 
 function RequirementCard({ requirement, latestEvidence, onSubmit }) {
-  const [url, setUrl] = useState("");
+  const [file, setFile] = useState(null);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [fileError, setFileError] = useState("");
+
+  const handleFileChange = (e) => {
+    const selected = e.target.files?.[0] || null;
+    setFileError("");
+    if (selected && selected.size > MAX_EVIDENCE_FILE_BYTES) {
+      setFileError("Ficheiro demasiado grande. Tamanho máximo: 3MB.");
+      setFile(null);
+      return;
+    }
+    setFile(selected);
+  };
 
   const handleSend = async () => {
-    if (!url) return alert("Insere o URL da evidência.");
+    if (!file) return alert("Escolhe um ficheiro de evidência.");
     setSubmitting(true);
-    await onSubmit(requirement.id, url, notes);
+    await onSubmit(requirement.id, file, notes);
     setSubmitting(false);
-    setUrl("");
+    setFile(null);
     setNotes("");
   };
 
@@ -306,12 +336,13 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
         <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-12">
           <div className="md:col-span-7">
             <input
-              type="text"
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
               className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
-              placeholder="URL da evidência (Drive, OneDrive, etc.)"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={handleFileChange}
             />
+            <p className="mt-1 text-xs text-slate-500">Formatos aceites: JPG, PNG, WEBP, PDF. Máximo 3MB.</p>
+            {fileError && <p className="mt-1 text-xs text-rose-600">{fileError}</p>}
           </div>
           <div className="md:col-span-5">
             <input

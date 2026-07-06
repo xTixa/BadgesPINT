@@ -1,24 +1,66 @@
 ﻿import Sidebar from "../../layout/Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProfileEditor from "../../components/ProfileEditor";
+import api from "/src/api";
+
+const DEFAULT_SETTINGS = {
+  serviceLine: "",
+  areas: [],
+  notifyNew: true,
+  notifySla: true,
+  notifyStatus: true,
+  exportFormat: "excel",
+  period: "month",
+  rankingBy: "points",
+  showTimeline: true,
+  language: "pt",
+  theme: "light",
+};
 
 export default function TalentManagerSettingsPage() {
-  const [settings, setSettings] = useState({
-    serviceLine: "",
-    areas: [],
-    notifyNew: true,
-    notifySla: true,
-    notifyStatus: true,
-    exportFormat: "excel",
-    period: "month",
-    rankingBy: "points",
-    showTimeline: true,
-    language: "pt",
-    theme: "light",
-  });
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      try {
+        const res = await api.get("/api/tm/preferences");
+        if (mounted && res.data && Object.keys(res.data).length > 0) {
+          setSettings({ ...DEFAULT_SETTINGS, ...res.data });
+        }
+      } catch (err) {
+        console.error("Erro ao carregar preferencias do TM:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleChange = (key, value) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setFeedback("");
+      await api.put("/api/tm/preferences", settings);
+      setFeedback("Definições guardadas com sucesso.");
+    } catch (err) {
+      console.error("Erro ao guardar preferencias do TM:", err);
+      setFeedback("Não foi possível guardar as definições.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -133,8 +175,16 @@ export default function TalentManagerSettingsPage() {
           </section>
         </div>
 
-        <div className="mt-4">
-          <button className="rounded-xl bg-[#16558C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3F76A6]" type="button" onClick={() => alert("Definições guardadas (mock).")}>Guardar alterações</button>
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            className="rounded-xl bg-[#16558C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3F76A6] disabled:opacity-60"
+            type="button"
+            disabled={loading || saving}
+            onClick={handleSave}
+          >
+            {saving ? "A guardar..." : "Guardar alterações"}
+          </button>
+          {feedback && <span className="text-sm text-slate-600">{feedback}</span>}
         </div>
       </main>
     </div>
