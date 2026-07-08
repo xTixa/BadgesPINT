@@ -49,7 +49,7 @@ export default function DashboardAdmin() {
     usersByRole: [],
   });
   const [loading, setLoading] = useState(true);
-  const [reportTab, setReportTab] = useState("overview");
+  const [reportTab, setReportTab] = useState("approval");
 
   useEffect(() => {
     async function fetchStats() {
@@ -520,9 +520,13 @@ export default function DashboardAdmin() {
                 </div>
                 <div className="mb-6 flex w-full gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/80 p-1.5 shadow-sm sm:w-fit">
                   {[
-                    { id: "overview", label: "Resumo", icon: "bi-grid-1x2-fill" },
-                    { id: "evolution", label: "Evolução", icon: "bi-graph-up-arrow" },
-                    { id: "catalog", label: "Catálogo", icon: "bi-diagram-3-fill" },
+                    { id: "approval", label: "Aprovação", icon: "bi-percent" },
+                    { id: "monthly", label: "Mensal", icon: "bi-bar-chart-fill" },
+                    { id: "monthlyPercent", label: "% mensal", icon: "bi-graph-up-arrow" },
+                    { id: "users", label: "Utilizadores", icon: "bi-people-fill" },
+                    { id: "paths", label: "Learning Paths", icon: "bi-diagram-3-fill" },
+                    { id: "levels", label: "Níveis", icon: "bi-layers-fill" },
+                    { id: "pathLevels", label: "Níveis por LP", icon: "bi-bar-chart-steps" },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -540,7 +544,7 @@ export default function DashboardAdmin() {
                   ))}
                 </div>
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <div className={`${reportCardClass} ${reportTab === "evolution" ? "" : "hidden"}`}>
+                <div className={`${reportCardClass} ${reportTab === "monthly" ? "lg:col-span-2" : "hidden"}`}>
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-bar-chart-fill text-slate-500"></i>
                       {t("admin.dashboard.charts.badgesPerMonth")}
@@ -554,7 +558,7 @@ export default function DashboardAdmin() {
                     )}
                 </div>
 
-                <div className={`${reportCardClass} ${reportTab === "evolution" ? "" : "hidden"}`}>
+                <div className={`${reportCardClass} ${reportTab === "monthlyPercent" ? "lg:col-span-2" : "hidden"}`}>
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-graph-up text-slate-500"></i>
                       {t("admin.dashboard.charts.badgesObtainedPercentMonthly")}
@@ -568,7 +572,7 @@ export default function DashboardAdmin() {
                     )}
                 </div>
 
-                <div className={`${reportCardClass} ${reportTab === "overview" ? "" : "hidden"}`}>
+                <div className={`${reportCardClass} ${reportTab === "users" ? "lg:col-span-2" : "hidden"}`}>
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-pie-chart-fill text-slate-500"></i>
                       {t("admin.dashboard.charts.userTypeDistribution")}
@@ -582,7 +586,7 @@ export default function DashboardAdmin() {
                     )}
                 </div>
 
-                <div className={`${reportCardClass} ${reportTab === "catalog" ? "" : "hidden"}`}>
+                <div className={`${reportCardClass} ${reportTab === "paths" ? "lg:col-span-2" : "hidden"}`}>
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-diagram-3 text-slate-500"></i>
                       {t("admin.dashboard.charts.badgesByLearningPath")}
@@ -596,7 +600,7 @@ export default function DashboardAdmin() {
                     )}
                 </div>
 
-                <div className={`${reportCardClass} ${reportTab === "catalog" ? "" : "hidden"}`}>
+                <div className={`${reportCardClass} ${reportTab === "levels" ? "lg:col-span-2" : "hidden"}`}>
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-layers text-emerald-500"></i>
                       {t("admin.dashboard.charts.badgesByLevel")}
@@ -610,7 +614,7 @@ export default function DashboardAdmin() {
                     )}
                 </div>
 
-                <div className={`${reportCardClass} ${reportTab === "overview" ? "" : "hidden"}`}>
+                <div className={`${reportCardClass} ${reportTab === "approval" ? "lg:col-span-2" : "hidden"}`}>
                   <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                     <i className="bi bi-percent text-emerald-500"></i>
                     Percentagem de badges aprovados
@@ -624,7 +628,7 @@ export default function DashboardAdmin() {
                   )}
                 </div>
 
-                <div className={`${reportCardClass} ${reportTab === "catalog" ? "lg:col-span-2" : "hidden"}`}>
+                <div className={`${reportCardClass} ${reportTab === "pathLevels" ? "lg:col-span-2" : "hidden"}`}>
                   <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                     <i className="bi bi-bar-chart-steps text-indigo-500"></i>
                     Badges por nível em cada Learning Path
