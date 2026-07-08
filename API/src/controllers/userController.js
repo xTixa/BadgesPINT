@@ -101,7 +101,7 @@ export const registerConsultant = async (req, res) => {
     res.status(201).json({
       message: emailStatus.emailSent
         ? "Utilizador criado com sucesso. O email com a password temporaria foi enviado."
-        : "Utilizador criado, mas nao foi possivel enviar o email de acesso. Contacta o administrador.",
+        : "Utilizador criado, mas nao foi possivel enviar o email de acesso. Usa a recuperacao de password para definires uma nova password.",
       ...emailStatus,
       user: {
         id: newUser.id,
