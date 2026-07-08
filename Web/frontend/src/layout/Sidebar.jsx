@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { sidebarMenus } from "../layout/menus";
 import { useSidebar } from "../context/SidebarContext";
 
 export default function Sidebar({ user }) {
+  const { t } = useTranslation();
   const { collapsed, setCollapsed, mobileOpen, setMobileOpen, isMobile } =
     useSidebar();
 
@@ -70,7 +72,7 @@ export default function Sidebar({ user }) {
           type="button"
           className="fixed left-3 top-[74px] z-[1200] inline-flex h-[44px] w-[44px] items-center justify-center rounded-xl border border-[#0F62FE] bg-gradient-to-br from-[#0F62FE] to-[#00AEEF] text-white shadow-md lg:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? "Fechar menu lateral" : "Abrir menu lateral"}
+          aria-label={mobileOpen ? t("layout.sidebar.closeMenu") : t("layout.sidebar.openMenu")}
         >
           <i className={`bi ${mobileOpen ? "bi-x-lg" : "bi-list"} text-lg`}></i>
         </button>
@@ -94,7 +96,7 @@ export default function Sidebar({ user }) {
             {(!collapsed || isMobile) && (
               <div>
                 <span className="block text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">
-                  Painel
+                  {t("layout.sidebar.panel")}
                 </span>
                 <span className="text-sm font-semibold text-[#0F62FE]">
                   {menu.title}
@@ -111,7 +113,7 @@ export default function Sidebar({ user }) {
             }}
             className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#0F62FE] bg-[#0F62FE] text-white transition hover:bg-[#00AEEF]"
             aria-label={
-              collapsed ? "Expandir menu lateral" : "Recolher menu lateral"
+              collapsed ? t("layout.sidebar.expandMenu") : t("layout.sidebar.collapseMenu")
             }
           >
             {collapsed && !isMobile ? (
@@ -128,7 +130,7 @@ export default function Sidebar({ user }) {
         <nav className="flex-1 overflow-y-auto px-2 pb-2 pt-2">
           {(!collapsed || isMobile) && (
             <p className="px-2 pb-1 text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">
-              Navegação
+              {t("layout.sidebar.navigation")}
             </p>
           )}
           <ul className="m-0 list-none p-0">
@@ -157,7 +159,7 @@ export default function Sidebar({ user }) {
           <div className="border-t border-[#0F62FE]/15 p-2">
             {(!collapsed || isMobile) && (
               <p className="px-2 pb-1 text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">
-                Sistema
+                {t("layout.sidebar.system")}
               </p>
             )}
             <ul className="m-0 list-none p-0">

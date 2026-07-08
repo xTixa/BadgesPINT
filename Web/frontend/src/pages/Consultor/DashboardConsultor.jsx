@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import BadgeCelebration, { getCelebratedIds, markAsCelebrated } from "../../components/BadgeCelebration";
@@ -8,8 +9,8 @@ import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
 const PLACEHOLDER = avatarPlaceholder;
 
-function getAlertBadgeName(alert) {
-  return alert?.nome || alert?.name || alert?.badge_name || "este badge";
+function getAlertBadgeName(alert, t) {
+  return alert?.nome || alert?.name || alert?.badge_name || t("consultor.dashboard.thisBadge");
 }
 
 function getAlertDays(alert) {
@@ -17,14 +18,15 @@ function getAlertDays(alert) {
   return Number.isFinite(days) ? Math.max(0, days) : 0;
 }
 
-function formatExpirationAlert(alert) {
+function formatExpirationAlert(alert, t) {
   const days = getAlertDays(alert);
-  const badgeName = getAlertBadgeName(alert);
-  if (days === 0) return `O badge ${badgeName} expira hoje`;
-  return `Falta${days === 1 ? "" : "m"} ${days} dia${days === 1 ? "" : "s"} para o badge ${badgeName} expirar`;
+  const badgeName = getAlertBadgeName(alert, t);
+  if (days === 0) return t("consultor.dashboard.expiresToday", { badgeName });
+  return t("consultor.dashboard.expiresInDays", { count: days, badgeName });
 }
 
 export default function DashboardConsultor() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser]               = useState(null);
   const [badges, setBadges]           = useState([]);
@@ -153,30 +155,30 @@ export default function DashboardConsultor() {
           <div className="absolute right-24 bottom-0 h-24 w-24 rounded-full bg-white/5"></div>
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-2 text-sm font-medium text-white/80">Dashboard Pessoal</p>
+              <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.dashboard.personalDashboard")}</p>
               <h1 className="mb-2 text-3xl font-bold">{getTimeGreeting()}, {user.name.split(" ")[0]}</h1>
               <p className="max-w-xl text-white/85">
-                Continua a desenvolver as tuas competências e acompanha o teu progresso em tempo real.
+                {t("consultor.dashboard.heroText")}
               </p>
               <Link
                 to="/consultor/gamification"
                 className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm"
               >
-                <i className="bi bi-stars"></i>Ver gamification
+                <i className="bi bi-stars"></i>{t("consultor.dashboard.viewGamification")}
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-4 xs:grid-cols-3">
               <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
                 <div className="text-2xl font-bold">{progresso}%</div>
-                <div className="text-xs text-white/80">Progresso</div>
+                <div className="text-xs text-white/80">{t("consultor.dashboard.progress")}</div>
               </div>
               <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
                 <div className="text-2xl font-bold">{badgesObtidos}</div>
-                <div className="text-xs text-white/80">Badges</div>
+                <div className="text-xs text-white/80">{t("consultor.dashboard.badges")}</div>
               </div>
               <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
                 <div className="text-2xl font-bold">{user.points_total || 0}</div>
-                <div className="text-xs text-white/80">Pontos</div>
+                <div className="text-xs text-white/80">{t("consultor.dashboard.points")}</div>
               </div>
             </div>
           </div>
@@ -185,11 +187,11 @@ export default function DashboardConsultor() {
         {/* KPI cards */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {[
-            { icon: "bi-graph-up-arrow",  label: "Progresso Global",   valor: `${progresso}%` },
-            { icon: "bi-star-fill",        label: "Pontos Totais",      valor: user.points_total || 0 },
-            { icon: "bi-award-fill",       label: "Badges Obtidos",     valor: badgesObtidos },
-            { icon: "bi-flag",             label: "LPs em progresso",   valor: learningPaths.filter((lp) => lp.status === "em progresso").length },
-            { icon: "bi-fire",             label: "Badges a expirar",   valor: alertsExpiracao.length },
+            { icon: "bi-graph-up-arrow",  label: t("consultor.dashboard.kpi.globalProgress"),   valor: `${progresso}%` },
+            { icon: "bi-star-fill",        label: t("consultor.dashboard.kpi.totalPoints"),      valor: user.points_total || 0 },
+            { icon: "bi-award-fill",       label: t("consultor.dashboard.kpi.badgesObtained"),     valor: badgesObtidos },
+            { icon: "bi-flag",             label: t("consultor.dashboard.kpi.lpsInProgress"),   valor: learningPaths.filter((lp) => lp.status === "em progresso").length },
+            { icon: "bi-fire",             label: t("consultor.dashboard.kpi.badgesExpiring"),   valor: alertsExpiracao.length },
           ].map((card, idx) => (
             <div key={idx} className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
@@ -207,14 +209,14 @@ export default function DashboardConsultor() {
             <div className={panelClass}>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h5 className="m-0 text-base font-bold text-slate-900">
-                  <i className="bi bi-diagram-3 mr-2 text-emerald-600"></i>Progresso em Learning Paths
+                  <i className="bi bi-diagram-3 mr-2 text-emerald-600"></i>{t("consultor.dashboard.learningPathsProgress")}
                 </h5>
                 <Link to="/learning-paths" className="text-xs text-slate-500 hover:text-[#0F62FE]">
-                  Ver todos
+                  {t("consultor.dashboard.viewAll")}
                 </Link>
               </div>
               {learningPaths.length === 0 ? (
-                <p className="py-4 text-center text-sm text-slate-400">Sem learning paths disponíveis.</p>
+                <p className="py-4 text-center text-sm text-slate-400">{t("consultor.dashboard.noLearningPaths")}</p>
               ) : (
                 <ul className="m-0 list-none divide-y divide-slate-100 p-0">
                   {learningPaths.map((lp) => (
@@ -241,19 +243,19 @@ export default function DashboardConsultor() {
           <div className="lg:col-span-5">
             <div className={panelClass}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-fire mr-2 text-rose-600"></i>Alertas de Expiração
+                <i className="bi bi-fire mr-2 text-rose-600"></i>{t("consultor.dashboard.expirationAlerts")}
               </h5>
               {alertsExpiracao.length === 0 ? (
-                <p className="py-4 text-sm text-slate-400">Sem expirações próximas.</p>
+                <p className="py-4 text-sm text-slate-400">{t("consultor.dashboard.noUpcomingExpirations")}</p>
               ) : (
                 <ul className="m-0 list-none divide-y divide-slate-100 p-0">
                   {alertsExpiracao.map((a) => (
                     <li key={a.id} className="flex items-center justify-between gap-3 py-3">
                       <div>
-                        <div className="text-sm font-semibold text-slate-900">{getAlertBadgeName(a)}</div>
-                        <div className="text-xs font-medium text-rose-500">{formatExpirationAlert(a)}</div>
+                        <div className="text-sm font-semibold text-slate-900">{getAlertBadgeName(a, t)}</div>
+                        <div className="text-xs font-medium text-rose-500">{formatExpirationAlert(a, t)}</div>
                       </div>
-                      <Link to="/consultor/historico" className={btnSecondary}>Ver</Link>
+                      <Link to="/consultor/historico" className={btnSecondary}>{t("consultor.dashboard.view")}</Link>
                     </li>
                   ))}
                 </ul>
@@ -268,13 +270,13 @@ export default function DashboardConsultor() {
             <div className={panelClass}>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h5 className="m-0 text-base font-bold text-slate-900">
-                  <i className="bi bi-lightbulb-fill mr-2 text-amber-500"></i>Badges Recomendados
+                  <i className="bi bi-lightbulb-fill mr-2 text-amber-500"></i>{t("consultor.dashboard.recommendedBadges")}
                 </h5>
-                <Link to="/badges" className="text-xs text-slate-500 hover:text-[#0F62FE]">Ver catálogo</Link>
+                <Link to="/badges" className="text-xs text-slate-500 hover:text-[#0F62FE]">{t("consultor.dashboard.viewCatalog")}</Link>
               </div>
               {recomendados.length === 0 ? (
                 <p className="py-4 text-sm text-slate-400">
-                  Obtém o teu primeiro badge para receberes recomendações personalizadas.
+                  {t("consultor.dashboard.noRecommendations")}
                 </p>
               ) : (
                 <ul className="m-0 list-none divide-y divide-slate-100 p-0">
@@ -286,9 +288,9 @@ export default function DashboardConsultor() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="rounded-full bg-[#0F62FE]/10 px-2 py-1 text-xs font-bold text-[#0F62FE]">
-                          {r.pontos} pts
+                          {t("consultor.dashboard.pointsAbbrev", { points: r.pontos })}
                         </span>
-                        <Link to={`/badges/${r.id}`} className={btnSecondary}>Ver</Link>
+                        <Link to={`/badges/${r.id}`} className={btnSecondary}>{t("consultor.dashboard.view")}</Link>
                       </div>
                     </li>
                   ))}
@@ -300,10 +302,10 @@ export default function DashboardConsultor() {
           <div className="lg:col-span-5">
             <div className={panelClass}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-stars mr-2 text-amber-500"></i>Conquistas
+                <i className="bi bi-stars mr-2 text-amber-500"></i>{t("consultor.dashboard.achievements")}
               </h5>
               {achievements.length === 0 ? (
-                <p className="py-4 text-sm text-slate-400">Começa a submeter badges para desbloquear conquistas.</p>
+                <p className="py-4 text-sm text-slate-400">{t("consultor.dashboard.noAchievements")}</p>
               ) : (
                 <ul className="m-0 list-none divide-y divide-slate-100 p-0">
                   {achievements.map((a) => (
@@ -336,26 +338,26 @@ export default function DashboardConsultor() {
         {/* Partilha */}
         <div className="mb-6 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
           <h5 className="mb-3 text-base font-bold text-slate-900">
-            <i className="bi bi-share mr-2 text-cyan-600"></i>Partilha e Visibilidade
+            <i className="bi bi-share mr-2 text-cyan-600"></i>{t("consultor.dashboard.shareAndVisibility")}
           </h5>
           <div className="flex flex-wrap gap-2">
             <button className={btnSecondaryLg} onClick={shareLinkedIn}>
-              <i className="bi bi-linkedin mr-1"></i>Partilhar no LinkedIn
+              <i className="bi bi-linkedin mr-1"></i>{t("consultor.dashboard.shareOnLinkedIn")}
             </button>
             <button
               className={btnSecondaryLg}
               onClick={() => {
                 const url = `${window.location.origin}/galeria/${user.id}`;
-                navigator.clipboard?.writeText(url).then(() => alert("Link copiado!")).catch(() => alert(url));
+                navigator.clipboard?.writeText(url).then(() => alert(t("consultor.dashboard.linkCopied"))).catch(() => alert(url));
               }}
             >
-              <i className="bi bi-link-45deg mr-1"></i>Copiar link público
+              <i className="bi bi-link-45deg mr-1"></i>{t("consultor.dashboard.copyPublicLink")}
             </button>
             <button className={btnSecondaryLg} onClick={() => navigate("/galeria")}>
-              <i className="bi bi-people-fill mr-1"></i>Ver galeria pública
+              <i className="bi bi-people-fill mr-1"></i>{t("consultor.dashboard.viewPublicGallery")}
             </button>
             <Link to="/consultor/historico" className={btnSecondaryLg}>
-              <i className="bi bi-award-fill mr-1"></i>Os meus badges
+              <i className="bi bi-award-fill mr-1"></i>{t("consultor.dashboard.myBadges")}
             </Link>
           </div>
         </div>

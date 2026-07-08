@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import AuthShell from "./AuthShell";
 import { storeBrowserCredentials } from "../../utils/browserCredentials";
 
 export default function FirstLogin() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -14,11 +16,11 @@ export default function FirstLogin() {
     e.preventDefault();
 
     if (password.length < 6) {
-      return setError("A password deve ter pelo menos 6 caracteres.");
+      return setError(t("auth.firstLogin.errors.tooShort"));
     }
 
     if (password !== confirm) {
-      return setError("As passwords nao coincidem.");
+      return setError(t("auth.firstLogin.errors.mismatch"));
     }
 
     try {
@@ -43,7 +45,7 @@ export default function FirstLogin() {
         }
       }
 
-      alert("Password atualizada com sucesso!");
+      alert(t("auth.firstLogin.success"));
 
       switch (res.data.user.role) {
         case "admin":
@@ -60,26 +62,26 @@ export default function FirstLogin() {
       }
     } catch (error) {
       console.error(error);
-      setError("Erro ao atualizar password.");
+      setError(t("auth.firstLogin.errors.updateFailed"));
     }
   };
 
   return (
     <AuthShell
-      title="Criar nova password"
-      description="Define uma password pessoal para concluir o primeiro acesso."
-      asideTitle="Primeiro login"
-      asideText="Este passo protege a tua conta antes de entrares no portal."
+      title={t("auth.firstLogin.title")}
+      description={t("auth.firstLogin.description")}
+      asideTitle={t("auth.firstLogin.asideTitle")}
+      asideText={t("auth.firstLogin.asideText")}
       asideNote={{
-        label: "Nova credencial",
-        text: "Usa pelo menos 6 caracteres e confirma a password antes de guardar.",
+        label: t("auth.firstLogin.asideNote.label"),
+        text: t("auth.firstLogin.asideNote.text"),
       }}
     >
       <form onSubmit={handleSubmit} autoComplete="on">
         {error && <p className="auth-message auth-message-error">{error}</p>}
 
         <div className="auth-field">
-          <label>Nova password</label>
+          <label>{t("auth.firstLogin.newPasswordLabel")}</label>
           <input
             type="password"
             name="new-password"
@@ -88,12 +90,12 @@ export default function FirstLogin() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="auth-input"
-            placeholder="Minimo 6 caracteres"
+            placeholder={t("auth.firstLogin.newPasswordPlaceholder")}
           />
         </div>
 
         <div className="auth-field">
-          <label>Confirmar password</label>
+          <label>{t("auth.firstLogin.confirmPasswordLabel")}</label>
           <input
             type="password"
             name="confirm-password"
@@ -102,13 +104,13 @@ export default function FirstLogin() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             className="auth-input"
-            placeholder="Repete a password"
+            placeholder={t("auth.firstLogin.confirmPasswordPlaceholder")}
           />
         </div>
 
         <button type="submit" className="auth-primary-button">
           <i className="bi bi-check2-circle"></i>
-          Guardar password
+          {t("auth.firstLogin.submit")}
         </button>
       </form>
     </AuthShell>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
@@ -6,15 +7,17 @@ import TalentManagerLayout, { tmActionClass, tmPrimaryActionClass } from "./Tale
 import SortableTh from "/src/components/ui/SortableTh";
 import { useSortableData } from "/src/hooks/useSortableData";
 
-const scopeOptions = [
-  { value: "pedidos", label: "Pedidos de badges" },
-  { value: "badges", label: "Catálogo de badges" },
-  { value: "consultores", label: "Consultores" },
-  { value: "aprovacoes", label: "Aprovações" },
-  { value: "rejeicoes", label: "Rejeições" },
+const getScopeOptions = (t) => [
+  { value: "pedidos", label: t("talentManager.relatorios.scopes.pedidos") },
+  { value: "badges", label: t("talentManager.relatorios.scopes.badges") },
+  { value: "consultores", label: t("talentManager.relatorios.scopes.consultores") },
+  { value: "aprovacoes", label: t("talentManager.relatorios.scopes.aprovacoes") },
+  { value: "rejeicoes", label: t("talentManager.relatorios.scopes.rejeicoes") },
 ];
 
 export default function RelatoriosTalent() {
+  const { t } = useTranslation();
+  const scopeOptions = useMemo(() => getScopeOptions(t), [t]);
   const [filtros, setFiltros] = useState({ mes: "", ano: "", consultor: "", badge: "", scope: "pedidos" });
   const [resultados, setResultados] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -33,7 +36,7 @@ export default function RelatoriosTalent() {
         if (mounted) setResultados(res.data?.rows || []);
       } catch (err) {
         console.error("Erro ao carregar relatorio TM:", err);
-        if (mounted) setError("Nao foi possivel carregar o relatorio.");
+        if (mounted) setError(t("talentManager.relatorios.errors.loadFailed"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -43,7 +46,7 @@ export default function RelatoriosTalent() {
     return () => {
       mounted = false;
     };
-  }, [filtros]);
+  }, [filtros, t]);
 
   const totals = useMemo(() => ({
     total: resultados.length,
@@ -71,7 +74,7 @@ export default function RelatoriosTalent() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(`Erro ao exportar ${formato}:`, err);
-      alert("Nao foi possivel gerar a exportacao.");
+      alert(t("talentManager.relatorios.errors.exportFailed"));
     }
   };
 
@@ -83,37 +86,37 @@ export default function RelatoriosTalent() {
 
   return (
     <TalentManagerLayout
-      title="Relatórios e Exportações"
-      subtitle="Filtra, consulta e exporta pedidos, badges, consultores, aprovações e rejeições."
+      title={t("talentManager.relatorios.title")}
+      subtitle={t("talentManager.relatorios.subtitle")}
       heroStats={[
-        { label: "Registos", value: totals.total },
-        { label: "Aprovados", value: totals.aprovados },
-        { label: "Pendentes", value: totals.pendentes },
+        { label: t("talentManager.relatorios.stats.records"), value: totals.total },
+        { label: t("talentManager.relatorios.stats.approved"), value: totals.aprovados },
+        { label: t("talentManager.relatorios.stats.pending"), value: totals.pendentes },
       ]}
     >
-        <SectionCard className="mb-4" title="Filtros" icon="bi-funnel-fill">
+        <SectionCard className="mb-4" title={t("talentManager.relatorios.filters.title")} icon="bi-funnel-fill">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Mês</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.month")}</label>
               <select name="mes" value={filtros.mes} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200">
-                <option value="">Todos</option>
+                <option value="">{t("talentManager.relatorios.filters.all")}</option>
                 {["01","02","03","04","05","06","07","08","09","10","11","12"].map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Ano</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.year")}</label>
               <input type="number" name="ano" value={filtros.ano} placeholder="2026" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Consultor</label>
-              <input type="text" name="consultor" value={filtros.consultor} placeholder="Nome" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.consultant")}</label>
+              <input type="text" name="consultor" value={filtros.consultor} placeholder={t("talentManager.relatorios.filters.namePlaceholder")} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Badge</label>
-              <input type="text" name="badge" value={filtros.badge} placeholder="Badge" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.badge")}</label>
+              <input type="text" name="badge" value={filtros.badge} placeholder={t("talentManager.relatorios.filters.badge")} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
             </div>
             <div className="md:col-span-4">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Âmbito</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.scope")}</label>
               <select name="scope" value={filtros.scope} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200">
                 {scopeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
@@ -122,20 +125,20 @@ export default function RelatoriosTalent() {
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <button className={tmPrimaryActionClass} onClick={() => gerar("pdf")}>
-              <i className="bi bi-file-earmark-pdf-fill mr-2"></i> Gerar PDF
+              <i className="bi bi-file-earmark-pdf-fill mr-2"></i> {t("talentManager.relatorios.actions.generatePdf")}
             </button>
             <button className={tmActionClass} onClick={() => gerar("excel")}>
-              <i className="bi bi-file-earmark-excel-fill mr-2"></i> Gerar Excel
+              <i className="bi bi-file-earmark-excel-fill mr-2"></i> {t("talentManager.relatorios.actions.generateExcel")}
             </button>
             <span className="text-sm text-slate-500">
-              {totals.total} registos · {totals.aprovados} aprovados · {totals.pendentes} pendentes · {totals.rejeitados} rejeitados
+              {t("talentManager.relatorios.summary", { total: totals.total, approved: totals.aprovados, pending: totals.pendentes, rejected: totals.rejeitados })}
             </span>
           </div>
         </SectionCard>
 
-        <SectionCard title="Resultados" icon="bi-list-check">
+        <SectionCard title={t("talentManager.relatorios.resultsSection.title")} icon="bi-list-check">
           {loading ? (
-            <EmptyState message="A carregar resultados..." icon="bi-hourglass-split" />
+            <EmptyState message={t("talentManager.relatorios.loading")} icon="bi-hourglass-split" />
           ) : error ? (
             <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
           ) : (
@@ -143,12 +146,12 @@ export default function RelatoriosTalent() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <SortableTh label="Tipo" sortKey="tipo" accessor={(r) => r.tipo || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Consultor" sortKey="consultor" accessor={(r) => r.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Badge" sortKey="badge" accessor={(r) => r.badge || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Situação" sortKey="situacao" accessor={(r) => r.situacao || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Área" sortKey="area" accessor={(r) => r.area || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Data" sortKey="data" accessor={(r) => (r.data ? new Date(r.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.relatorios.table.type")} sortKey="tipo" accessor={(r) => r.tipo || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.relatorios.table.consultant")} sortKey="consultor" accessor={(r) => r.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.relatorios.table.badge")} sortKey="badge" accessor={(r) => r.badge || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.relatorios.table.situation")} sortKey="situacao" accessor={(r) => r.situacao || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.relatorios.table.area")} sortKey="area" accessor={(r) => r.area || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.relatorios.table.date")} sortKey="data" accessor={(r) => (r.data ? new Date(r.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -165,7 +168,7 @@ export default function RelatoriosTalent() {
                   {!resultados.length && (
                     <tr>
                       <td colSpan="6" className="px-3 py-4">
-                        <EmptyState message="Sem resultados para os filtros selecionados." icon="bi-search" />
+                        <EmptyState message={t("talentManager.relatorios.resultsSection.empty")} icon="bi-search" />
                       </td>
                     </tr>
                   )}

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Sidebar from "../../layout/Sidebar";
 
 export const tmPanelClass =
@@ -23,21 +24,24 @@ export function TalentStatCard({ icon, label, value }) {
 
 export default function TalentManagerLayout({
   title,
-  eyebrow = "Talent Manager",
+  eyebrow,
   subtitle,
-  userName = "Talent Manager",
+  userName,
   heroStats = [],
   children,
 }) {
+  const { t } = useTranslation();
+  const resolvedEyebrow = eyebrow ?? t("talentManager.layout.defaultEyebrow");
+  const resolvedUserName = userName ?? t("talentManager.layout.defaultUserName");
   return (
     <div className="admin-shell">
-      <Sidebar user={{ role: "talent_manager", name: userName }} />
+      <Sidebar user={{ role: "talent_manager", name: resolvedUserName }} />
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
         <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-2 text-sm font-medium text-white/80">{eyebrow}</p>
+              <p className="mb-2 text-sm font-medium text-white/80">{resolvedEyebrow}</p>
               <h1 className="mb-2 text-3xl font-bold text-white">{title}</h1>
               {subtitle ? <p className="max-w-2xl text-white/85">{subtitle}</p> : null}
             </div>

@@ -1,5 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 
 const MAX_EVIDENCE_FILE_BYTES = 3 * 1024 * 1024;
@@ -14,6 +15,7 @@ function readFileAsDataUrl(file) {
 }
 
 export default function UploadEvidencias() {
+  const { t } = useTranslation();
   const [badges, setBadges] = useState([]);
   const [selectedBadgeId, setSelectedBadgeId] = useState("");
   const [requirements, setRequirements] = useState([]);
@@ -45,12 +47,12 @@ export default function UploadEvidencias() {
         setBadges(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar badges:", err);
-        setError("Não foi possível carregar badges.");
+        setError(t("consultor.uploadEvidencias.loadBadgesError"));
       }
     };
 
     loadBadges();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -69,18 +71,18 @@ export default function UploadEvidencias() {
         setEvidences(evRes.data || []);
       } catch (err) {
         console.error("Erro ao carregar requisitos:", err);
-        setError("Não foi possível carregar requisitos.");
+        setError(t("consultor.uploadEvidencias.loadRequirementsError"));
       } finally {
         setLoading(false);
       }
     };
 
     loadRequirements();
-  }, [selectedBadgeId]);
+  }, [selectedBadgeId, t]);
 
   const handleSubmitEvidence = async (requirementId, file, notes) => {
     const token = localStorage.getItem("token");
-    if (!token) return alert("Sem token. Faz login novamente.");
+    if (!token) return alert(t("consultor.uploadEvidencias.noTokenLoginAgain"));
 
     try {
       const fileDataUrl = await readFileAsDataUrl(file);
@@ -99,14 +101,14 @@ export default function UploadEvidencias() {
       setEvidences((prev) => [res.data, ...prev]);
     } catch (err) {
       console.error("Erro ao submeter evidência:", err);
-      alert(err.response?.data?.error || "Erro ao submeter evidência.");
+      alert(err.response?.data?.error || t("consultor.uploadEvidencias.submitEvidenceError"));
     }
   };
 
   const handleSubmitPedido = async () => {
-    if (!selectedBadgeId) return alert("Seleciona um badge primeiro.");
+    if (!selectedBadgeId) return alert(t("consultor.uploadEvidencias.selectBadgeFirst"));
     const token = localStorage.getItem("token");
-    if (!token) return alert("Sem token. Faz login novamente.");
+    if (!token) return alert(t("consultor.uploadEvidencias.noTokenLoginAgain"));
 
     try {
       setPedidoStatus("");
@@ -116,11 +118,11 @@ export default function UploadEvidencias() {
         { headers: { Authorization: `Bearer ${token}` } },
       );
 
-      setPedidoStatus("Pedido submetido com sucesso.");
+      setPedidoStatus(t("consultor.uploadEvidencias.requestSubmitted"));
     } catch (err) {
       console.error("Erro ao submeter pedido:", err);
       setPedidoStatus(
-        err.response?.data?.message || "Erro ao submeter pedido.",
+        err.response?.data?.message || t("consultor.uploadEvidencias.submitRequestError"),
       );
     }
   };
@@ -134,12 +136,11 @@ export default function UploadEvidencias() {
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
           <div className="relative z-10">
-            <p className="mb-2 text-sm font-medium text-white/80">Area do consultor</p>
-            <h1 className="text-3xl font-bold text-white">Upload de Evidencias</h1>
+            <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
+            <h1 className="text-3xl font-bold text-white">{t("consultor.uploadEvidencias.title")}</h1>
 
             <p className="mt-2 text-white/80">
-              Submete documentação e comprovativos para validação dos teus
-              badges.
+              {t("consultor.uploadEvidencias.subtitle")}
             </p>
           </div>
         </section>
@@ -152,7 +153,7 @@ export default function UploadEvidencias() {
 
             <h3 className="text-3xl font-bold">{badges.length}</h3>
 
-            <p className="text-slate-500">Badges Disponíveis</p>
+            <p className="text-slate-500">{t("consultor.uploadEvidencias.availableBadges")}</p>
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
@@ -162,7 +163,7 @@ export default function UploadEvidencias() {
 
             <h3 className="text-3xl font-bold">{requirements.length}</h3>
 
-            <p className="text-slate-500">Requisitos</p>
+            <p className="text-slate-500">{t("consultor.uploadEvidencias.requirements")}</p>
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
@@ -172,28 +173,28 @@ export default function UploadEvidencias() {
 
             <h3 className="text-3xl font-bold">{evidences.length}</h3>
 
-            <p className="text-slate-500">Evidências</p>
+            <p className="text-slate-500">{t("consultor.uploadEvidencias.evidences")}</p>
           </div>
         </div>
 
         <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <p className="mb-3 text-sm text-slate-500 sm:text-base">
-            Seleciona um badge e submete evidências para cada requisito.
+            {t("consultor.uploadEvidencias.selectBadgeHelper")}
           </p>
 
           <div className="mb-3">
             <label className="mb-1 block text-sm font-semibold text-slate-700">
-              Selecionar Badge
+              {t("consultor.uploadEvidencias.selectBadge")}
             </label>
             <select
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10 "
               value={selectedBadgeId}
               onChange={(e) => setSelectedBadgeId(e.target.value)}
             >
-              <option value="">Escolher...</option>
+              <option value="">{t("consultor.uploadEvidencias.choose")}</option>
               {badges.map((b) => (
                 <option key={b.id} value={b.id}>
-                  {b.description || b.name || `Badge #${b.id}`}
+                  {b.description || b.name || t("consultor.uploadEvidencias.badgeNumber", { id: b.id })}
                 </option>
               ))}
             </select>
@@ -205,7 +206,7 @@ export default function UploadEvidencias() {
               onClick={handleSubmitPedido}
               disabled={!selectedBadgeId}
             >
-              Submeter candidatura
+              {t("consultor.uploadEvidencias.submitApplication")}
             </button>
           </div>
 
@@ -241,7 +242,7 @@ export default function UploadEvidencias() {
 
               {!requirements.length && selectedBadgeId && (
                 <div className="text-sm text-slate-500">
-                  Este badge não tem requisitos definidos.
+                  {t("consultor.uploadEvidencias.noRequirementsDefined")}
                 </div>
               )}
             </div>
@@ -253,6 +254,7 @@ export default function UploadEvidencias() {
 }
 
 function RequirementCard({ requirement, latestEvidence, onSubmit }) {
+  const { t } = useTranslation();
   const [file, setFile] = useState(null);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -262,7 +264,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
     const selected = e.target.files?.[0] || null;
     setFileError("");
     if (selected && selected.size > MAX_EVIDENCE_FILE_BYTES) {
-      setFileError("Ficheiro demasiado grande. Tamanho máximo: 3MB.");
+      setFileError(t("consultor.uploadEvidencias.fileTooLarge"));
       setFile(null);
       return;
     }
@@ -270,7 +272,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
   };
 
   const handleSend = async () => {
-    if (!file) return alert("Escolhe um ficheiro de evidência.");
+    if (!file) return alert(t("consultor.uploadEvidencias.chooseEvidenceFile"));
     setSubmitting(true);
     await onSubmit(requirement.id, file, notes);
     setSubmitting(false);
@@ -307,7 +309,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
 
         {latestEvidence && (
           <div className="mt-2 text-xs sm:text-sm">
-            Estado:{" "}
+            {t("consultor.uploadEvidencias.stateLabel")}{" "}
             <span
               className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
                 latestEvidence.status === "aprovado"
@@ -320,14 +322,14 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
               {latestEvidence.status}
             </span>
             <span className="ml-2 text-slate-600">
-              Última evidência:{" "}
+              {t("consultor.uploadEvidencias.latestEvidence")}{" "}
               <a
                 className="text-sky-700 underline"
                 href={latestEvidence.evidence_url}
                 target="_blank"
                 rel="noreferrer"
               >
-                ver
+                {t("consultor.uploadEvidencias.view")}
               </a>
             </span>
           </div>
@@ -341,14 +343,14 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
               className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
               onChange={handleFileChange}
             />
-            <p className="mt-1 text-xs text-slate-500">Formatos aceites: JPG, PNG, WEBP, PDF. Máximo 3MB.</p>
+            <p className="mt-1 text-xs text-slate-500">{t("consultor.uploadEvidencias.acceptedFormats")}</p>
             {fileError && <p className="mt-1 text-xs text-rose-600">{fileError}</p>}
           </div>
           <div className="md:col-span-5">
             <input
               type="text"
               className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
-              placeholder="Notas (opcional)"
+              placeholder={t("consultor.uploadEvidencias.notesOptional")}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -361,7 +363,7 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
             onClick={handleSend}
             disabled={submitting}
           >
-            {submitting ? "A enviar..." : "Submeter evidência"}
+            {submitting ? t("consultor.uploadEvidencias.sending") : t("consultor.uploadEvidencias.submitEvidence")}
           </button>
         </div>
       </div>

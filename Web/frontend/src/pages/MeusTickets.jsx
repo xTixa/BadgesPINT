@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../layout/Sidebar";
 
 export default function MeusTickets() {
+  const { t } = useTranslation();
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   const sidebarUser = {
     role: storedUser.role || "consultant",
-    name: storedUser.name || storedUser.nome || "Utilizador",
+    name: storedUser.name || storedUser.nome || t("meusTickets.defaultUserName"),
   };
 
   const [tickets, setTickets] = useState([]);
@@ -18,17 +20,17 @@ export default function MeusTickets() {
   const [ticketSelecionado, setTicketSelecionado] = useState(null);
 
   const statusOptions = [
-    { value: "aberto", label: "🔵 Aberto" },
-    { value: "em_analise", label: "🟡 Em Análise" },
-    { value: "resolvido", label: "🟢 Resolvido" },
-    { value: "fechado", label: "⚪ Fechado" },
+    { value: "aberto", label: `🔵 ${t("meusTickets.status.open")}` },
+    { value: "em_analise", label: `🟡 ${t("meusTickets.status.inReview")}` },
+    { value: "resolvido", label: `🟢 ${t("meusTickets.status.resolved")}` },
+    { value: "fechado", label: `⚪ ${t("meusTickets.status.closed")}` },
   ];
 
   const prioridadeOptions = [
-    { value: "baixa", label: "🟢 Baixa" },
-    { value: "media", label: "🟡 Média" },
-    { value: "alta", label: "🔴 Alta" },
-    { value: "critica", label: "🔴🔴 Crítica" },
+    { value: "baixa", label: `🟢 ${t("meusTickets.priority.low")}` },
+    { value: "media", label: `🟡 ${t("meusTickets.priority.medium")}` },
+    { value: "alta", label: `🔴 ${t("meusTickets.priority.high")}` },
+    { value: "critica", label: `🔴🔴 ${t("meusTickets.priority.critical")}` },
   ];
 
   useEffect(() => {
@@ -67,10 +69,10 @@ export default function MeusTickets() {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      aberto: { color: "bg-sky-100 text-sky-700", label: "🔵 Aberto" },
-      em_analise: { color: "bg-amber-100 text-amber-700", label: "🟡 Em Análise" },
-      resolvido: { color: "bg-emerald-100 text-emerald-700", label: "🟢 Resolvido" },
-      fechado: { color: "bg-slate-200 text-slate-700", label: "⚪ Fechado" },
+      aberto: { color: "bg-sky-100 text-sky-700", label: `🔵 ${t("meusTickets.status.open")}` },
+      em_analise: { color: "bg-amber-100 text-amber-700", label: `🟡 ${t("meusTickets.status.inReview")}` },
+      resolvido: { color: "bg-emerald-100 text-emerald-700", label: `🟢 ${t("meusTickets.status.resolved")}` },
+      fechado: { color: "bg-slate-200 text-slate-700", label: `⚪ ${t("meusTickets.status.closed")}` },
     };
     const s = statusMap[status];
     return <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${s.color}`}>{s.label}</span>;
@@ -93,7 +95,7 @@ export default function MeusTickets() {
 
         <main className="admin-main px-4 py-8 text-center sm:px-5 md:px-6">
           <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-sky-700 border-r-transparent" role="status">
-            <span className="visually-hidden">Carregando...</span>
+            <span className="visually-hidden">{t("meusTickets.loading")}</span>
           </div>
         </main>
       </div>
@@ -108,10 +110,10 @@ export default function MeusTickets() {
       <div className="mb-8">
         <h2 className="flex items-center gap-2 text-2xl font-bold text-slate-800 sm:text-3xl">
           <i className="bi bi-ticket-detailed"></i>
-          Meus Tickets
+          {t("meusTickets.title")}
         </h2>
         <p className="mt-1 text-sm text-slate-500 sm:text-base">
-          Total: <strong>{pagination.total}</strong> tickets
+          {t("meusTickets.totalLabel")} <strong>{pagination.total}</strong> {t("meusTickets.ticketsWord")}
         </p>
       </div>
 
@@ -126,7 +128,7 @@ export default function MeusTickets() {
                 setPage(1);
               }}
             >
-              <option value="">Todos os Status</option>
+              <option value="">{t("meusTickets.filters.allStatuses")}</option>
               {statusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -144,7 +146,7 @@ export default function MeusTickets() {
                 setPage(1);
               }}
             >
-              <option value="">Todas as Prioridades</option>
+              <option value="">{t("meusTickets.filters.allPriorities")}</option>
               {prioridadeOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -162,7 +164,7 @@ export default function MeusTickets() {
                 setPage(1);
               }}
             >
-              <i className="bi bi-arrow-clockwise"></i> Limpar
+              <i className="bi bi-arrow-clockwise"></i> {t("meusTickets.filters.clear")}
             </button>
           </div>
         </div>
@@ -205,7 +207,7 @@ export default function MeusTickets() {
         <div className="rounded-xl border border-slate-200 bg-white p-12 text-center shadow-sm">
           <i style={{ fontSize: "3rem", color: "#d1d5db" }} className="bi bi-inbox"></i>
           <p className="mt-4 text-slate-500">
-            Nenhum ticket encontrado
+            {t("meusTickets.empty")}
           </p>
         </div>
       )}
@@ -220,7 +222,7 @@ export default function MeusTickets() {
                 onClick={() => setPage(1)}
                 disabled={page === 1}
               >
-                Primeira
+                {t("meusTickets.pagination.first")}
               </button>
             </li>
             {Array.from({ length: Math.min(5, pagination.pages) }).map((_, i) => {
@@ -247,7 +249,7 @@ export default function MeusTickets() {
                 onClick={() => setPage(pagination.pages)}
                 disabled={page === pagination.pages}
               >
-                Última
+                {t("meusTickets.pagination.last")}
               </button>
             </li>
           </ul>
@@ -278,14 +280,14 @@ export default function MeusTickets() {
 
             <div className="mb-6 space-y-4">
               <div>
-                <strong className="text-slate-800">Status:</strong>
+                <strong className="text-slate-800">{t("meusTickets.modal.status")}</strong>
                 <div className="mt-2">
                   {getStatusBadge(ticketSelecionado.status)}
                 </div>
               </div>
 
               <div>
-                <strong className="text-slate-800">Prioridade:</strong>
+                <strong className="text-slate-800">{t("meusTickets.modal.priority")}</strong>
                 <span
                   className="ml-2 rounded px-3 py-1 text-sm"
                   style={{ backgroundColor: getPriorityColor(ticketSelecionado.prioridade) + "20", color: getPriorityColor(ticketSelecionado.prioridade) }}
@@ -295,7 +297,7 @@ export default function MeusTickets() {
               </div>
 
               <div>
-                <strong className="text-slate-800">Criado em:</strong>
+                <strong className="text-slate-800">{t("meusTickets.modal.createdAt")}</strong>
                 <p className="mt-1 text-slate-500">
                   {new Date(ticketSelecionado.createdAt).toLocaleString("pt-PT")}
                 </p>
@@ -303,7 +305,7 @@ export default function MeusTickets() {
             </div>
 
             <div className="mb-6 border-b border-slate-200 pb-6">
-              <strong className="text-slate-800">Descrição:</strong>
+              <strong className="text-slate-800">{t("meusTickets.modal.description")}</strong>
               <p className="mt-3 whitespace-pre-wrap text-slate-500">
                 {ticketSelecionado.descricao}
               </p>
@@ -311,7 +313,7 @@ export default function MeusTickets() {
 
             {ticketSelecionado.resposta_admin && (
               <div className="mb-4 rounded-lg bg-slate-100 p-4">
-                <strong className="text-slate-800">Resposta do Administrador:</strong>
+                <strong className="text-slate-800">{t("meusTickets.modal.adminResponse")}</strong>
                 <p className="mt-3 whitespace-pre-wrap text-slate-500">
                   {ticketSelecionado.resposta_admin}
                 </p>
@@ -323,7 +325,7 @@ export default function MeusTickets() {
                 className="w-full rounded-xl border border-sky-700 bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800 sm:text-base"
                 onClick={() => setTicketSelecionado(null)}
               >
-                Fechar
+                {t("meusTickets.modal.close")}
               </button>
             </div>
           </div>

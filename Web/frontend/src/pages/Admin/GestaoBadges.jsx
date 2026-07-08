@@ -1,11 +1,13 @@
 import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function GestaoBadges() {
+  const { t } = useTranslation();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
@@ -55,13 +57,14 @@ export default function GestaoBadges() {
         setAreas(areasRes.data);
       } catch (err) {
         console.error(err);
-        setErro("Erro ao carregar badges.");
+        setErro(t("admin.gestaoBadges.errors.loadFailed"));
       } finally {
         setLoading(false);
       }
     }
 
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   // Abrir modal de edição
@@ -88,16 +91,16 @@ export default function GestaoBadges() {
 
       setBadges(prev => prev.map(b => b.id === badgeEditando.id ? response.data : b));
       setShowEditModal(false);
-      alert("Badge atualizado com sucesso!");
+      alert(t("admin.gestaoBadges.success.updated"));
     } catch (err) {
       console.error(err);
-      alert("Erro ao atualizar badge.");
+      alert(t("admin.gestaoBadges.errors.updateFailed"));
     }
   };
 
   // Eliminar badge
   const handleDelete = async (id) => {
-    if (!window.confirm("Tem a certeza que deseja eliminar este badge?")) return;
+    if (!window.confirm(t("admin.gestaoBadges.confirmDelete"))) return;
 
     try {
       await api.delete(`/api/admin/badges/${id}`, {
@@ -105,10 +108,10 @@ export default function GestaoBadges() {
       });
 
       setBadges((prev) => prev.filter((b) => b.id !== id));
-      alert("Badge eliminado com sucesso!");
+      alert(t("admin.gestaoBadges.success.deleted"));
     } catch (err) {
       console.error(err);
-      alert("Erro ao eliminar badge.");
+      alert(t("admin.gestaoBadges.errors.deleteFailed"));
     }
   };
 
@@ -127,7 +130,7 @@ export default function GestaoBadges() {
       setConsultores(res.data);
     } catch (err) {
       console.error(err);
-      setConsultoresErro("Erro ao carregar colaboradores.");
+      setConsultoresErro(t("admin.gestaoBadges.errors.loadConsultantsFailed"));
     } finally {
       setLoadingConsultores(false);
     }
@@ -151,7 +154,7 @@ export default function GestaoBadges() {
       window.open(fileURL, "_blank");
     } catch (err) {
       console.error(err);
-      let msg = "Erro ao gerar certificado.";
+      let msg = t("admin.gestaoBadges.errors.certificateFailed");
       if (err.response?.data instanceof Blob) {
         try {
           const text = await err.response.data.text();
@@ -199,10 +202,10 @@ export default function GestaoBadges() {
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
           <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="mb-2 text-sm font-medium text-white/80">Painel de administracao</p>
-              <h1 className="text-3xl font-bold text-white">Gestao de Badges</h1>
+              <p className="mb-2 text-sm font-medium text-white/80">{t("admin.common.adminPanel")}</p>
+              <h1 className="text-3xl font-bold text-white">{t("admin.gestaoBadges.title")}</h1>
               <p className="mt-2 max-w-2xl text-white/85">
-                Criar, editar e gerir badges, pontos, niveis e expiracao.
+                {t("admin.gestaoBadges.subtitle")}
               </p>
             </div>
 
@@ -211,20 +214,20 @@ export default function GestaoBadges() {
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm transition hover:bg-[#EFF4FF]"
           >
             <i className="bi bi-plus-circle"></i>
-            Criar novo Badge
+            {t("admin.gestaoBadges.createNew")}
           </Link>
           </div>
         </section>
 
         <section className="mb-6 grid grid-cols-1 gap-3 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)] md:grid-cols-3">
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Pesquisar</label>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("admin.common.search")}</label>
             <div className="relative">
               <i className="bi bi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input
                 type="text"
                 className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
-                placeholder="Nome do badge..."
+                placeholder={t("admin.gestaoBadges.searchPlaceholder")}
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
               />
@@ -232,13 +235,13 @@ export default function GestaoBadges() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Área</label>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("admin.badgeForm.areaLabel")}</label>
             <select
               className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
               value={filtroArea}
               onChange={(e) => setFiltroArea(e.target.value)}
             >
-              <option value="">Todas as áreas</option>
+              <option value="">{t("admin.gestaoBadges.allAreas")}</option>
               {areas.map(a => (
                 <option key={a.id} value={a.id}>{a.name}</option>
               ))}
@@ -246,13 +249,13 @@ export default function GestaoBadges() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Nível</label>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("admin.badgeForm.levelLabel")}</label>
             <select
               className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
               value={filtroNivel}
               onChange={(e) => setFiltroNivel(e.target.value)}
             >
-              <option value="">Todos os níveis</option>
+              <option value="">{t("admin.gestaoBadges.allLevels")}</option>
               {niveisBadges.map(n => (
                 <option key={n} value={n}>{n}</option>
               ))}
@@ -263,7 +266,7 @@ export default function GestaoBadges() {
         {loading ? (
           <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-500">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0F62FE]/20 border-t-[#0F62FE]"></div>
-            <p className="text-sm">A carregar...</p>
+            <p className="text-sm">{t("admin.common.loading")}</p>
           </div>
         ) : erro ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{erro}</div>
@@ -273,12 +276,12 @@ export default function GestaoBadges() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <SortableTh label="Nome" sortKey="description" accessor={(b) => b.description} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Nível" sortKey="level" accessor={(b) => niveisBadges.indexOf(b.level)} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Área" sortKey="area" accessor={(b) => b.area?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Pontos" sortKey="points" accessor={(b) => b.points} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Expiração (dias)" sortKey="expiry_days" accessor={(b) => b.expiry_days ?? Infinity} sortConfig={sortConfig} onSort={requestSort} />
-                    <th className="px-4 py-3">Ações</th>
+                    <SortableTh label={t("admin.gestaoBadges.columns.name")} sortKey="description" accessor={(b) => b.description} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.badgeForm.levelLabel")} sortKey="level" accessor={(b) => niveisBadges.indexOf(b.level)} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.badgeForm.areaLabel")} sortKey="area" accessor={(b) => b.area?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoBadges.columns.points")} sortKey="points" accessor={(b) => b.points} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoBadges.columns.expiry")} sortKey="expiry_days" accessor={(b) => b.expiry_days ?? Infinity} sortConfig={sortConfig} onSort={requestSort} />
+                    <th className="px-4 py-3">{t("admin.common.actions")}</th>
                   </tr>
                 </thead>
 
@@ -309,15 +312,15 @@ export default function GestaoBadges() {
                         {b.area?.name || "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="font-semibold text-slate-800">{b.points}</span> pts
+                        <span className="font-semibold text-slate-800">{b.points}</span> {t("admin.gestaoBadges.pts")}
                       </td>
                       <td className="px-4 py-3">
                         {b.expiry_days ? (
                           <span className={b.expiry_days < 30 ? "text-rose-600" : "text-emerald-600"}>
-                            {b.expiry_days} dias
+                            {t("admin.gestaoBadges.days", { count: b.expiry_days })}
                           </span>
                         ) : (
-                          <span className="text-slate-500">Sem expiração</span>
+                          <span className="text-slate-500">{t("admin.gestaoBadges.noExpiry")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -327,21 +330,21 @@ export default function GestaoBadges() {
                           onClick={() => handleEditBadge(b)}
                         >
                           <i className="bi bi-pencil"></i>
-                          Editar
+                          {t("admin.common.edit")}
                         </button>
                         <button
                           className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
                           onClick={() => handleAbrirRetificarCertificado(b)}
                         >
                           <i className="bi bi-file-earmark-pdf"></i>
-                          Retificar Certificado
+                          {t("admin.gestaoBadges.rectifyCertificate")}
                         </button>
                         <button
                           className="inline-flex items-center gap-1 rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
                           onClick={() => handleDelete(b.id)}
                         >
                           <i className="bi bi-trash"></i>
-                          Apagar
+                          {t("admin.common.delete")}
                         </button>
                         </div>
                       </td>
@@ -351,7 +354,7 @@ export default function GestaoBadges() {
                   {badgesFiltrados.length === 0 && (
                     <tr>
                       <td colSpan="6" className="px-4 py-6 text-center text-sm text-slate-500">
-                        {filtro || filtroArea || filtroNivel ? "Nenhum badge encontrado com esses critérios." : "Nenhum badge encontrado."}
+                        {filtro || filtroArea || filtroNivel ? t("admin.gestaoBadges.noResultsFiltered") : t("admin.gestaoBadges.noResults")}
                       </td>
                     </tr>
                   )}
@@ -367,7 +370,7 @@ export default function GestaoBadges() {
         <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4">
           <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
               <div className="flex items-center justify-between border-b border-[#0F62FE]/15 bg-[#EFF4FF] px-5 py-4">
-                <h5 className="text-lg font-bold text-[#0F62FE]">Editar Badge</h5>
+                <h5 className="text-lg font-bold text-[#0F62FE]">{t("admin.badgeForm.editTitle")}</h5>
                 <button
                   type="button"
                   className="rounded-md px-2 py-1 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
@@ -379,7 +382,7 @@ export default function GestaoBadges() {
 
               <div className="space-y-4 p-5">
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">Nome do Badge *</label>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.nameLabel")}</label>
                   <input
                     type="text"
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
@@ -389,7 +392,7 @@ export default function GestaoBadges() {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">Nível *</label>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.levelLabel")}</label>
                   <select
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.level}
@@ -402,7 +405,7 @@ export default function GestaoBadges() {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">Pontos *</label>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.pointsLabel")}</label>
                   <input
                     type="number"
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
@@ -413,19 +416,19 @@ export default function GestaoBadges() {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">Dias até Expiração</label>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.expiryDaysLabel")}</label>
                   <input
                     type="number"
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                     value={formData.expiry_days || ""}
                     onChange={(e) => setFormData({ ...formData, expiry_days: e.target.value ? parseInt(e.target.value) : null })}
-                    placeholder="Deixe em branco se sem expiração"
+                    placeholder={t("admin.gestaoBadges.modal.expiryDaysPlaceholder")}
                     min="0"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">URL da Imagem</label>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.imageUrlLabel")}</label>
                   <input
                     type="text"
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
@@ -442,7 +445,7 @@ export default function GestaoBadges() {
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                   onClick={() => setShowEditModal(false)}
                 >
-                  Cancelar
+                  {t("admin.common.cancel")}
                 </button>
                 <button
                   type="button"
@@ -450,7 +453,7 @@ export default function GestaoBadges() {
                   onClick={handleSaveEdit}
                 >
                   <i className="bi bi-check-circle"></i>
-                  Guardar Alterações
+                  {t("admin.configuracoes.saveChanges")}
                 </button>
               </div>
           </div>
@@ -472,7 +475,7 @@ export default function GestaoBadges() {
                   />
                 )}
                 <div>
-                  <h5 className="text-base font-bold text-emerald-800">Retificar Certificado</h5>
+                  <h5 className="text-base font-bold text-emerald-800">{t("admin.gestaoBadges.rectifyCertificate")}</h5>
                   <p className="text-xs text-emerald-600">{badgeSelecionado.description}</p>
                 </div>
               </div>
@@ -490,7 +493,7 @@ export default function GestaoBadges() {
               {loadingConsultores ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-10 text-slate-500">
                   <div className="h-7 w-7 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600"></div>
-                  <p className="text-sm">A carregar colaboradores...</p>
+                  <p className="text-sm">{t("admin.gestaoBadges.modal.loadingConsultants")}</p>
                 </div>
               ) : consultoresErro ? (
                 <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -499,7 +502,7 @@ export default function GestaoBadges() {
               ) : consultores.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-10 text-slate-400">
                   <i className="bi bi-person-x text-3xl"></i>
-                  <p className="text-sm">Nenhum colaborador concluiu este badge.</p>
+                  <p className="text-sm">{t("admin.gestaoBadges.modal.noConsultants")}</p>
                 </div>
               ) : (
                 <div className="overflow-hidden rounded-xl border border-slate-200">
@@ -507,9 +510,9 @@ export default function GestaoBadges() {
                     <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                       <tr>
                         <th className="px-4 py-3">ID</th>
-                        <th className="px-4 py-3">Nome</th>
-                        <th className="px-4 py-3">Data de Conclusão</th>
-                        <th className="px-4 py-3">Ações</th>
+                        <th className="px-4 py-3">{t("admin.gestaoBadges.modal.nameLabel")}</th>
+                        <th className="px-4 py-3">{t("admin.gestaoBadges.modal.completionDate")}</th>
+                        <th className="px-4 py-3">{t("admin.common.actions")}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -527,12 +530,12 @@ export default function GestaoBadges() {
                               {retificandoId === c.consultorId ? (
                                 <>
                                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-emerald-400 border-t-emerald-700"></span>
-                                  A gerar...
+                                  {t("admin.gestaoBadges.modal.generating")}
                                 </>
                               ) : (
                                 <>
                                   <i className="bi bi-file-earmark-pdf"></i>
-                                  Retificar
+                                  {t("admin.gestaoBadges.modal.rectify")}
                                 </>
                               )}
                             </button>
@@ -549,7 +552,7 @@ export default function GestaoBadges() {
             {!loadingConsultores && consultores.length > 0 && (
               <div className="border-t border-slate-100 bg-slate-50 px-5 py-3">
                 <p className="text-xs text-slate-500">
-                  {consultores.length} colaborador{consultores.length !== 1 ? "es" : ""} com o badge concluído
+                  {t("admin.gestaoBadges.modal.collaboratorsWithBadge", { count: consultores.length })}
                 </p>
               </div>
             )}

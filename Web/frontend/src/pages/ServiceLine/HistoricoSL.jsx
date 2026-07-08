@@ -1,27 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
 import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
-const STATUS_LABEL = {
-  obtido: { label: "Obtido", cls: "bg-emerald-100 text-emerald-700" },
-  pendente: { label: "Pendente", cls: "bg-amber-100 text-amber-700" },
-  rejeitado: { label: "Rejeitado", cls: "bg-rose-100 text-rose-700" },
-};
-
-const WORKFLOW_LABEL = {
-  open: "Aberto",
-  submitted: "Submetido",
-  em_validacao: "Em Validação (SL)",
-  fechado: "Fechado",
+const STATUS_STYLE = {
+  obtido: "bg-emerald-100 text-emerald-700",
+  pendente: "bg-amber-100 text-amber-700",
+  rejeitado: "bg-rose-100 text-rose-700",
 };
 
 function ProcessoDetail({ pedido, onClose }) {
+  const { t } = useTranslation();
+  const STATUS_LABEL = {
+    obtido: t("serviceLine.historico.status.obtained"),
+    pendente: t("serviceLine.historico.status.pending"),
+    rejeitado: t("serviceLine.historico.status.rejected"),
+  };
   const steps = [
     {
-      label: "Candidatura submetida",
+      label: t("serviceLine.historico.steps.submitted"),
       date: pedido.submitted_at,
       actor: pedido.user?.name,
       comment: null,
@@ -30,7 +30,7 @@ function ProcessoDetail({ pedido, onClose }) {
       color: "text-blue-600",
     },
     {
-      label: "Validação Talent Manager",
+      label: t("serviceLine.historico.steps.tmValidation"),
       date: pedido.tm_validated_at,
       actor: null,
       comment: pedido.tm_comment,
@@ -39,7 +39,7 @@ function ProcessoDetail({ pedido, onClose }) {
       color: "text-violet-600",
     },
     {
-      label: pedido.status === "rejeitado" ? "Rejeitado pela Service Line" : "Aprovado pela Service Line",
+      label: pedido.status === "rejeitado" ? t("serviceLine.historico.steps.rejectedBySl") : t("serviceLine.historico.steps.approvedBySl"),
       date: pedido.sl_validated_at,
       actor: null,
       comment: pedido.sl_comment,
@@ -55,10 +55,10 @@ function ProcessoDetail({ pedido, onClose }) {
         <div className="mb-4 flex items-start justify-between gap-2">
           <div>
             <h3 className="text-lg font-bold text-slate-900">
-              Processo de Candidatura
+              {t("serviceLine.historico.processTitle")}
             </h3>
             <p className="text-sm text-slate-500">
-              {pedido.badge?.name || pedido.badge?.description || `Badge #${pedido.badge_id}`}
+              {pedido.badge?.name || pedido.badge?.description || t("serviceLine.historico.badgeFallback", { id: pedido.badge_id })}
             </p>
           </div>
           <button onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
@@ -72,8 +72,8 @@ function ProcessoDetail({ pedido, onClose }) {
             <div className="text-sm font-semibold text-slate-900">{pedido.user?.name}</div>
             <div className="text-xs text-slate-500">{pedido.user?.email}</div>
           </div>
-          <span className={`ml-auto rounded-full px-2 py-1 text-xs font-semibold ${STATUS_LABEL[pedido.status]?.cls || "bg-slate-100 text-slate-700"}`}>
-            {STATUS_LABEL[pedido.status]?.label || pedido.status}
+          <span className={`ml-auto rounded-full px-2 py-1 text-xs font-semibold ${STATUS_STYLE[pedido.status] || "bg-slate-100 text-slate-700"}`}>
+            {STATUS_LABEL[pedido.status] || pedido.status}
           </span>
         </div>
 
@@ -92,20 +92,20 @@ function ProcessoDetail({ pedido, onClose }) {
                     </span>
                   )}
                 </div>
-                {step.actor && <div className="mt-1 text-xs text-slate-500">por {step.actor}</div>}
+                {step.actor && <div className="mt-1 text-xs text-slate-500">{t("serviceLine.historico.by", { name: step.actor })}</div>}
                 {step.comment && (
                   <div className="mt-2 rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-600 italic">
                     "{step.comment}"
                   </div>
                 )}
-                {!step.done && <div className="mt-1 text-xs text-slate-400">Aguarda...</div>}
+                {!step.done && <div className="mt-1 text-xs text-slate-400">{t("serviceLine.historico.awaiting")}</div>}
               </div>
             </li>
           ))}
         </ol>
 
         <button onClick={onClose} className={`mt-2 w-full ${slPrimaryActionClass}`}>
-          Fechar
+          {t("serviceLine.historico.close")}
         </button>
       </div>
     </div>
@@ -113,6 +113,18 @@ function ProcessoDetail({ pedido, onClose }) {
 }
 
 export default function HistoricoSL() {
+  const { t } = useTranslation();
+  const STATUS_LABEL = {
+    obtido: { label: t("serviceLine.historico.status.obtained"), cls: STATUS_STYLE.obtido },
+    pendente: { label: t("serviceLine.historico.status.pending"), cls: STATUS_STYLE.pendente },
+    rejeitado: { label: t("serviceLine.historico.status.rejected"), cls: STATUS_STYLE.rejeitado },
+  };
+  const WORKFLOW_LABEL = {
+    open: t("serviceLine.historico.workflow.open"),
+    submitted: t("serviceLine.historico.workflow.submitted"),
+    em_validacao: t("serviceLine.historico.workflow.emValidacao"),
+    fechado: t("serviceLine.historico.workflow.fechado"),
+  };
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("todos");
   const [search, setSearch] = useState("");
@@ -130,14 +142,14 @@ export default function HistoricoSL() {
         if (mounted) setPedidos(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar histórico SL:", err);
-        if (mounted) setError("Não foi possível carregar o histórico.");
+        if (mounted) setError(t("serviceLine.historico.errors.loadFailed"));
       } finally {
         if (mounted) setLoading(false);
       }
     }
     load();
     return () => { mounted = false; };
-  }, []);
+  }, [t]);
 
   const filtered = useMemo(() => {
     let list = pedidos;
@@ -175,35 +187,35 @@ export default function HistoricoSL() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Erro ao gerar certificado:", err);
-      alert("Não foi possível gerar o certificado.");
+      alert(t("serviceLine.historico.errors.certificateFailed"));
     }
   };
 
   return (
     <ServiceLineLayout
-      title="Histórico de Badges"
-      subtitle="Consulta o histórico completo de badges obtidos e em processo da tua Service Line."
+      title={t("serviceLine.historico.title")}
+      subtitle={t("serviceLine.historico.subtitle")}
       heroStats={[
-        { label: "Obtidos", value: totals.obtidos },
-        { label: "Em Processo", value: totals.emProcesso },
-        { label: "Rejeitados", value: totals.rejeitados },
+        { label: t("serviceLine.historico.stats.obtained"), value: totals.obtidos },
+        { label: t("serviceLine.historico.stats.inProcess"), value: totals.emProcesso },
+        { label: t("serviceLine.historico.stats.rejected"), value: totals.rejeitados },
       ]}
     >
       {selected && <ProcessoDetail pedido={selected} onClose={() => setSelected(null)} />}
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <ServiceLineStatCard icon="bi-patch-check-fill" label="Badges Obtidos" value={totals.obtidos} />
-        <ServiceLineStatCard icon="bi-hourglass-split" label="Em Processo" value={totals.emProcesso} />
-        <ServiceLineStatCard icon="bi-x-circle-fill" label="Rejeitados" value={totals.rejeitados} />
+        <ServiceLineStatCard icon="bi-patch-check-fill" label={t("serviceLine.historico.stats.badgesObtained")} value={totals.obtidos} />
+        <ServiceLineStatCard icon="bi-hourglass-split" label={t("serviceLine.historico.stats.inProcess")} value={totals.emProcesso} />
+        <ServiceLineStatCard icon="bi-x-circle-fill" label={t("serviceLine.historico.stats.rejected")} value={totals.rejeitados} />
       </div>
 
       <section className="mb-4 rounded-3xl bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
         <div className="flex flex-wrap gap-2">
           {[
-            { value: "todos", label: "Todos" },
-            { value: "obtido", label: "Obtidos" },
-            { value: "em_processo", label: "Em Processo" },
-            { value: "rejeitado", label: "Rejeitados" },
+            { value: "todos", label: t("serviceLine.historico.filters.all") },
+            { value: "obtido", label: t("serviceLine.historico.filters.obtained") },
+            { value: "em_processo", label: t("serviceLine.historico.filters.inProcess") },
+            { value: "rejeitado", label: t("serviceLine.historico.filters.rejected") },
           ].map((item) => (
             <button
               key={item.value}
@@ -215,7 +227,7 @@ export default function HistoricoSL() {
           ))}
           <input
             className="ui-input ml-auto max-w-xs"
-            placeholder="Pesquisar consultor ou badge..."
+            placeholder={t("serviceLine.historico.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -223,29 +235,29 @@ export default function HistoricoSL() {
       </section>
 
       {loading ? (
-        <EmptyState message="A carregar histórico..." icon="bi-hourglass-split" />
+        <EmptyState message={t("serviceLine.historico.loading")} icon="bi-hourglass-split" />
       ) : error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : (
         <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <h5 className="mb-3 text-base font-bold text-slate-900">
             <i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>
-            Processos de Candidatura ({filtered.length})
+            {t("serviceLine.historico.processesTitle", { count: filtered.length })}
           </h5>
           {filtered.length === 0 ? (
-            <EmptyState message="Sem registos para os filtros selecionados." icon="bi-inbox" />
+            <EmptyState message={t("serviceLine.historico.emptyFiltered")} icon="bi-inbox" />
           ) : (
             <div className="overflow-x-auto rounded-xl border border-slate-200">
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <SortableTh label="Consultor" sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Badge" sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Estado" sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Workflow" sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Submetido" sortKey="submitted_at" accessor={(p) => (p.submitted_at ? new Date(p.submitted_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Concluído" sortKey="data_atribuicao" accessor={(p) => (p.data_atribuicao ? new Date(p.data_atribuicao).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <th className="px-3 py-2 text-right font-semibold">Ações</th>
+                    <SortableTh label={t("serviceLine.historico.table.consultant")} sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("serviceLine.historico.table.badge")} sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("serviceLine.historico.table.status")} sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("serviceLine.historico.table.workflow")} sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("serviceLine.historico.table.submitted")} sortKey="submitted_at" accessor={(p) => (p.submitted_at ? new Date(p.submitted_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("serviceLine.historico.table.completed")} sortKey="data_atribuicao" accessor={(p) => (p.data_atribuicao ? new Date(p.data_atribuicao).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <th className="px-3 py-2 text-right font-semibold">{t("serviceLine.historico.table.actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -278,15 +290,15 @@ export default function HistoricoSL() {
                           <button
                             className={slActionClass}
                             onClick={() => setSelected(pedido)}
-                            title="Ver processo completo"
+                            title={t("serviceLine.historico.viewProcessTitle")}
                           >
-                            <i className="bi bi-eye mr-1"></i>Processo
+                            <i className="bi bi-eye mr-1"></i>{t("serviceLine.historico.process")}
                           </button>
                           {pedido.status === "obtido" && (
                             <button
                               className={slActionClass}
                               onClick={() => downloadCertificado(pedido.badge_id, pedido.consultor_id)}
-                              title="Download certificado"
+                              title={t("serviceLine.historico.downloadCertificateTitle")}
                             >
                               <i className="bi bi-file-earmark-pdf mr-1"></i>PDF
                             </button>

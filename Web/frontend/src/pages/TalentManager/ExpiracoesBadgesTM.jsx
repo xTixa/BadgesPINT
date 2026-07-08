@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout from "./TalentManagerLayout";
 
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString("pt-PT") : "-");
 
-const JANELAS = [
-  { label: "Todos", value: 999 },
-  { label: "≤ 30 dias", value: 30 },
-  { label: "≤ 60 dias", value: 60 },
-  { label: "≤ 90 dias", value: 90 },
+const getJanelas = (t) => [
+  { label: t("talentManager.expiracoes.windows.all"), value: 999 },
+  { label: t("talentManager.expiracoes.windows.days30"), value: 30 },
+  { label: t("talentManager.expiracoes.windows.days60"), value: 60 },
+  { label: t("talentManager.expiracoes.windows.days90"), value: 90 },
 ];
 
 const urgencyClass = (dias) => {
@@ -31,6 +32,8 @@ function SortButton({ sortKey, activeKey, asc, onSort, children }) {
 }
 
 export default function ExpiracoesBadgesTM() {
+  const { t } = useTranslation();
+  const JANELAS = useMemo(() => getJanelas(t), [t]);
   const [expiracoes, setExpiracoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -54,10 +57,10 @@ export default function ExpiracoesBadgesTM() {
         );
         setExpiracoes(items);
       })
-      .catch(() => { if (mounted) setError("Não foi possível carregar os dados."); })
+      .catch(() => { if (mounted) setError(t("talentManager.expiracoes.errors.loadFailed")); })
       .finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
-  }, []);
+  }, [t]);
 
   const filtered = useMemo(() => {
     let result = janela === 999
@@ -95,16 +98,16 @@ export default function ExpiracoesBadgesTM() {
 
   return (
     <TalentManagerLayout
-      title="Expirações de Badges"
-      subtitle="Monitoriza todos os badges da tua equipa próximos de expirar. Atua antes que expirem."
+      title={t("talentManager.expiracoes.title")}
+      subtitle={t("talentManager.expiracoes.subtitle")}
       heroStats={[
-        { label: "Total (≤90d)", value: total90 },
-        { label: "Críticos (≤15d)", value: criticos },
-        { label: "Urgentes (≤30d)", value: urgentes },
+        { label: t("talentManager.expiracoes.stats.total90"), value: total90 },
+        { label: t("talentManager.expiracoes.stats.critical15"), value: criticos },
+        { label: t("talentManager.expiracoes.stats.urgent30"), value: urgentes },
       ]}
     >
       {loading ? (
-        <EmptyState message="A carregar expirações..." icon="bi-hourglass-split" />
+        <EmptyState message={t("talentManager.expiracoes.loading")} icon="bi-hourglass-split" />
       ) : error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : (
@@ -130,7 +133,7 @@ export default function ExpiracoesBadgesTM() {
               <input
                 type="text"
                 className="w-52 border-0 bg-transparent py-2 pr-3 text-sm text-slate-800 outline-none"
-                placeholder="Consultor ou badge..."
+                placeholder={t("talentManager.expiracoes.searchPlaceholder")}
                 value={filtroNome}
                 onChange={(e) => setFiltroNome(e.target.value)}
               />
@@ -141,7 +144,7 @@ export default function ExpiracoesBadgesTM() {
             <div className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-3">
               <i className="bi bi-exclamation-triangle-fill text-rose-600"></i>
               <span className="text-sm font-semibold text-rose-700">
-                {criticos} badge{criticos !== 1 ? "s" : ""} expiram em menos de 15 dias — contacta os consultores.
+                {t("talentManager.expiracoes.criticalWarning", { count: criticos })}
               </span>
             </div>
           )}
@@ -152,27 +155,27 @@ export default function ExpiracoesBadgesTM() {
                 <tr className="text-left text-slate-500">
                   <th className="px-5 py-3 font-semibold">
                     <SortButton sortKey="badge" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
-                      Badge
+                      {t("talentManager.expiracoes.table.badge")}
                     </SortButton>
                   </th>
                   <th className="px-5 py-3 font-semibold">
                     <SortButton sortKey="consultor" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
-                      Consultor
+                      {t("talentManager.expiracoes.table.consultant")}
                     </SortButton>
                   </th>
                   <th className="px-5 py-3 font-semibold">
                     <SortButton sortKey="area" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
-                      Área
+                      {t("talentManager.expiracoes.table.area")}
                     </SortButton>
                   </th>
                   <th className="px-5 py-3 font-semibold">
                     <SortButton sortKey="expires_at" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
-                      Expira em
+                      {t("talentManager.expiracoes.table.expiresOn")}
                     </SortButton>
                   </th>
                   <th className="px-5 py-3 font-semibold">
                     <SortButton sortKey="dias" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
-                      Dias restantes
+                      {t("talentManager.expiracoes.table.daysLeft")}
                     </SortButton>
                   </th>
                 </tr>
@@ -189,7 +192,7 @@ export default function ExpiracoesBadgesTM() {
                     <td className="px-5 py-3 text-slate-500">{formatDate(b.expires_at)}</td>
                     <td className="px-5 py-3">
                       <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${urgencyClass(b.dias)}`}>
-                        {b.dias} dias
+                        {t("talentManager.expiracoes.daysLabel", { count: b.dias })}
                       </span>
                     </td>
                   </tr>
@@ -200,8 +203,8 @@ export default function ExpiracoesBadgesTM() {
                       <EmptyState
                         message={
                           expiracoes.length
-                            ? "Nenhum badge encontrado com este filtro."
-                            : "Nenhum badge próximo de expirar na tua equipa."
+                            ? t("talentManager.expiracoes.emptyFiltered")
+                            : t("talentManager.expiracoes.emptyTeam")
                         }
                         icon="bi-calendar2-check"
                       />
@@ -212,11 +215,11 @@ export default function ExpiracoesBadgesTM() {
             </table>
             <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3">
               <span className="text-xs text-slate-500">
-                {filtered.length} badge{filtered.length !== 1 ? "s" : ""}{" "}
-                {janela === 999 ? "no total" : `a expirar nos próximos ${janela} dias`}
+                {t("talentManager.expiracoes.summary.count", { count: filtered.length })}{" "}
+                {janela === 999 ? t("talentManager.expiracoes.summary.total") : t("talentManager.expiracoes.summary.withinDays", { days: janela })}
               </span>
               <Link to="/tm/equipa" className="text-xs font-semibold text-[#0F62FE] hover:underline">
-                Ver equipa completa →
+                {t("talentManager.expiracoes.viewFullTeam")}
               </Link>
             </div>
           </div>

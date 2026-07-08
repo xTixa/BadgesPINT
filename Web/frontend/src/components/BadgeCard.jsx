@@ -1,15 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BadgeMedal from "./BadgeMedal";
 
 const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
 const getBadgeLevel = (badge) => badge?.level || badge?.nivel || badge?.level_name || "Junior";
-const getBadgeArea = (badge) =>
-  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "Competencia";
-const getBadgeDescription = (badge) =>
+const getBadgeArea = (badge, t) =>
+  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || t("components.badgeCard.defaultArea");
+const getBadgeDescription = (badge, t) =>
   badge?.description ||
   badge?.descricao ||
-  "Badge focado no desenvolvimento e validacao de uma competencia profissional.";
+  t("components.badgeCard.defaultDescription");
 const getBadgePoints = (badge) => Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
 
 export default function BadgeCard({
@@ -21,10 +22,11 @@ export default function BadgeCard({
   canApply = false,
   variant = "catalog",
 }) {
+  const { t } = useTranslation();
   const name = getBadgeName(badge);
   const level = getBadgeLevel(badge);
-  const areaName = getBadgeArea(badge);
-  const description = getBadgeDescription(badge);
+  const areaName = getBadgeArea(badge, t);
+  const description = getBadgeDescription(badge, t);
   const points = getBadgePoints(badge);
   const imageUrl = badge?.image_url || badge?.imageUrl || "";
   const detailUrl = `/badges/${badge?.id}`;
@@ -66,15 +68,15 @@ export default function BadgeCard({
         <div className="mt-5 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-slate-50 px-2 py-3">
             <p className="text-sm font-extrabold text-slate-950">{points}</p>
-            <p className="text-[11px] font-semibold text-slate-500">pontos</p>
+            <p className="text-[11px] font-semibold text-slate-500">{t("components.badgeCard.points")}</p>
           </div>
           <div className="rounded-xl bg-slate-50 px-2 py-3">
             <p className="text-sm font-extrabold text-slate-950">{requirementsCount}</p>
-            <p className="text-[11px] font-semibold text-slate-500">requisitos</p>
+            <p className="text-[11px] font-semibold text-slate-500">{t("components.badgeCard.requirements")}</p>
           </div>
           <div className="rounded-xl bg-slate-50 px-2 py-3">
             <p className="text-sm font-extrabold text-slate-950">100%</p>
-            <p className="text-[11px] font-semibold text-slate-500">validado</p>
+            <p className="text-[11px] font-semibold text-slate-500">{t("components.badgeCard.validated")}</p>
           </div>
         </div>
 
@@ -84,7 +86,7 @@ export default function BadgeCard({
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/20 px-4 py-3 text-sm font-bold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
           >
             <i className="bi bi-list-check"></i>
-            Ver detalhes
+            {t("components.badgeCard.viewDetails")}
           </Link>
 
           {(canApply || variant === "course") && (
@@ -97,10 +99,10 @@ export default function BadgeCard({
               >
                 <i className="bi bi-send"></i>
                 {applied
-                  ? applicationStatus || "Candidatura ativa"
+                  ? applicationStatus || t("components.badgeCard.activeApplication")
                   : applying
-                    ? "A candidatar..."
-                    : "Candidatar-me"}
+                    ? t("components.badgeCard.applying")
+                    : t("components.badgeCard.apply")}
               </button>
             ) : (
               <Link
@@ -108,7 +110,7 @@ export default function BadgeCard({
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:shadow-md"
               >
                 <i className="bi bi-arrow-right"></i>
-                Explorar badge
+                {t("components.badgeCard.exploreBadge")}
               </Link>
             )
           )}

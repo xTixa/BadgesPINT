@@ -1,9 +1,10 @@
 import logo from "/src/assets/logo.png";
+import { useTranslation } from "react-i18next";
 
 const particles = Array.from({ length: 14 }, (_, index) => index);
 
 export default function AuthShell({
-  eyebrow = "Softinsa Badges",
+  eyebrow,
   title,
   description,
   asideTitle,
@@ -12,6 +13,7 @@ export default function AuthShell({
   children,
   wide = false,
 }) {
+  const { t } = useTranslation();
   return (
     <main className="auth-screen">
       <div className="auth-grid"></div>
@@ -23,7 +25,7 @@ export default function AuthShell({
 
       <section className={`auth-card ${wide ? "auth-card-wide" : ""}`}>
         <aside className="auth-aside">
-          <span className="auth-eyebrow">{eyebrow}</span>
+          <span className="auth-eyebrow">{eyebrow || t("auth.shell.eyebrow")}</span>
           <div>
             <h1>{asideTitle || title}</h1>
             {asideText && <p>{asideText}</p>}

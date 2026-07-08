@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ServiceLineLayout, { slPanelClass, slPrimaryActionClass } from "./ServiceLineLayout";
 import ProfileEditor from "../../components/ProfileEditor";
 import api from "/src/api";
@@ -14,6 +15,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function ServiceLineSettingsPage() {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -48,10 +50,10 @@ export default function ServiceLineSettingsPage() {
       setSaving(true);
       setFeedback("");
       await api.put("/api/sl/preferences", settings);
-      setFeedback("Definições guardadas com sucesso.");
+      setFeedback(t("serviceLine.settings.saveSuccess"));
     } catch (err) {
       console.error("Erro ao guardar preferencias do SL:", err);
-      setFeedback("Não foi possível guardar as definições.");
+      setFeedback(t("serviceLine.settings.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -59,22 +61,22 @@ export default function ServiceLineSettingsPage() {
 
   return (
     <ServiceLineLayout
-      title="Configuracoes"
-      subtitle="Define preferencias operacionais da tua area de Service Line."
+      title={t("serviceLine.settings.title")}
+      subtitle={t("serviceLine.settings.subtitle")}
     >
       <div className="mb-6">
-        <h2 className="mb-3 text-lg font-bold text-slate-900">Perfil</h2>
+        <h2 className="mb-3 text-lg font-bold text-slate-900">{t("serviceLine.settings.profile")}</h2>
         <ProfileEditor />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">Notificacoes</h2>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.notifications")}</h2>
 
           <div className="space-y-4">
             <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
               <span className="text-sm font-medium text-slate-700">
-                Candidaturas em validacao da Service Line
+                {t("serviceLine.settings.notifyValidacao")}
               </span>
               <input
                 type="checkbox"
@@ -86,7 +88,7 @@ export default function ServiceLineSettingsPage() {
 
             <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
               <span className="text-sm font-medium text-slate-700">
-                SLA ultrapassado na minha Service Line
+                {t("serviceLine.settings.notifySla")}
               </span>
               <input
                 type="checkbox"
@@ -99,12 +101,12 @@ export default function ServiceLineSettingsPage() {
         </section>
 
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">Relatorios</h2>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.reports")}</h2>
 
           <div className="space-y-4">
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-slate-700">
-                Formato padrao de exportacao
+                {t("serviceLine.settings.exportFormat")}
               </span>
               <select
                 value={settings.exportFormat}
@@ -118,7 +120,7 @@ export default function ServiceLineSettingsPage() {
 
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-slate-700">
-                Mostrar ranking Top N consultores
+                {t("serviceLine.settings.topN")}
               </span>
               <input
                 type="number"
@@ -132,41 +134,41 @@ export default function ServiceLineSettingsPage() {
         </section>
 
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">Interface</h2>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.interface")}</h2>
 
           <div className="space-y-4">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Idioma</span>
+              <span className="mb-1 block text-sm font-medium text-slate-700">{t("serviceLine.settings.language")}</span>
               <select
                 value={settings.language}
                 onChange={(e) => handleChange("language", e.target.value)}
                 className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
               >
-                <option value="pt">Portugues</option>
-                <option value="en">Ingles</option>
+                <option value="pt">{t("serviceLine.settings.portuguese")}</option>
+                <option value="en">{t("serviceLine.settings.english")}</option>
               </select>
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Tema</span>
+              <span className="mb-1 block text-sm font-medium text-slate-700">{t("serviceLine.settings.theme")}</span>
               <select
                 value={settings.theme}
                 onChange={(e) => handleChange("theme", e.target.value)}
                 className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
               >
-                <option value="light">Claro</option>
-                <option value="dark">Escuro</option>
+                <option value="light">{t("serviceLine.settings.themeLight")}</option>
+                <option value="dark">{t("serviceLine.settings.themeDark")}</option>
               </select>
             </label>
           </div>
         </section>
 
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">Metricas</h2>
+          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.metrics")}</h2>
 
           <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
             <span className="text-sm font-medium text-slate-700">
-              Comparar consultores da mesma area
+              {t("serviceLine.settings.compareConsultants")}
             </span>
             <input
               type="checkbox"
@@ -184,7 +186,7 @@ export default function ServiceLineSettingsPage() {
               onClick={handleSave}
               className={`${slPrimaryActionClass} disabled:opacity-60`}
             >
-              {saving ? "A guardar..." : "Guardar alteracoes"}
+              {saving ? t("serviceLine.settings.saving") : t("serviceLine.settings.saveChanges")}
             </button>
           </div>
         </section>

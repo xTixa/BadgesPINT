@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import EmptyState from "../../components/ui/EmptyState";
 import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
-const roleLabels = {
-  admin: "Admin",
-  talent_manager: "Talent Manager",
-  service_line_leader: "Service Line",
+const roleLabelKeys = {
+  admin: "admin.gestaoPedidosBadges.roles.admin",
+  talent_manager: "admin.gestaoPedidosBadges.roles.talentManager",
+  service_line_leader: "admin.gestaoPedidosBadges.roles.serviceLine",
 };
 
 function readCurrentRole() {
@@ -26,62 +27,63 @@ function formatDate(value) {
   return date.toLocaleDateString("pt-PT");
 }
 
-function statusMeta(status) {
+function statusMeta(status, t) {
   switch (status) {
     case "pending":
       return {
-        label: "Pendente",
+        label: t("admin.gestaoPedidosBadges.status.pending"),
         icon: "bi-hourglass-split",
         className: "bg-amber-50 text-amber-700 ring-amber-200",
       };
     case "approved":
       return {
-        label: "Aprovado",
+        label: t("admin.gestaoPedidosBadges.status.approved"),
         icon: "bi-check-circle",
         className: "bg-emerald-50 text-emerald-700 ring-emerald-200",
       };
     case "rejected":
       return {
-        label: "Rejeitado",
+        label: t("admin.gestaoPedidosBadges.status.rejected"),
         icon: "bi-x-circle",
         className: "bg-rose-50 text-rose-700 ring-rose-200",
       };
     default:
       return {
-        label: "Desconhecido",
+        label: t("admin.gestaoPedidosBadges.status.unknown"),
         icon: "bi-question-circle",
         className: "bg-slate-50 text-slate-700 ring-slate-200",
       };
   }
 }
 
-function workflowMeta(status) {
+function workflowMeta(status, t) {
   switch (status) {
     case "submitted":
       return {
-        label: "Submetido",
+        label: t("admin.gestaoPedidosBadges.workflow.submitted"),
         className: "bg-amber-50 text-amber-700 ring-amber-200",
       };
     case "em_validacao":
       return {
-        label: "Em validacao",
+        label: t("admin.gestaoPedidosBadges.workflow.inValidation"),
         className: "bg-sky-50 text-sky-700 ring-sky-200",
       };
     case "fechado":
       return {
-        label: "Fechado",
+        label: t("admin.gestaoPedidosBadges.workflow.closed"),
         className: "bg-emerald-50 text-emerald-700 ring-emerald-200",
       };
     case "open":
     default:
       return {
-        label: "Aberto",
+        label: t("admin.gestaoPedidosBadges.workflow.open"),
         className: "bg-slate-50 text-slate-700 ring-slate-200",
       };
   }
 }
 
 export default function GestaoPedidosBadges() {
+  const { t } = useTranslation();
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState("all");
@@ -90,7 +92,7 @@ export default function GestaoPedidosBadges() {
   const token = localStorage.getItem("token");
   const currentRole = readCurrentRole();
   const pedidosBaseUrl = "/api/admin/pedidos";
-  const roleName = roleLabels[currentRole] || "Admin";
+  const roleName = roleLabelKeys[currentRole] ? t(roleLabelKeys[currentRole]) : t("admin.gestaoPedidosBadges.roles.admin");
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -115,13 +117,13 @@ export default function GestaoPedidosBadges() {
 
         const pedidosFormatados = response.data.map((p) => ({
           id: p.id,
-          userName: p.user?.name || "Desconhecido",
+          userName: p.user?.name || t("admin.gestaoPedidosBadges.unknown"),
           userEmail: p.user?.email || "",
           badgeName:
             p.badge?.name ||
             p.badge?.description ||
             p.badge_name ||
-            "Desconhecido",
+            t("admin.gestaoPedidosBadges.unknown"),
           badgeLevel: p.badge?.level || "",
           badgePoints: p.badge?.points || 0,
           status:
@@ -141,7 +143,7 @@ export default function GestaoPedidosBadges() {
         setPedidos(pedidosFormatados);
       } catch (err) {
         console.error("Erro ao carregar pedidos:", err);
-        setError("Erro ao carregar pedidos. Tente novamente.");
+        setError(t("admin.gestaoPedidosBadges.errors.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -151,6 +153,7 @@ export default function GestaoPedidosBadges() {
     const intervalId = window.setInterval(fetchPedidos, 15000);
 
     return () => window.clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtro, token]);
 
   const stats = useMemo(
@@ -171,29 +174,29 @@ export default function GestaoPedidosBadges() {
   const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidosFiltrados);
 
   const filterOptions = [
-    { value: "all", label: "Todos", count: stats.total, icon: "bi-inboxes" },
+    { value: "all", label: t("admin.gestaoPedidosBadges.filters.all"), count: stats.total, icon: "bi-inboxes" },
     {
       value: "pending",
-      label: "Pendentes",
+      label: t("admin.gestaoPedidosBadges.filters.pending"),
       count: stats.pending,
       icon: "bi-hourglass-split",
     },
     {
       value: "approved",
-      label: "Aprovados",
+      label: t("admin.gestaoPedidosBadges.filters.approved"),
       count: stats.approved,
       icon: "bi-check-circle",
     },
     {
       value: "rejected",
-      label: "Rejeitados",
+      label: t("admin.gestaoPedidosBadges.filters.rejected"),
       count: stats.rejected,
       icon: "bi-x-circle",
     },
   ];
 
   const handleAprovPedido = async (id) => {
-    if (!window.confirm("Tem a certeza que deseja aprovar este pedido?")) return;
+    if (!window.confirm(t("admin.gestaoPedidosBadges.confirmApprove"))) return;
 
     try {
       await api.post(
@@ -205,15 +208,15 @@ export default function GestaoPedidosBadges() {
       setPedidos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, status: "approved" } : p)),
       );
-      alert("Pedido aprovado com sucesso!");
+      alert(t("admin.gestaoPedidosBadges.success.approved"));
     } catch (err) {
       console.error("Erro ao aprovar pedido:", err);
-      alert("Erro ao aprovar pedido.");
+      alert(t("admin.gestaoPedidosBadges.errors.approveFailed"));
     }
   };
 
   const handleRejectPedido = async (id) => {
-    if (!window.confirm("Tem a certeza que deseja rejeitar este pedido?")) return;
+    if (!window.confirm(t("admin.gestaoPedidosBadges.confirmReject"))) return;
 
     try {
       await api.post(
@@ -225,15 +228,15 @@ export default function GestaoPedidosBadges() {
       setPedidos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, status: "rejected" } : p)),
       );
-      alert("Pedido rejeitado com sucesso!");
+      alert(t("admin.gestaoPedidosBadges.success.rejected"));
     } catch (err) {
       console.error("Erro ao rejeitar pedido:", err);
-      alert("Erro ao rejeitar pedido.");
+      alert(t("admin.gestaoPedidosBadges.errors.rejectFailed"));
     }
   };
 
   const handleTmValidar = async (id) => {
-    const comment = window.prompt("Comentario (opcional):") || "";
+    const comment = window.prompt(t("admin.gestaoPedidosBadges.commentPromptOptional")) || "";
     try {
       await api.post(
         `/api/admin/pedidos/${id}/tm/validar`,
@@ -249,12 +252,12 @@ export default function GestaoPedidosBadges() {
       );
     } catch (err) {
       console.error("Erro TM validar pedido:", err);
-      alert("Erro ao validar pedido.");
+      alert(t("admin.gestaoPedidosBadges.errors.validateFailed"));
     }
   };
 
   const handleTmDevolver = async (id) => {
-    const comment = window.prompt("Comentario para devolucao:") || "";
+    const comment = window.prompt(t("admin.gestaoPedidosBadges.commentPromptReturn")) || "";
     if (!comment) return;
     try {
       await api.post(
@@ -269,12 +272,12 @@ export default function GestaoPedidosBadges() {
       );
     } catch (err) {
       console.error("Erro TM devolver pedido:", err);
-      alert("Erro ao devolver pedido.");
+      alert(t("admin.gestaoPedidosBadges.errors.returnFailed"));
     }
   };
 
   const handleSlAprovar = async (id) => {
-    const comment = window.prompt("Comentario (opcional):") || "";
+    const comment = window.prompt(t("admin.gestaoPedidosBadges.commentPromptOptional")) || "";
     try {
       await api.post(
         `/api/admin/pedidos/${id}/sl/aprovar`,
@@ -295,12 +298,12 @@ export default function GestaoPedidosBadges() {
       );
     } catch (err) {
       console.error("Erro SL aprovar pedido:", err);
-      alert("Erro ao aprovar pedido.");
+      alert(t("admin.gestaoPedidosBadges.errors.approveFailed"));
     }
   };
 
   const handleSlRejeitar = async (id) => {
-    const comment = window.prompt("Comentario (opcional):") || "";
+    const comment = window.prompt(t("admin.gestaoPedidosBadges.commentPromptOptional")) || "";
     try {
       await api.post(
         `/api/admin/pedidos/${id}/sl/rejeitar`,
@@ -321,12 +324,12 @@ export default function GestaoPedidosBadges() {
       );
     } catch (err) {
       console.error("Erro SL rejeitar pedido:", err);
-      alert("Erro ao rejeitar pedido.");
+      alert(t("admin.gestaoPedidosBadges.errors.rejectFailed"));
     }
   };
 
   const handleSlDevolver = async (id) => {
-    const comment = window.prompt("Comentario para devolucao:") || "";
+    const comment = window.prompt(t("admin.gestaoPedidosBadges.commentPromptReturn")) || "";
     if (!comment) return;
     try {
       await api.post(
@@ -348,7 +351,7 @@ export default function GestaoPedidosBadges() {
       );
     } catch (err) {
       console.error("Erro SL devolver pedido:", err);
-      alert("Erro ao devolver pedido.");
+      alert(t("admin.gestaoPedidosBadges.errors.returnFailed"));
     }
   };
 
@@ -366,13 +369,13 @@ export default function GestaoPedidosBadges() {
             className={approveButtonClass}
             onClick={() => handleAprovPedido(pedido.id)}
           >
-            <i className="bi bi-check-circle"></i>Aprovar
+            <i className="bi bi-check-circle"></i>{t("admin.gestaoPedidosBadges.actions.approve")}
           </button>
           <button
             className={rejectButtonClass}
             onClick={() => handleRejectPedido(pedido.id)}
           >
-            <i className="bi bi-x-circle"></i>Rejeitar
+            <i className="bi bi-x-circle"></i>{t("admin.gestaoPedidosBadges.actions.reject")}
           </button>
         </>
       );
@@ -385,13 +388,13 @@ export default function GestaoPedidosBadges() {
             className={approveButtonClass}
             onClick={() => handleTmValidar(pedido.id)}
           >
-            <i className="bi bi-check-circle"></i>Validar
+            <i className="bi bi-check-circle"></i>{t("admin.gestaoPedidosBadges.actions.validate")}
           </button>
           <button
             className={returnButtonClass}
             onClick={() => handleTmDevolver(pedido.id)}
           >
-            <i className="bi bi-arrow-counterclockwise"></i>Devolver
+            <i className="bi bi-arrow-counterclockwise"></i>{t("admin.gestaoPedidosBadges.actions.return")}
           </button>
         </>
       );
@@ -407,19 +410,19 @@ export default function GestaoPedidosBadges() {
             className={approveButtonClass}
             onClick={() => handleSlAprovar(pedido.id)}
           >
-            <i className="bi bi-check-circle"></i>Aprovar
+            <i className="bi bi-check-circle"></i>{t("admin.gestaoPedidosBadges.actions.approve")}
           </button>
           <button
             className={rejectButtonClass}
             onClick={() => handleSlRejeitar(pedido.id)}
           >
-            <i className="bi bi-x-circle"></i>Rejeitar
+            <i className="bi bi-x-circle"></i>{t("admin.gestaoPedidosBadges.actions.reject")}
           </button>
           <button
             className={returnButtonClass}
             onClick={() => handleSlDevolver(pedido.id)}
           >
-            <i className="bi bi-arrow-counterclockwise"></i>Devolver
+            <i className="bi bi-arrow-counterclockwise"></i>{t("admin.gestaoPedidosBadges.actions.return")}
           </button>
         </>
       );
@@ -428,7 +431,7 @@ export default function GestaoPedidosBadges() {
     if (pedido.status === "approved") {
       return (
         <span className="inline-flex items-center gap-1 text-sm font-bold text-emerald-700">
-          <i className="bi bi-check2-all"></i> Processado
+          <i className="bi bi-check2-all"></i> {t("admin.gestaoPedidosBadges.actions.processed")}
         </span>
       );
     }
@@ -436,12 +439,12 @@ export default function GestaoPedidosBadges() {
     if (pedido.status === "rejected") {
       return (
         <span className="inline-flex items-center gap-1 text-sm font-bold text-rose-700">
-          <i className="bi bi-x-lg"></i> Rejeitado
+          <i className="bi bi-x-lg"></i> {t("admin.gestaoPedidosBadges.status.rejected")}
         </span>
       );
     }
 
-    return <span className="text-sm font-semibold text-slate-400">Sem acoes</span>;
+    return <span className="text-sm font-semibold text-slate-400">{t("admin.gestaoPedidosBadges.actions.none")}</span>;
   }
 
   return (
@@ -454,32 +457,31 @@ export default function GestaoPedidosBadges() {
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="mb-2 text-sm font-medium text-white/80">
-                Painel de administracao
+                {t("admin.common.adminPanel")}
               </p>
               <h1 className="text-3xl font-bold text-white">
-                Gestao de Pedidos de Badges
+                {t("admin.gestaoPedidosBadges.title")}
               </h1>
               <p className="mt-2 max-w-2xl text-white/85">
-                Consulta pedidos submetidos, acompanha o workflow e executa
-                aprovacoes ou rejeicoes.
+                {t("admin.gestaoPedidosBadges.subtitle")}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
               {[
-                { label: "Total", value: stats.total, icon: "bi-inboxes" },
+                { label: t("admin.gestaoPedidosBadges.filters.all"), value: stats.total, icon: "bi-inboxes" },
                 {
-                  label: "Pendentes",
+                  label: t("admin.gestaoPedidosBadges.filters.pending"),
                   value: stats.pending,
                   icon: "bi-hourglass-split",
                 },
                 {
-                  label: "Aprovados",
+                  label: t("admin.gestaoPedidosBadges.filters.approved"),
                   value: stats.approved,
                   icon: "bi-check-circle",
                 },
                 {
-                  label: "Rejeitados",
+                  label: t("admin.gestaoPedidosBadges.filters.rejected"),
                   value: stats.rejected,
                   icon: "bi-x-circle",
                 },
@@ -542,32 +544,32 @@ export default function GestaoPedidosBadges() {
             <div className="flex flex-col items-center justify-center px-6 py-16 text-slate-500">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#0F62FE]"></div>
               <p className="mt-3 text-sm font-semibold text-slate-500">
-                A carregar pedidos...
+                {t("admin.gestaoPedidosBadges.loading")}
               </p>
             </div>
           ) : pedidosFiltrados.length === 0 ? (
             <div className="p-6">
-              <EmptyState message="Nenhum pedido encontrado." icon="bi-inbox" />
+              <EmptyState message={t("admin.gestaoPedidosBadges.emptyState")} icon="bi-inbox" />
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-100">
                 <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <SortableTh label="Utilizador" sortKey="userName" accessor={(p) => p.userName} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Badge" sortKey="badgeName" accessor={(p) => p.badgeName} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Nivel" sortKey="badgeLevel" accessor={(p) => p.badgeLevel} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Status" sortKey="status" accessor={(p) => p.status} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Workflow" sortKey="workflowStatus" accessor={(p) => p.workflowStatus} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Data" sortKey="dataPedidoRaw" accessor={(p) => (p.dataPedidoRaw ? new Date(p.dataPedidoRaw).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
-                    <th className="px-4 py-3 text-left">Acoes</th>
+                    <SortableTh label={t("admin.gestaoPedidosBadges.columns.user")} sortKey="userName" accessor={(p) => p.userName} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoPedidosBadges.columns.badge")} sortKey="badgeName" accessor={(p) => p.badgeName} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.badgeForm.levelLabel")} sortKey="badgeLevel" accessor={(p) => p.badgeLevel} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoPedidosBadges.columns.status")} sortKey="status" accessor={(p) => p.status} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoPedidosBadges.columns.workflow")} sortKey="workflowStatus" accessor={(p) => p.workflowStatus} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoPedidosBadges.columns.date")} sortKey="dataPedidoRaw" accessor={(p) => (p.dataPedidoRaw ? new Date(p.dataPedidoRaw).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
+                    <th className="px-4 py-3 text-left">{t("admin.common.actions")}</th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
                   {pedidosOrdenados.map((pedido) => {
-                    const status = statusMeta(pedido.status);
-                    const workflow = workflowMeta(pedido.workflowStatus);
+                    const status = statusMeta(pedido.status, t);
+                    const workflow = workflowMeta(pedido.workflowStatus, t);
 
                     return (
                       <tr key={pedido.id} className="transition hover:bg-slate-50">
@@ -576,7 +578,7 @@ export default function GestaoPedidosBadges() {
                             {pedido.userName}
                           </div>
                           <div className="text-xs text-slate-500">
-                            {pedido.userEmail || "Sem email"}
+                            {pedido.userEmail || t("admin.gestaoPedidosBadges.noEmail")}
                           </div>
                         </td>
                         <td className="px-4 py-4">
@@ -585,12 +587,12 @@ export default function GestaoPedidosBadges() {
                           </div>
                           <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#0F62FE]/10 px-2 py-0.5 text-xs font-bold text-[#0F62FE]">
                             <i className="bi bi-coin"></i>
-                            {pedido.badgePoints} pts
+                            {pedido.badgePoints} {t("admin.gestaoBadges.pts")}
                           </div>
                         </td>
                         <td className="px-4 py-4">
                           <span className="inline-flex rounded-full bg-sky-50 px-2.5 py-1 text-xs font-bold text-sky-700 ring-1 ring-inset ring-sky-200">
-                            {pedido.badgeLevel || "N/D"}
+                            {pedido.badgeLevel || t("admin.common.notAvailable")}
                           </span>
                         </td>
                         <td className="px-4 py-4">

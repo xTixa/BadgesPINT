@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../api";
 import BadgeMedal from "../components/BadgeMedal";
 
 const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
-const getBadgeArea = (badge) =>
-  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || "Competencia";
-const getBadgeLevel = (badge) => badge?.level || badge?.nivel || badge?.level_name || "Nivel";
+const getBadgeArea = (badge, t) =>
+  badge?.area?.name || badge?.area?.nome || badge?.area_name || badge?.area || t("requirements.defaults.area");
+const getBadgeLevel = (badge, t) => badge?.level || badge?.nivel || badge?.level_name || t("requirements.defaults.level");
 const getBadgePoints = (badge) => Number(badge?.points ?? badge?.pontos ?? badge?.score ?? 0);
-const getBadgeDescription = (badge) =>
+const getBadgeDescription = (badge, t) =>
   badge?.description ||
   badge?.descricao ||
-  "Valida uma competencia profissional atraves de requisitos, evidencias e revisao.";
+  t("requirements.defaults.description");
 
 const getApplicationCacheKey = (user) => `badge_applications_${user?.id || user?.email || "anon"}`;
 
@@ -47,6 +48,7 @@ const openLinkedInShare = (url) => {
 };
 
 export default function Requirements() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [reqs, setReqs] = useState([]);
   const [badge, setBadge] = useState(null);
@@ -99,7 +101,7 @@ export default function Requirements() {
       } catch (err) {
         console.error(err);
         if (!active) return;
-        setError("Nao foi possivel carregar os detalhes deste badge.");
+        setError(t("requirements.errors.loadFailed"));
       } finally {
         if (active) setLoading(false);
       }
@@ -110,7 +112,7 @@ export default function Requirements() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     if (!id || user?.role !== "consultant") {
@@ -158,30 +160,30 @@ export default function Requirements() {
 
   const imageUrl = badge?.image_url || badge?.imageUrl || "";
   const badgeName = getBadgeName(badge);
-  const areaName = getBadgeArea(badge);
-  const level = getBadgeLevel(badge);
+  const areaName = getBadgeArea(badge, t);
+  const level = getBadgeLevel(badge, t);
   const points = getBadgePoints(badge);
-  const description = getBadgeDescription(badge);
+  const description = getBadgeDescription(badge, t);
   const publicBadgeUrl = getPublicBadgeUrl(id);
 
   const learningOutcomes = Array.isArray(badge?.learning_outcomes) && badge.learning_outcomes.length > 0
     ? badge.learning_outcomes
     : [
-    `Demonstrar competencia em ${areaName}.`,
-    "Perceber os requisitos necessarios antes de submeter evidencias.",
-    "Organizar provas de trabalho para validacao pela equipa responsavel.",
-    "Ganhar pontos e progresso no percurso profissional.",
+    t("requirements.defaultOutcomes.demonstrateSkill", { area: areaName }),
+    t("requirements.defaultOutcomes.understandRequirements"),
+    t("requirements.defaultOutcomes.organizeEvidence"),
+    t("requirements.defaultOutcomes.earnPoints"),
   ];
   const sections = Array.isArray(badge?.sections) ? badge.sections : [];
 
   const handleApply = async () => {
     if (!user) {
-      setError("Inicia sessao como consultor para te candidatares a este badge.");
+      setError(t("requirements.errors.loginRequired"));
       return;
     }
 
     if (user.role !== "consultant") {
-      setError("Apenas consultores podem candidatar-se a badges.");
+      setError(t("requirements.errors.onlyConsultants"));
       return;
     }
 
@@ -197,10 +199,10 @@ export default function Requirements() {
         workflow_status: "submitted",
       });
       writeCachedApplicationId(user, id);
-      setSuccess("Candidatura criada e enviada para validacao.");
+      setSuccess(t("requirements.success.applied"));
     } catch (err) {
       console.error("Erro ao candidatar:", err);
-      setError(err.response?.data?.message || "Nao foi possivel criar a candidatura.");
+      setError(err.response?.data?.message || t("requirements.errors.applyFailed"));
     } finally {
       setApplying(false);
     }
@@ -212,9 +214,9 @@ export default function Requirements() {
         <div className="mx-auto grid w-full max-w-[1600px] gap-6 rounded-2xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-6 text-white shadow-[0_12px_40px_rgba(15,98,254,0.18)] lg:grid-cols-[minmax(0,1fr)_320px] lg:p-7">
           <div className="max-w-5xl">
             <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-bold text-[#BFEFFF]">
-              <Link to="/" className="hover:text-white">Inicio</Link>
+              <Link to="/" className="hover:text-white">{t("requirements.breadcrumbs.home")}</Link>
               <span className="text-white/40">/</span>
-              <Link to="/badges" className="hover:text-white">Badges</Link>
+              <Link to="/badges" className="hover:text-white">{t("requirements.breadcrumbs.badges")}</Link>
               <span className="text-white/40">/</span>
               <span className="text-white/80">{areaName}</span>
             </nav>
@@ -229,7 +231,7 @@ export default function Requirements() {
             </div>
 
             <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white md:text-4xl">
-              {badge ? badgeName : "Detalhe do badge"}
+              {badge ? badgeName : t("requirements.badgeDetailFallback")}
             </h1>
             <p className="mt-3 max-w-4xl text-base leading-7 text-[#EAF6FF]">
               {description}
@@ -238,15 +240,15 @@ export default function Requirements() {
             <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#EAF6FF]">
               <span className="font-bold text-[#BFEFFF]">
                 <i className="bi bi-star-fill mr-1"></i>
-                Badge verificado
+                {t("requirements.verifiedBadge")}
               </span>
-              <span>{reqs.length} requisitos</span>
-              <span>{points} pontos</span>
-              <span>Atualizado recentemente</span>
+              <span>{t("requirements.requirementsCount", { count: reqs.length })}</span>
+              <span>{t("requirements.pointsCount", { count: points })}</span>
+              <span>{t("requirements.recentlyUpdated")}</span>
             </div>
 
             <p className="mt-3 text-sm text-[#D9F7FF]">
-              Criado para consultores que querem validar competencias com evidencias reais.
+              {t("requirements.heroFooterText")}
             </p>
           </div>
 
@@ -257,8 +259,8 @@ export default function Requirements() {
               </div>
               <div className="p-4">
                 <div className="mb-3">
-                  <p className="text-2xl font-extrabold">{points} pontos</p>
-                  <p className="text-sm font-semibold text-slate-500">ao conquistar este badge</p>
+                  <p className="text-2xl font-extrabold">{t("requirements.pointsCount", { count: points })}</p>
+                  <p className="text-sm font-semibold text-slate-500">{t("requirements.onEarnBadge")}</p>
                 </div>
 
                 {user?.role === "consultant" ? (
@@ -270,18 +272,18 @@ export default function Requirements() {
                   >
                     {applied
                       ? application?.status === "obtido"
-                        ? "Badge obtido"
-                        : "Candidatura ativa"
+                        ? t("requirements.card.obtained")
+                        : t("requirements.card.activeApplication")
                       : applying
-                        ? "A criar candidatura..."
-                        : "Candidatar-me agora"}
+                        ? t("requirements.card.applying")
+                        : t("requirements.card.applyNow")}
                   </button>
                 ) : (
                   <Link
                     to="/login"
                     className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD]"
                   >
-                    Entrar para candidatar
+                    {t("requirements.card.loginToApply")}
                   </Link>
                 )}
 
@@ -290,22 +292,22 @@ export default function Requirements() {
                   onClick={() => openLinkedInShare(publicBadgeUrl)}
                   className="mb-3 flex h-10 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                 >
-                  Partilhar no LinkedIn
+                  {t("requirements.card.shareLinkedIn")}
                 </button>
 
                 <Link
                   to="/badges"
                   className="flex h-10 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                 >
-                  Ver outros badges
+                  {t("requirements.card.viewOtherBadges")}
                 </Link>
 
                 <div className="mt-4 space-y-2 text-sm">
-                  <p className="font-extrabold">Este badge inclui:</p>
-                  <p><i className="bi bi-list-check mr-2"></i>{reqs.length} requisitos de validacao</p>
-                  <p><i className="bi bi-upload mr-2"></i>Submissao de evidencias</p>
-                  <p><i className="bi bi-shield-check mr-2"></i>Revisao por responsavel</p>
-                  <p><i className="bi bi-award mr-2"></i>Reconhecimento interno</p>
+                  <p className="font-extrabold">{t("requirements.card.includesTitle")}</p>
+                  <p><i className="bi bi-list-check mr-2"></i>{t("requirements.card.validationRequirements", { count: reqs.length })}</p>
+                  <p><i className="bi bi-upload mr-2"></i>{t("requirements.card.evidenceSubmission")}</p>
+                  <p><i className="bi bi-shield-check mr-2"></i>{t("requirements.card.reviewByOwner")}</p>
+                  <p><i className="bi bi-award mr-2"></i>{t("requirements.card.internalRecognition")}</p>
                 </div>
               </div>
             </div>
@@ -328,7 +330,7 @@ export default function Requirements() {
           )}
 
           <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="text-xl font-extrabold text-slate-950">O que vais aprender</h2>
+            <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.learningOutcomes.title")}</h2>
             <div className="mt-4 grid gap-x-8 gap-y-3 md:grid-cols-2 xl:grid-cols-4">
               {learningOutcomes.map((outcome) => (
                 <div key={outcome} className="flex gap-3 text-sm leading-relaxed text-slate-700">
@@ -341,16 +343,16 @@ export default function Requirements() {
 
           <section>
             <div className="mb-4">
-                <h2 className="text-xl font-extrabold text-slate-950">Conteudo do badge</h2>
+                <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.content.title")}</h2>
               <p className="mt-1 text-sm text-slate-600">
-                {reqs.length} requisitos • evidencia obrigatoria • validacao pela equipa responsavel
+                {t("requirements.content.subtitle", { count: reqs.length })}
               </p>
             </div>
 
             {loading ? (
               <div className="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
                 <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
-                <p className="font-semibold text-slate-600">A carregar requisitos...</p>
+                <p className="font-semibold text-slate-600">{t("requirements.content.loading")}</p>
               </div>
             ) : reqs.length > 0 ? (
               <div className="overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
@@ -364,11 +366,11 @@ export default function Requirements() {
                       <div className="flex min-w-0 items-center gap-3">
                         <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
                         <span className="font-extrabold text-slate-950">
-                          Requisito {index + 1}: {requirement.code || "Evidencia"}
+                          {t("requirements.content.requirementLabel", { index: index + 1, code: requirement.code || t("requirements.content.defaultEvidence") })}
                         </span>
                       </div>
                       <span className="hidden text-sm font-semibold text-slate-500 sm:inline">
-                        Obrigatorio
+                        {t("requirements.content.mandatory")}
                       </span>
                     </summary>
                     <div className="px-5 py-4">
@@ -377,10 +379,10 @@ export default function Requirements() {
                       </p>
                       <div className="mt-4 flex flex-wrap gap-2">
                         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
-                          Evidencia pratica
+                          {t("requirements.content.practicalEvidence")}
                         </span>
                         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
-                          Validacao manual
+                          {t("requirements.content.manualValidation")}
                         </span>
                       </div>
                     </div>
@@ -390,9 +392,9 @@ export default function Requirements() {
             ) : (
               <div className="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
                 <i className="bi bi-clipboard2-x mb-4 block text-5xl text-slate-300"></i>
-                <h2 className="text-xl font-extrabold text-slate-950">Nenhum requisito definido</h2>
+                <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.content.emptyTitle")}</h2>
                 <p className="mt-2 text-slate-500">
-                  Este badge ainda precisa de requisitos para ficar pronto para candidatura.
+                  {t("requirements.content.emptyText")}
                 </p>
               </div>
             )}
@@ -401,9 +403,9 @@ export default function Requirements() {
           {sections.length > 0 && (
             <section>
               <div className="mb-4">
-                <h2 className="text-xl font-extrabold text-slate-950">Curriculo</h2>
+                <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.curriculum.title")}</h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Modulos e aulas de apoio para preparar a candidatura.
+                  {t("requirements.curriculum.subtitle")}
                 </p>
               </div>
               <div className="overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
@@ -419,7 +421,7 @@ export default function Requirements() {
                         <span className="font-extrabold text-slate-950">{section.title}</span>
                       </div>
                       <span className="text-sm font-semibold text-slate-500">
-                        {(section.lessons || []).length} aulas
+                        {t("requirements.curriculum.lessonsCount", { count: (section.lessons || []).length })}
                       </span>
                     </summary>
                     <div className="divide-y divide-slate-100">
@@ -432,7 +434,7 @@ export default function Requirements() {
                               <p className="mt-1 text-sm text-slate-600">{lesson.description}</p>
                             )}
                             <p className="mt-1 text-xs font-semibold text-slate-400">
-                              {lesson.duration_minutes || 0} min · {lesson.content_type || "article"}
+                              {t("requirements.curriculum.durationInfo", { minutes: lesson.duration_minutes || 0, type: lesson.content_type || "article" })}
                             </p>
                           </div>
                         </div>
@@ -445,15 +447,15 @@ export default function Requirements() {
           )}
 
           <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="text-xl font-extrabold text-slate-950">Descricao</h2>
+            <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.descriptionTitle")}</h2>
             <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{description}</p>
           </section>
         </div>
 
         <aside className="lg:hidden">
           <div className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <p className="text-2xl font-extrabold text-slate-950">{points} pontos</p>
-            <p className="text-sm font-semibold text-slate-500">ao conquistar este badge</p>
+            <p className="text-2xl font-extrabold text-slate-950">{t("requirements.pointsCount", { count: points })}</p>
+            <p className="text-sm font-semibold text-slate-500">{t("requirements.onEarnBadge")}</p>
             {user?.role === "consultant" ? (
               <button
                 type="button"
@@ -463,18 +465,18 @@ export default function Requirements() {
               >
                 {applied
                   ? application?.status === "obtido"
-                    ? "Badge obtido"
-                    : "Candidatura ativa"
+                    ? t("requirements.card.obtained")
+                    : t("requirements.card.activeApplication")
                   : applying
-                    ? "A criar candidatura..."
-                    : "Candidatar-me agora"}
+                    ? t("requirements.card.applying")
+                    : t("requirements.card.applyNow")}
               </button>
             ) : (
               <Link
                 to="/login"
                 className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white"
               >
-                Entrar para candidatar
+                {t("requirements.card.loginToApply")}
               </Link>
             )}
             <button
@@ -482,7 +484,7 @@ export default function Requirements() {
               onClick={() => openLinkedInShare(publicBadgeUrl)}
               className="mt-3 flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
             >
-              Partilhar no LinkedIn
+              {t("requirements.card.shareLinkedIn")}
             </button>
           </div>
         </aside>

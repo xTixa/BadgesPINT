@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 export default function NotificationCenter() {
+  const { t } = useTranslation();
   const { isMobile } = useWindowSize();
   const [notificacoes, setNotificacoes] = useState([]);
   const [naoLidas, setNaoLidas] = useState(0);
@@ -125,7 +127,7 @@ export default function NotificationCenter() {
           justifyContent: "center",
         }}
         onClick={() => setAbrirDropdown(!abrirDropdown)}
-        title="Notificações"
+        title={t("components.notificationCenter.title")}
       >
         <i className="bi bi-bell"></i>
         {naoLidas > 0 && (
@@ -181,7 +183,7 @@ export default function NotificationCenter() {
             }}
           >
             <h6 style={{ margin: 0, color: "#0F62FE", fontWeight: "600" }}>
-              Notificações
+              {t("components.notificationCenter.title")}
               {naoLidas > 0 && (
                 <span style={{ fontSize: "0.8rem", color: "#ef4444", marginLeft: "0.5rem" }}>
                   ({naoLidas})
@@ -201,7 +203,7 @@ export default function NotificationCenter() {
                 onClick={handleMarcarTodasComoLidas}
                 disabled={loading}
               >
-                Marcar todas como lidas
+                {t("components.notificationCenter.markAllRead")}
               </button>
             )}
           </div>
@@ -306,7 +308,7 @@ export default function NotificationCenter() {
                           fontSize: "0.8rem",
                         }}
                         onClick={(e) => handleMarcarComoLida(notif.id, e)}
-                        title="Marcar como lida"
+                        title={t("components.notificationCenter.markAsRead")}
                         disabled={loading}
                       >
                         <i className="bi bi-check"></i>
@@ -322,7 +324,7 @@ export default function NotificationCenter() {
                         fontSize: "0.8rem",
                       }}
                       onClick={(e) => handleApagarNotificacao(notif.id, e)}
-                      title="Apagar"
+                      title={t("components.notificationCenter.delete")}
                       disabled={loading}
                     >
                       <i className="bi bi-trash"></i>
@@ -339,7 +341,7 @@ export default function NotificationCenter() {
                 }}
               >
                 <i className="bi bi-inbox" style={{ fontSize: "2rem", display: "block", marginBottom: "0.5rem" }}></i>
-                Sem notificações
+                {t("components.notificationCenter.empty")}
               </div>
             )}
           </div>
@@ -362,7 +364,7 @@ export default function NotificationCenter() {
                 fontWeight: "500",
               }}
             >
-              Ver todas as notificações →
+              {t("components.notificationCenter.viewAll")}
             </a>
           </div>
         </div>

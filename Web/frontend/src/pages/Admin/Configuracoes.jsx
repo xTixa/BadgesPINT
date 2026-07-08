@@ -1,8 +1,10 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 
 export default function Configuracoes() {
+  const { t } = useTranslation();
   const currentUser = (() => {
     try {
       return JSON.parse(localStorage.getItem("user")) || {};
@@ -70,10 +72,10 @@ export default function Configuracoes() {
 
   const handleChangePassword = async () => {
     if (!passwordData.currentPassword || !passwordData.newPassword) {
-      return alert("Preencha a password atual e a nova password.");
+      return alert(t("admin.configuracoes.errors.fillPasswords"));
     }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      return alert("As passwords novas não coincidem.");
+      return alert(t("admin.configuracoes.errors.passwordsDontMatch"));
     }
 
     try {
@@ -82,11 +84,11 @@ export default function Configuracoes() {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      alert("Password alterada com sucesso!");
+      alert(t("admin.configuracoes.success.passwordChanged"));
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
       console.error("Erro ao alterar password:", err);
-      alert(err.response?.data?.message || "Erro ao alterar password.");
+      alert(err.response?.data?.message || t("admin.configuracoes.errors.passwordChangeFailed"));
     } finally {
       setChangingPassword(false);
     }
@@ -106,20 +108,20 @@ export default function Configuracoes() {
         public_gallery_enabled: privacySettings.publicGallery,
         rgpd_consent_text: privacySettings.rgpdText,
       });
-      setFeedback("Configurações guardadas com sucesso!");
+      setFeedback(t("admin.configuracoes.success.saved"));
     } catch (err) {
       console.error("Erro ao guardar definições da plataforma:", err);
-      setFeedback("Não foi possível guardar as configurações.");
+      setFeedback(t("admin.configuracoes.errors.saveFailed"));
     } finally {
       setSaving(false);
     }
   };
 
   const tabs = [
-    { id: "security", label: "Segurança", icon: "bi-shield-lock" },
-    { id: "gamification", label: "Gamificação", icon: "bi-trophy" },
-    { id: "notifications", label: "Notificações", icon: "bi-bell" },
-    { id: "privacy", label: "RGPD", icon: "bi-file-lock" },
+    { id: "security", label: t("admin.configuracoes.tabs.security"), icon: "bi-shield-lock" },
+    { id: "gamification", label: t("admin.configuracoes.tabs.gamification"), icon: "bi-trophy" },
+    { id: "notifications", label: t("admin.configuracoes.tabs.notifications"), icon: "bi-bell" },
+    { id: "privacy", label: t("admin.configuracoes.tabs.privacy"), icon: "bi-file-lock" },
   ];
 
   const inputClass =
@@ -135,11 +137,10 @@ export default function Configuracoes() {
             <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
             <div className="relative z-10">
-              <h1 className="text-3xl font-bold">Configurações do Sistema</h1>
+              <h1 className="text-3xl font-bold">{t("admin.configuracoes.title")}</h1>
 
               <p className="mt-2 text-white/80">
-                Gere segurança, notificações, gamificação e preferências globais
-                da plataforma.
+                {t("admin.configuracoes.subtitle")}
               </p>
             </div>
           </div>
@@ -171,18 +172,18 @@ export default function Configuracoes() {
                 <div>
                   <h3 className="mb-6 flex items-center gap-3 text-xl font-bold text-slate-800">
                     <i className="bi bi-shield-lock text-[#0F62FE]"></i>
-                    Segurança da Conta
+                    {t("admin.configuracoes.security.heading")}
                   </h3>
 
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Password Atual
+                        {t("admin.configuracoes.security.currentPassword")}
                       </label>
 
                       <input
                         type="password"
-                        placeholder="Digite a password atual"
+                        placeholder={t("admin.configuracoes.security.currentPasswordPlaceholder")}
                         value={passwordData.currentPassword}
                         onChange={(e) =>
                           setPasswordData({
@@ -196,12 +197,12 @@ export default function Configuracoes() {
 
                     <div>
                       <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Nova Password
+                        {t("admin.configuracoes.security.newPassword")}
                       </label>
 
                       <input
                         type="password"
-                        placeholder="Digite a nova password"
+                        placeholder={t("admin.configuracoes.security.newPasswordPlaceholder")}
                         value={passwordData.newPassword}
                         onChange={(e) =>
                           setPasswordData({
@@ -215,12 +216,12 @@ export default function Configuracoes() {
 
                     <div>
                       <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Confirmar Password
+                        {t("admin.configuracoes.security.confirmPassword")}
                       </label>
 
                       <input
                         type="password"
-                        placeholder="Confirme a password"
+                        placeholder={t("admin.configuracoes.security.confirmPasswordPlaceholder")}
                         value={passwordData.confirmPassword}
                         onChange={(e) =>
                           setPasswordData({
@@ -240,7 +241,7 @@ export default function Configuracoes() {
                       className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-md transition hover:scale-[1.02] disabled:opacity-60"
                     >
                       <i className="bi bi-check-circle me-2"></i>
-                      {changingPassword ? "A alterar..." : "Alterar Password"}
+                      {changingPassword ? t("admin.configuracoes.security.changing") : t("admin.configuracoes.security.changeButton")}
                     </button>
                   </div>
                 </div>
@@ -251,7 +252,7 @@ export default function Configuracoes() {
               <div className="space-y-6">
                 <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
                   <i className="bi bi-trophy text-[#0F62FE]"></i>
-                  Gamificação e Validação
+                  {t("admin.configuracoes.gamification.heading")}
                 </h3>
 
                 <div className="grid gap-6 md:grid-cols-2">
@@ -260,7 +261,7 @@ export default function Configuracoes() {
                       <i className="bi bi-star-fill text-amber-500"></i>
 
                       <span className="font-semibold text-slate-800">
-                        Pontos por Badge
+                        {t("admin.configuracoes.gamification.pointsPerBadge")}
                       </span>
                     </div>
 
@@ -282,7 +283,7 @@ export default function Configuracoes() {
                       <i className="bi bi-clock-history text-cyan-500"></i>
 
                       <span className="font-semibold text-slate-800">
-                        SLA Padrão (dias)
+                        {t("admin.configuracoes.gamification.defaultSLA")}
                       </span>
                     </div>
 
@@ -307,13 +308,12 @@ export default function Configuracoes() {
                         <i className="bi bi-hourglass-split text-rose-500"></i>
 
                         <span className="font-semibold text-slate-800">
-                          Expiração de Badges
+                          {t("admin.configuracoes.gamification.badgeExpiration")}
                         </span>
                       </div>
 
                       <p className="mt-1 text-sm text-slate-500">
-                        Permitir que determinados badges tenham validade
-                        limitada.
+                        {t("admin.configuracoes.gamification.badgeExpirationDesc")}
                       </p>
                     </div>
 
@@ -337,13 +337,11 @@ export default function Configuracoes() {
 
                     <div>
                       <h4 className="font-semibold text-slate-800">
-                        Configuração Global
+                        {t("admin.configuracoes.gamification.globalConfigTitle")}
                       </h4>
 
                       <p className="mt-1 text-sm text-slate-600">
-                        Estas definições serão aplicadas por defeito a novos
-                        badges e novos pedidos de validação criados na
-                        plataforma.
+                        {t("admin.configuracoes.gamification.globalConfigDesc")}
                       </p>
                     </div>
                   </div>
@@ -356,7 +354,7 @@ export default function Configuracoes() {
               <div className="space-y-6">
                 <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
                   <i className="bi bi-bell text-[#0F62FE]"></i>
-                  Notificações e Integrações
+                  {t("admin.configuracoes.notifications.heading")}
                 </h3>
 
                 <div className="space-y-4">
@@ -364,20 +362,20 @@ export default function Configuracoes() {
                     {
                       key: "email",
                       icon: "bi-envelope-fill",
-                      label: "Notificações por Email",
-                      desc: "Enviar emails para eventos importantes",
+                      label: t("admin.configuracoes.notifications.email.label"),
+                      desc: t("admin.configuracoes.notifications.email.desc"),
                     },
                     {
                       key: "push",
                       icon: "bi-phone-fill",
-                      label: "Notificações Push",
-                      desc: "Alertas em dispositivos móveis",
+                      label: t("admin.configuracoes.notifications.push.label"),
+                      desc: t("admin.configuracoes.notifications.push.desc"),
                     },
                     {
                       key: "teams",
                       icon: "bi-microsoft-teams",
-                      label: "Integração Teams / Slack",
-                      desc: "Enviar alertas para ferramentas colaborativas",
+                      label: t("admin.configuracoes.notifications.teams.label"),
+                      desc: t("admin.configuracoes.notifications.teams.desc"),
                     },
                   ].map((notif) => (
                     <div
@@ -429,16 +427,15 @@ export default function Configuracoes() {
 
                     <div>
                       <h4 className="font-semibold text-slate-800">
-                        Templates de Email
+                        {t("admin.configuracoes.notifications.emailTemplatesTitle")}
                       </h4>
 
                       <p className="mt-1 text-sm text-slate-600">
-                        Personaliza as mensagens automáticas enviadas pela
-                        plataforma.
+                        {t("admin.configuracoes.notifications.emailTemplatesDesc")}
                       </p>
 
                       <button className="mt-4 rounded-xl border border-[#0F62FE] px-4 py-2 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE] hover:text-white">
-                        Configurar Templates
+                        {t("admin.configuracoes.notifications.configureTemplates")}
                       </button>
                     </div>
                   </div>
@@ -450,7 +447,7 @@ export default function Configuracoes() {
               <div className="space-y-6">
                 <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
                   <i className="bi bi-file-lock text-[#0F62FE]"></i>
-                  RGPD e Privacidade
+                  {t("admin.configuracoes.privacy.heading")}
                 </h3>
 
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
@@ -459,13 +456,11 @@ export default function Configuracoes() {
 
                     <div>
                       <h4 className="font-semibold text-emerald-700">
-                        Conformidade RGPD
+                        {t("admin.configuracoes.privacy.complianceTitle")}
                       </h4>
 
                       <p className="mt-1 text-sm text-emerald-600">
-                        Configurações relacionadas com privacidade,
-                        consentimento e publicação de informação dos
-                        colaboradores.
+                        {t("admin.configuracoes.privacy.complianceDesc")}
                       </p>
                     </div>
                   </div>
@@ -473,7 +468,7 @@ export default function Configuracoes() {
 
                 <div>
                   <label className="mb-2 block font-medium text-slate-700">
-                    Texto de Consentimento RGPD
+                    {t("admin.configuracoes.privacy.consentTextLabel")}
                   </label>
 
                   <textarea
@@ -485,7 +480,7 @@ export default function Configuracoes() {
                         rgpdText: e.target.value,
                       })
                     }
-                    placeholder="Insira os termos de consentimento..."
+                    placeholder={t("admin.configuracoes.privacy.consentTextPlaceholder")}
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
                   />
                 </div>
@@ -494,12 +489,11 @@ export default function Configuracoes() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-semibold text-slate-800">
-                        Galeria Pública de Badges
+                        {t("admin.configuracoes.privacy.publicGalleryTitle")}
                       </h4>
 
                       <p className="mt-1 text-sm text-slate-500">
-                        Permitir que os badges conquistados possam ser
-                        apresentados publicamente.
+                        {t("admin.configuracoes.privacy.publicGalleryDesc")}
                       </p>
                     </div>
 
@@ -522,12 +516,10 @@ export default function Configuracoes() {
                     <i className="bi bi-exclamation-triangle-fill text-amber-500"></i>
 
                     <div>
-                      <h4 className="font-semibold text-amber-700">Atenção</h4>
+                      <h4 className="font-semibold text-amber-700">{t("admin.configuracoes.privacy.warningTitle")}</h4>
 
                       <p className="mt-1 text-sm text-amber-600">
-                        Alterações às definições de privacidade podem afetar
-                        todos os utilizadores da plataforma e futuras
-                        publicações de badges.
+                        {t("admin.configuracoes.privacy.warningDesc")}
                       </p>
                     </div>
                   </div>
@@ -544,7 +536,7 @@ export default function Configuracoes() {
               className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] disabled:opacity-60"
             >
               <i className="bi bi-check-circle me-2"></i>
-              {saving ? "A guardar..." : "Guardar Alterações"}
+              {saving ? t("admin.common.saving") : t("admin.configuracoes.saveChanges")}
             </button>
           </div>
         </div>

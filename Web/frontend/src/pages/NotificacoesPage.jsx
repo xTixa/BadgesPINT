@@ -1,33 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../layout/Sidebar";
 import EmptyState from "../components/ui/EmptyState";
 
 const itemsPorPagina = 10;
 
-const notificationMeta = {
+const notificationMetaConfig = {
   ticket_novo: {
-    label: "Ticket",
     icon: "bi-ticket-fill",
     className: "bg-sky-100 text-sky-700",
   },
   ticket_resposta: {
-    label: "Resposta",
     icon: "bi-chat-dots-fill",
     className: "bg-amber-100 text-amber-700",
   },
   ticket_resolvido: {
-    label: "Resolvido",
     icon: "bi-check-circle-fill",
     className: "bg-emerald-100 text-emerald-700",
   },
   ticket_fechado: {
-    label: "Fechado",
     icon: "bi-x-circle-fill",
     className: "bg-slate-100 text-slate-700",
   },
   geral: {
-    label: "Aviso",
     icon: "bi-megaphone-fill",
     className: "bg-indigo-100 text-indigo-700",
   },
@@ -42,6 +38,7 @@ const getUser = () => {
 };
 
 export default function NotificacoesPage() {
+  const { t } = useTranslation();
   const user = getUser();
   const [notificacoes, setNotificacoes] = useState([]);
   const [meta, setMeta] = useState({ total: 0, pages: 1, naoLidas: 0 });
@@ -75,7 +72,7 @@ export default function NotificacoesPage() {
       });
     } catch (error) {
       console.error("Erro ao carregar notificacoes:", error);
-      setError("Nao foi possivel carregar as notificacoes.");
+      setError(t("notificacoesPage.errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -83,6 +80,7 @@ export default function NotificacoesPage() {
 
   useEffect(() => {
     if (token) fetchNotificacoes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, filtro, pagina]);
 
   const handleMarcarComoLida = async (id) => {
@@ -121,6 +119,17 @@ export default function NotificacoesPage() {
     [notificacoes],
   );
 
+  const notificationMeta = useMemo(
+    () => ({
+      ticket_novo: { ...notificationMetaConfig.ticket_novo, label: t("notificacoesPage.types.ticketNew") },
+      ticket_resposta: { ...notificationMetaConfig.ticket_resposta, label: t("notificacoesPage.types.ticketReply") },
+      ticket_resolvido: { ...notificationMetaConfig.ticket_resolvido, label: t("notificacoesPage.types.ticketResolved") },
+      ticket_fechado: { ...notificationMetaConfig.ticket_fechado, label: t("notificacoesPage.types.ticketClosed") },
+      geral: { ...notificationMetaConfig.geral, label: t("notificacoesPage.types.general") },
+    }),
+    [t],
+  );
+
   return (
     <div className="admin-shell">
       <Sidebar user={user} />
@@ -129,18 +138,18 @@ export default function NotificacoesPage() {
         <section className="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-2 text-sm font-semibold text-white/80">Centro de notificacoes</p>
-              <h1 className="text-3xl font-bold text-white">Notificacoes</h1>
+              <p className="mb-2 text-sm font-semibold text-white/80">{t("notificacoesPage.eyebrow")}</p>
+              <h1 className="text-3xl font-bold text-white">{t("notificacoesPage.title")}</h1>
               <p className="mt-2 max-w-2xl text-white/85">
-                Consulta avisos, pedidos e atualizacoes do portal no mesmo layout do teu painel.
+                {t("notificacoesPage.subtitle")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 gap-3 xs:grid-cols-3">
               {[
-                { label: "Total", value: meta.total },
-                { label: "Nao lidas", value: meta.naoLidas },
-                { label: "Nesta pagina", value: stats.totalPagina },
+                { label: t("notificacoesPage.stats.total"), value: meta.total },
+                { label: t("notificacoesPage.stats.unread"), value: meta.naoLidas },
+                { label: t("notificacoesPage.stats.onThisPage"), value: stats.totalPagina },
               ].map((item) => (
                 <div key={item.label} className="rounded-2xl bg-white/10 p-4 text-center backdrop-blur-sm">
                   <div className="text-2xl font-bold">{item.value}</div>
@@ -153,9 +162,9 @@ export default function NotificacoesPage() {
 
         <div className="mb-4 grid gap-4 md:grid-cols-3">
           {[
-            { label: "Notificacoes nesta pagina", value: stats.totalPagina, icon: "bi-bell-fill", tone: "text-[#0F62FE]" },
-            { label: "Nao lidas nesta pagina", value: stats.naoLidasPagina, icon: "bi-dot", tone: "text-amber-600" },
-            { label: "Lidas nesta pagina", value: stats.lidasPagina, icon: "bi-check2-circle", tone: "text-emerald-600" },
+            { label: t("notificacoesPage.stats.notificationsOnPage"), value: stats.totalPagina, icon: "bi-bell-fill", tone: "text-[#0F62FE]" },
+            { label: t("notificacoesPage.stats.unreadOnPage"), value: stats.naoLidasPagina, icon: "bi-dot", tone: "text-amber-600" },
+            { label: t("notificacoesPage.stats.readOnPage"), value: stats.lidasPagina, icon: "bi-check2-circle", tone: "text-emerald-600" },
           ].map((item) => (
             <article key={item.label} className="rounded-3xl bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
               <i className={`bi ${item.icon} text-xl ${item.tone}`}></i>
@@ -169,8 +178,8 @@ export default function NotificacoesPage() {
           <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap gap-2">
               {[
-                { id: "todas", label: "Todas", icon: "bi-list-ul" },
-                { id: "nao-lidas", label: "Nao lidas", icon: "bi-circle-fill" },
+                { id: "todas", label: t("notificacoesPage.filters.all"), icon: "bi-list-ul" },
+                { id: "nao-lidas", label: t("notificacoesPage.filters.unread"), icon: "bi-circle-fill" },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -201,7 +210,7 @@ export default function NotificacoesPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100"
               >
                 <i className="bi bi-check2-all"></i>
-                Marcar todas como lidas
+                {t("notificacoesPage.markAllRead")}
               </button>
             )}
           </div>
@@ -209,10 +218,10 @@ export default function NotificacoesPage() {
           {error && <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>}
 
           {loading ? (
-            <EmptyState message="A carregar notificacoes..." icon="bi-hourglass-split" />
+            <EmptyState message={t("notificacoesPage.loading")} icon="bi-hourglass-split" />
           ) : notificacoes.length === 0 ? (
             <EmptyState
-              message={filtro === "nao-lidas" ? "Nao existem notificacoes por ler." : "Nao existem notificacoes para apresentar."}
+              message={filtro === "nao-lidas" ? t("notificacoesPage.emptyUnread") : t("notificacoesPage.emptyAll")}
               icon="bi-inbox"
             />
           ) : (
@@ -242,7 +251,7 @@ export default function NotificacoesPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className={`rounded-full px-2 py-1 text-xs font-bold ${metaInfo.className}`}>{metaInfo.label}</span>
-                          {!notif.lido && <span className="rounded-full bg-[#0F62FE] px-2 py-1 text-xs font-bold text-white">Nova</span>}
+                          {!notif.lido && <span className="rounded-full bg-[#0F62FE] px-2 py-1 text-xs font-bold text-white">{t("notificacoesPage.newBadge")}</span>}
                           <span className="text-xs text-slate-500">
                             {new Date(notif.createdAt).toLocaleString("pt-PT", {
                               year: "numeric",
@@ -266,7 +275,7 @@ export default function NotificacoesPage() {
                               handleMarcarComoLida(notif.id);
                             }}
                             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
-                            title="Marcar como lida"
+                            title={t("notificacoesPage.markAsRead")}
                           >
                             <i className="bi bi-check2"></i>
                           </button>
@@ -278,7 +287,7 @@ export default function NotificacoesPage() {
                             handleApagarNotificacao(notif.id);
                           }}
                           className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-700 transition hover:bg-rose-100"
-                          title="Apagar"
+                          title={t("notificacoesPage.delete")}
                         >
                           <i className="bi bi-trash"></i>
                         </button>
@@ -342,7 +351,7 @@ export default function NotificacoesPage() {
                     type="button"
                     onClick={() => setSelectedNotification(null)}
                     className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-50"
-                    aria-label="Fechar detalhes"
+                    aria-label={t("notificacoesPage.closeDetails")}
                   >
                     <i className="bi bi-x-lg"></i>
                   </button>
@@ -353,13 +362,13 @@ export default function NotificacoesPage() {
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl bg-slate-50 p-4">
-                      <p className="m-0 text-xs font-bold uppercase tracking-[0.08em] text-slate-500">Estado</p>
+                      <p className="m-0 text-xs font-bold uppercase tracking-[0.08em] text-slate-500">{t("notificacoesPage.modal.state")}</p>
                       <p className="m-0 mt-1 text-sm font-semibold text-slate-900">
-                        {selectedNotification.lido ? "Lida" : "Por ler"}
+                        {selectedNotification.lido ? t("notificacoesPage.modal.read") : t("notificacoesPage.modal.unread")}
                       </p>
                     </div>
                     <div className="rounded-2xl bg-slate-50 p-4">
-                      <p className="m-0 text-xs font-bold uppercase tracking-[0.08em] text-slate-500">Tipo</p>
+                      <p className="m-0 text-xs font-bold uppercase tracking-[0.08em] text-slate-500">{t("notificacoesPage.modal.type")}</p>
                       <p className="m-0 mt-1 text-sm font-semibold text-slate-900">{metaInfo.label}</p>
                     </div>
                   </div>
@@ -376,7 +385,7 @@ export default function NotificacoesPage() {
                       className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100"
                     >
                       <i className="bi bi-check2"></i>
-                      Marcar como lida
+                      {t("notificacoesPage.markAsRead")}
                     </button>
                   )}
                   <button
@@ -388,14 +397,14 @@ export default function NotificacoesPage() {
                     className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100"
                   >
                     <i className="bi bi-trash"></i>
-                    Apagar
+                    {t("notificacoesPage.delete")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setSelectedNotification(null)}
                     className="inline-flex items-center gap-2 rounded-xl bg-[#0F62FE] px-4 py-2 text-sm font-semibold text-white hover:bg-[#16558C]"
                   >
-                    Fechar
+                    {t("notificacoesPage.modal.close")}
                   </button>
                 </div>
               </div>

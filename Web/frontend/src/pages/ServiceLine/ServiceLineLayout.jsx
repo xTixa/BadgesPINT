@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Sidebar from "../../layout/Sidebar";
 
 export const slPanelClass =
@@ -22,6 +23,7 @@ export function ServiceLineStatCard({ icon, label, value }) {
 }
 
 export default function ServiceLineLayout({ title, subtitle, userName = "Service Line", heroStats = [], children }) {
+  const { t } = useTranslation();
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "service_line_leader", name: userName }} />
@@ -30,7 +32,7 @@ export default function ServiceLineLayout({ title, subtitle, userName = "Service
         <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-2 text-sm font-medium text-white/80">Service Line</p>
+              <p className="mb-2 text-sm font-medium text-white/80">{t("serviceLine.layout.eyebrow")}</p>
               <h1 className="mb-2 text-3xl font-bold text-white">{title}</h1>
               {subtitle ? <p className="max-w-2xl text-white/85">{subtitle}</p> : null}
             </div>

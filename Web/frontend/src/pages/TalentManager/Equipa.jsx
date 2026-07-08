@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
@@ -10,6 +11,7 @@ import { useSortableData } from "/src/hooks/useSortableData";
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString("pt-PT") : "-");
 
 export default function Equipa() {
+  const { t } = useTranslation();
   const [filtroNome, setFiltroNome] = useState("");
   const [consultores, setConsultores] = useState([]);
   const [catalogo, setCatalogo] = useState([]);
@@ -37,7 +39,7 @@ export default function Equipa() {
         setSelectedConsultor(equipa[0] || null);
       } catch (err) {
         console.error("Erro ao carregar equipa TM:", err);
-        if (mounted) setError("Nao foi possivel carregar os dados da equipa.");
+        if (mounted) setError(t("talentManager.equipa.errors.loadFailed"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -47,7 +49,7 @@ export default function Equipa() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [t]);
 
   const filtrados = useMemo(
     () => consultores.filter((c) => String(c.name || "").toLowerCase().includes(filtroNome.toLowerCase())),
@@ -85,7 +87,7 @@ export default function Equipa() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Erro ao gerar certificado:", err);
-      alert("Nao foi possivel gerar o certificado.");
+      alert(t("talentManager.equipa.errors.certificateFailed"));
     }
   };
 
@@ -97,42 +99,42 @@ export default function Equipa() {
   <strong>${selectedConsultor.name}</strong><br/>
   <span>${selectedConsultor.area || selectedConsultor.service_line || "Softinsa Badges"}</span><br/>
   <span style="display:inline-block;margin-top:6px;padding:6px 10px;border:1px solid #0F62FE;border-radius:999px;color:#0F62FE;font-weight:700">
-    Badge: ${item.badge}
+    ${t("talentManager.equipa.signatureBadgeLabel")}: ${item.badge}
   </span>
 </div>`.trim();
 
     try {
       await navigator.clipboard.writeText(assinatura);
-      setSignatureMessage("Assinatura copiada para a area de transferencia.");
+      setSignatureMessage(t("talentManager.equipa.signatureCopied"));
       window.setTimeout(() => setSignatureMessage(""), 3000);
     } catch (err) {
       console.error("Erro ao copiar assinatura:", err);
-      window.prompt("Copia a assinatura HTML:", assinatura);
+      window.prompt(t("talentManager.equipa.copySignaturePrompt"), assinatura);
     }
   };
 
   return (
     <TalentManagerLayout
-      title="Equipa"
-      subtitle="Consulta progresso, pontos, badges, requisitos e timeline profissional dos consultores."
+      title={t("talentManager.equipa.title")}
+      subtitle={t("talentManager.equipa.subtitle")}
       heroStats={[
-        { label: "Consultores", value: consultores.length },
-        { label: "Média pontos", value: mediaPontos },
-        { label: "Progresso", value: `${mediaProgresso}%` },
+        { label: t("talentManager.equipa.stats.consultants"), value: consultores.length },
+        { label: t("talentManager.equipa.stats.averagePoints"), value: mediaPontos },
+        { label: t("talentManager.equipa.stats.progress"), value: `${mediaProgresso}%` },
       ]}
     >
         {loading ? (
-          <EmptyState message="A carregar equipa..." icon="bi-hourglass-split" />
+          <EmptyState message={t("talentManager.equipa.loading")} icon="bi-hourglass-split" />
         ) : error ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
         ) : (
           <>
             <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { label: "Total de Consultores", icon: "bi-people-fill", value: consultores.length, tone: "sky" },
-                { label: "Media de Pontos", icon: "bi-star-fill", value: mediaPontos, tone: "amber" },
-                { label: "Media de Progresso", icon: "bi-graph-up-arrow", value: `${mediaProgresso}%`, tone: "emerald" },
-                { label: "Badges Disponiveis", icon: "bi-award-fill", value: catalogo.length, tone: "indigo" },
+                { label: t("talentManager.equipa.cards.totalConsultants"), icon: "bi-people-fill", value: consultores.length, tone: "sky" },
+                { label: t("talentManager.equipa.cards.averagePoints"), icon: "bi-star-fill", value: mediaPontos, tone: "amber" },
+                { label: t("talentManager.equipa.cards.averageProgress"), icon: "bi-graph-up-arrow", value: `${mediaProgresso}%`, tone: "emerald" },
+                { label: t("talentManager.equipa.cards.availableBadges"), icon: "bi-award-fill", value: catalogo.length, tone: "indigo" },
               ].map((card) => (
                 <TalentStatCard key={card.label} label={card.label} icon={card.icon} value={card.value} />
               ))}
@@ -140,13 +142,13 @@ export default function Equipa() {
 
             <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
               <div className="lg:col-span-8">
-                <SectionCard title="Consultores" icon="bi-person-lines-fill">
+                <SectionCard title={t("talentManager.equipa.consultantsSection.title")} icon="bi-person-lines-fill">
                   <div className="mb-3 flex w-full items-center overflow-hidden rounded-xl border border-slate-300 bg-white sm:w-[300px]">
                     <span className="px-3 text-slate-500"><i className="bi bi-search"></i></span>
                     <input
                       type="text"
                       className="w-full border-0 px-2 py-2 text-sm text-slate-800 outline-none"
-                      placeholder="Procurar por nome..."
+                      placeholder={t("talentManager.equipa.consultantsSection.searchPlaceholder")}
                       value={filtroNome}
                       onChange={(e) => setFiltroNome(e.target.value)}
                     />
@@ -156,14 +158,14 @@ export default function Equipa() {
                     <table className="min-w-full divide-y divide-slate-200 text-sm">
                       <thead className="bg-slate-100 text-slate-700">
                         <tr>
-                          <SortableTh label="Consultor" sortKey="name" accessor={(c) => c.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                          <SortableTh label="Email" sortKey="email" accessor={(c) => c.email || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                          <SortableTh label="Area" sortKey="area" accessor={(c) => c.area || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                          <SortableTh label="Pontos" sortKey="points_total" accessor={(c) => Number(c.points_total || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                          <SortableTh label="Obtidos" sortKey="badges_obtidos" accessor={(c) => Number(c.badges_obtidos || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                          <SortableTh label="Pendentes" sortKey="badges_pendentes" accessor={(c) => Number(c.badges_pendentes || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                          <SortableTh label="Progresso" sortKey="progresso" accessor={(c) => Number(c.progresso || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                          <th className="px-3 py-2 text-right font-semibold">Timeline</th>
+                          <SortableTh label={t("talentManager.equipa.table.consultant")} sortKey="name" accessor={(c) => c.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label={t("talentManager.equipa.table.email")} sortKey="email" accessor={(c) => c.email || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label={t("talentManager.equipa.table.area")} sortKey="area" accessor={(c) => c.area || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label={t("talentManager.equipa.table.points")} sortKey="points_total" accessor={(c) => Number(c.points_total || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label={t("talentManager.equipa.table.earned")} sortKey="badges_obtidos" accessor={(c) => Number(c.badges_obtidos || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label={t("talentManager.equipa.table.pending")} sortKey="badges_pendentes" accessor={(c) => Number(c.badges_pendentes || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <SortableTh label={t("talentManager.equipa.table.progress")} sortKey="progresso" accessor={(c) => Number(c.progresso || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                          <th className="px-3 py-2 text-right font-semibold">{t("talentManager.equipa.table.timeline")}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -185,7 +187,7 @@ export default function Equipa() {
                             </td>
                             <td className="px-3 py-2 text-right">
                               <button className="rounded-lg border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => setSelectedConsultor(c)}>
-                                Ver
+                                {t("talentManager.equipa.table.view")}
                               </button>
                             </td>
                           </tr>
@@ -193,7 +195,7 @@ export default function Equipa() {
                         {!filtrados.length && (
                           <tr>
                             <td colSpan="8" className="px-3 py-4">
-                              <EmptyState message="Nenhum consultor encontrado." icon="bi-search" />
+                              <EmptyState message={t("talentManager.equipa.consultantsSection.empty")} icon="bi-search" />
                             </td>
                           </tr>
                         )}
@@ -204,7 +206,7 @@ export default function Equipa() {
               </div>
 
               <div className="lg:col-span-4">
-                <SectionCard title="Badges próximos da expiração" icon="bi-calendar2-week" className="mb-3">
+                <SectionCard title={t("talentManager.equipa.expirySection.title")} icon="bi-calendar2-week" className="mb-3">
                   <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
                     {expiracoes.slice(0, 6).map((b, idx) => (
                       <li key={`${b.consultor}-${b.badge}-${idx}`} className="flex items-center justify-between gap-3 px-3 py-3">
@@ -212,23 +214,23 @@ export default function Equipa() {
                           <div className="text-sm font-semibold text-slate-900">{b.badge}</div>
                           <div className="text-xs text-slate-500">{b.consultor} · {formatDate(b.expires_at)}</div>
                         </div>
-                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${Number(b.dias) <= 15 ? "bg-rose-100 text-rose-700" : Number(b.dias) <= 30 ? "bg-orange-100 text-orange-700" : "bg-amber-100 text-amber-700"}`}>{b.dias} dias</span>
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${Number(b.dias) <= 15 ? "bg-rose-100 text-rose-700" : Number(b.dias) <= 30 ? "bg-orange-100 text-orange-700" : "bg-amber-100 text-amber-700"}`}>{t("talentManager.equipa.expirySection.daysLabel", { count: b.dias })}</span>
                       </li>
                     ))}
-                    {!expiracoes.length && <li className="px-3 py-3 text-sm text-slate-500">Sem expirações próximas.</li>}
+                    {!expiracoes.length && <li className="px-3 py-3 text-sm text-slate-500">{t("talentManager.equipa.expirySection.empty")}</li>}
                   </ul>
                   {expiracoes.length > 0 && (
                     <Link
                       to="/tm/expiracoes"
                       className="mt-2 flex items-center justify-center gap-1 rounded-xl border border-slate-200 py-2 text-xs font-semibold text-[#0F62FE] hover:bg-slate-50"
                     >
-                      Ver todas ({expiracoes.length}) <i className="bi bi-arrow-right"></i>
+                      {t("talentManager.equipa.expirySection.viewAll", { count: expiracoes.length })} <i className="bi bi-arrow-right"></i>
                     </Link>
                   )}
                 </SectionCard>
 
-                <SectionCard title="Timeline profissional" icon="bi-clock-history">
-                  <div className="mb-2 text-sm font-semibold text-slate-900">{selectedConsultor?.name || "Seleciona um consultor"}</div>
+                <SectionCard title={t("talentManager.equipa.timelineSection.title")} icon="bi-clock-history">
+                  <div className="mb-2 text-sm font-semibold text-slate-900">{selectedConsultor?.name || t("talentManager.equipa.timelineSection.selectConsultant")}</div>
                   {signatureMessage && (
                     <div className="mb-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
                       {signatureMessage}
@@ -240,21 +242,21 @@ export default function Equipa() {
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <div className="text-sm font-semibold text-slate-900">{item.badge}</div>
-                            <div className="text-xs text-slate-500">{item.status} · {item.workflow_status || "sem workflow"} · {formatDate(item.data)}</div>
+                            <div className="text-xs text-slate-500">{item.status} · {item.workflow_status || t("talentManager.equipa.timelineSection.noWorkflow")} · {formatDate(item.data)}</div>
                           </div>
                           {item.status === "obtido" && (
                             <div className="flex shrink-0 gap-1">
                               <button
                                 className="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                 onClick={() => copiarAssinatura(item)}
-                                title="Copiar assinatura de email"
+                                title={t("talentManager.equipa.timelineSection.copySignatureTitle")}
                               >
                                 <i className="bi bi-envelope-paper"></i>
                               </button>
                               <button
                                 className="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                 onClick={() => downloadCertificado(selectedConsultor.id, item.badge_id)}
-                                title="Download certificado PDF"
+                                title={t("talentManager.equipa.timelineSection.downloadCertificateTitle")}
                               >
                                 PDF
                               </button>
@@ -263,29 +265,29 @@ export default function Equipa() {
                         </div>
                       </li>
                     ))}
-                    {!selectedConsultor?.timeline?.length && <li className="px-3 py-3 text-sm text-slate-500">Sem histórico para apresentar.</li>}
+                    {!selectedConsultor?.timeline?.length && <li className="px-3 py-3 text-sm text-slate-500">{t("talentManager.equipa.timelineSection.empty")}</li>}
                   </ul>
                 </SectionCard>
               </div>
             </div>
 
-            <SectionCard title="Catálogo de badges, requisitos e pontos" icon="bi-patch-check-fill">
+            <SectionCard title={t("talentManager.equipa.catalogSection.title")} icon="bi-patch-check-fill">
               <div className="overflow-x-auto rounded-xl border border-slate-200">
                 <table className="min-w-full divide-y divide-slate-200 text-sm">
                   <thead className="bg-slate-100 text-slate-700">
                     <tr>
-                      <SortableTh label="Badge" sortKey="name" accessor={(b) => b.name || b.description || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
-                      <SortableTh label="Nivel" sortKey="level" accessor={(b) => b.level || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
-                      <SortableTh label="Area" sortKey="area" accessor={(b) => b.area?.name || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
-                      <SortableTh label="Pontos" sortKey="points" accessor={(b) => Number(b.points || 0)} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
-                      <th className="px-3 py-2 text-left font-semibold">Requisitos</th>
+                      <SortableTh label={t("talentManager.equipa.table.badge")} sortKey="name" accessor={(b) => b.name || b.description || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
+                      <SortableTh label={t("talentManager.equipa.table.level")} sortKey="level" accessor={(b) => b.level || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
+                      <SortableTh label={t("talentManager.equipa.table.area")} sortKey="area" accessor={(b) => b.area?.name || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
+                      <SortableTh label={t("talentManager.equipa.table.points")} sortKey="points" accessor={(b) => Number(b.points || 0)} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
+                      <th className="px-3 py-2 text-left font-semibold">{t("talentManager.equipa.table.requirements")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
                     {catalogoOrdenado.map((badge) => (
                       <tr key={badge.id}>
                         <td className="px-3 py-2">
-                          <div className="font-semibold text-slate-900">{badge.name || badge.description || `Badge #${badge.id}`}</div>
+                          <div className="font-semibold text-slate-900">{badge.name || badge.description || t("talentManager.equipa.badgeFallback", { id: badge.id })}</div>
                           <div className="text-xs text-slate-500">{badge.description}</div>
                         </td>
                         <td className="px-3 py-2">{badge.level}</td>
@@ -297,14 +299,14 @@ export default function Equipa() {
                               <span className="font-semibold">{req.code}</span> {req.title}
                             </div>
                           ))}
-                          {!badge.requirements?.length && <span className="text-slate-500">Sem requisitos registados.</span>}
+                          {!badge.requirements?.length && <span className="text-slate-500">{t("talentManager.equipa.noRequirements")}</span>}
                         </td>
                       </tr>
                     ))}
                     {!catalogo.length && (
                       <tr>
                         <td colSpan="5" className="px-3 py-4">
-                          <EmptyState message="Sem badges disponíveis para esta área." icon="bi-award" />
+                          <EmptyState message={t("talentManager.equipa.catalogSection.empty")} icon="bi-award" />
                         </td>
                       </tr>
                     )}

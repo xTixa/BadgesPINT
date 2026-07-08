@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
@@ -6,13 +7,15 @@ import TalentManagerLayout, { TalentStatCard } from "./TalentManagerLayout";
 import SortableTh from "/src/components/ui/SortableTh";
 import { useSortableData } from "/src/hooks/useSortableData";
 
-const normalizeEstado = (estado) => {
-  if (estado === "aprovado") return "Aprovado";
-  if (estado === "rejeitado") return "Rejeitado";
-  return "Pendente";
-};
-
 export default function HistoricoValidacoes() {
+  const { t } = useTranslation();
+
+  const normalizeEstado = (estado) => {
+    if (estado === "aprovado") return t("talentManager.historico.status.approved");
+    if (estado === "rejeitado") return t("talentManager.historico.status.rejected");
+    return t("talentManager.historico.status.pending");
+  };
+
   const [filtroEstado, setFiltroEstado] = useState("todos");
   const [filtroTexto, setFiltroTexto] = useState("");
   const [historico, setHistorico] = useState([]);
@@ -32,7 +35,7 @@ export default function HistoricoValidacoes() {
         if (mounted) setHistorico(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar historico TM:", err);
-        if (mounted) setError("Nao foi possivel carregar o historico.");
+        if (mounted) setError(t("talentManager.historico.errors.loadFailed"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -42,7 +45,7 @@ export default function HistoricoValidacoes() {
     return () => {
       mounted = false;
     };
-  }, [filtroEstado]);
+  }, [filtroEstado, t]);
 
   const resultados = useMemo(() => {
     return historico.filter((item) => {
@@ -68,56 +71,56 @@ export default function HistoricoValidacoes() {
 
   return (
     <TalentManagerLayout
-      title="Histórico de Validações"
-      subtitle="Consulta decisões anteriores e o histórico associado a cada candidatura."
+      title={t("talentManager.historico.title")}
+      subtitle={t("talentManager.historico.subtitle")}
       heroStats={[
-        { label: "Total", value: totals.todos },
-        { label: "Aprovadas", value: totals.aprovado },
-        { label: "Rejeitadas", value: totals.rejeitado },
+        { label: t("talentManager.historico.stats.total"), value: totals.todos },
+        { label: t("talentManager.historico.stats.approved"), value: totals.aprovado },
+        { label: t("talentManager.historico.stats.rejected"), value: totals.rejeitado },
       ]}
     >
         <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { label: "Total", value: totals.todos, icon: "bi-clock-history", tone: "slate" },
-            { label: "Aprovadas", value: totals.aprovado, icon: "bi-check-circle-fill", tone: "emerald" },
-            { label: "Rejeitadas", value: totals.rejeitado, icon: "bi-x-circle-fill", tone: "rose" },
-            { label: "Pendentes", value: totals.pendente, icon: "bi-hourglass-split", tone: "amber" },
+            { label: t("talentManager.historico.stats.total"), value: totals.todos, icon: "bi-clock-history", tone: "slate" },
+            { label: t("talentManager.historico.stats.approved"), value: totals.aprovado, icon: "bi-check-circle-fill", tone: "emerald" },
+            { label: t("talentManager.historico.stats.rejected"), value: totals.rejeitado, icon: "bi-x-circle-fill", tone: "rose" },
+            { label: t("talentManager.historico.stats.pending"), value: totals.pendente, icon: "bi-hourglass-split", tone: "amber" },
           ].map((card) => (
             <TalentStatCard key={card.label} label={card.label} value={card.value} icon={card.icon} />
           ))}
         </div>
 
-        <SectionCard className="mb-4" title="Filtros" icon="bi-funnel-fill">
+        <SectionCard className="mb-4" title={t("talentManager.historico.filters.title")} icon="bi-funnel-fill">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
             <div className="md:col-span-4">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Pesquisar</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.historico.filters.search")}</label>
               <input
                 type="text"
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
-                placeholder="Consultor, badge ou requisito"
+                placeholder={t("talentManager.historico.filters.searchPlaceholder")}
                 value={filtroTexto}
                 onChange={(e) => setFiltroTexto(e.target.value)}
               />
             </div>
             <div className="md:col-span-3">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Estado</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.historico.filters.status")}</label>
               <select
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
                 value={filtroEstado}
                 onChange={(e) => setFiltroEstado(e.target.value)}
               >
-                <option value="todos">Todos</option>
-                <option value="aprovado">Aprovado</option>
-                <option value="rejeitado">Rejeitado</option>
-                <option value="pendente">Pendente</option>
+                <option value="todos">{t("talentManager.historico.filters.all")}</option>
+                <option value="aprovado">{t("talentManager.historico.status.approved")}</option>
+                <option value="rejeitado">{t("talentManager.historico.status.rejected")}</option>
+                <option value="pendente">{t("talentManager.historico.status.pending")}</option>
               </select>
             </div>
           </div>
         </SectionCard>
 
-        <SectionCard title="Registos" icon="bi-list-check">
+        <SectionCard title={t("talentManager.historico.recordsSection.title")} icon="bi-list-check">
           {loading ? (
-            <EmptyState message="A carregar histórico..." icon="bi-hourglass-split" />
+            <EmptyState message={t("talentManager.historico.loading")} icon="bi-hourglass-split" />
           ) : error ? (
             <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
           ) : (
@@ -125,13 +128,13 @@ export default function HistoricoValidacoes() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-100 text-slate-700">
                   <tr>
-                    <SortableTh label="Consultor" sortKey="consultor" accessor={(i) => i.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Badge" sortKey="badge" accessor={(i) => i.badge || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Requisito" sortKey="requisito" accessor={(i) => i.requisito || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Estado" sortKey="estado" accessor={(i) => i.estado || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Data" sortKey="data" accessor={(i) => (i.data ? new Date(i.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <SortableTh label="Validador" sortKey="validador" accessor={(i) => i.validador || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                    <th className="px-3 py-2 text-left font-semibold">Observações</th>
+                    <SortableTh label={t("talentManager.historico.table.consultant")} sortKey="consultor" accessor={(i) => i.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.historico.table.badge")} sortKey="badge" accessor={(i) => i.badge || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.historico.table.requirement")} sortKey="requisito" accessor={(i) => i.requisito || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.historico.table.status")} sortKey="estado" accessor={(i) => i.estado || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.historico.table.date")} sortKey="data" accessor={(i) => (i.data ? new Date(i.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <SortableTh label={t("talentManager.historico.table.validator")} sortKey="validador" accessor={(i) => i.validador || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                    <th className="px-3 py-2 text-left font-semibold">{t("talentManager.historico.table.notes")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -153,7 +156,7 @@ export default function HistoricoValidacoes() {
                   {!resultados.length && (
                     <tr>
                       <td colSpan="7" className="px-3 py-4">
-                        <EmptyState message="Nenhum registo encontrado para os filtros selecionados." icon="bi-search" />
+                        <EmptyState message={t("talentManager.historico.recordsSection.empty")} icon="bi-search" />
                       </td>
                     </tr>
                   )}

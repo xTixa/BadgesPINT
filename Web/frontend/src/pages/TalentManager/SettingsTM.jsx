@@ -1,5 +1,6 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ProfileEditor from "../../components/ProfileEditor";
 import api from "/src/api";
 
@@ -18,6 +19,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function TalentManagerSettingsPage() {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,10 +56,10 @@ export default function TalentManagerSettingsPage() {
       setSaving(true);
       setFeedback("");
       await api.put("/api/tm/preferences", settings);
-      setFeedback("Definições guardadas com sucesso.");
+      setFeedback(t("talentManager.settings.saveSuccess"));
     } catch (err) {
       console.error("Erro ao guardar preferencias do TM:", err);
-      setFeedback("Não foi possível guardar as definições.");
+      setFeedback(t("talentManager.settings.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -65,31 +67,31 @@ export default function TalentManagerSettingsPage() {
 
   return (
     <div className="admin-shell">
-      <Sidebar user={{ role: "talent_manager", name: "Talent Manager" }} />
+      <Sidebar user={{ role: "talent_manager", name: t("talentManager.layout.defaultUserName") }} />
 
       <main className="admin-main">
         <div className="mb-4 rounded-2xl bg-[#16558C] p-4 text-white shadow-sm">
-          <h3 className="mb-1 text-xl font-bold sm:text-2xl">Definições do Talent Manager</h3>
-          <p className="m-0 text-sm text-white/80 sm:text-base">Personaliza notificações, relatórios e preferências de trabalho.</p>
+          <h3 className="mb-1 text-xl font-bold sm:text-2xl">{t("talentManager.settings.title")}</h3>
+          <p className="m-0 text-sm text-white/80 sm:text-base">{t("talentManager.settings.subtitle")}</p>
         </div>
 
         <div className="mb-6">
-          <h3 className="mb-3 text-lg font-bold text-slate-900">Perfil</h3>
+          <h3 className="mb-3 text-lg font-bold text-slate-900">{t("talentManager.settings.profile")}</h3>
           <ProfileEditor />
         </div>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">Âmbito</h5>
+            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.scope.title")}</h5>
             <div className="space-y-3">
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Service Line</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.scope.serviceLine")}</label>
                 <select
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
                   value={settings.serviceLine}
                   onChange={(e) => handleChange("serviceLine", e.target.value)}
                 >
-                  <option value="">Selecionar</option>
+                  <option value="">{t("talentManager.settings.scope.select")}</option>
                   <option value="outsystems">Outsystems</option>
                   <option value="devops">DevOps</option>
                   <option value="cloud">Cloud</option>
@@ -97,7 +99,7 @@ export default function TalentManagerSettingsPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Áreas sob responsabilidade</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.scope.areasResponsible")}</label>
                 <select
                   multiple
                   className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
@@ -114,60 +116,60 @@ export default function TalentManagerSettingsPage() {
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">Notificações</h5>
+            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.notifications.title")}</h5>
             <div className="space-y-3 text-sm text-slate-700">
-              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyNew} onChange={(e) => handleChange("notifyNew", e.target.checked)} /> Novas candidaturas</label>
-              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifySla} onChange={(e) => handleChange("notifySla", e.target.checked)} /> Candidaturas com SLA ultrapassado</label>
-              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyStatus} onChange={(e) => handleChange("notifyStatus", e.target.checked)} /> Atualizações de estado (aprovado/rejeitado)</label>
+              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyNew} onChange={(e) => handleChange("notifyNew", e.target.checked)} /> {t("talentManager.settings.notifications.newApplications")}</label>
+              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifySla} onChange={(e) => handleChange("notifySla", e.target.checked)} /> {t("talentManager.settings.notifications.slaExceeded")}</label>
+              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyStatus} onChange={(e) => handleChange("notifyStatus", e.target.checked)} /> {t("talentManager.settings.notifications.statusUpdates")}</label>
             </div>
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">Relatórios e Exportações</h5>
+            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.reports.title")}</h5>
             <div className="space-y-3">
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Formato padrão de exportação</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.reports.defaultExportFormat")}</label>
                 <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.exportFormat} onChange={(e) => handleChange("exportFormat", e.target.value)}>
                   <option value="excel">Excel</option>
                   <option value="pdf">PDF</option>
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Filtro de período padrão</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.reports.defaultPeriodFilter")}</label>
                 <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.period} onChange={(e) => handleChange("period", e.target.value)}>
-                  <option value="month">Último mês</option>
-                  <option value="quarter">Último trimestre</option>
-                  <option value="year">Último ano</option>
+                  <option value="month">{t("talentManager.settings.reports.lastMonth")}</option>
+                  <option value="quarter">{t("talentManager.settings.reports.lastQuarter")}</option>
+                  <option value="year">{t("talentManager.settings.reports.lastYear")}</option>
                 </select>
               </div>
             </div>
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">Gamification e Interface</h5>
+            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.gamification.title")}</h5>
             <div className="space-y-3">
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Ordenar ranking por</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.gamification.sortRankingBy")}</label>
                 <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.rankingBy} onChange={(e) => handleChange("rankingBy", e.target.value)}>
-                  <option value="points">Pontos</option>
-                  <option value="badges">Número de badges</option>
+                  <option value="points">{t("talentManager.settings.gamification.points")}</option>
+                  <option value="badges">{t("talentManager.settings.gamification.badgeCount")}</option>
                 </select>
               </div>
-              <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={settings.showTimeline} onChange={(e) => handleChange("showTimeline", e.target.checked)} /> Mostrar timeline de evolução profissional</label>
+              <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={settings.showTimeline} onChange={(e) => handleChange("showTimeline", e.target.checked)} /> {t("talentManager.settings.gamification.showTimeline")}</label>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Idioma</label>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.gamification.language")}</label>
                   <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.language} onChange={(e) => handleChange("language", e.target.value)}>
-                    <option value="pt">Português</option>
-                    <option value="en">Inglês</option>
-                    <option value="es">Espanhol</option>
+                    <option value="pt">{t("talentManager.settings.gamification.langPt")}</option>
+                    <option value="en">{t("talentManager.settings.gamification.langEn")}</option>
+                    <option value="es">{t("talentManager.settings.gamification.langEs")}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Tema</label>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.gamification.theme")}</label>
                   <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.theme} onChange={(e) => handleChange("theme", e.target.value)}>
-                    <option value="light">Claro</option>
-                    <option value="dark">Escuro</option>
+                    <option value="light">{t("talentManager.settings.gamification.themeLight")}</option>
+                    <option value="dark">{t("talentManager.settings.gamification.themeDark")}</option>
                   </select>
                 </div>
               </div>
@@ -182,7 +184,7 @@ export default function TalentManagerSettingsPage() {
             disabled={loading || saving}
             onClick={handleSave}
           >
-            {saving ? "A guardar..." : "Guardar alterações"}
+            {saving ? t("talentManager.settings.saving") : t("talentManager.settings.saveChanges")}
           </button>
           {feedback && <span className="text-sm text-slate-600">{feedback}</span>}
         </div>

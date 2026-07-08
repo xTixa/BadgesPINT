@@ -1,10 +1,12 @@
 import api from "/src/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AuthShell from "./AuthShell";
 import { loadBrowserCredentials, storeBrowserCredentials } from "../../utils/browserCredentials";
 
 export default function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -73,24 +75,24 @@ export default function Login() {
       }
     } catch (err) {
       console.error(err);
-      setError("Credenciais invalidas. Verifica email e password.");
+      setError(t("auth.login.errors.invalidCredentials"));
     }
   };
 
   return (
     <AuthShell
-      title="Iniciar sessao"
-      description="Insere os teus dados para entrar na plataforma."
-      asideTitle="Bem-vindo ao portal de badges"
-      asideText="Acompanha a tua evolucao, consulta conquistas e gere pedidos numa experiencia mais limpa e direta."
+      title={t("auth.login.title")}
+      description={t("auth.login.description")}
+      asideTitle={t("auth.login.asideTitle")}
+      asideText={t("auth.login.asideText")}
       asideNote={{
-        label: "Credenciais de teste",
-        text: "Usa uma destas contas para validar a plataforma:",
+        label: t("auth.login.asideNote.label"),
+        text: t("auth.login.asideNote.text"),
         items: [
-          "Admin: admin@example.com | Password123",
-          "Talent Manager: natalia.neves@softinsa.pt | qwerty",
-          "Service Line Leader: monica@yopmail.com | qwerty123",
-          "Consultant: guilherme@softinsa.pt | Password123",
+          t("auth.login.asideNote.items.admin"),
+          t("auth.login.asideNote.items.talentManager"),
+          t("auth.login.asideNote.items.serviceLineLeader"),
+          t("auth.login.asideNote.items.consultant"),
         ],
       }}
     >
@@ -98,7 +100,7 @@ export default function Login() {
         {error && <p className="auth-message auth-message-error">{error}</p>}
 
         <div className="auth-field">
-          <label>Email</label>
+          <label>{t("auth.login.emailLabel")}</label>
           <input
             type="email"
             name="username"
@@ -107,19 +109,19 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="auth-input"
-            placeholder="exemplo@dominio.com"
+            placeholder={t("auth.login.emailPlaceholder")}
           />
         </div>
 
         <div className="auth-field">
           <div className="mb-2 flex items-center justify-between gap-3">
-            <label className="auth-label m-0">Password</label>
+            <label className="auth-label m-0">{t("auth.login.passwordLabel")}</label>
             <button
               type="button"
               onClick={() => navigate("/recover")}
               className="auth-link"
             >
-              Recuperar password
+              {t("auth.login.recoverPassword")}
             </button>
           </div>
           <div className="relative">
@@ -137,7 +139,7 @@ export default function Login() {
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               className="absolute inset-y-0 right-3 my-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-[#0F62FE]"
-              aria-label={showPassword ? "Ocultar password" : "Mostrar password"}
+              aria-label={showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
             >
               <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
             </button>
@@ -152,23 +154,23 @@ export default function Login() {
               onChange={(e) => setRememberMe(e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-slate-800 focus:ring-[#0F62FE]"
             />
-            Guardar credenciais neste dispositivo
+            {t("auth.login.rememberMe")}
           </label>
         </div>
 
         <button type="submit" className="auth-primary-button">
           <i className="bi bi-box-arrow-in-right"></i>
-          Entrar
+          {t("auth.login.submit")}
         </button>
 
         <div className="mt-6 text-center">
-          <p className="mb-3 text-sm text-slate-600">Ainda nao tens conta?</p>
+          <p className="mb-3 text-sm text-slate-600">{t("auth.login.noAccount")}</p>
           <button
             type="button"
             onClick={() => navigate("/register")}
             className="auth-secondary-button"
           >
-            Criar conta
+            {t("auth.login.createAccount")}
           </button>
         </div>
       </form>

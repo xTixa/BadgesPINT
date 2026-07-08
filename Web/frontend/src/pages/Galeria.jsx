@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import PublicGalleryShell from "../components/PublicGalleryShell";
 import avatarPlaceholder from "../assets/avatar-placeholder.svg";
@@ -15,6 +16,7 @@ const LEVEL_COLOR = {
 };
 
 export default function Galeria() {
+  const { t } = useTranslation();
   const [consultores, setConsultores] = useState([]);
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState("");
@@ -53,18 +55,18 @@ export default function Galeria() {
         <div className="w-full">
           <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
             <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/85 hover:text-white">
-              <i className="bi bi-arrow-left"></i>Voltar ao início
+              <i className="bi bi-arrow-left"></i>{t("galeria.backToHome")}
             </Link>
             <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-end">
               <div>
                 <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
-                  Galeria Pública
+                  {t("galeria.eyebrow")}
                 </p>
                 <h1 className="max-w-2xl text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-                  Talentos certificados Softinsa
+                  {t("galeria.title")}
                 </h1>
                 <p className="mt-4 max-w-xl text-lg text-white/85">
-                  Consultores que partilharam publicamente as suas competências e badges obtidos.
+                  {t("galeria.subtitle")}
                 </p>
               </div>
               <div className="rounded-2xl border border-white/15 bg-white/15 p-4 backdrop-blur">
@@ -72,7 +74,7 @@ export default function Galeria() {
                   type="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Pesquisar consultor..."
+                  placeholder={t("galeria.searchPlaceholder")}
                   className="h-12 w-full rounded-xl border-0 bg-white px-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
                 />
               </div>
@@ -86,11 +88,11 @@ export default function Galeria() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex gap-4">
             <div className="rounded-2xl border border-[#0F62FE]/10 bg-white px-5 py-3 shadow-sm">
-              <p className="text-xs text-slate-500">Perfis públicos</p>
+              <p className="text-xs text-slate-500">{t("galeria.stats.publicProfiles")}</p>
               <p className="text-2xl font-extrabold text-slate-950">{consultores.length}</p>
             </div>
             <div className="rounded-2xl border border-[#0F62FE]/10 bg-white px-5 py-3 shadow-sm">
-              <p className="text-xs text-slate-500">Resultados</p>
+              <p className="text-xs text-slate-500">{t("galeria.stats.results")}</p>
               <p className="text-2xl font-extrabold text-slate-950">{filtered.length}</p>
             </div>
           </div>
@@ -99,7 +101,7 @@ export default function Galeria() {
             onChange={(e) => setSelectedArea(e.target.value)}
             className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE]"
           >
-            <option value="todas">Todas as áreas</option>
+            <option value="todas">{t("galeria.allAreas")}</option>
             {areas.map((a) => <option key={a} value={a}>{a}</option>)}
           </select>
         </div>
@@ -112,12 +114,12 @@ export default function Galeria() {
           <div className="rounded-2xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
             <i className="bi bi-people mb-4 block text-6xl text-slate-300"></i>
             <h2 className="text-xl font-extrabold text-slate-950">
-              {consultores.length === 0 ? "Nenhum perfil público disponível" : "Sem resultados"}
+              {consultores.length === 0 ? t("galeria.empty.noProfilesTitle") : t("galeria.empty.noResultsTitle")}
             </h2>
             <p className="mx-auto mt-2 max-w-md text-slate-500">
               {consultores.length === 0
-                ? "Os consultores podem activar o perfil público nas suas definições."
-                : "Tenta um nome diferente ou muda de área."}
+                ? t("galeria.empty.noProfilesText")
+                : t("galeria.empty.noResultsText")}
             </p>
           </div>
         ) : (
@@ -134,6 +136,7 @@ export default function Galeria() {
 }
 
 function ConsultorCard({ consultor: c }) {
+  const { t } = useTranslation();
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(15,98,254,0.14)]">
       {/* Cabeçalho */}
@@ -158,11 +161,11 @@ function ConsultorCard({ consultor: c }) {
       <div className="grid grid-cols-2 divide-x divide-slate-100 border-y border-slate-100">
         <div className="py-3 text-center">
           <p className="text-xl font-extrabold text-slate-950">{c.badge_count}</p>
-          <p className="text-xs text-slate-500">Badges</p>
+          <p className="text-xs text-slate-500">{t("galeria.card.badges")}</p>
         </div>
         <div className="py-3 text-center">
           <p className="text-xl font-extrabold text-slate-950">{c.points_total}</p>
-          <p className="text-xs text-slate-500">Pontos</p>
+          <p className="text-xs text-slate-500">{t("galeria.card.points")}</p>
         </div>
       </div>
 
@@ -180,7 +183,7 @@ function ConsultorCard({ consultor: c }) {
             ))}
           </div>
         ) : (
-          <p className="text-xs text-slate-400">Sem badges públicos</p>
+          <p className="text-xs text-slate-400">{t("galeria.card.noPublicBadges")}</p>
         )}
       </div>
 
@@ -190,7 +193,7 @@ function ConsultorCard({ consultor: c }) {
           to={`/galeria/${c.id}`}
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/20 px-4 py-2.5 text-sm font-bold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
         >
-          <i className="bi bi-person-badge"></i>Ver perfil
+          <i className="bi bi-person-badge"></i>{t("galeria.card.viewProfile")}
         </Link>
       </div>
     </article>

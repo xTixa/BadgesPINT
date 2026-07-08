@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../layout/Sidebar";
 
 export default function CriarTicket() {
+  const { t } = useTranslation();
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   const sidebarUser = {
     role: storedUser.role || "consultant",
-    name: storedUser.name || storedUser.nome || "Utilizador",
+    name: storedUser.name || storedUser.nome || t("criarTicket.defaultUserName"),
   };
 
   const [loading, setLoading] = useState(false);
@@ -20,17 +22,17 @@ export default function CriarTicket() {
   });
 
   const categoriasOptions = [
-    { value: "bug", label: "🐛 Bug" },
-    { value: "feature", label: "✨ Funcionalidade" },
-    { value: "duvida", label: "❓ Dúvida" },
-    { value: "outro", label: "📝 Outro" },
+    { value: "bug", label: `🐛 ${t("criarTicket.categories.bug")}` },
+    { value: "feature", label: `✨ ${t("criarTicket.categories.feature")}` },
+    { value: "duvida", label: `❓ ${t("criarTicket.categories.question")}` },
+    { value: "outro", label: `📝 ${t("criarTicket.categories.other")}` },
   ];
 
   const prioridadeOptions = [
-    { value: "baixa", label: "🟢 Baixa" },
-    { value: "media", label: "🟡 Média" },
-    { value: "alta", label: "🔴 Alta" },
-    { value: "critica", label: "🔴🔴 Crítica" },
+    { value: "baixa", label: `🟢 ${t("criarTicket.priorities.low")}` },
+    { value: "media", label: `🟡 ${t("criarTicket.priorities.medium")}` },
+    { value: "alta", label: `🔴 ${t("criarTicket.priorities.high")}` },
+    { value: "critica", label: `🔴🔴 ${t("criarTicket.priorities.critical")}` },
   ];
 
   const handleChange = (e) => {
@@ -66,7 +68,7 @@ export default function CriarTicket() {
         setTimeout(() => setSucesso(false), 3000);
       }
     } catch (err) {
-      setErro(err.response?.data?.message || "Erro ao criar ticket");
+      setErro(err.response?.data?.message || t("criarTicket.errors.createFailed"));
     } finally {
       setLoading(false);
     }
@@ -80,16 +82,16 @@ export default function CriarTicket() {
       <div className="mb-8">
         <h2 className="flex items-center gap-2 text-2xl font-bold text-slate-800 sm:text-3xl">
           <i className="bi bi-ticket"></i>
-          Criar Novo Ticket
+          {t("criarTicket.title")}
         </h2>
         <p className="mt-1 text-sm text-slate-500 sm:text-base">
-          Descreva o problema ou solicitude detalhadamente
+          {t("criarTicket.subtitle")}
         </p>
       </div>
 
       {sucesso && (
         <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" role="alert">
-          <i className="bi bi-check-circle mr-2"></i> Ticket criado com sucesso! Em breve um administrador analisará.
+          <i className="bi bi-check-circle mr-2"></i> {t("criarTicket.success")}
         </div>
       )}
       {erro && (
@@ -102,7 +104,7 @@ export default function CriarTicket() {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="titulo" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
-              Título do Ticket <span style={{ color: "red" }}>*</span>
+              {t("criarTicket.form.titleLabel")} <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="text"
@@ -111,7 +113,7 @@ export default function CriarTicket() {
               name="titulo"
               value={formData.titulo}
               onChange={handleChange}
-              placeholder="Ex: Erro ao fazer login"
+              placeholder={t("criarTicket.form.titlePlaceholder")}
               required
             />
             <small className="text-xs text-slate-500 sm:text-sm">
@@ -121,7 +123,7 @@ export default function CriarTicket() {
 
           <div className="mb-3">
             <label htmlFor="descricao" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
-              Descrição <span style={{ color: "red" }}>*</span>
+              {t("criarTicket.form.descriptionLabel")} <span style={{ color: "red" }}>*</span>
             </label>
             <textarea
               className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 sm:text-base"
@@ -129,7 +131,7 @@ export default function CriarTicket() {
               name="descricao"
               value={formData.descricao}
               onChange={handleChange}
-              placeholder="Descreva detalhadamente o problema..."
+              placeholder={t("criarTicket.form.descriptionPlaceholder")}
               rows={6}
               style={{ fontFamily: "inherit" }}
               required
@@ -142,7 +144,7 @@ export default function CriarTicket() {
           <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label htmlFor="categoria" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
-                Categoria
+                {t("criarTicket.form.categoryLabel")}
               </label>
               <select
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 sm:text-base"
@@ -161,7 +163,7 @@ export default function CriarTicket() {
 
             <div>
               <label htmlFor="prioridade" className="mb-2 block text-sm font-semibold text-slate-800 sm:text-base">
-                Prioridade
+                {t("criarTicket.form.priorityLabel")}
               </label>
               <select
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 sm:text-base"
@@ -188,11 +190,11 @@ export default function CriarTicket() {
               {loading ? (
                 <>
                   <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></span>
-                  Enviando...
+                  {t("criarTicket.form.sending")}
                 </>
               ) : (
                 <>
-                  <i className="bi bi-send"></i> Enviar Ticket
+                  <i className="bi bi-send"></i> {t("criarTicket.form.submit")}
                 </>
               )}
             </button>
@@ -201,20 +203,20 @@ export default function CriarTicket() {
               className="inline-flex items-center justify-center rounded-xl border border-slate-400 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:text-base"
               onClick={() => setFormData({ titulo: "", descricao: "", categoria: "outro", prioridade: "media" })}
             >
-              <i className="bi bi-arrow-clockwise"></i> Limpar
+              <i className="bi bi-arrow-clockwise"></i> {t("criarTicket.form.clear")}
             </button>
           </div>
         </form>
 
         <div className="mt-8 rounded-xl border border-sky-200 bg-sky-50 p-4">
           <h5 className="mb-2 text-sm font-semibold text-slate-800 sm:text-base">
-            <i className="bi bi-lightbulb"></i> Dicas para um ticket melhor:
+            <i className="bi bi-lightbulb"></i> {t("criarTicket.tips.title")}
           </h5>
           <ul className="mb-0 list-disc pl-5 text-xs text-slate-500 sm:text-sm">
-            <li>Seja o mais descritivo possível</li>
-            <li>Inclua os passos para reproduzir o problema</li>
-            <li>Mencione qual navegador ou dispositivo está usando</li>
-            <li>Tickets mais detalhados são resolvidos mais rapidamente</li>
+            <li>{t("criarTicket.tips.item1")}</li>
+            <li>{t("criarTicket.tips.item2")}</li>
+            <li>{t("criarTicket.tips.item3")}</li>
+            <li>{t("criarTicket.tips.item4")}</li>
           </ul>
         </div>
       </div>

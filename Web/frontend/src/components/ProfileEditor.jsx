@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
 export default function ProfileEditor() {
+  const { t } = useTranslation();
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState(null);
@@ -58,13 +60,13 @@ export default function ProfileEditor() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setAvatarError("Seleciona um ficheiro de imagem.");
+      setAvatarError(t("components.profileEditor.errors.selectImage"));
       event.target.value = "";
       return;
     }
 
     if (file.size > 3 * 1024 * 1024) {
-      setAvatarError("A imagem deve ter no máximo 3 MB.");
+      setAvatarError(t("components.profileEditor.errors.imageTooLarge"));
       event.target.value = "";
       return;
     }
@@ -81,7 +83,7 @@ export default function ProfileEditor() {
       setUser(updatedUser);
     } catch (error) {
       console.error("Erro ao enviar foto de perfil:", error);
-      setAvatarError(error.response?.data?.message || "Erro ao enviar foto de perfil.");
+      setAvatarError(error.response?.data?.message || t("components.profileEditor.errors.avatarUploadFailed"));
     } finally {
       setAvatarUploading(false);
       event.target.value = "";
@@ -92,7 +94,7 @@ export default function ProfileEditor() {
     e.preventDefault();
 
     if (!formData.name || !formData.email) {
-      alert("Nome e email são obrigatórios.");
+      alert(t("components.profileEditor.errors.nameEmailRequired"));
       return;
     }
 
@@ -110,10 +112,10 @@ export default function ProfileEditor() {
       window.dispatchEvent(new Event("user:updated"));
       setUser(updatedUser);
 
-      alert("Perfil atualizado com sucesso!");
+      alert(t("components.profileEditor.success.profileUpdated"));
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      alert("Erro ao atualizar perfil: " + (error.response?.data?.message || error.message));
+      alert(t("components.profileEditor.errors.profileUpdateFailed") + " " + (error.response?.data?.message || error.message));
     } finally {
       setSaving(false);
     }
@@ -123,17 +125,17 @@ export default function ProfileEditor() {
     e.preventDefault();
 
     if (!passwordData.currentPassword || !passwordData.newPassword) {
-      alert("Preencha todos os campos de password.");
+      alert(t("components.profileEditor.errors.fillAllPasswordFields"));
       return;
     }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("As passwords novas não coincidem.");
+      alert(t("components.profileEditor.errors.passwordsMismatch"));
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      alert("A password deve ter pelo menos 6 caracteres.");
+      alert(t("components.profileEditor.errors.passwordTooShort"));
       return;
     }
 
@@ -144,12 +146,12 @@ export default function ProfileEditor() {
         newPassword: passwordData.newPassword,
       });
 
-      alert("Password alterada com sucesso!");
+      alert(t("components.profileEditor.success.passwordChanged"));
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
       setShowPasswordChange(false);
     } catch (error) {
       console.error("Erro ao alterar password:", error);
-      alert("Erro ao alterar password: " + (error.response?.data?.message || error.message));
+      alert(t("components.profileEditor.errors.passwordChangeFailed") + " " + (error.response?.data?.message || error.message));
     } finally {
       setSaving(false);
     }
@@ -171,14 +173,14 @@ export default function ProfileEditor() {
           <div className="relative mx-auto mb-4 h-24 w-24">
             <img
               src={user.avatar_url || avatarPlaceholder}
-              alt="Perfil"
+              alt={t("components.profileEditor.profileAlt")}
               className="h-24 w-24 rounded-3xl border-4 border-[#0F62FE]/10 object-cover"
             />
 
             <label
               htmlFor="profile-editor-avatar-upload"
               className="absolute -bottom-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#0F62FE] text-white shadow-md transition hover:bg-[#16558C]"
-              title="Alterar foto de perfil"
+              title={t("components.profileEditor.changePhoto")}
             >
               {avatarUploading ? (
                 <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
@@ -207,12 +209,12 @@ export default function ProfileEditor() {
       {/* DADOS + SEGURANCA */}
       <div className="xl:col-span-2">
         <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <h2 className="mb-6 text-xl font-semibold">Informações Pessoais</h2>
+          <h2 className="mb-6 text-xl font-semibold">{t("components.profileEditor.personalInfo")}</h2>
 
           <form onSubmit={handleUpdateProfile}>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">Nome Completo</label>
+                <label className="mb-2 block text-sm font-medium text-slate-700">{t("components.profileEditor.fullName")}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -222,7 +224,7 @@ export default function ProfileEditor() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">Email</label>
+                <label className="mb-2 block text-sm font-medium text-slate-700">{t("components.profileEditor.email")}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -237,21 +239,21 @@ export default function ProfileEditor() {
               disabled={saving}
               className="mt-6 rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02]"
             >
-              {saving ? "A guardar..." : "Guardar Alterações"}
+              {saving ? t("components.profileEditor.saving") : t("components.profileEditor.saveChanges")}
             </button>
           </form>
         </div>
 
         <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Segurança</h2>
+            <h2 className="text-xl font-semibold">{t("components.profileEditor.security")}</h2>
 
             {!showPasswordChange && (
               <button
                 onClick={() => setShowPasswordChange(true)}
                 className="rounded-2xl border border-amber-500 px-4 py-2 font-medium text-amber-600 transition hover:bg-amber-50"
               >
-                Alterar Password
+                {t("components.profileEditor.changePassword")}
               </button>
             )}
           </div>
@@ -259,14 +261,14 @@ export default function ProfileEditor() {
           {!showPasswordChange ? (
             <div className="rounded-2xl bg-amber-50 p-4 text-amber-700">
               <i className="bi bi-shield-lock mr-2"></i>
-              Mantenha a sua conta segura alterando a password regularmente.
+              {t("components.profileEditor.securityHint")}
             </div>
           ) : (
             <form onSubmit={handleChangePassword}>
               <div className="space-y-4">
                 <input
                   type="password"
-                  placeholder="Password Atual"
+                  placeholder={t("components.profileEditor.currentPassword")}
                   value={passwordData.currentPassword}
                   onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
@@ -274,7 +276,7 @@ export default function ProfileEditor() {
 
                 <input
                   type="password"
-                  placeholder="Nova Password"
+                  placeholder={t("components.profileEditor.newPassword")}
                   value={passwordData.newPassword}
                   onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
@@ -282,7 +284,7 @@ export default function ProfileEditor() {
 
                 <input
                   type="password"
-                  placeholder="Confirmar Nova Password"
+                  placeholder={t("components.profileEditor.confirmNewPassword")}
                   value={passwordData.confirmPassword}
                   onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
@@ -291,7 +293,7 @@ export default function ProfileEditor() {
 
               <div className="mt-6 flex gap-3">
                 <button type="submit" className="rounded-2xl bg-amber-500 px-5 py-3 font-semibold text-white">
-                  Confirmar
+                  {t("components.profileEditor.confirm")}
                 </button>
 
                 <button
@@ -299,7 +301,7 @@ export default function ProfileEditor() {
                   onClick={() => setShowPasswordChange(false)}
                   className="rounded-2xl border border-slate-300 px-5 py-3 font-semibold text-slate-700"
                 >
-                  Cancelar
+                  {t("components.profileEditor.cancel")}
                 </button>
               </div>
             </form>

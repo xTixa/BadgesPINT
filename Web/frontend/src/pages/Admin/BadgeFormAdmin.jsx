@@ -1,9 +1,11 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 
 export default function BadgeFormAdmin() {
+  const { t } = useTranslation();
   const { id } = useParams(); // "novo" ou um id numérico
   const navigate = useNavigate();
 
@@ -72,6 +74,7 @@ export default function BadgeFormAdmin() {
 
     loadAreas();
     loadBadge();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNovo, id]);
 
   const handleChange = (e) => {
@@ -86,7 +89,7 @@ export default function BadgeFormAdmin() {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
-    if (!token) return alert("Sem token. Faz login novamente.");
+    if (!token) return alert(t("admin.badgeForm.errors.noToken"));
 
     const payload = {
       ...form,
@@ -110,7 +113,7 @@ export default function BadgeFormAdmin() {
       navigate("/admin/gestao-badges");
     } catch (err) {
       console.error("Erro ao guardar badge:", err);
-      alert(err.response?.data?.error || err.response?.data?.message || "Erro ao guardar badge.");
+      alert(err.response?.data?.error || err.response?.data?.message || t("admin.badgeForm.errors.saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -138,12 +141,12 @@ export default function BadgeFormAdmin() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setImageError("Seleciona um ficheiro de imagem.");
+      setImageError(t("admin.badgeForm.errors.selectImageFile"));
       return;
     }
 
     if (file.size > 3 * 1024 * 1024) {
-      setImageError("A imagem deve ter no maximo 3 MB.");
+      setImageError(t("admin.badgeForm.errors.imageTooLarge"));
       return;
     }
 
@@ -158,7 +161,7 @@ export default function BadgeFormAdmin() {
       setForm((prev) => ({ ...prev, image_url: res.data.url }));
     } catch (err) {
       console.error("Erro ao enviar imagem:", err);
-      setImageError(err.response?.data?.error || "Erro ao enviar imagem.");
+      setImageError(err.response?.data?.error || t("admin.badgeForm.errors.uploadFailed"));
     } finally {
       setImageUploading(false);
       event.target.value = "";
@@ -189,13 +192,13 @@ export default function BadgeFormAdmin() {
       <main className="admin-main">
         <h3 className="mb-4 text-xl font-bold text-slate-900 sm:text-2xl">
           <i className="bi bi-award-fill mr-2 text-sky-600" />
-          {isNovo ? "Criar Badge" : "Editar Badge"}
+          {isNovo ? t("admin.badgeForm.createTitle") : t("admin.badgeForm.editTitle")}
         </h3>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Nome do Badge</label>
+              <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.badgeNameLabel")}</label>
               <input
                 type="text"
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
@@ -208,7 +211,7 @@ export default function BadgeFormAdmin() {
 
             <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Área</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.areaLabel")}</label>
                 <select
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                   name="area_id"
@@ -216,7 +219,7 @@ export default function BadgeFormAdmin() {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleciona uma área</option>
+                  <option value="">{t("admin.badgeForm.selectArea")}</option>
                   {areas.map((a) => (
                     <option key={a.id} value={a.id}>{a.name}</option>
                   ))}
@@ -224,7 +227,7 @@ export default function BadgeFormAdmin() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Nível</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.levelLabel")}</label>
                 <select
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                   name="level"
@@ -242,7 +245,7 @@ export default function BadgeFormAdmin() {
 
             <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Pontos</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.pointsLabel")}</label>
                 <input
                   type="number"
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
@@ -253,7 +256,7 @@ export default function BadgeFormAdmin() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Expira em (dias)</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.expiryLabel")}</label>
                 <input
                   type="number"
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
@@ -261,11 +264,11 @@ export default function BadgeFormAdmin() {
                   value={form.expiry_days}
                   onChange={handleChange}
                   min="0"
-                  placeholder="Opcional"
+                  placeholder={t("admin.badgeForm.optionalPlaceholder")}
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Imagem (URL)</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.imageUrlLabel")}</label>
                 <input
                   type="text"
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
@@ -281,14 +284,14 @@ export default function BadgeFormAdmin() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-[96px_minmax(0,1fr)]">
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white">
                   {form.image_url ? (
-                    <img src={form.image_url} alt="Preview do badge" className="h-full w-full object-cover" />
+                    <img src={form.image_url} alt={t("admin.badgeForm.imagePreviewAlt")} className="h-full w-full object-cover" />
                   ) : (
                     <i className="bi bi-image text-3xl text-slate-300"></i>
                   )}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-slate-700">
-                    Upload da imagem do badge
+                    {t("admin.badgeForm.uploadImageLabel")}
                   </label>
                   <input
                     type="file"
@@ -298,9 +301,9 @@ export default function BadgeFormAdmin() {
                     className="block w-full text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-sky-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-sky-700 disabled:opacity-60"
                   />
                   <p className="mt-2 text-xs text-slate-500">
-                    PNG/JPG/WebP ate 3 MB. O URL fica guardado no campo acima.
+                    {t("admin.badgeForm.uploadHint")}
                   </p>
-                  {imageUploading && <p className="mt-2 text-sm text-sky-700">A enviar imagem...</p>}
+                  {imageUploading && <p className="mt-2 text-sm text-sky-700">{t("admin.badgeForm.uploadingImage")}</p>}
                   {imageError && <p className="mt-2 text-sm text-rose-600">{imageError}</p>}
                 </div>
               </div>
@@ -308,10 +311,10 @@ export default function BadgeFormAdmin() {
 
             <div className="mt-2 border-t border-slate-200 pt-4">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <h6 className="m-0 text-sm font-semibold text-slate-900 sm:text-base">Requisitos do Ní­vel</h6>
+                <h6 className="m-0 text-sm font-semibold text-slate-900 sm:text-base">{t("admin.badgeForm.levelRequirements")}</h6>
                 <button type="button" className="rounded-lg border border-sky-600 px-3 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50" onClick={addRequirement}>
                   <i className="bi bi-plus-circle mr-1"></i>
-                  Adicionar requisito
+                  {t("admin.badgeForm.addRequirement")}
                 </button>
               </div>
 
@@ -320,7 +323,7 @@ export default function BadgeFormAdmin() {
                   <div key={idx} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
                         <div className="md:col-span-4">
-                          <label className="mb-1 block text-sm font-semibold text-slate-700">Título</label>
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.requirementTitleLabel")}</label>
                           <input
                             type="text"
                             className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
@@ -330,7 +333,7 @@ export default function BadgeFormAdmin() {
                           />
                         </div>
                         <div className="md:col-span-2">
-                          <label className="mb-1 block text-sm font-semibold text-slate-700">Código</label>
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.requirementCodeLabel")}</label>
                           <input
                             type="text"
                             className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
@@ -340,7 +343,7 @@ export default function BadgeFormAdmin() {
                           />
                         </div>
                         <div className="md:col-span-6">
-                          <label className="mb-1 block text-sm font-semibold text-slate-700">Imagem (URL)</label>
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.imageUrlLabel")}</label>
                           <input
                             type="text"
                             className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
@@ -350,7 +353,7 @@ export default function BadgeFormAdmin() {
                           />
                         </div>
                         <div className="md:col-span-12">
-                          <label className="mb-1 block text-sm font-semibold text-slate-700">Descrição / Evidência</label>
+                          <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.requirementDescriptionLabel")}</label>
                           <textarea
                             className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
                             rows="2"
@@ -367,7 +370,7 @@ export default function BadgeFormAdmin() {
                           onClick={() => removeRequirement(idx)}
                           disabled={requirements.length === 1}
                         >
-                          Remover
+                          {t("admin.common.remove")}
                         </button>
                     </div>
                   </div>
@@ -381,14 +384,14 @@ export default function BadgeFormAdmin() {
                 className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                 onClick={() => navigate("/admin/badges")}
               >
-                Cancelar
+                {t("admin.common.cancel")}
               </button>
               <button
                 type="submit"
                 className="rounded-lg bg-[#16558C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#16558C]"
                 disabled={loading}
               >
-                {loading ? "A guardar..." : "Guardar"}
+                {loading ? t("admin.common.saving") : t("admin.common.save")}
               </button>
             </div>
           </form>

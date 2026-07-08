@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const sizeClasses = {
   sm: "h-20 w-20",
@@ -9,12 +10,15 @@ const sizeClasses = {
 
 export default function BadgeMedal({
   imageUrl = "",
-  name = "Badge",
-  level = "Badge",
+  name,
+  level,
   size = "md",
   className = "",
 }) {
-  const label = String(level || "Badge").slice(0, 16);
+  const { t } = useTranslation();
+  const fallbackLabel = t("components.badgeMedal.badge");
+  const label = String(level || fallbackLabel).slice(0, 16);
+  const altText = name || fallbackLabel;
 
   return (
     <div className={`relative inline-flex ${sizeClasses[size] || sizeClasses.md} ${className}`}>
@@ -28,7 +32,7 @@ export default function BadgeMedal({
           {imageUrl ? (
             <img
               src={imageUrl}
-              alt={name}
+              alt={altText}
               className="h-full w-full object-cover"
               loading="lazy"
             />

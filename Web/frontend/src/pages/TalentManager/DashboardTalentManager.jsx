@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getTimeGreeting } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
@@ -20,6 +21,7 @@ function showBrowserNotification(title, body) {
 }
 
 export default function DashboardTalentManager() {
+  const { t } = useTranslation();
   const [tm, setTM] = useState(null);
   const [stats, setStats] = useState({ totalEquipa: 0, evidenciasPendentes: 0, progressoMedio: 0 });
   const [kpis, setKpis] = useState({
@@ -81,8 +83,8 @@ export default function DashboardTalentManager() {
           const latestId = latest.id;
           if (lastSeenIdRef.current !== null && latestId !== lastSeenIdRef.current) {
             showBrowserNotification(
-              "Nova notificação — Talent Manager",
-              latest.message || latest.title || "Tens notificações não lidas."
+              t("talentManager.dashboard.notifications.newTitle"),
+              latest.message || latest.title || t("talentManager.dashboard.notifications.unreadFallback")
             );
           }
           lastSeenIdRef.current = latestId;
@@ -95,19 +97,19 @@ export default function DashboardTalentManager() {
     pollNotifications();
     const timer = window.setInterval(pollNotifications, POLL_INTERVAL_MS);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [t]);
 
   const summary = kpis?.summary || { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 };
 
   return (
     <TalentManagerLayout
-      title={tm ? `${getTimeGreeting()}, ${tm.name.split(" ")[0]}` : "Talent Manager"}
-      subtitle="Acompanha a tua equipa, validações pendentes e evolução de badges em tempo real."
-      userName={tm?.name || "Talent Manager"}
+      title={tm ? `${getTimeGreeting()}, ${tm.name.split(" ")[0]}` : t("talentManager.dashboard.defaultTitle")}
+      subtitle={t("talentManager.dashboard.subtitle")}
+      userName={tm?.name || t("talentManager.dashboard.defaultTitle")}
       heroStats={[
-        { label: "Consultores", value: stats.totalEquipa },
-        { label: "Pendentes", value: stats.evidenciasPendentes },
-        { label: "Progresso", value: `${stats.progressoMedio}%` },
+        { label: t("talentManager.dashboard.stats.consultants"), value: stats.totalEquipa },
+        { label: t("talentManager.dashboard.stats.pending"), value: stats.evidenciasPendentes },
+        { label: t("talentManager.dashboard.stats.progress"), value: `${stats.progressoMedio}%` },
       ]}
     >
       {naoLidas > 0 && (
@@ -118,24 +120,24 @@ export default function DashboardTalentManager() {
           <div className="flex items-center gap-3">
             <i className="bi bi-bell-fill text-amber-600"></i>
             <span className="text-sm font-semibold text-amber-800">
-              Tens {naoLidas} notificaç{naoLidas === 1 ? "ão" : "ões"} não lida{naoLidas !== 1 ? "s" : ""}
+              {t("talentManager.dashboard.notifications.unreadCount", { count: naoLidas })}
             </span>
           </div>
-          <span className="text-xs font-semibold text-amber-700">Ver notificações →</span>
+          <span className="text-xs font-semibold text-amber-700">{t("talentManager.dashboard.notifications.viewLink")}</span>
         </Link>
       )}
       {loading ? (
         <div className="py-10">
-          <EmptyState message="A carregar dados do dashboard..." icon="bi-hourglass-split" />
+          <EmptyState message={t("talentManager.dashboard.loading")} icon="bi-hourglass-split" />
         </div>
       ) : (
         <>
           <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
-              { label: "Consultores na Equipa", value: stats.totalEquipa, icon: "bi-people-fill" },
-              { label: "Evidências Pendentes", value: stats.evidenciasPendentes, icon: "bi-hourglass-split" },
-              { label: "Progresso Médio", value: `${stats.progressoMedio}%`, icon: "bi-graph-up-arrow" },
-              { label: "Badges Obtidos", value: summary.badgesObtidosTotal, icon: "bi-award-fill" },
+              { label: t("talentManager.dashboard.cards.teamConsultants"), value: stats.totalEquipa, icon: "bi-people-fill" },
+              { label: t("talentManager.dashboard.cards.pendingEvidence"), value: stats.evidenciasPendentes, icon: "bi-hourglass-split" },
+              { label: t("talentManager.dashboard.cards.averageProgress"), value: `${stats.progressoMedio}%`, icon: "bi-graph-up-arrow" },
+              { label: t("talentManager.dashboard.cards.badgesEarned"), value: summary.badgesObtidosTotal, icon: "bi-award-fill" },
             ].map((card) => (
               <TalentStatCard key={card.label} label={card.label} value={card.value} icon={card.icon} />
             ))}
@@ -144,13 +146,13 @@ export default function DashboardTalentManager() {
           <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
             <section className={`lg:col-span-7 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-bar-chart-fill mr-2 text-[#0F62FE]"></i>Resumo de KPIs
+                <i className="bi bi-bar-chart-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.kpiSummary")}
               </h5>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {[
-                  { label: "Utilizadores", value: summary.totalUsers },
-                  { label: "Total de Badges", value: summary.totalBadges },
-                  { label: "Badges Obtidos", value: summary.badgesObtidosTotal },
+                  { label: t("talentManager.dashboard.kpiItems.users"), value: summary.totalUsers },
+                  { label: t("talentManager.dashboard.kpiItems.totalBadges"), value: summary.totalBadges },
+                  { label: t("talentManager.dashboard.kpiItems.badgesEarned"), value: summary.badgesObtidosTotal },
                 ].map((item) => (
                   <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
                     <div className="text-xs text-slate-500">{item.label}</div>
@@ -162,7 +164,7 @@ export default function DashboardTalentManager() {
 
             <section className={`lg:col-span-5 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-person-badge-fill mr-2 text-[#0F62FE]"></i>Utilizadores por Perfil
+                <i className="bi bi-person-badge-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.usersByRole")}
               </h5>
               <ul className="m-0 list-none divide-y divide-slate-100 p-0">
                 {(kpis.usersByRole || []).map((item) => (
@@ -171,7 +173,7 @@ export default function DashboardTalentManager() {
                     <span className="rounded-full bg-cyan-100 px-2 py-1 text-xs font-semibold text-cyan-700">{item.count}</span>
                   </li>
                 ))}
-                {!kpis.usersByRole?.length && <li className="py-2 text-sm text-slate-500">Sem dados disponíveis.</li>}
+                {!kpis.usersByRole?.length && <li className="py-2 text-sm text-slate-500">{t("talentManager.dashboard.noData")}</li>}
               </ul>
             </section>
           </div>
@@ -179,22 +181,22 @@ export default function DashboardTalentManager() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <section className={`lg:col-span-6 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-layers-fill mr-2 text-[#0F62FE]"></i>Badges por Nível
+                <i className="bi bi-layers-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.badgesByLevel")}
               </h5>
               <ul className="m-0 list-none divide-y divide-slate-100 p-0">
                 {(kpis.badgesByLevel || []).map((item) => (
                   <li key={item.level} className="flex items-center justify-between py-2">
-                    <span className="text-sm text-slate-700">{item.level || "Sem nível"}</span>
+                    <span className="text-sm text-slate-700">{item.level || t("talentManager.dashboard.noLevel")}</span>
                     <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">{item.count}</span>
                   </li>
                 ))}
-                {!kpis.badgesByLevel?.length && <li className="py-2 text-sm text-slate-500">Sem dados disponíveis.</li>}
+                {!kpis.badgesByLevel?.length && <li className="py-2 text-sm text-slate-500">{t("talentManager.dashboard.noData")}</li>}
               </ul>
             </section>
 
             <section className={`lg:col-span-6 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-calendar3 mr-2 text-[#0F62FE]"></i>Badges por Mês
+                <i className="bi bi-calendar3 mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.badgesByMonth")}
               </h5>
               <ul className="m-0 list-none divide-y divide-slate-100 p-0">
                 {(kpis.badgesByMonth || []).slice(-6).map((item) => (
@@ -203,7 +205,7 @@ export default function DashboardTalentManager() {
                     <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">{item.count}</span>
                   </li>
                 ))}
-                {!kpis.badgesByMonth?.length && <li className="py-2 text-sm text-slate-500">Sem dados disponíveis.</li>}
+                {!kpis.badgesByMonth?.length && <li className="py-2 text-sm text-slate-500">{t("talentManager.dashboard.noData")}</li>}
               </ul>
             </section>
           </div>

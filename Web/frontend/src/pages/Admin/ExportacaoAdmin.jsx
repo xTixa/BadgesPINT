@@ -1,9 +1,11 @@
 ﻿import Sidebar from "../../layout/Sidebar";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import { useSidebar } from "../../context/SidebarContext";
 
 export default function ExportacaoAdmin() {
+  const { t } = useTranslation();
   const { collapsed } = useSidebar();
   const [format, setFormat] = useState("excel");
   const [scope, setScope] = useState("todos");
@@ -38,7 +40,7 @@ export default function ExportacaoAdmin() {
 
   const handleExport = async () => {
     if (!scope) {
-      setError("Por favor, selecione um Âmbito de exportação.");
+      setError(t("admin.exportacao.errors.selectScope"));
       return;
     }
 
@@ -90,7 +92,7 @@ export default function ExportacaoAdmin() {
       console.error("Erro na exportação:", err);
       setError(
         err.response?.data?.message ||
-          "Erro ao exportar dados. Tente novamente.",
+          t("admin.exportacao.errors.exportFailed"),
       );
     } finally {
       setLoading(false);
@@ -99,26 +101,26 @@ export default function ExportacaoAdmin() {
 
   const cards = [
     {
-      title: "Tudo",
-      desc: "Todos os dados disponíveis",
+      title: t("admin.exportacao.cards.all.title"),
+      desc: t("admin.exportacao.cards.all.desc"),
       icon: "bi-database-fill",
       value: "todos",
     },
     {
-      title: "Utilizadores",
-      desc: "Dados completos e perfis",
+      title: t("admin.exportacao.cards.users.title"),
+      desc: t("admin.exportacao.cards.users.desc"),
       icon: "bi-people-fill",
       value: "users",
     },
     {
-      title: "Badges",
-      desc: "Catálogo e requisitos",
+      title: t("admin.exportacao.cards.badges.title"),
+      desc: t("admin.exportacao.cards.badges.desc"),
       icon: "bi-award-fill",
       value: "badges",
     },
     {
-      title: "Pedidos",
-      desc: "Fluxos de aprovação",
+      title: t("admin.exportacao.cards.requests.title"),
+      desc: t("admin.exportacao.cards.requests.desc"),
       icon: "bi-hourglass-split",
       value: "pedidos",
     },
@@ -138,10 +140,10 @@ export default function ExportacaoAdmin() {
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold">Exportação de Dados</h1>
+            <h1 className="text-3xl font-bold">{t("admin.exportacao.title")}</h1>
 
             <p className="mt-2 text-white/80">
-              Exporta utilizadores, badges e pedidos em Excel ou PDF.
+              {t("admin.exportacao.subtitle")}
             </p>
           </div>
         </div>
@@ -151,32 +153,32 @@ export default function ExportacaoAdmin() {
           <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <i className="bi bi-people-fill text-2xl text-[#0F62FE]"></i>
             <h3 className="mt-2 text-3xl font-bold text-slate-900">248</h3>
-            <p className="text-sm text-slate-500">Utilizadores</p>
+            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.users")}</p>
           </div>
 
           <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <i className="bi bi-award-fill text-2xl text-amber-500"></i>
             <h3 className="mt-2 text-3xl font-bold text-slate-900">87</h3>
-            <p className="text-sm text-slate-500">Badges</p>
+            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.badges")}</p>
           </div>
 
           <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <i className="bi bi-hourglass-split text-2xl text-emerald-600"></i>
             <h3 className="mt-2 text-3xl font-bold text-slate-900">14</h3>
-            <p className="text-sm text-slate-500">Pedidos</p>
+            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.requests")}</p>
           </div>
 
           <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <i className="bi bi-file-earmark-arrow-down text-2xl text-purple-600"></i>
             <h3 className="mt-2 text-3xl font-bold text-slate-900">36</h3>
-            <p className="text-sm text-slate-500">Exportações</p>
+            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.exports")}</p>
           </div>
         </div>
 
         {/* FORMATO */}
         <section className="mb-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <h2 className="mb-4 text-xl font-bold text-slate-900">
-            Formato de Exportação
+            {t("admin.exportacao.formatHeading")}
           </h2>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -196,7 +198,7 @@ export default function ExportacaoAdmin() {
               </h3>
 
               <p className="mt-1 text-sm text-slate-500">
-                Ideal para análise e tratamento de dados.
+                {t("admin.exportacao.excelDesc")}
               </p>
             </button>
 
@@ -214,7 +216,7 @@ export default function ExportacaoAdmin() {
               <h3 className="mt-3 font-semibold text-slate-900">PDF (.pdf)</h3>
 
               <p className="mt-1 text-sm text-slate-500">
-                Ideal para relatórios e auditorias.
+                {t("admin.exportacao.pdfDesc")}
               </p>
             </button>
           </div>
@@ -223,7 +225,7 @@ export default function ExportacaoAdmin() {
         {/* ÂMBITO */}
         <section className="mb-6">
           <h2 className="mb-4 text-xl font-bold text-slate-900">
-            Dados a Exportar
+            {t("admin.exportacao.dataToExport")}
           </h2>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -252,17 +254,17 @@ export default function ExportacaoAdmin() {
 
         {/* PERÍODO */}
         <section className="mb-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">Período</h2>
+          <h2 className="mb-4 text-xl font-bold text-slate-900">{t("admin.exportacao.periodHeading")}</h2>
 
           <select
             className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
           >
-            <option value="ultima-semana">Última semana</option>
-            <option value="ultimo-mes">Último mês</option>
-            <option value="ultimo-trimestre">Último trimestre</option>
-            <option value="ano-atual">Ano atual</option>
+            <option value="ultima-semana">{t("admin.exportacao.periods.lastWeek")}</option>
+            <option value="ultimo-mes">{t("admin.exportacao.periods.lastMonth")}</option>
+            <option value="ultimo-trimestre">{t("admin.exportacao.periods.lastQuarter")}</option>
+            <option value="ano-atual">{t("admin.exportacao.periods.currentYear")}</option>
           </select>
 
           {error && (
@@ -277,7 +279,7 @@ export default function ExportacaoAdmin() {
               disabled={loading}
               className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] disabled:opacity-50"
             >
-              {loading ? "A gerar..." : "Exportar Dados"}
+              {loading ? t("admin.exportacao.generating") : t("admin.exportacao.exportButton")}
             </button>
           </div>
         </section>
@@ -285,7 +287,7 @@ export default function ExportacaoAdmin() {
         {lastExport && (
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-700">
             <i className="bi bi-check-circle-fill mr-2"></i>
-            Exportação concluída com sucesso.
+            {t("admin.exportacao.exportSuccess")}
           </div>
         )}
       </main>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
@@ -11,17 +12,11 @@ const statusMap = {
   rejeitado: "bg-rose-100 text-rose-700",
 };
 
-const WORKFLOW_LABEL = {
-  open: "Aberto",
-  submitted: "Submetido",
-  em_validacao: "Em Validação (SL)",
-  fechado: "Fechado",
-};
-
 function ProcessoModal({ pedido, onClose }) {
+  const { t } = useTranslation();
   const steps = [
     {
-      label: "Candidatura submetida",
+      label: t("serviceLine.pedidos.steps.submitted"),
       date: pedido.submitted_at,
       actor: pedido.user?.name,
       comment: null,
@@ -31,7 +26,7 @@ function ProcessoModal({ pedido, onClose }) {
       iconColor: "text-blue-600",
     },
     {
-      label: "Validação Talent Manager",
+      label: t("serviceLine.pedidos.steps.tmValidation"),
       date: pedido.tm_validated_at,
       actor: null,
       comment: pedido.tm_comment,
@@ -41,7 +36,7 @@ function ProcessoModal({ pedido, onClose }) {
       iconColor: "text-violet-600",
     },
     {
-      label: pedido.status === "rejeitado" ? "Rejeitado pela Service Line" : "Aprovação Service Line",
+      label: pedido.status === "rejeitado" ? t("serviceLine.pedidos.steps.rejectedBySl") : t("serviceLine.pedidos.steps.approvedBySl"),
       date: pedido.sl_validated_at,
       actor: null,
       comment: pedido.sl_comment,
@@ -63,9 +58,9 @@ function ProcessoModal({ pedido, onClose }) {
       >
         <div className="mb-4 flex items-start justify-between gap-2">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Processo de Candidatura</h3>
+            <h3 className="text-lg font-bold text-slate-900">{t("serviceLine.pedidos.processTitle")}</h3>
             <p className="text-sm text-slate-500">
-              {pedido.badge?.name || pedido.badge?.description || `Badge #${pedido.badge_id}`}
+              {pedido.badge?.name || pedido.badge?.description || t("serviceLine.pedidos.badgeFallback", { id: pedido.badge_id })}
             </p>
           </div>
           <button
@@ -105,7 +100,7 @@ function ProcessoModal({ pedido, onClose }) {
                   )}
                 </div>
                 {step.actor && (
-                  <div className="mt-1 text-xs text-slate-500">por {step.actor}</div>
+                  <div className="mt-1 text-xs text-slate-500">{t("serviceLine.pedidos.by", { name: step.actor })}</div>
                 )}
                 {step.comment && (
                   <div className="mt-2 rounded-lg border border-slate-200 bg-white p-2 text-xs italic text-slate-600">
@@ -113,7 +108,7 @@ function ProcessoModal({ pedido, onClose }) {
                   </div>
                 )}
                 {!step.done && (
-                  <div className="mt-1 text-xs text-slate-400">Aguarda...</div>
+                  <div className="mt-1 text-xs text-slate-400">{t("serviceLine.pedidos.awaiting")}</div>
                 )}
               </div>
             </li>
@@ -121,7 +116,7 @@ function ProcessoModal({ pedido, onClose }) {
         </ol>
 
         <button onClick={onClose} className={`mt-4 w-full ${slPrimaryActionClass}`}>
-          Fechar
+          {t("serviceLine.pedidos.close")}
         </button>
       </div>
     </div>
@@ -129,6 +124,13 @@ function ProcessoModal({ pedido, onClose }) {
 }
 
 export default function PedidosServiceLine() {
+  const { t } = useTranslation();
+  const WORKFLOW_LABEL = {
+    open: t("serviceLine.pedidos.workflow.open"),
+    submitted: t("serviceLine.pedidos.workflow.submitted"),
+    em_validacao: t("serviceLine.pedidos.workflow.emValidacao"),
+    fechado: t("serviceLine.pedidos.workflow.fechado"),
+  };
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -152,7 +154,7 @@ export default function PedidosServiceLine() {
       );
     } catch (err) {
       console.error("Erro ao carregar pedidos SL:", err);
-      setError("Não foi possível carregar os pedidos.");
+      setError(t("serviceLine.pedidos.errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -162,6 +164,7 @@ export default function PedidosServiceLine() {
     load();
     const intervalId = window.setInterval(load, 15000);
     return () => window.clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtro]);
 
   const totals = useMemo(() => ({
@@ -173,7 +176,7 @@ export default function PedidosServiceLine() {
   const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidos);
 
   const aprovar = async (id) => {
-    const comment = window.prompt("Comentário (opcional):") || "";
+    const comment = window.prompt(t("serviceLine.pedidos.prompts.approveComment")) || "";
     try {
       await api.post(`/api/pedidos/${id}/sl/aprovar`, { comment });
       setPedidos((prev) =>
@@ -181,12 +184,12 @@ export default function PedidosServiceLine() {
       );
     } catch (err) {
       console.error("Erro ao aprovar pedido:", err);
-      alert("Erro ao aprovar pedido.");
+      alert(t("serviceLine.pedidos.errors.approveFailed"));
     }
   };
 
   const rejeitar = async (id) => {
-    const comment = window.prompt("Motivo da rejeição (opcional):") || "";
+    const comment = window.prompt(t("serviceLine.pedidos.prompts.rejectReason")) || "";
     try {
       await api.post(`/api/pedidos/${id}/sl/rejeitar`, { comment });
       setPedidos((prev) =>
@@ -194,12 +197,12 @@ export default function PedidosServiceLine() {
       );
     } catch (err) {
       console.error("Erro ao rejeitar pedido:", err);
-      alert("Erro ao rejeitar pedido.");
+      alert(t("serviceLine.pedidos.errors.rejectFailed"));
     }
   };
 
   const devolver = async (id) => {
-    const comment = window.prompt("Motivo da devolução:") || "";
+    const comment = window.prompt(t("serviceLine.pedidos.prompts.returnReason")) || "";
     try {
       await api.post(`/api/pedidos/${id}/sl/devolver`, { comment });
       setPedidos((prev) =>
@@ -207,29 +210,29 @@ export default function PedidosServiceLine() {
       );
     } catch (err) {
       console.error("Erro ao devolver pedido:", err);
-      alert("Erro ao devolver pedido.");
+      alert(t("serviceLine.pedidos.errors.returnFailed"));
     }
   };
 
   return (
     <ServiceLineLayout
-      title="Pedidos de Badges"
-      subtitle="Visualiza o estado dos pedidos da tua Service Line em tempo real e faz a validação final."
+      title={t("serviceLine.pedidos.title")}
+      subtitle={t("serviceLine.pedidos.subtitle")}
       heroStats={[
-        { label: "Pedidos", value: totals.total },
-        { label: "Em validação", value: totals.emValidacao },
-        { label: "Aprovados", value: totals.aprovados },
+        { label: t("serviceLine.pedidos.stats.requests"), value: totals.total },
+        { label: t("serviceLine.pedidos.stats.inValidation"), value: totals.emValidacao },
+        { label: t("serviceLine.pedidos.stats.approved"), value: totals.aprovados },
       ]}
     >
       {selected && <ProcessoModal pedido={selected} onClose={() => setSelected(null)} />}
 
       <div className="mb-4 flex flex-wrap gap-2">
         {[
-          { value: "all", label: "Todos" },
-          { value: "em_validacao", label: "Para validar" },
-          { value: "pendente", label: "Pendentes" },
-          { value: "obtido", label: "Aprovados" },
-          { value: "rejeitado", label: "Rejeitados" },
+          { value: "all", label: t("serviceLine.pedidos.filters.all") },
+          { value: "em_validacao", label: t("serviceLine.pedidos.filters.toValidate") },
+          { value: "pendente", label: t("serviceLine.pedidos.filters.pending") },
+          { value: "obtido", label: t("serviceLine.pedidos.filters.approved") },
+          { value: "rejeitado", label: t("serviceLine.pedidos.filters.rejected") },
         ].map((item) => (
           <button
             key={item.value}
@@ -241,32 +244,32 @@ export default function PedidosServiceLine() {
         ))}
         <div className="ml-auto flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1 text-xs text-emerald-700">
           <i className="bi bi-arrow-repeat"></i>
-          <span>Atualização automática (15s)</span>
+          <span>{t("serviceLine.pedidos.autoRefresh")}</span>
         </div>
       </div>
 
       <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
         <h5 className="mb-3 text-base font-bold text-slate-900">
           <i className="bi bi-inbox mr-2 text-[#0F62FE]"></i>
-          Lista de Pedidos
+          {t("serviceLine.pedidos.listTitle")}
         </h5>
         {loading ? (
-          <EmptyState message="A carregar pedidos..." icon="bi-hourglass-split" />
+          <EmptyState message={t("serviceLine.pedidos.loading")} icon="bi-hourglass-split" />
         ) : error ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
         ) : pedidos.length === 0 ? (
-          <EmptyState message="Sem pedidos para apresentar." icon="bi-inbox" />
+          <EmptyState message={t("serviceLine.pedidos.empty")} icon="bi-inbox" />
         ) : (
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-100 text-slate-700">
                 <tr>
-                  <SortableTh label="Consultor" sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Badge" sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Estado" sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Workflow" sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Data" sortKey="created_at" accessor={(p) => (p.created_at ? new Date(p.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <th className="px-3 py-2 text-right font-semibold">Ações</th>
+                  <SortableTh label={t("serviceLine.pedidos.table.consultant")} sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("serviceLine.pedidos.table.badge")} sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("serviceLine.pedidos.table.status")} sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("serviceLine.pedidos.table.workflow")} sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("serviceLine.pedidos.table.date")} sortKey="created_at" accessor={(p) => (p.created_at ? new Date(p.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <th className="px-3 py-2 text-right font-semibold">{t("serviceLine.pedidos.table.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -286,7 +289,7 @@ export default function PedidosServiceLine() {
                       </span>
                     </td>
                     <td className="px-3 py-2 text-xs text-slate-600">
-                      {WORKFLOW_LABEL[pedido.workflow_status] || pedido.workflow_status || "open"}
+                      {WORKFLOW_LABEL[pedido.workflow_status] || pedido.workflow_status || WORKFLOW_LABEL.open}
                     </td>
                     <td className="px-3 py-2 text-xs text-slate-500">
                       {pedido.created_at ? new Date(pedido.created_at).toLocaleDateString("pt-PT") : "-"}
@@ -296,9 +299,9 @@ export default function PedidosServiceLine() {
                         <button
                           className={`${slActionClass} py-1`}
                           onClick={() => setSelected(pedido)}
-                          title="Ver histórico do processo"
+                          title={t("serviceLine.pedidos.viewHistoryTitle")}
                         >
-                          <i className="bi bi-eye mr-1"></i>Processo
+                          <i className="bi bi-eye mr-1"></i>{t("serviceLine.pedidos.process")}
                         </button>
                         {pedido.workflow_status === "em_validacao" && (
                           <>
@@ -306,27 +309,27 @@ export default function PedidosServiceLine() {
                               className={`${slPrimaryActionClass} py-1`}
                               onClick={() => aprovar(pedido.id)}
                             >
-                              Aprovar
+                              {t("serviceLine.pedidos.approve")}
                             </button>
                             <button
                               className={`${slActionClass} py-1 text-amber-600 hover:bg-amber-50`}
                               onClick={() => devolver(pedido.id)}
                             >
-                              Devolver
+                              {t("serviceLine.pedidos.return")}
                             </button>
                             <button
                               className={`${slActionClass} py-1 text-rose-600 hover:bg-rose-50`}
                               onClick={() => rejeitar(pedido.id)}
                             >
-                              Rejeitar
+                              {t("serviceLine.pedidos.reject")}
                             </button>
                           </>
                         )}
                         {pedido.workflow_status !== "em_validacao" && pedido.status === "pendente" && (
                           <span className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500">
                             {pedido.workflow_status === "submitted"
-                              ? "Aguarda Talent Manager"
-                              : "Sem ação SL"}
+                              ? t("serviceLine.pedidos.awaitingTalentManager")
+                              : t("serviceLine.pedidos.noSlAction")}
                           </span>
                         )}
                       </div>

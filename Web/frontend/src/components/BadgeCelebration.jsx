@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import confetti from "canvas-confetti";
 
 const STORAGE_KEY = "celebrated_badge_ids";
@@ -19,6 +20,7 @@ export function markAsCelebrated(id) {
 }
 
 export default function BadgeCelebration({ badge, onClose }) {
+  const { t } = useTranslation();
   const burstRef = useRef(null);
 
   const fireConfetti = useCallback(() => {
@@ -96,15 +98,15 @@ export default function BadgeCelebration({ badge, onClose }) {
                 <i className="bi bi-award-fill text-5xl text-white"></i>
               )}
             </div>
-            <div className="mb-1 text-4xl font-black tracking-tight">PARABÉNS!</div>
-            <p className="text-white/85">Conquistaste um novo badge!</p>
+            <div className="mb-1 text-4xl font-black tracking-tight">{t("components.badgeCelebration.congrats")}</div>
+            <p className="text-white/85">{t("components.badgeCelebration.subtitle")}</p>
           </div>
         </div>
 
         {/* Body */}
         <div className="px-8 py-6 text-center">
           <h2 className="mb-1 text-xl font-bold text-slate-900">
-            {badge.description || badge.nome || `Badge #${badge.id}`}
+            {badge.description || badge.nome || t("components.badgeCelebration.badgeFallback", { id: badge.id })}
           </h2>
 
           {badge.level && (
@@ -117,13 +119,13 @@ export default function BadgeCelebration({ badge, onClose }) {
             <div className="mt-4 flex items-center justify-center gap-2">
               <div className="flex items-center gap-1.5 rounded-full bg-amber-50 px-4 py-2">
                 <i className="bi bi-star-fill text-amber-500"></i>
-                <span className="text-sm font-bold text-amber-700">+{badge.points} pontos</span>
+                <span className="text-sm font-bold text-amber-700">{t("components.badgeCelebration.pointsEarned", { count: badge.points })}</span>
               </div>
             </div>
           )}
 
           <p className="mt-4 text-sm text-slate-500">
-            Continua o teu excelente trabalho e conquista ainda mais badges!
+            {t("components.badgeCelebration.encouragement")}
           </p>
 
           <button
@@ -131,7 +133,7 @@ export default function BadgeCelebration({ badge, onClose }) {
             className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] py-3.5 text-sm font-bold text-white shadow-lg transition hover:opacity-90 active:scale-95"
           >
             <i className="bi bi-trophy-fill mr-2"></i>
-            Ver os meus badges
+            {t("components.badgeCelebration.viewMyBadges")}
           </button>
         </div>
       </div>

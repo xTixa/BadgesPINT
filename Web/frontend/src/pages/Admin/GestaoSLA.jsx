@@ -1,10 +1,12 @@
 import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function GestaoSLA() {
+  const { t } = useTranslation();
   const [slas, setSlas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,11 +48,11 @@ export default function GestaoSLA() {
       setTeams(teamsRes.data || []);
     } catch (err) {
       console.error("Erro ao carregar SLAs:", err);
-      setError("Erro ao carregar SLAs");
+      setError(t("admin.gestaoSLA.errors.loadFailed"));
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     fetchSLAs();
@@ -80,7 +82,7 @@ export default function GestaoSLA() {
       setSlas(refreshed.data);
     } catch (err) {
       console.error("Erro ao disparar verificação SLA:", err);
-      setCheckError(err.response?.data?.message || "Erro ao verificar alertas SLA.");
+      setCheckError(err.response?.data?.message || t("admin.gestaoSLA.errors.checkFailed"));
     } finally {
       setCheckLoading(false);
     }
@@ -118,7 +120,7 @@ export default function GestaoSLA() {
 
   const handleSaveSLA = async () => {
     if (!formData.team_id) {
-      alert("Por favor, selecione uma equipa.");
+      alert(t("admin.gestaoSLA.errors.selectTeam"));
       return;
     }
 
@@ -135,25 +137,25 @@ export default function GestaoSLA() {
 
       setShowModal(false);
       await fetchSLAs();
-      alert("SLA guardado com sucesso!");
+      alert(t("admin.gestaoSLA.success.saved"));
     } catch (err) {
       console.error("Erro ao guardar SLA:", err);
-      alert(err.response?.data?.message || "Erro ao guardar SLA.");
+      alert(err.response?.data?.message || t("admin.gestaoSLA.errors.saveFailed"));
     }
   };
 
   const handleDeleteSLA = async (id) => {
-    if (!window.confirm("Tem a certeza que deseja apagar este SLA?")) return;
+    if (!window.confirm(t("admin.gestaoSLA.confirmDelete"))) return;
 
     try {
       await api.delete(`/api/admin/slas/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSlas(prev => prev.filter(s => s.id !== id));
-      alert("SLA removido com sucesso!");
+      alert(t("admin.gestaoSLA.success.deleted"));
     } catch (err) {
       console.error("Erro ao apagar SLA:", err);
-      alert("Erro ao apagar SLA.");
+      alert(t("admin.gestaoSLA.errors.deleteFailed"));
     }
   };
 

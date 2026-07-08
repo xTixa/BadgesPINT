@@ -1,27 +1,29 @@
 import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
 const PLACEHOLDER_IMG = avatarPlaceholder;
 
-const ROLE_LABEL = {
-  consultant: "Consultor",
-  talent_manager: "Talent Manager",
-  service_line_leader: "Service Line Leader",
-  admin: "Administrador",
+const ROLE_LABEL_KEYS = {
+  consultant: "consultor.perfilConsultor.roles.consultant",
+  talent_manager: "consultor.perfilConsultor.roles.talentManager",
+  service_line_leader: "consultor.perfilConsultor.roles.serviceLineLeader",
+  admin: "consultor.perfilConsultor.roles.admin",
 };
 
-function activityLabel(badge) {
+function activityLabel(badge, t) {
+  const name = badge.description || badge.name;
   if (badge.status === "obtido")
-    return `Conquistou o badge "${badge.description || badge.name}"`;
+    return t("consultor.perfilConsultor.activity.obtained", { name });
   if (badge.status === "rejeitado")
-    return `Badge "${badge.description || badge.name}" foi rejeitado`;
+    return t("consultor.perfilConsultor.activity.rejected", { name });
   if (badge.workflow_status === "em_validacao")
-    return `Badge "${badge.description || badge.name}" aguarda aprovação final`;
+    return t("consultor.perfilConsultor.activity.awaitingApproval", { name });
   if (badge.workflow_status === "submitted")
-    return `Submeteu candidatura a "${badge.description || badge.name}"`;
-  return `Badge "${badge.description || badge.name}" em progresso`;
+    return t("consultor.perfilConsultor.activity.submitted", { name });
+  return t("consultor.perfilConsultor.activity.inProgress", { name });
 }
 
 function activityIcon(badge) {
@@ -32,6 +34,7 @@ function activityIcon(badge) {
 }
 
 export default function PerfilConsultor() {
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
   const [competencias, setCompetencias] = useState([]);
@@ -47,7 +50,7 @@ export default function PerfilConsultor() {
         setUser({
           id: data.id,
           nome: data.name,
-          cargo: ROLE_LABEL[data.role] || data.role,
+          cargo: ROLE_LABEL_KEYS[data.role] ? t(ROLE_LABEL_KEYS[data.role]) : data.role,
           email: data.email,
           imagem: data.avatar_url || PLACEHOLDER_IMG,
           pontos: data.points_total || 0,
@@ -85,7 +88,7 @@ export default function PerfilConsultor() {
     }
     load();
     return () => { mounted = false; };
-  }, []);
+  }, [t]);
 
   if (loading) {
     return (
@@ -99,7 +102,7 @@ export default function PerfilConsultor() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          Erro ao carregar perfil
+          {t("consultor.perfilConsultor.loadError")}
         </div>
       </div>
     );
@@ -117,12 +120,12 @@ export default function PerfilConsultor() {
             <div className="flex items-center gap-5">
               <img
                 src={user.imagem}
-                alt="Foto de perfil"
+                alt={t("consultor.perfilConsultor.profilePhotoAlt")}
                 className="h-24 w-24 rounded-3xl border-4 border-white/20 object-cover"
                 onError={(e) => { e.target.src = PLACEHOLDER_IMG; }}
               />
               <div>
-                <p className="mb-2 text-sm font-medium text-white/80">Area do consultor</p>
+                <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
                 <h1 className="text-3xl font-bold text-white">{user.nome}</h1>
                 <p className="mt-1 text-white/80">{user.cargo}</p>
                 <p className="mt-2 text-sm text-white/70">{user.email}</p>
@@ -133,7 +136,7 @@ export default function PerfilConsultor() {
               onClick={() => (window.location.href = "/editar-perfil")}
             >
               <i className="bi bi-pencil-square mr-2"></i>
-              Editar Perfil
+              {t("consultor.perfilConsultor.editProfile")}
             </button>
           </div>
         </section>
@@ -141,9 +144,9 @@ export default function PerfilConsultor() {
         {/* Stat Cards */}
         <div className="mb-8 grid gap-4 md:grid-cols-3">
           {[
-            { icon: "bi-star-fill",      label: "Pontos Acumulados", valor: user.pontos },
-            { icon: "bi-award-fill",     label: "Badges Obtidos",    valor: user.badges },
-            { icon: "bi-graph-up-arrow", label: "Progresso Global",  valor: `${user.progresso}%` },
+            { icon: "bi-star-fill",      label: t("consultor.perfilConsultor.stats.pointsAccumulated"), valor: user.pontos },
+            { icon: "bi-award-fill",     label: t("consultor.perfilConsultor.stats.badgesObtained"),    valor: user.badges },
+            { icon: "bi-graph-up-arrow", label: t("consultor.perfilConsultor.stats.globalProgress"),  valor: `${user.progresso}%` },
           ].map((card, idx) => (
             <div key={idx} className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
@@ -158,14 +161,14 @@ export default function PerfilConsultor() {
         <div className="mb-6 grid gap-6 lg:grid-cols-2">
           {/* Informações */}
           <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="mb-4 text-lg font-bold text-slate-900">Informações</h2>
+            <h2 className="mb-4 text-lg font-bold text-slate-900">{t("consultor.perfilConsultor.information")}</h2>
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-slate-500">Email</p>
+                <p className="text-xs text-slate-500">{t("consultor.perfilConsultor.email")}</p>
                 <p className="font-medium text-slate-900">{user.email}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Cargo</p>
+                <p className="text-xs text-slate-500">{t("consultor.perfilConsultor.role")}</p>
                 <p className="font-medium text-slate-900">{user.cargo}</p>
               </div>
             </div>
@@ -173,10 +176,10 @@ export default function PerfilConsultor() {
 
           {/* Competências */}
           <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="mb-4 text-lg font-bold text-slate-900">Competências Comprovadas</h2>
+            <h2 className="mb-4 text-lg font-bold text-slate-900">{t("consultor.perfilConsultor.provenSkills")}</h2>
             {competencias.length === 0 ? (
               <p className="text-sm text-slate-400">
-                Ainda sem badges obtidos. Candidata-te a um badge para mostrar as tuas competências.
+                {t("consultor.perfilConsultor.noSkillsYet")}
               </p>
             ) : (
               <div className="flex flex-wrap gap-2">
@@ -197,10 +200,10 @@ export default function PerfilConsultor() {
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <h5 className="mb-3 text-base font-bold text-slate-900">
             <i className="bi bi-clock-history mr-2 text-emerald-600"></i>
-            Atividade Recente
+            {t("consultor.perfilConsultor.recentActivity")}
           </h5>
           {recentActivity.length === 0 ? (
-            <p className="py-4 text-center text-sm text-slate-400">Ainda não há atividade de badges.</p>
+            <p className="py-4 text-center text-sm text-slate-400">{t("consultor.perfilConsultor.noActivityYet")}</p>
           ) : (
             <ul className="space-y-4">
               {recentActivity.map((badge, idx) => {
@@ -210,9 +213,9 @@ export default function PerfilConsultor() {
                   <li key={idx} className="flex gap-4">
                     <i className={`bi ${icon} ${color} mt-0.5 text-lg`}></i>
                     <div className="flex-1">
-                      <p className="font-medium text-slate-900">{activityLabel(badge)}</p>
+                      <p className="font-medium text-slate-900">{activityLabel(badge, t)}</p>
                       <p className="text-sm text-slate-500">
-                        {date ? new Date(date).toLocaleDateString("pt-PT") : "Data desconhecida"}
+                        {date ? new Date(date).toLocaleDateString("pt-PT") : t("consultor.perfilConsultor.unknownDate")}
                       </p>
                     </div>
                   </li>

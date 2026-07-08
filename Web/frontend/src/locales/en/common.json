@@ -242,5 +242,1535 @@
     "viewBadges": "View badges",
     "emptyTitle": "No areas available",
     "emptyText": "There are no published areas to view yet."
+  },
+  "serviceLine": {
+    "layout": {
+      "eyebrow": "Service Line"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "loadingSubtitle": "Loading your Service Line data.",
+      "loadingDashboard": "Loading dashboard...",
+      "errorSubtitle": "Could not load your Service Line data.",
+      "errorMessage": "Could not load the dashboard data.",
+      "subtitle": "Track your Service Line's progress, ranking, badges and period-based performance.",
+      "globalProgress": "Overall Progress",
+      "globalProgressHelper": "Average progress of all Service Line consultants.",
+      "badgeKpis": "Badge KPIs",
+      "dateRangeTo": "to",
+      "stats": {
+        "consultants": "Consultants",
+        "awaitingSl": "Awaiting SL",
+        "progress": "Progress",
+        "slBadges": "SL Badges",
+        "awaitingSlValidation": "Awaiting SL validation",
+        "badgesObtained": "Badges obtained",
+        "usersInSl": "Users in SL",
+        "inPeriod": "In period"
+      },
+      "charts": {
+        "badgesObtained": "Badges obtained",
+        "badgesByLevel": "Badges by level",
+        "badgesByMonthTitle": "Badges obtained by month",
+        "badgesByLevelTitle": "Badges by level",
+        "noRecordsPeriod": "No records for the selected period.",
+        "noRecordsLevels": "No level records for the period."
+      }
+    },
+    "badges": {
+      "title": "Badges Catalog",
+      "subtitle": "Check out every badge available on the platform, even outside your area.",
+      "loading": "Loading catalog...",
+      "errors": {
+        "loadFailed": "Could not load the catalog."
+      },
+      "stats": {
+        "badges": "Badges",
+        "points": "Points",
+        "premium": "Premium",
+        "badgesAvailable": "Badges available",
+        "totalPoints": "Total points",
+        "premiumBadges": "Premium badges",
+        "levels": "Levels"
+      },
+      "searchPlaceholder": "Search by badge, description, area...",
+      "allLevels": "All levels",
+      "table": {
+        "badge": "Badge",
+        "level": "Level",
+        "area": "Area",
+        "points": "Points",
+        "type": "Type",
+        "requirements": "Requirements",
+        "actions": "Actions"
+      },
+      "badgeFallback": "Badge #{{id}}",
+      "premium": "Premium",
+      "standard": "Standard",
+      "moreRequirements": "+{{count}} more...",
+      "noRequirements": "No requirements.",
+      "viewRequirementsTitle": "View all requirements for this badge",
+      "requirements": "Requirements"
+    },
+    "consultores": {
+      "title": "Consultants and Ranking",
+      "subtitle": "Compare consultants from the same Service Line by points, badges obtained and progress.",
+      "loading": "Loading consultants...",
+      "errors": {
+        "loadFailed": "Could not load the consultants.",
+        "certificateFailed": "Could not generate the certificate."
+      },
+      "stats": {
+        "consultants": "Consultants",
+        "avgPoints": "Avg points",
+        "avgBadges": "Avg badges",
+        "totalConsultants": "Total Consultants",
+        "avgPointsLabel": "Average Points",
+        "avgBadgesLabel": "Average Badges",
+        "topRanking": "Top Ranking"
+      },
+      "rankingTitle": "Consultant Ranking",
+      "searchPlaceholder": "Search consultant...",
+      "table": {
+        "consultant": "Consultant",
+        "area": "Area",
+        "points": "Points",
+        "badges": "Badges",
+        "progress": "Progress",
+        "timeline": "Timeline"
+      },
+      "view": "View",
+      "timeline": "Timeline",
+      "selectConsultant": "Select a consultant",
+      "noHistory": "No history to display."
+    },
+    "gamificacao": {
+      "title": "Gamification & Achievements",
+      "subtitle": "Premium badges, special achievements and level system for your Service Line.",
+      "loading": "Loading gamification...",
+      "errors": {
+        "loadFailed": "Could not load gamification."
+      },
+      "stats": {
+        "premiumBadges": "Premium Badges",
+        "premiumObtained": "Premium Obtained",
+        "fastAchievers": "Fast Achievers"
+      },
+      "pointsThreshold": "{{count}}+ pts",
+      "tiersTitle": "Points-Based Level System",
+      "tiersHelper": "Consultants level up as they accumulate points through obtained badges.",
+      "premiumBadgesTitle": "Premium Badges",
+      "premiumBadgesHelper": "Badges at Specialist or Knowledge Leader level, or worth 100+ points.",
+      "noPremiumBadges": "No premium badges available.",
+      "badgeFallback": "Badge #{{id}}",
+      "pointsSuffix": "{{count}} pts",
+      "rankingTitle": "Consultant Ranking",
+      "premiumBadgeCount": "{{count}} premium badge(s)",
+      "noConsultants": "No consultants to display.",
+      "fastTrackTitle": "Achievement: Fast Track",
+      "fastTrackHint": "(3+ badges in a month)",
+      "fastTrackEmpty": "No consultant has earned 3 badges in the same month yet.",
+      "badgesCount": "{{count}} badges",
+      "areaMasterTitle": "Achievement: Area Master",
+      "areaMasterHint": "(all levels in an area)",
+      "areaMasterEmpty": "No consultant has completed all levels of an area yet.",
+      "levelsCompleted": "{{count}}/5 levels"
+    },
+    "historico": {
+      "title": "Badge History",
+      "subtitle": "Check the full history of obtained and in-progress badges for your Service Line.",
+      "loading": "Loading history...",
+      "errors": {
+        "loadFailed": "Could not load the history.",
+        "certificateFailed": "Could not generate the certificate."
+      },
+      "status": {
+        "obtained": "Obtained",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      },
+      "steps": {
+        "submitted": "Application submitted",
+        "tmValidation": "Talent Manager validation",
+        "rejectedBySl": "Rejected by Service Line",
+        "approvedBySl": "Approved by Service Line"
+      },
+      "processTitle": "Application Process",
+      "badgeFallback": "Badge #{{id}}",
+      "by": "by {{name}}",
+      "awaiting": "Awaiting...",
+      "close": "Close",
+      "workflow": {
+        "open": "Open",
+        "submitted": "Submitted",
+        "emValidacao": "In Validation (SL)",
+        "fechado": "Closed"
+      },
+      "stats": {
+        "obtained": "Obtained",
+        "inProcess": "In Progress",
+        "rejected": "Rejected",
+        "badgesObtained": "Badges Obtained"
+      },
+      "filters": {
+        "all": "All",
+        "obtained": "Obtained",
+        "inProcess": "In Progress",
+        "rejected": "Rejected"
+      },
+      "searchPlaceholder": "Search consultant or badge...",
+      "processesTitle": "Application Processes ({{count}})",
+      "emptyFiltered": "No records for the selected filters.",
+      "table": {
+        "consultant": "Consultant",
+        "badge": "Badge",
+        "status": "Status",
+        "workflow": "Workflow",
+        "submitted": "Submitted",
+        "completed": "Completed",
+        "actions": "Actions"
+      },
+      "viewProcessTitle": "View full process",
+      "process": "Process",
+      "downloadCertificateTitle": "Download certificate"
+    },
+    "pedidos": {
+      "title": "Badge Requests",
+      "subtitle": "View your Service Line's request status in real time and do the final validation.",
+      "loading": "Loading requests...",
+      "empty": "No requests to display.",
+      "errors": {
+        "loadFailed": "Could not load the requests.",
+        "approveFailed": "Error approving request.",
+        "rejectFailed": "Error rejecting request.",
+        "returnFailed": "Error returning request."
+      },
+      "steps": {
+        "submitted": "Application submitted",
+        "tmValidation": "Talent Manager validation",
+        "rejectedBySl": "Rejected by Service Line",
+        "approvedBySl": "Service Line approval"
+      },
+      "processTitle": "Application Process",
+      "badgeFallback": "Badge #{{id}}",
+      "by": "by {{name}}",
+      "awaiting": "Awaiting...",
+      "close": "Close",
+      "workflow": {
+        "open": "Open",
+        "submitted": "Submitted",
+        "emValidacao": "In Validation (SL)",
+        "fechado": "Closed"
+      },
+      "stats": {
+        "requests": "Requests",
+        "inValidation": "In validation",
+        "approved": "Approved"
+      },
+      "filters": {
+        "all": "All",
+        "toValidate": "To validate",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "autoRefresh": "Auto-refresh (15s)",
+      "listTitle": "Request List",
+      "table": {
+        "consultant": "Consultant",
+        "badge": "Badge",
+        "status": "Status",
+        "workflow": "Workflow",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "viewHistoryTitle": "View process history",
+      "process": "Process",
+      "approve": "Approve",
+      "return": "Return",
+      "reject": "Reject",
+      "awaitingTalentManager": "Awaiting Talent Manager",
+      "noSlAction": "No SL action",
+      "prompts": {
+        "approveComment": "Comment (optional):",
+        "rejectReason": "Rejection reason (optional):",
+        "returnReason": "Return reason:"
+      }
+    },
+    "relatorios": {
+      "title": "Reports and History",
+      "subtitle": "Generate reports by area/period and check the history of application processes.",
+      "loading": "Loading reports...",
+      "errors": {
+        "loadFailed": "Could not load the reports.",
+        "exportFailed": "Could not generate the export."
+      },
+      "scopes": {
+        "pedidos": "Requests",
+        "badges": "Badges",
+        "consultores": "Consultants",
+        "aprovacoes": "Approvals",
+        "rejeicoes": "Rejections"
+      },
+      "stats": {
+        "records": "Records",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "filtersTitle": "Filters",
+      "allMonths": "All months",
+      "yearPlaceholder": "Year",
+      "consultantPlaceholder": "Consultant",
+      "badgePlaceholder": "Badge",
+      "resultsTitle": "Results",
+      "table": {
+        "type": "Type",
+        "consultant": "Consultant",
+        "badge": "Badge",
+        "situation": "Situation",
+        "date": "Date"
+      },
+      "noResults": "No results.",
+      "historyTitle": "History",
+      "noHistory": "No history."
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Set operational preferences for your Service Line area.",
+      "saveSuccess": "Settings saved successfully.",
+      "saveFailed": "Could not save the settings.",
+      "profile": "Profile",
+      "notifications": "Notifications",
+      "notifyValidacao": "Applications in Service Line validation",
+      "notifySla": "SLA exceeded in my Service Line",
+      "reports": "Reports",
+      "exportFormat": "Default export format",
+      "topN": "Show Top N consultants ranking",
+      "interface": "Interface",
+      "language": "Language",
+      "portuguese": "Portuguese",
+      "english": "English",
+      "theme": "Theme",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "metrics": "Metrics",
+      "compareConsultants": "Compare consultants from the same area",
+      "saving": "Saving...",
+      "saveChanges": "Save changes"
+    }
+  },
+  "consultor": {
+    "common": {
+      "consultantArea": "Consultant area"
+    },
+    "dashboard": {
+      "thisBadge": "this badge",
+      "expiresToday": "The {{badgeName}} badge expires today",
+      "expiresInDays_one": "1 day left for the {{badgeName}} badge to expire",
+      "expiresInDays_other": "{{count}} days left for the {{badgeName}} badge to expire",
+      "personalDashboard": "Personal Dashboard",
+      "heroText": "Keep developing your skills and track your progress in real time.",
+      "viewGamification": "View gamification",
+      "progress": "Progress",
+      "badges": "Badges",
+      "points": "Points",
+      "kpi": {
+        "globalProgress": "Overall Progress",
+        "totalPoints": "Total Points",
+        "badgesObtained": "Badges Obtained",
+        "lpsInProgress": "LPs in progress",
+        "badgesExpiring": "Badges expiring"
+      },
+      "learningPathsProgress": "Learning Paths Progress",
+      "viewAll": "View all",
+      "noLearningPaths": "No learning paths available.",
+      "expirationAlerts": "Expiration Alerts",
+      "noUpcomingExpirations": "No upcoming expirations.",
+      "view": "View",
+      "recommendedBadges": "Recommended Badges",
+      "viewCatalog": "View catalog",
+      "noRecommendations": "Earn your first badge to receive personalized recommendations.",
+      "pointsAbbrev": "{{points}} pts",
+      "achievements": "Achievements",
+      "noAchievements": "Start submitting badges to unlock achievements.",
+      "shareAndVisibility": "Sharing and Visibility",
+      "shareOnLinkedIn": "Share on LinkedIn",
+      "linkCopied": "Link copied!",
+      "copyPublicLink": "Copy public link",
+      "viewPublicGallery": "View public gallery",
+      "myBadges": "My badges"
+    },
+    "editarPerfil": {
+      "nameEmailRequired": "Name and email are required.",
+      "updateSuccess": "Profile updated successfully!",
+      "updateError": "Error updating profile: ",
+      "selectImageFile": "Select an image file.",
+      "imageMaxSize": "The image must be at most 3 MB.",
+      "avatarUploadError": "Error uploading profile photo.",
+      "fillAllPasswordFields": "Fill in all password fields.",
+      "passwordsDontMatch": "The new passwords don't match.",
+      "passwordMinLength": "The password must be at least 6 characters long.",
+      "passwordChangeSuccess": "Password changed successfully!",
+      "passwordChangeError": "Error changing password: ",
+      "title": "Edit Profile",
+      "subtitle": "Update your personal data and security settings.",
+      "backToProfile": "Back to Profile",
+      "profileAlt": "Profile",
+      "changePhoto": "Change profile photo",
+      "professionalProfile": "Professional Profile",
+      "personalInfo": "Personal Information",
+      "fullName": "Full Name",
+      "email": "Email",
+      "area": "Area",
+      "noArea": "No area",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "security": "Security",
+      "changePassword": "Change Password",
+      "securityHint": "Keep your account secure by changing your password regularly.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "securityTips": "Security Tips",
+      "tipValidEmail": "Use a valid email for account recovery.",
+      "tipKeepPasswordSafe": "Keep your password private and secure."
+    },
+    "emailSignature": {
+      "loadError": "Could not load the signature.",
+      "previewError": "Could not update the preview.",
+      "saved": "Signature saved.",
+      "saveError": "Could not save.",
+      "copied": "Signature copied. Paste it in Outlook or Gmail's signature settings.",
+      "copyHtmlPrompt": "Copy the signature HTML:",
+      "title": "Email Signature",
+      "subtitle": "Create a professional signature with the badges you've earned.",
+      "loading": "Loading signature...",
+      "enableSignature": "Enable signature",
+      "enableSignatureHint": "Save the selection for use in your emails.",
+      "badgesInSignature": "Badges in signature",
+      "noBadgesObtained": "You don't have any badges yet.",
+      "saving": "Saving...",
+      "saveSignature": "Save signature",
+      "preview": "Preview",
+      "copyToEmail": "Copy for email",
+      "downloadHtml": "Download HTML",
+      "afterCopyHint": "After copying, open your email client's signature settings and paste directly into the editor."
+    },
+    "gamification": {
+      "loadError": "Could not load gamification.",
+      "maxLevelReached": "Maximum level reached",
+      "pointsToNext": "{{pointsToNext}} points to {{nextPoints}}",
+      "title": "Achievements center",
+      "subtitle": "Track your level, points, ranking, unlocked achievements and upcoming milestones.",
+      "viewRanking": "View ranking",
+      "currentLevel": "Current level",
+      "pointsCount": "{{count}} points",
+      "stats": {
+        "points": "Points",
+        "ranking": "Ranking",
+        "achievements": "Achievements",
+        "evidences": "Evidences"
+      },
+      "achievements": "Achievements",
+      "badges": "Badges",
+      "badgeStatus": {
+        "obtained": "Obtained",
+        "pending": "Pending",
+        "rejected": "Rejected",
+        "total": "Total"
+      }
+    },
+    "historicoBadges": {
+      "status": {
+        "obtained": "Obtained",
+        "rejected": "Rejected",
+        "validating": "In Validation",
+        "inProgress": "In Progress"
+      },
+      "certificateError": "Could not generate the certificate.",
+      "title": "Badge History",
+      "subtitle": "Check your evolution and track your training journey.",
+      "badgesObtained": "Badges Obtained",
+      "inProgressOrValidation": "In Progress / Validation",
+      "rejected": "Rejected",
+      "emptyText": "You don't have any badges associated yet.",
+      "badgeNumber": "Badge #{{id}}",
+      "downloadCertificate": "Download PDF Certificate",
+      "pointsAbbrev": "{{points}} pts"
+    },
+    "perfilConsultor": {
+      "roles": {
+        "consultant": "Consultant",
+        "talentManager": "Talent Manager",
+        "serviceLineLeader": "Service Line Leader",
+        "admin": "Administrator"
+      },
+      "activity": {
+        "obtained": "Earned the \"{{name}}\" badge",
+        "rejected": "The \"{{name}}\" badge was rejected",
+        "awaitingApproval": "The \"{{name}}\" badge awaits final approval",
+        "submitted": "Applied for \"{{name}}\"",
+        "inProgress": "\"{{name}}\" badge in progress"
+      },
+      "loadError": "Error loading profile",
+      "profilePhotoAlt": "Profile photo",
+      "editProfile": "Edit Profile",
+      "stats": {
+        "pointsAccumulated": "Points Accumulated",
+        "badgesObtained": "Badges Obtained",
+        "globalProgress": "Overall Progress"
+      },
+      "information": "Information",
+      "email": "Email",
+      "role": "Role",
+      "provenSkills": "Proven Skills",
+      "noSkillsYet": "No badges obtained yet. Apply for a badge to show your skills.",
+      "recentActivity": "Recent Activity",
+      "noActivityYet": "No badge activity yet.",
+      "unknownDate": "Unknown date"
+    },
+    "ranking": {
+      "defaultAreaLabel": "Consultant",
+      "title": "Consultant Ranking",
+      "subtitle": "Track the collaborators with the highest score and claim your spot at the top.",
+      "firstPlace": "1st place",
+      "highestScore": "Highest score",
+      "participants": "Participants",
+      "overallRanking": "Overall Ranking",
+      "updatedRanking": "Updated consultant ranking",
+      "participantsCount": "{{count}} participants",
+      "pointsLabel": "points",
+      "badgesCount": "{{count}} badges"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Customize your experience, notifications and badge sharing.",
+      "goalsAndLearning": "Goals and Learning",
+      "badgesGoal": "Badge Goal",
+      "badgesGoalPlaceholder": "E.g.: 10",
+      "deadline": "Deadline",
+      "recommendNextBadges": "Recommend next badges",
+      "notifications": "Notifications",
+      "confirmationEmail": "Confirmation email",
+      "approvalRejection": "Approval / Rejection",
+      "expirationAlerts": "Expiration alerts",
+      "goalReminders": "Goal reminders",
+      "privacyAndSharing": "Privacy and Sharing",
+      "gdprConsentActive": "GDPR consent active",
+      "publicGallery": "Public Badge Gallery",
+      "shareOnLinkedIn": "Share on LinkedIn",
+      "emailSignature": "Email Signature",
+      "integrations": "Integrations",
+      "connected": "Connected",
+      "checking": "Checking...",
+      "active": "Active",
+      "configuredInactive": "Configured (inactive)",
+      "notConfigured": "Not configured",
+      "manage": "Manage",
+      "saveChanges": "Save Changes"
+    },
+    "uploadEvidencias": {
+      "loadBadgesError": "Could not load badges.",
+      "loadRequirementsError": "Could not load requirements.",
+      "noTokenLoginAgain": "No token. Please log in again.",
+      "submitEvidenceError": "Error submitting evidence.",
+      "selectBadgeFirst": "Select a badge first.",
+      "requestSubmitted": "Request submitted successfully.",
+      "submitRequestError": "Error submitting request.",
+      "title": "Upload Evidence",
+      "subtitle": "Submit documentation and proof for validation of your badges.",
+      "availableBadges": "Available Badges",
+      "requirements": "Requirements",
+      "evidences": "Evidences",
+      "selectBadgeHelper": "Select a badge and submit evidence for each requirement.",
+      "selectBadge": "Select Badge",
+      "choose": "Choose...",
+      "badgeNumber": "Badge #{{id}}",
+      "submitApplication": "Submit application",
+      "noRequirementsDefined": "This badge has no requirements defined.",
+      "fileTooLarge": "File too large. Maximum size: 3MB.",
+      "chooseEvidenceFile": "Choose an evidence file.",
+      "stateLabel": "Status:",
+      "latestEvidence": "Latest evidence:",
+      "view": "view",
+      "acceptedFormats": "Accepted formats: JPG, PNG, WEBP, PDF. Maximum 3MB.",
+      "notesOptional": "Notes (optional)",
+      "sending": "Sending...",
+      "submitEvidence": "Submit evidence"
+    }
+  },
+  "talentManager": {
+    "layout": {
+      "defaultEyebrow": "Talent Manager",
+      "defaultUserName": "Talent Manager"
+    },
+    "catalogo": {
+      "title": "Badges Catalog",
+      "subtitle": "Check available badges, descriptions, requirements, points, special achievements and validity.",
+      "errors": {
+        "loadFailed": "Could not load the catalog."
+      },
+      "stats": {
+        "badges": "Badges",
+        "special": "Special",
+        "points": "Points",
+        "badgesAvailable": "Available badges",
+        "specialAchievements": "Special achievements",
+        "pointsInCatalog": "Points in catalog"
+      },
+      "filters": {
+        "title": "Filters",
+        "search": "Search",
+        "searchPlaceholder": "Name, description, area...",
+        "level": "Level",
+        "all": "All"
+      },
+      "loading": "Loading catalog...",
+      "emptyFiltered": "No badges for the selected filters.",
+      "noLevel": "No level",
+      "special": "Special",
+      "badgeFallback": "Badge #{{id}}",
+      "noDescription": "No description.",
+      "points": "points",
+      "area": "Area",
+      "validity": "Validity",
+      "expiryDays": "{{days}} days",
+      "noExpiry": "No expiration",
+      "requirements": "Requirements",
+      "noRequirements": "No requirements recorded.",
+      "outcomes": "Outcomes",
+      "prerequisites": "Prerequisites"
+    },
+    "dashboard": {
+      "defaultTitle": "Talent Manager",
+      "subtitle": "Track your team, pending validations and badge progress in real time.",
+      "notifications": {
+        "newTitle": "New notification — Talent Manager",
+        "unreadFallback": "You have unread notifications.",
+        "unreadCount_one": "You have {{count}} unread notification",
+        "unreadCount_other": "You have {{count}} unread notifications",
+        "viewLink": "View notifications →"
+      },
+      "loading": "Loading dashboard data...",
+      "cards": {
+        "teamConsultants": "Consultants in Team",
+        "pendingEvidence": "Pending Evidence",
+        "averageProgress": "Average Progress",
+        "badgesEarned": "Badges Earned"
+      },
+      "stats": {
+        "consultants": "Consultants",
+        "pending": "Pending",
+        "progress": "Progress"
+      },
+      "sections": {
+        "kpiSummary": "KPI Summary",
+        "usersByRole": "Users by Role",
+        "badgesByLevel": "Badges by Level",
+        "badgesByMonth": "Badges by Month"
+      },
+      "kpiItems": {
+        "users": "Users",
+        "totalBadges": "Total Badges",
+        "badgesEarned": "Badges Earned"
+      },
+      "noData": "No data available.",
+      "noLevel": "No level"
+    },
+    "equipa": {
+      "title": "Team",
+      "subtitle": "Check progress, points, badges, requirements and professional timeline of consultants.",
+      "errors": {
+        "loadFailed": "Could not load the team data.",
+        "certificateFailed": "Could not generate the certificate."
+      },
+      "signatureCopied": "Signature copied to clipboard.",
+      "copySignaturePrompt": "Copy the HTML signature:",
+      "signatureBadgeLabel": "Badge",
+      "loading": "Loading team...",
+      "stats": {
+        "consultants": "Consultants",
+        "averagePoints": "Average points",
+        "progress": "Progress"
+      },
+      "cards": {
+        "totalConsultants": "Total Consultants",
+        "averagePoints": "Average Points",
+        "averageProgress": "Average Progress",
+        "availableBadges": "Available Badges"
+      },
+      "consultantsSection": {
+        "title": "Consultants",
+        "searchPlaceholder": "Search by name...",
+        "empty": "No consultant found."
+      },
+      "table": {
+        "consultant": "Consultant",
+        "email": "Email",
+        "area": "Area",
+        "points": "Points",
+        "earned": "Earned",
+        "pending": "Pending",
+        "progress": "Progress",
+        "timeline": "Timeline",
+        "view": "View",
+        "badge": "Badge",
+        "level": "Level",
+        "requirements": "Requirements"
+      },
+      "expirySection": {
+        "title": "Badges close to expiring",
+        "daysLabel_one": "{{count}} day",
+        "daysLabel_other": "{{count}} days",
+        "empty": "No upcoming expirations.",
+        "viewAll": "View all ({{count}})"
+      },
+      "timelineSection": {
+        "title": "Professional timeline",
+        "selectConsultant": "Select a consultant",
+        "noWorkflow": "no workflow",
+        "copySignatureTitle": "Copy email signature",
+        "downloadCertificateTitle": "Download PDF certificate",
+        "empty": "No history to display."
+      },
+      "catalogSection": {
+        "title": "Badge catalog, requirements and points",
+        "empty": "No badges available for this area."
+      },
+      "badgeFallback": "Badge #{{id}}",
+      "noRequirements": "No requirements recorded."
+    },
+    "expiracoes": {
+      "title": "Badge Expirations",
+      "subtitle": "Monitor all badges of your team close to expiring. Act before they expire.",
+      "windows": {
+        "all": "All",
+        "days30": "≤ 30 days",
+        "days60": "≤ 60 days",
+        "days90": "≤ 90 days"
+      },
+      "errors": {
+        "loadFailed": "Could not load the data."
+      },
+      "stats": {
+        "total90": "Total (≤90d)",
+        "critical15": "Critical (≤15d)",
+        "urgent30": "Urgent (≤30d)"
+      },
+      "loading": "Loading expirations...",
+      "searchPlaceholder": "Consultant or badge...",
+      "criticalWarning_one": "{{count}} badge expires in less than 15 days — contact the consultants.",
+      "criticalWarning_other": "{{count}} badges expire in less than 15 days — contact the consultants.",
+      "table": {
+        "badge": "Badge",
+        "consultant": "Consultant",
+        "area": "Area",
+        "expiresOn": "Expires on",
+        "daysLeft": "Days left"
+      },
+      "daysLabel_one": "{{count}} day",
+      "daysLabel_other": "{{count}} days",
+      "emptyFiltered": "No badge found with this filter.",
+      "emptyTeam": "No badge close to expiring in your team.",
+      "summary": {
+        "count_one": "{{count}} badge",
+        "count_other": "{{count}} badges",
+        "total": "in total",
+        "withinDays": "expiring in the next {{days}} days"
+      },
+      "viewFullTeam": "View full team →"
+    },
+    "historico": {
+      "title": "Validation History",
+      "subtitle": "Check past decisions and the history associated with each application.",
+      "errors": {
+        "loadFailed": "Could not load the history."
+      },
+      "status": {
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "pending": "Pending"
+      },
+      "stats": {
+        "total": "Total",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "pending": "Pending"
+      },
+      "filters": {
+        "title": "Filters",
+        "search": "Search",
+        "searchPlaceholder": "Consultant, badge or requirement",
+        "status": "Status",
+        "all": "All"
+      },
+      "recordsSection": {
+        "title": "Records",
+        "empty": "No record found for the selected filters."
+      },
+      "loading": "Loading history...",
+      "table": {
+        "consultant": "Consultant",
+        "badge": "Badge",
+        "requirement": "Requirement",
+        "status": "Status",
+        "date": "Date",
+        "validator": "Validator",
+        "notes": "Notes"
+      }
+    },
+    "pedidos": {
+      "title": "Badge Requests",
+      "subtitle": "Track request status, validate the workflow and check the history of each application.",
+      "noDate": "No date",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "errors": {
+        "loadFailed": "Could not load the requests.",
+        "validateFailed": "Error validating request.",
+        "returnFailed": "Error returning request."
+      },
+      "prompts": {
+        "validateComment": "Comment (optional):",
+        "returnComment": "Comment for return:"
+      },
+      "history": {
+        "created": "Created",
+        "createdDetail": "Request registered on the platform.",
+        "submitted": "Submitted",
+        "notSubmittedDetail": "Not yet submitted for validation.",
+        "submittedDetail": "Request submitted for validation.",
+        "tmValidation": "TM Validation",
+        "noTmComment": "No comment from the Talent Manager.",
+        "finalDecision": "Final decision",
+        "currentStatus": "Current status: {{status}}."
+      },
+      "stats": {
+        "requests": "Requests",
+        "pending": "Pending",
+        "approved": "Approved"
+      },
+      "filters": {
+        "all": "All",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "listTitle": "Request List",
+      "loading": "Loading requests...",
+      "empty": "No requests to display.",
+      "table": {
+        "consultant": "Consultant",
+        "badge": "Badge",
+        "level": "Level",
+        "status": "Status",
+        "workflow": "Workflow",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "unknownUser": "Unknown",
+      "actions": {
+        "validate": "Validate",
+        "return": "Return",
+        "history": "History"
+      },
+      "processHistoryTitle": "Process history",
+      "consultantFallback": "Consultant",
+      "badgeFallback": "Badge",
+      "close": "Close"
+    },
+    "relatorios": {
+      "title": "Reports and Exports",
+      "subtitle": "Filter, check and export requests, badges, consultants, approvals and rejections.",
+      "errors": {
+        "loadFailed": "Could not load the report.",
+        "exportFailed": "Could not generate the export."
+      },
+      "scopes": {
+        "pedidos": "Badge requests",
+        "badges": "Badge catalog",
+        "consultores": "Consultants",
+        "aprovacoes": "Approvals",
+        "rejeicoes": "Rejections"
+      },
+      "stats": {
+        "records": "Records",
+        "approved": "Approved",
+        "pending": "Pending"
+      },
+      "filters": {
+        "title": "Filters",
+        "month": "Month",
+        "all": "All",
+        "year": "Year",
+        "consultant": "Consultant",
+        "namePlaceholder": "Name",
+        "badge": "Badge",
+        "scope": "Scope"
+      },
+      "actions": {
+        "generatePdf": "Generate PDF",
+        "generateExcel": "Generate Excel"
+      },
+      "summary": "{{total}} records · {{approved}} approved · {{pending}} pending · {{rejected}} rejected",
+      "resultsSection": {
+        "title": "Results",
+        "empty": "No results for the selected filters."
+      },
+      "loading": "Loading results...",
+      "table": {
+        "type": "Type",
+        "consultant": "Consultant",
+        "badge": "Badge",
+        "situation": "Situation",
+        "area": "Area",
+        "date": "Date"
+      }
+    },
+    "settings": {
+      "saveSuccess": "Settings saved successfully.",
+      "saveFailed": "Could not save the settings.",
+      "title": "Talent Manager Settings",
+      "subtitle": "Customize notifications, reports and work preferences.",
+      "profile": "Profile",
+      "scope": {
+        "title": "Scope",
+        "serviceLine": "Service Line",
+        "select": "Select",
+        "areasResponsible": "Areas of responsibility"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "newApplications": "New applications",
+        "slaExceeded": "Applications with exceeded SLA",
+        "statusUpdates": "Status updates (approved/rejected)"
+      },
+      "reports": {
+        "title": "Reports and Exports",
+        "defaultExportFormat": "Default export format",
+        "defaultPeriodFilter": "Default period filter",
+        "lastMonth": "Last month",
+        "lastQuarter": "Last quarter",
+        "lastYear": "Last year"
+      },
+      "gamification": {
+        "title": "Gamification and Interface",
+        "sortRankingBy": "Sort ranking by",
+        "points": "Points",
+        "badgeCount": "Number of badges",
+        "showTimeline": "Show professional evolution timeline",
+        "language": "Language",
+        "langPt": "Portuguese",
+        "langEn": "English",
+        "langEs": "Spanish",
+        "theme": "Theme",
+        "themeLight": "Light",
+        "themeDark": "Dark"
+      },
+      "saving": "Saving...",
+      "saveChanges": "Save changes"
+    },
+    "validar": {
+      "title": "Validate Evidence",
+      "subtitle": "Review evidence, approve or reject requests and track updates in real time.",
+      "errors": {
+        "loadFailed": "Could not load evidence.",
+        "approveFailed": "Error approving evidence.",
+        "rejectFailed": "Error rejecting evidence."
+      },
+      "stats": {
+        "total": "Total",
+        "pending": "Pending",
+        "approved": "Approved"
+      },
+      "filters": {
+        "all": "All",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "notifications": {
+        "email": "Email",
+        "push": "Push/Teams"
+      },
+      "sectionTitle": "Evidence",
+      "loading": "Loading evidence...",
+      "empty": "There is no evidence in this state.",
+      "table": {
+        "consultant": "Consultant",
+        "badge": "Badge",
+        "requirement": "Requirement",
+        "date": "Date",
+        "file": "File",
+        "status": "Status",
+        "actions": "Actions",
+        "view": "view"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject"
+      }
+    }
+  },
+  "auth": {
+    "shell": {
+      "eyebrow": "Softinsa Badges"
+    },
+    "firstLogin": {
+      "errors": {
+        "tooShort": "The password must be at least 6 characters long.",
+        "mismatch": "The passwords don't match.",
+        "updateFailed": "Error updating password."
+      },
+      "success": "Password updated successfully!",
+      "title": "Create new password",
+      "description": "Set a personal password to complete your first login.",
+      "asideTitle": "First login",
+      "asideText": "This step protects your account before you enter the portal.",
+      "asideNote": {
+        "label": "New credential",
+        "text": "Use at least 6 characters and confirm the password before saving."
+      },
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "Minimum 6 characters",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat the password",
+      "submit": "Save password"
+    },
+    "login": {
+      "errors": {
+        "invalidCredentials": "Invalid credentials. Check your email and password."
+      },
+      "title": "Log in",
+      "description": "Enter your details to access the platform.",
+      "asideTitle": "Welcome to the badges portal",
+      "asideText": "Track your growth, check achievements and manage requests in a cleaner, more direct experience.",
+      "asideNote": {
+        "label": "Test credentials",
+        "text": "Use one of these accounts to try the platform:",
+        "items": {
+          "admin": "Admin: admin@example.com | Password123",
+          "talentManager": "Talent Manager: natalia.neves@softinsa.pt | qwerty",
+          "serviceLineLeader": "Service Line Leader: monica@yopmail.com | qwerty123",
+          "consultant": "Consultant: guilherme@softinsa.pt | Password123"
+        }
+      },
+      "emailLabel": "Email",
+      "emailPlaceholder": "example@domain.com",
+      "passwordLabel": "Password",
+      "recoverPassword": "Recover password",
+      "hidePassword": "Hide password",
+      "showPassword": "Show password",
+      "rememberMe": "Remember credentials on this device",
+      "submit": "Log in",
+      "noAccount": "Don't have an account yet?",
+      "createAccount": "Create account"
+    },
+    "logout": {
+      "title": "Do you want to end your session?",
+      "text": "If you end your session, you'll need to log in again to access the platform.",
+      "confirm": "End Session",
+      "cancel": "Cancel"
+    },
+    "recoverPassword": {
+      "infoDefineNew": "Set your new password to complete the recovery.",
+      "infoSent": "If the email exists, we sent instructions.",
+      "errors": {
+        "sendFailed": "Error sending instructions.",
+        "tooShort": "The password must be at least 6 characters long.",
+        "mismatch": "The passwords don't match.",
+        "resetFailed": "Error resetting password."
+      },
+      "success": "Password reset successfully.",
+      "title": "Recover password",
+      "description": "Get a token and set a new access password.",
+      "asideTitle": "Log back in securely",
+      "asideText": "We'll send the instructions to the email associated with your account.",
+      "asideNote": {
+        "label": "Protected account",
+        "text": "The recovery token is validated before any change."
+      },
+      "emailLabel": "Email",
+      "emailPlaceholder": "example@domain.com",
+      "sending": "Sending...",
+      "sendInstructions": "Send instructions",
+      "tokenLabel": "Reset token",
+      "tokenPlaceholder": "Paste the token sent by email",
+      "devToken": "Test token (dev): {{token}}",
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "Minimum 6 characters",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat the password",
+      "saving": "Saving...",
+      "resetSubmit": "Reset password",
+      "backToLogin": "Back to login"
+    },
+    "register": {
+      "errors": {
+        "loadAreasFailed": "Could not load the available areas.",
+        "areaRequired": "Select an area before creating the user.",
+        "createFailed": "Error creating user."
+      },
+      "temporaryPassword": "Temporary password: {{password}}",
+      "success": "Registration created. Check your email to get your access details.",
+      "title": "Create account",
+      "description": "Fill in the details to start your access request.",
+      "asideTitle": "Your journey starts here",
+      "asideText": "After registering, you'll get confirmation and can log in to check badges and progress.",
+      "asideNote": {
+        "label": "Simple registration",
+        "text": "Link your profile to a service line to enable the right experience."
+      },
+      "nameLabel": "Name",
+      "namePlaceholder": "Full name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "example@domain.com",
+      "areaLabel": "Area / Service Line",
+      "loadingAreas": "Loading...",
+      "selectPlaceholder": "Select...",
+      "rgpdLabel": "I agree to the publication and sharing of my badges and I'll receive a confirmation email before using the platform.",
+      "creating": "Creating...",
+      "submit": "Create user"
+    }
+  },
+  "criarTicket": {
+    "defaultUserName": "User",
+    "categories": {
+      "bug": "Bug",
+      "feature": "Feature",
+      "question": "Question",
+      "other": "Other"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "errors": {
+      "createFailed": "Error creating ticket"
+    },
+    "title": "Create New Ticket",
+    "subtitle": "Describe the problem or request in detail",
+    "success": "Ticket created successfully! An administrator will review it soon.",
+    "form": {
+      "titleLabel": "Ticket Title",
+      "titlePlaceholder": "E.g.: Error logging in",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe the problem in detail...",
+      "categoryLabel": "Category",
+      "priorityLabel": "Priority",
+      "sending": "Sending...",
+      "submit": "Send Ticket",
+      "clear": "Clear"
+    },
+    "tips": {
+      "title": "Tips for a better ticket:",
+      "item1": "Be as descriptive as possible",
+      "item2": "Include the steps to reproduce the issue",
+      "item3": "Mention which browser or device you're using",
+      "item4": "More detailed tickets get resolved faster"
+    }
+  },
+  "faq": {
+    "eyebrow": "Help center",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to the most common questions about the platform.",
+    "searchPlaceholder": "Search question...",
+    "noResults": "No question found for \"{{search}}\".",
+    "contact": {
+      "title": "Didn't find what you were looking for?",
+      "text": "Talk to your Talent Manager or the platform administrator."
+    },
+    "categories": {
+      "badges": {
+        "title": "Badges & Applications",
+        "items": {
+          "0": {
+            "q": "How do I apply for a badge?",
+            "a": "Go to the badges catalog, choose the badge you want and click Apply. You can upload your evidence before or after submitting the request."
+          },
+          "1": {
+            "q": "Who validates my badge requests?",
+            "a": "The process has two steps: first the Talent Manager reviews the evidence; then the Service Line Leader gives final approval."
+          },
+          "2": {
+            "q": "How long does validation take?",
+            "a": "There's no fixed deadline. You can track the request status in real time in the My Badges section."
+          },
+          "3": {
+            "q": "What happens if my request is rejected?",
+            "a": "You'll get a notification with the reason for rejection. You can review the evidence, improve it and submit the request again."
+          }
+        }
+      },
+      "certificates": {
+        "title": "Certificates & Exports",
+        "items": {
+          "0": {
+            "q": "How do I download my certificate?",
+            "a": "In the My Badges section, click on the earned badge and use the Download PDF Certificate button."
+          },
+          "1": {
+            "q": "Can I export my badges to Excel or PDF?",
+            "a": "Yes. In the reports areas you can export lists to Excel or PDF when your profile has permission to do so."
+          }
+        }
+      },
+      "points": {
+        "title": "Points & Gamification",
+        "items": {
+          "0": {
+            "q": "How does the points system work?",
+            "a": "Each badge has a points value set by the administrator. When you earn a badge, the points are added to your profile."
+          },
+          "1": {
+            "q": "What are Premium badges?",
+            "a": "They are advanced-level or higher-scoring badges, given special highlighting in the gamification system."
+          }
+        }
+      },
+      "profile": {
+        "title": "Profile & Notifications",
+        "items": {
+          "0": {
+            "q": "How do I change my password?",
+            "a": "Go to settings in the side menu. In the security section you can set a new password."
+          },
+          "1": {
+            "q": "Why am I not receiving notification emails?",
+            "a": "Check that the email on your profile is correct and check your spam folder. If it persists, contact the administrator."
+          }
+        }
+      }
+    }
+  },
+  "galeria": {
+    "backToHome": "Back to home",
+    "eyebrow": "Public Gallery",
+    "title": "Softinsa certified talent",
+    "subtitle": "Consultants who publicly shared their skills and earned badges.",
+    "searchPlaceholder": "Search consultant...",
+    "allAreas": "All areas",
+    "stats": {
+      "publicProfiles": "Public profiles",
+      "results": "Results"
+    },
+    "empty": {
+      "noProfilesTitle": "No public profile available",
+      "noResultsTitle": "No results",
+      "noProfilesText": "Consultants can enable their public profile in their settings.",
+      "noResultsText": "Try a different name or change area."
+    },
+    "card": {
+      "badges": "Badges",
+      "points": "Points",
+      "noPublicBadges": "No public badges",
+      "viewProfile": "View profile"
+    }
+  },
+  "galeriaConsultor": {
+    "loading": "Loading profile...",
+    "privateProfile": {
+      "title": "Private profile",
+      "text": "This consultant does not have their public profile active or it doesn't exist."
+    },
+    "backToGallery": "Back to gallery",
+    "publicGallery": "Public Gallery",
+    "certifiedProfile": "Certified profile",
+    "stats": {
+      "badges": "Badges",
+      "points": "Points",
+      "ranking": "Ranking"
+    },
+    "verifiedSkills": "Verified skills",
+    "earnedBadges": "Earned badges",
+    "totalCount": "{{count}} total",
+    "noBadges": "No public badges available.",
+    "points": "{{count}} points"
+  },
+  "meusTickets": {
+    "defaultUserName": "User",
+    "status": {
+      "open": "Open",
+      "inReview": "In Review",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "loading": "Loading...",
+    "title": "My Tickets",
+    "totalLabel": "Total:",
+    "ticketsWord": "tickets",
+    "filters": {
+      "allStatuses": "All Statuses",
+      "allPriorities": "All Priorities",
+      "clear": "Clear"
+    },
+    "empty": "No tickets found",
+    "pagination": {
+      "first": "First",
+      "last": "Last"
+    },
+    "modal": {
+      "status": "Status:",
+      "priority": "Priority:",
+      "createdAt": "Created on:",
+      "description": "Description:",
+      "adminResponse": "Administrator Response:",
+      "close": "Close"
+    }
+  },
+  "notificacoesPage": {
+    "errors": {
+      "loadFailed": "Could not load the notifications."
+    },
+    "eyebrow": "Notification center",
+    "title": "Notifications",
+    "subtitle": "Check notices, requests and portal updates in the same layout as your dashboard.",
+    "stats": {
+      "total": "Total",
+      "unread": "Unread",
+      "onThisPage": "On this page",
+      "notificationsOnPage": "Notifications on this page",
+      "unreadOnPage": "Unread on this page",
+      "readOnPage": "Read on this page"
+    },
+    "filters": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "markAllRead": "Mark all as read",
+    "loading": "Loading notifications...",
+    "emptyUnread": "There are no unread notifications.",
+    "emptyAll": "There are no notifications to display.",
+    "newBadge": "New",
+    "markAsRead": "Mark as read",
+    "delete": "Delete",
+    "closeDetails": "Close details",
+    "types": {
+      "ticketNew": "Ticket",
+      "ticketReply": "Reply",
+      "ticketResolved": "Resolved",
+      "ticketClosed": "Closed",
+      "general": "Notice"
+    },
+    "modal": {
+      "state": "State",
+      "read": "Read",
+      "unread": "Unread",
+      "type": "Type",
+      "close": "Close"
+    }
+  },
+  "requirements": {
+    "defaults": {
+      "area": "Skill",
+      "level": "Level",
+      "description": "Validates a professional skill through requirements, evidence and review."
+    },
+    "errors": {
+      "loadFailed": "Could not load the details of this badge.",
+      "loginRequired": "Log in as a consultant to apply for this badge.",
+      "onlyConsultants": "Only consultants can apply for badges.",
+      "applyFailed": "Could not create the application."
+    },
+    "success": {
+      "applied": "Application created and sent for validation."
+    },
+    "defaultOutcomes": {
+      "demonstrateSkill": "Demonstrate skill in {{area}}.",
+      "understandRequirements": "Understand the requirements needed before submitting evidence.",
+      "organizeEvidence": "Organize proof of work for validation by the responsible team.",
+      "earnPoints": "Earn points and progress in your career path."
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "badges": "Badges"
+    },
+    "badgeDetailFallback": "Badge detail",
+    "verifiedBadge": "Verified badge",
+    "requirementsCount": "{{count}} requirements",
+    "pointsCount": "{{count}} points",
+    "recentlyUpdated": "Recently updated",
+    "heroFooterText": "Created for consultants who want to validate skills with real evidence.",
+    "onEarnBadge": "when you earn this badge",
+    "card": {
+      "obtained": "Badge earned",
+      "activeApplication": "Application active",
+      "applying": "Creating application...",
+      "applyNow": "Apply now",
+      "loginToApply": "Log in to apply",
+      "shareLinkedIn": "Share on LinkedIn",
+      "viewOtherBadges": "View other badges",
+      "includesTitle": "This badge includes:",
+      "validationRequirements": "{{count}} validation requirements",
+      "evidenceSubmission": "Evidence submission",
+      "reviewByOwner": "Review by owner",
+      "internalRecognition": "Internal recognition"
+    },
+    "learningOutcomes": {
+      "title": "What you'll learn"
+    },
+    "content": {
+      "title": "Badge content",
+      "subtitle": "{{count}} requirements • mandatory evidence • validation by the responsible team",
+      "loading": "Loading requirements...",
+      "requirementLabel": "Requirement {{index}}: {{code}}",
+      "defaultEvidence": "Evidence",
+      "mandatory": "Mandatory",
+      "practicalEvidence": "Practical evidence",
+      "manualValidation": "Manual validation",
+      "emptyTitle": "No requirements defined",
+      "emptyText": "This badge still needs requirements before it's ready for applications."
+    },
+    "curriculum": {
+      "title": "Curriculum",
+      "subtitle": "Support modules and lessons to prepare your application.",
+      "lessonsCount": "{{count}} lessons",
+      "durationInfo": "{{minutes}} min · {{type}}"
+    },
+    "descriptionTitle": "Description"
+  },
+  "layout": {
+    "sidebar": {
+      "closeMenu": "Close side menu",
+      "openMenu": "Open side menu",
+      "panel": "Panel",
+      "expandMenu": "Expand side menu",
+      "collapseMenu": "Collapse side menu",
+      "navigation": "Navigation",
+      "system": "System"
+    }
+  },
+  "components": {
+    "badgeCard": {
+      "defaultArea": "Skill",
+      "defaultDescription": "Badge focused on developing and validating a professional skill.",
+      "points": "points",
+      "requirements": "requirements",
+      "validated": "validated",
+      "viewDetails": "View details",
+      "activeApplication": "Application active",
+      "applying": "Applying...",
+      "apply": "Apply",
+      "exploreBadge": "Explore badge"
+    },
+    "badgeCelebration": {
+      "congrats": "CONGRATULATIONS!",
+      "subtitle": "You earned a new badge!",
+      "badgeFallback": "Badge #{{id}}",
+      "pointsEarned": "+{{count}} points",
+      "encouragement": "Keep up the great work and earn even more badges!",
+      "viewMyBadges": "View my badges"
+    },
+    "badgeMedal": {
+      "badge": "Badge"
+    },
+    "consultantComparison": {
+      "errors": {
+        "loadFailed": "Could not load the comparison."
+      },
+      "loading": "Loading comparison...",
+      "selectConsultants": "Select consultants",
+      "maxFour": "Maximum 4",
+      "selectToCompare": "Select consultants to compare.",
+      "chart": {
+        "points": "Points",
+        "obtainedBadges": "Badges obtained"
+      },
+      "stats": {
+        "points": "Points",
+        "badges": "Badges",
+        "approval": "Approval",
+        "avgValidation": "Average validation",
+        "days": "{{count}} days",
+        "last90Days": "Last 90 days",
+        "pending": "Pending"
+      },
+      "charts": {
+        "cumulativePerformance": "Cumulative performance",
+        "badgesPerMonth": "Badges obtained per month"
+      },
+      "detailedComparison": "Detailed comparison",
+      "table": {
+        "consultant": "Consultant",
+        "applications": "Applications",
+        "obtained": "Obtained",
+        "rejected": "Rejected",
+        "approvalRate": "Approval rate",
+        "vsAveragePoints": "Vs. average points"
+      },
+      "title": "Consultant Comparison",
+      "tmSubtitle": "Compare performance, growth and efficiency of consultants in your area.",
+      "slSubtitle": "Compare performance, growth and efficiency in your Service Line."
+    },
+    "learningPathCard": {
+      "defaultName": "Learning Path Name",
+      "defaultDescription": "Brief description of the learning path and its goals.",
+      "badgeCount": "{{count}} Badges",
+      "monthCount": "{{count}} Months",
+      "progress": "Progress",
+      "start": "Start"
+    },
+    "notificationCenter": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "markAsRead": "Mark as read",
+      "delete": "Delete",
+      "empty": "No notifications",
+      "viewAll": "View all notifications →"
+    },
+    "profileEditor": {
+      "errors": {
+        "selectImage": "Select an image file.",
+        "imageTooLarge": "The image must be at most 3 MB.",
+        "avatarUploadFailed": "Error uploading profile photo.",
+        "nameEmailRequired": "Name and email are required.",
+        "profileUpdateFailed": "Error updating profile:",
+        "fillAllPasswordFields": "Fill in all password fields.",
+        "passwordsMismatch": "The new passwords don't match.",
+        "passwordTooShort": "The password must be at least 6 characters long.",
+        "passwordChangeFailed": "Error changing password:"
+      },
+      "success": {
+        "profileUpdated": "Profile updated successfully!",
+        "passwordChanged": "Password changed successfully!"
+      },
+      "profileAlt": "Profile",
+      "changePhoto": "Change profile photo",
+      "personalInfo": "Personal Information",
+      "fullName": "Full Name",
+      "email": "Email",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "security": "Security",
+      "changePassword": "Change Password",
+      "securityHint": "Keep your account secure by changing your password regularly.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "adminHero": {
+      "defaultEyebrow": "Admin panel"
+    },
+    "emptyState": {
+      "defaultMessage": "No data available."
+    },
+    "pageHeader": {
+      "eyebrow": "Admin panel"
+    }
   }
 }

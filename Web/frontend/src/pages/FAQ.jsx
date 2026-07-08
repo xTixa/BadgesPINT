@@ -1,75 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Sidebar from "../layout/Sidebar";
 
-const FAQS = [
-  {
-    category: "Badges & Candidaturas",
-    icon: "bi-award-fill",
-    color: "text-[#0F62FE]",
-    items: [
-      {
-        q: "Como submeto uma candidatura a um badge?",
-        a: "Acede ao catalogo de badges, escolhe o badge desejado e clica em Candidatar. Podes fazer upload das tuas evidencias antes ou depois de submeter o pedido.",
-      },
-      {
-        q: "Quem valida os meus pedidos de badge?",
-        a: "O processo tem duas etapas: primeiro o Talent Manager reve as evidencias; depois o Service Line Leader faz a aprovacao final.",
-      },
-      {
-        q: "Quanto tempo demora a validacao?",
-        a: "Nao ha um prazo fixo. Podes acompanhar o estado do pedido em tempo real na seccao Meus Badges.",
-      },
-      {
-        q: "O que acontece se o meu pedido for rejeitado?",
-        a: "Recebes uma notificacao com o motivo da rejeicao. Podes rever as evidencias, melhora-las e submeter novamente o pedido.",
-      },
-    ],
-  },
-  {
-    category: "Certificados & Exportacoes",
-    icon: "bi-file-earmark-text-fill",
-    color: "text-emerald-600",
-    items: [
-      {
-        q: "Como faco o download do meu certificado?",
-        a: "Na seccao Meus Badges, clica no badge obtido e usa o botao Descarregar Certificado PDF.",
-      },
-      {
-        q: "Posso exportar os meus badges em Excel ou PDF?",
-        a: "Sim. Nas areas de relatorios podes exportar listas em Excel ou PDF quando o teu perfil tem permissoes para isso.",
-      },
-    ],
-  },
-  {
-    category: "Pontos & Gamificacao",
-    icon: "bi-stars",
-    color: "text-amber-500",
-    items: [
-      {
-        q: "Como funciona o sistema de pontos?",
-        a: "Cada badge tem um valor em pontos definido pelo administrador. Ao obteres um badge, os pontos sao acumulados no teu perfil.",
-      },
-      {
-        q: "O que sao badges Premium?",
-        a: "Sao badges de nivel avancado ou com maior pontuacao, com destaque especial no sistema de gamificacao.",
-      },
-    ],
-  },
-  {
-    category: "Perfil & Notificacoes",
-    icon: "bi-person-fill",
-    color: "text-violet-600",
-    items: [
-      {
-        q: "Como altero a minha palavra-passe?",
-        a: "Acede as configuracoes no menu lateral. Na seccao de seguranca podes definir uma nova palavra-passe.",
-      },
-      {
-        q: "Porque nao estou a receber emails de notificacao?",
-        a: "Verifica se o email no teu perfil esta correto e confirma a pasta de spam. Se persistir, contacta o administrador.",
-      },
-    ],
-  },
+const FAQ_CATEGORIES = [
+  { key: "badges", icon: "bi-award-fill", color: "text-[#0F62FE]", itemCount: 4 },
+  { key: "certificates", icon: "bi-file-earmark-text-fill", color: "text-emerald-600", itemCount: 2 },
+  { key: "points", icon: "bi-stars", color: "text-amber-500", itemCount: 2 },
+  { key: "profile", icon: "bi-person-fill", color: "text-violet-600", itemCount: 2 },
 ];
 
 function FAQItem({ item }) {
@@ -103,18 +40,34 @@ function getUser() {
 }
 
 export default function FAQ() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const user = getUser();
 
-  const filtered = FAQS.map((category) => ({
-    ...category,
-    items: category.items.filter(
-      (item) =>
-        search === "" ||
-        item.q.toLowerCase().includes(search.toLowerCase()) ||
-        item.a.toLowerCase().includes(search.toLowerCase()),
-    ),
-  })).filter((category) => category.items.length > 0);
+  const faqs = useMemo(
+    () =>
+      FAQ_CATEGORIES.map((category) => ({
+        ...category,
+        category: t(`faq.categories.${category.key}.title`),
+        items: Array.from({ length: category.itemCount }, (_, index) => ({
+          q: t(`faq.categories.${category.key}.items.${index}.q`),
+          a: t(`faq.categories.${category.key}.items.${index}.a`),
+        })),
+      })),
+    [t],
+  );
+
+  const filtered = faqs
+    .map((category) => ({
+      ...category,
+      items: category.items.filter(
+        (item) =>
+          search === "" ||
+          item.q.toLowerCase().includes(search.toLowerCase()) ||
+          item.a.toLowerCase().includes(search.toLowerCase()),
+      ),
+    }))
+    .filter((category) => category.items.length > 0);
 
   return (
     <div className="admin-shell">
@@ -129,13 +82,13 @@ export default function FAQ() {
                 <i className="bi bi-question-circle-fill text-2xl text-white"></i>
               </div>
               <p className="mb-2 text-sm font-medium text-white/80">
-                Centro de ajuda
+                {t("faq.eyebrow")}
               </p>
               <h1 className="text-3xl font-bold text-white">
-                Perguntas Frequentes
+                {t("faq.title")}
               </h1>
               <p className="mt-2 text-white/85">
-                Encontra respostas as duvidas mais comuns sobre a plataforma.
+                {t("faq.subtitle")}
               </p>
             </div>
           </section>
@@ -145,7 +98,7 @@ export default function FAQ() {
               <i className="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input
                 className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm focus:border-[#0F62FE] focus:outline-none focus:ring-2 focus:ring-[#0F62FE]/20"
-                placeholder="Pesquisar pergunta..."
+                placeholder={t("faq.searchPlaceholder")}
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
@@ -155,7 +108,7 @@ export default function FAQ() {
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-sm text-slate-400">
               <i className="bi bi-inbox mb-3 block text-3xl"></i>
-              Nenhuma pergunta encontrada para "{search}".
+              {t("faq.noResults", { search })}
             </div>
           ) : (
             <div className="grid gap-6 xl:grid-cols-2">
@@ -182,10 +135,10 @@ export default function FAQ() {
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-700">
-                Nao encontraste o que procuravas?
+                {t("faq.contact.title")}
               </p>
               <p className="mt-1 text-sm text-slate-500">
-                Fala com o teu Talent Manager ou com o administrador da plataforma.
+                {t("faq.contact.text")}
               </p>
             </div>
           </div>

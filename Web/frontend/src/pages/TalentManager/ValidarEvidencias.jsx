@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
@@ -7,6 +8,7 @@ import SortableTh from "/src/components/ui/SortableTh";
 import { useSortableData } from "/src/hooks/useSortableData";
 
 export default function ValidarEvidencias() {
+  const { t } = useTranslation();
   const [filtro, setFiltro] = useState("pendente");
   const [notificacoesAtivas, setNotificacoesAtivas] = useState({ email: true, push: true });
   const [evidencias, setEvidencias] = useState([]);
@@ -35,7 +37,7 @@ export default function ValidarEvidencias() {
         setEvidencias(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar evidências:", err);
-        setError("Não foi possível carregar evidências.");
+        setError(t("talentManager.validar.errors.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -45,7 +47,7 @@ export default function ValidarEvidencias() {
     const intervalId = window.setInterval(load, 15000);
 
     return () => window.clearInterval(intervalId);
-  }, [filtro]);
+  }, [filtro, t]);
 
   const aprovar = async (id) => {
     try {
@@ -56,7 +58,7 @@ export default function ValidarEvidencias() {
       setEvidencias((prev) => prev.map((e) => (e.id === id ? { ...e, status: "aprovado" } : e)));
     } catch (err) {
       console.error("Erro ao aprovar evidência:", err);
-      alert("Erro ao aprovar evidência.");
+      alert(t("talentManager.validar.errors.approveFailed"));
     }
   };
 
@@ -69,7 +71,7 @@ export default function ValidarEvidencias() {
       setEvidencias((prev) => prev.map((e) => (e.id === id ? { ...e, status: "rejeitado" } : e)));
     } catch (err) {
       console.error("Erro ao rejeitar evidência:", err);
-      alert("Erro ao rejeitar evidência.");
+      alert(t("talentManager.validar.errors.rejectFailed"));
     }
   };
 
@@ -81,21 +83,21 @@ export default function ValidarEvidencias() {
 
   return (
     <TalentManagerLayout
-      title="Validar Evidências"
-      subtitle="Revê evidências, aprova ou rejeita pedidos e acompanha atualizações em tempo real."
+      title={t("talentManager.validar.title")}
+      subtitle={t("talentManager.validar.subtitle")}
       heroStats={[
-        { label: "Total", value: evidencias.length },
-        { label: "Pendentes", value: evidencias.filter((e) => e.status === "pendente").length },
-        { label: "Aprovadas", value: evidencias.filter((e) => e.status === "aprovado").length },
+        { label: t("talentManager.validar.stats.total"), value: evidencias.length },
+        { label: t("talentManager.validar.stats.pending"), value: evidencias.filter((e) => e.status === "pendente").length },
+        { label: t("talentManager.validar.stats.approved"), value: evidencias.filter((e) => e.status === "aprovado").length },
       ]}
     >
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
           {[
-            { id: "todas", label: "Todas", tone: "default" },
-            { id: "pendente", label: "Pendentes", tone: "warning" },
-            { id: "aprovado", label: "Aprovadas", tone: "success" },
-            { id: "rejeitado", label: "Rejeitadas", tone: "danger" },
+            { id: "todas", label: t("talentManager.validar.filters.all"), tone: "default" },
+            { id: "pendente", label: t("talentManager.validar.filters.pending"), tone: "warning" },
+            { id: "aprovado", label: t("talentManager.validar.filters.approved"), tone: "success" },
+            { id: "rejeitado", label: t("talentManager.validar.filters.rejected"), tone: "danger" },
           ].map((b) => (
             <button
               key={b.id}
@@ -120,34 +122,34 @@ export default function ValidarEvidencias() {
         <div className="flex items-center gap-4 rounded-2xl bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           <label className="inline-flex items-center gap-2">
             <input className="h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-400" type="checkbox" checked={notificacoesAtivas.email} onChange={(e) => setNotificacoesAtivas({ ...notificacoesAtivas, email: e.target.checked })} />
-            Email
+            {t("talentManager.validar.notifications.email")}
           </label>
           <label className="inline-flex items-center gap-2">
             <input className="h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-400" type="checkbox" checked={notificacoesAtivas.push} onChange={(e) => setNotificacoesAtivas({ ...notificacoesAtivas, push: e.target.checked })} />
-            Push/Teams
+            {t("talentManager.validar.notifications.push")}
           </label>
         </div>
       </div>
 
-      <SectionCard title="Evidências" icon="bi-folder-check">
+      <SectionCard title={t("talentManager.validar.sectionTitle")} icon="bi-folder-check">
         {loading ? (
-          <EmptyState message="A carregar evidências..." icon="bi-arrow-repeat" />
+          <EmptyState message={t("talentManager.validar.loading")} icon="bi-arrow-repeat" />
         ) : error ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
         ) : filtradas.length === 0 ? (
-          <EmptyState message="Não existem evidências neste estado." icon="bi-inbox" />
+          <EmptyState message={t("talentManager.validar.empty")} icon="bi-inbox" />
         ) : (
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-100 text-slate-700">
                 <tr>
-                  <SortableTh label="Consultor" sortKey="consultor" accessor={(e) => e.consultor?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Badge" sortKey="badge" accessor={(e) => e.badge?.name || e.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Requisito" sortKey="requirement" accessor={(e) => e.requirement?.title || e.requirement?.code || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Data" sortKey="created_at" accessor={(e) => (e.created_at ? new Date(e.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <th className="px-3 py-2 text-left font-semibold">Ficheiro</th>
-                  <SortableTh label="Estado" sortKey="status" accessor={(e) => e.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <th className="px-3 py-2 text-right font-semibold">Ações</th>
+                  <SortableTh label={t("talentManager.validar.table.consultant")} sortKey="consultor" accessor={(e) => e.consultor?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.validar.table.badge")} sortKey="badge" accessor={(e) => e.badge?.name || e.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.validar.table.requirement")} sortKey="requirement" accessor={(e) => e.requirement?.title || e.requirement?.code || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.validar.table.date")} sortKey="created_at" accessor={(e) => (e.created_at ? new Date(e.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <th className="px-3 py-2 text-left font-semibold">{t("talentManager.validar.table.file")}</th>
+                  <SortableTh label={t("talentManager.validar.table.status")} sortKey="status" accessor={(e) => e.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <th className="px-3 py-2 text-right font-semibold">{t("talentManager.validar.table.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -157,7 +159,7 @@ export default function ValidarEvidencias() {
                     <td className="px-3 py-2">{e.badge?.name || e.badge?.description}</td>
                     <td className="px-3 py-2">{e.requirement?.title || e.requirement?.code}</td>
                     <td className="px-3 py-2">{new Date(e.created_at).toLocaleDateString("pt-PT")}</td>
-                    <td className="px-3 py-2"><a href={e.evidence_url} target="_blank" rel="noreferrer" className="font-semibold text-sky-700 underline">ver</a></td>
+                    <td className="px-3 py-2"><a href={e.evidence_url} target="_blank" rel="noreferrer" className="font-semibold text-sky-700 underline">{t("talentManager.validar.table.view")}</a></td>
                     <td className="px-3 py-2">
                       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusBadgeClass(e.status)}`}>
                         {e.status}
@@ -165,10 +167,10 @@ export default function ValidarEvidencias() {
                     </td>
                     <td className="px-3 py-2 text-right">
                       <button className={`${tmPrimaryActionClass} mr-2 py-1`} onClick={() => aprovar(e.id)}>
-                        <i className="bi bi-check-circle mr-1"></i>Aprovar
+                        <i className="bi bi-check-circle mr-1"></i>{t("talentManager.validar.actions.approve")}
                       </button>
                       <button className={`${tmActionClass} py-1 text-rose-600 hover:bg-rose-50`} onClick={() => rejeitar(e.id)}>
-                        <i className="bi bi-x-circle mr-1"></i>Rejeitar
+                        <i className="bi bi-x-circle mr-1"></i>{t("talentManager.validar.actions.reject")}
                       </button>
                     </td>
                   </tr>

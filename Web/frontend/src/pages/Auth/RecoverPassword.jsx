@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import AuthShell from "./AuthShell";
 
 export default function RecoverPassword() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,8 +25,8 @@ export default function RecoverPassword() {
 
     setSent(true);
     setTokenInput(token);
-    setInfo("Define a tua nova password para concluir a recuperacao.");
-  }, []);
+    setInfo(t("auth.recoverPassword.infoDefineNew"));
+  }, [t]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -36,7 +38,7 @@ export default function RecoverPassword() {
       const res = await api.post("/api/auth/recover-password", { email });
 
       setSent(true);
-      setInfo(res.data?.message || "Se o email existir, enviamos instrucoes.");
+      setInfo(res.data?.message || t("auth.recoverPassword.infoSent"));
 
       if (res.data?.resetToken) {
         setResetToken(res.data.resetToken);
@@ -47,7 +49,7 @@ export default function RecoverPassword() {
         setInfo(`${res.data.message} ${res.data.emailError}`);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Erro ao enviar instrucoes.");
+      setError(err.response?.data?.message || t("auth.recoverPassword.errors.sendFailed"));
     } finally {
       setLoading(false);
     }
@@ -60,13 +62,13 @@ export default function RecoverPassword() {
     setInfo("");
 
     if (newPassword.length < 6) {
-      setError("A password deve ter pelo menos 6 caracteres.");
+      setError(t("auth.recoverPassword.errors.tooShort"));
       setResetting(false);
       return;
     }
 
     if (newPassword !== confirm) {
-      setError("As passwords nao coincidem.");
+      setError(t("auth.recoverPassword.errors.mismatch"));
       setResetting(false);
       return;
     }
@@ -78,9 +80,9 @@ export default function RecoverPassword() {
       });
 
       setDone(true);
-      setInfo(res.data?.message || "Password redefinida com sucesso.");
+      setInfo(res.data?.message || t("auth.recoverPassword.success"));
     } catch (err) {
-      setError(err.response?.data?.message || "Erro a redefinir password.");
+      setError(err.response?.data?.message || t("auth.recoverPassword.errors.resetFailed"));
     } finally {
       setResetting(false);
     }
@@ -88,13 +90,13 @@ export default function RecoverPassword() {
 
   return (
     <AuthShell
-      title="Recuperar password"
-      description="Recebe um token e define uma nova password de acesso."
-      asideTitle="Volta a entrar com seguranca"
-      asideText="Enviaremos as instrucoes para o email associado a tua conta."
+      title={t("auth.recoverPassword.title")}
+      description={t("auth.recoverPassword.description")}
+      asideTitle={t("auth.recoverPassword.asideTitle")}
+      asideText={t("auth.recoverPassword.asideText")}
       asideNote={{
-        label: "Conta protegida",
-        text: "O token de recuperacao e validado antes de qualquer alteracao.",
+        label: t("auth.recoverPassword.asideNote.label"),
+        text: t("auth.recoverPassword.asideNote.text"),
       }}
     >
       {error && <p className="auth-message auth-message-error">{error}</p>}
@@ -103,20 +105,20 @@ export default function RecoverPassword() {
       {!sent && !done && (
         <form onSubmit={handleSend}>
           <div className="auth-field">
-            <label>Email</label>
+            <label>{t("auth.recoverPassword.emailLabel")}</label>
             <input
               type="email"
               required
               className="auth-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="exemplo@dominio.com"
+              placeholder={t("auth.recoverPassword.emailPlaceholder")}
             />
           </div>
 
           <button type="submit" disabled={loading} className="auth-primary-button">
             <i className="bi bi-send"></i>
-            {loading ? "A enviar..." : "Enviar instrucoes"}
+            {loading ? t("auth.recoverPassword.sending") : t("auth.recoverPassword.sendInstructions")}
           </button>
         </form>
       )}
@@ -124,24 +126,24 @@ export default function RecoverPassword() {
       {sent && !done && (
         <form onSubmit={handleReset}>
           <div className="auth-field">
-            <label>Token de redefinicao</label>
+            <label>{t("auth.recoverPassword.tokenLabel")}</label>
             <input
               type="text"
               required
               value={tokenInput}
               onChange={(e) => setTokenInput(e.target.value)}
               className="auth-input"
-              placeholder="Cole o token enviado por email"
+              placeholder={t("auth.recoverPassword.tokenPlaceholder")}
             />
             {resetToken && (
               <p className="mt-2 text-xs text-slate-500">
-                Token para testes (dev): {resetToken}
+                {t("auth.recoverPassword.devToken", { token: resetToken })}
               </p>
             )}
           </div>
 
           <div className="auth-field">
-            <label>Nova password</label>
+            <label>{t("auth.recoverPassword.newPasswordLabel")}</label>
             <input
               type="password"
               required
@@ -150,12 +152,12 @@ export default function RecoverPassword() {
               className={`auth-input ${
                 newPassword && newPassword.length < 6 ? "border-red-400" : ""
               }`}
-              placeholder="Minimo 6 caracteres"
+              placeholder={t("auth.recoverPassword.newPasswordPlaceholder")}
             />
           </div>
 
           <div className="auth-field">
-            <label>Confirmar password</label>
+            <label>{t("auth.recoverPassword.confirmPasswordLabel")}</label>
             <input
               type="password"
               required
@@ -164,13 +166,13 @@ export default function RecoverPassword() {
               className={`auth-input ${
                 confirm && confirm !== newPassword ? "border-red-400" : ""
               }`}
-              placeholder="Repete a password"
+              placeholder={t("auth.recoverPassword.confirmPasswordPlaceholder")}
             />
           </div>
 
           <button type="submit" disabled={resetting} className="auth-primary-button">
             <i className="bi bi-shield-check"></i>
-            {resetting ? "A guardar..." : "Redefinir password"}
+            {resetting ? t("auth.recoverPassword.saving") : t("auth.recoverPassword.resetSubmit")}
           </button>
         </form>
       )}
@@ -178,7 +180,7 @@ export default function RecoverPassword() {
       {done && (
         <div className="text-center">
           <Link to="/login" className="auth-secondary-button">
-            Voltar ao login
+            {t("auth.recoverPassword.backToLogin")}
           </Link>
         </div>
       )}

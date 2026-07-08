@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 
-const roleLabels = {
-  admin: "Administrador",
-  consultant: "Consultor",
-  talent_manager: "Talent Manager",
-  service_line_leader: "Service Line Leader",
+const roleKeys = {
+  admin: "admin.fichaUtilizador.roles.admin",
+  consultant: "admin.fichaUtilizador.roles.consultant",
+  talent_manager: "admin.fichaUtilizador.roles.talentManager",
+  service_line_leader: "admin.fichaUtilizador.roles.serviceLineLeader",
 };
 
 const roleStyles = {
@@ -17,20 +18,16 @@ const roleStyles = {
   service_line_leader: "bg-indigo-50 text-indigo-700 ring-indigo-200",
 };
 
-function getRoleLabel(role) {
-  return roleLabels[role] || role || "Sem perfil";
-}
-
 function getInitials(name = "") {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return "U";
   return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function formatDate(value) {
-  if (!value) return "N/D";
+function formatDate(value, naLabel) {
+  if (!value) return naLabel;
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "N/D";
+  if (Number.isNaN(date.getTime())) return naLabel;
   return date.toLocaleDateString("pt-PT", {
     day: "2-digit",
     month: "2-digit",
@@ -41,6 +38,7 @@ function formatDate(value) {
 }
 
 export default function FichaUtilizador() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -61,6 +59,7 @@ export default function FichaUtilizador() {
   useEffect(() => {
     fetchUser();
     fetchAreas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function fetchUser() {
@@ -82,7 +81,7 @@ export default function FichaUtilizador() {
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Nao foi possivel carregar a ficha do utilizador.",
+          t("admin.fichaUtilizador.errors.loadFailed"),
       );
     } finally {
       setLoading(false);
@@ -104,12 +103,12 @@ export default function FichaUtilizador() {
     setSuccess("");
 
     if (!form.name.trim() || !form.email.trim()) {
-      setError("Preenche o nome e o email do utilizador.");
+      setError(t("admin.fichaUtilizador.errors.fillNameAndEmail"));
       return;
     }
 
     if (form.role === "service_line_leader" && !form.area_id) {
-      setError("Seleciona uma area para o Service Line Leader.");
+      setError(t("admin.fichaUtilizador.errors.selectAreaForLeader"));
       return;
     }
 
@@ -136,13 +135,13 @@ export default function FichaUtilizador() {
 
       setUser(updatedUser);
       setForm((current) => ({ ...current, password: "" }));
-      setSuccess("Ficha atualizada com sucesso.");
+      setSuccess(t("admin.fichaUtilizador.success.updated"));
     } catch (err) {
       console.error("Erro ao atualizar ficha:", err);
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Nao foi possivel atualizar a ficha.",
+          t("admin.fichaUtilizador.errors.updateFailed"),
       );
     } finally {
       setSaving(false);
@@ -154,11 +153,11 @@ export default function FichaUtilizador() {
 
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     if (storedUser?.id === user.id) {
-      setError("Nao podes apagar o teu proprio utilizador.");
+      setError(t("admin.fichaUtilizador.errors.cannotDeleteSelf"));
       return;
     }
 
-    if (!window.confirm(`Apagar o utilizador ${user.name || user.email}?`)) {
+    if (!window.confirm(t("admin.fichaUtilizador.confirmDelete", { name: user.name || user.email }))) {
       return;
     }
 
@@ -171,7 +170,7 @@ export default function FichaUtilizador() {
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Nao foi possivel apagar o utilizador.",
+          t("admin.fichaUtilizador.errors.deleteFailed"),
       );
     } finally {
       setDeleting(false);
@@ -184,7 +183,7 @@ export default function FichaUtilizador() {
   );
 
   function getAreaName(areaId) {
-    return areaById.get(Number(areaId)) || areaId || "N/D";
+    return areaById.get(Number(areaId)) || areaId || t("admin.common.notAvailable");
   }
 
   return (
@@ -200,11 +199,11 @@ export default function FichaUtilizador() {
               onClick={() => navigate("/admin/gestao-utilizadores")}
             >
               <i className="bi bi-arrow-left"></i>
-              Voltar a gestao
+              {t("admin.fichaUtilizador.backToManagement")}
             </button>
-            <h1 className="text-3xl font-bold text-slate-900">Ficha do utilizador</h1>
+            <h1 className="text-3xl font-bold text-slate-900">{t("admin.fichaUtilizador.title")}</h1>
             <p className="mt-1 text-sm text-slate-500">
-              Consulta e edita os dados completos do utilizador.
+              {t("admin.fichaUtilizador.subtitle")}
             </p>
           </div>
         </div>
@@ -212,11 +211,11 @@ export default function FichaUtilizador() {
         {loading ? (
           <div className="rounded-2xl border border-slate-200 bg-white px-4 py-12 text-center text-sm text-slate-500 shadow-sm">
             <span className="mr-2 inline-block h-5 w-5 animate-spin rounded-full border-2 border-sky-600 border-r-transparent align-middle"></span>
-            A carregar ficha...
+            {t("admin.fichaUtilizador.loading")}
           </div>
         ) : !user ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-6 text-sm text-rose-700">
-            {error || "Utilizador nao encontrado."}
+            {error || t("admin.fichaUtilizador.notFound")}
           </div>
         ) : (
           <>
@@ -243,14 +242,14 @@ export default function FichaUtilizador() {
                     </div>
                     <div className="min-w-0">
                       <h2 className="truncate text-xl font-bold text-slate-900">
-                        {user.name || "Sem nome"}
+                        {user.name || t("admin.fichaUtilizador.noName")}
                       </h2>
-                      <p className="truncate text-sm text-slate-500">{user.email || "N/D"}</p>
+                      <p className="truncate text-sm text-slate-500">{user.email || t("admin.common.notAvailable")}</p>
                     </div>
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <RoleBadge role={user.role} />
+                    <RoleBadge role={user.role} t={t} />
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
                       ID {user.id}
                     </span>
@@ -258,22 +257,22 @@ export default function FichaUtilizador() {
                 </section>
 
                 <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <h3 className="mb-4 text-base font-bold text-slate-900">Resumo</h3>
+                  <h3 className="mb-4 text-base font-bold text-slate-900">{t("admin.fichaUtilizador.summary")}</h3>
                   <dl className="space-y-3 text-sm">
-                    <InfoRow label="Area" value={getAreaName(user.area_id)} />
-                    <InfoRow label="Pontos" value={Number(user.points_total || 0)} />
-                    <InfoRow label="Criado em" value={formatDate(user.createdAt)} />
-                    <InfoRow label="Atualizado em" value={formatDate(user.updatedAt)} />
+                    <InfoRow label={t("admin.fichaUtilizador.areaLabel")} value={getAreaName(user.area_id)} />
+                    <InfoRow label={t("admin.fichaUtilizador.pointsLabel")} value={Number(user.points_total || 0)} />
+                    <InfoRow label={t("admin.fichaUtilizador.createdAtLabel")} value={formatDate(user.createdAt, t("admin.common.notAvailable"))} />
+                    <InfoRow label={t("admin.fichaUtilizador.updatedAtLabel")} value={formatDate(user.updatedAt, t("admin.common.notAvailable"))} />
                   </dl>
                 </section>
               </aside>
 
               <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="mb-4 text-xl font-bold text-slate-900">Dados editaveis</h2>
+                <h2 className="mb-4 text-xl font-bold text-slate-900">{t("admin.fichaUtilizador.editableData")}</h2>
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <Field label="Nome">
+                    <Field label={t("admin.fichaUtilizador.nameLabel")}>
                       <input
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                         value={form.name}
@@ -283,7 +282,7 @@ export default function FichaUtilizador() {
                       />
                     </Field>
 
-                    <Field label="Email">
+                    <Field label={t("admin.fichaUtilizador.emailLabel")}>
                       <input
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                         type="email"
@@ -294,7 +293,7 @@ export default function FichaUtilizador() {
                       />
                     </Field>
 
-                    <Field label="Perfil">
+                    <Field label={t("admin.fichaUtilizador.roleLabel")}>
                       <select
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                         value={form.role}
@@ -302,15 +301,15 @@ export default function FichaUtilizador() {
                           setForm((current) => ({ ...current, role: event.target.value }))
                         }
                       >
-                        {Object.entries(roleLabels).map(([value, label]) => (
+                        {Object.entries(roleKeys).map(([value, key]) => (
                           <option key={value} value={value}>
-                            {label}
+                            {t(key)}
                           </option>
                         ))}
                       </select>
                     </Field>
 
-                    <Field label="Area">
+                    <Field label={t("admin.fichaUtilizador.areaLabel")}>
                       <select
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                         value={form.area_id}
@@ -318,7 +317,7 @@ export default function FichaUtilizador() {
                           setForm((current) => ({ ...current, area_id: event.target.value }))
                         }
                       >
-                        <option value="">Sem area</option>
+                        <option value="">{t("admin.fichaUtilizador.noArea")}</option>
                         {areas.map((area) => (
                           <option key={area.id} value={area.id}>
                             {area.name}
@@ -328,7 +327,7 @@ export default function FichaUtilizador() {
                     </Field>
                   </div>
 
-                  <Field label="Nova password">
+                  <Field label={t("admin.fichaUtilizador.newPasswordLabel")}>
                     <input
                       className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="password"
@@ -336,7 +335,7 @@ export default function FichaUtilizador() {
                       onChange={(event) =>
                         setForm((current) => ({ ...current, password: event.target.value }))
                       }
-                      placeholder="Deixar vazio para manter a password atual"
+                      placeholder={t("admin.fichaUtilizador.newPasswordPlaceholder")}
                     />
                   </Field>
 
@@ -348,7 +347,7 @@ export default function FichaUtilizador() {
                       disabled={saving || deleting}
                     >
                       <i className="bi bi-trash"></i>
-                      {deleting ? "A apagar..." : "Apagar utilizador"}
+                      {deleting ? t("admin.fichaUtilizador.deleting") : t("admin.fichaUtilizador.deleteUser")}
                     </button>
 
                     <button
@@ -357,7 +356,7 @@ export default function FichaUtilizador() {
                       disabled={saving || deleting}
                     >
                       <i className="bi bi-save"></i>
-                      {saving ? "A guardar..." : "Guardar alteracoes"}
+                      {saving ? t("admin.common.saving") : t("admin.fichaUtilizador.saveChanges")}
                     </button>
                   </div>
                 </form>
@@ -370,14 +369,14 @@ export default function FichaUtilizador() {
   );
 }
 
-function RoleBadge({ role }) {
+function RoleBadge({ role, t }) {
   return (
     <span
       className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
         roleStyles[role] || "bg-slate-50 text-slate-700 ring-slate-200"
       }`}
     >
-      {getRoleLabel(role)}
+      {roleKeys[role] ? t(roleKeys[role]) : role || t("admin.fichaUtilizador.roles.none")}
     </span>
   );
 }

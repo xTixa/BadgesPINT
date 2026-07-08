@@ -1,19 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { tmActionClass, tmPrimaryActionClass } from "./TalentManagerLayout";
 import SortableTh from "/src/components/ui/SortableTh";
 import { useSortableData } from "/src/hooks/useSortableData";
 
-const statusMap = {
-  pendente: { label: "Pendente", className: "bg-amber-100 text-amber-700" },
-  obtido: { label: "Aprovado", className: "bg-emerald-100 text-emerald-700" },
-  rejeitado: { label: "Rejeitado", className: "bg-rose-100 text-rose-700" },
-};
-
-const formatDateTime = (value) => (value ? new Date(value).toLocaleString("pt-PT") : "Sem data");
+const formatDateTime = (value, t) => (value ? new Date(value).toLocaleString("pt-PT") : t("talentManager.pedidos.noDate"));
 
 export default function PedidosTalentManager() {
+  const { t } = useTranslation();
+
+  const statusMap = {
+    pendente: { label: t("talentManager.pedidos.status.pending"), className: "bg-amber-100 text-amber-700" },
+    obtido: { label: t("talentManager.pedidos.status.approved"), className: "bg-emerald-100 text-emerald-700" },
+    rejeitado: { label: t("talentManager.pedidos.status.rejected"), className: "bg-rose-100 text-rose-700" },
+  };
+
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("all");
   const [selectedPedido, setSelectedPedido] = useState(null);
@@ -30,7 +33,7 @@ export default function PedidosTalentManager() {
         setPedidos(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar pedidos:", err);
-        setError("Nao foi possivel carregar os pedidos.");
+        setError(t("talentManager.pedidos.errors.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -39,7 +42,7 @@ export default function PedidosTalentManager() {
     load();
     const intervalId = window.setInterval(load, 15000);
     return () => window.clearInterval(intervalId);
-  }, [filtro]);
+  }, [filtro, t]);
 
   const totals = useMemo(
     () => ({
@@ -54,71 +57,71 @@ export default function PedidosTalentManager() {
   const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidos);
 
   const validar = async (id) => {
-    const comment = window.prompt("Comentario (opcional):") || "";
+    const comment = window.prompt(t("talentManager.pedidos.prompts.validateComment")) || "";
     try {
       await api.post(`/api/admin/pedidos/${id}/tm/validar`, { comment });
       setPedidos((prev) => prev.map((p) => (p.id === id ? { ...p, workflow_status: "em_validacao", tm_comment: comment } : p)));
     } catch (err) {
       console.error("Erro ao validar pedido:", err);
-      alert("Erro ao validar pedido.");
+      alert(t("talentManager.pedidos.errors.validateFailed"));
     }
   };
 
   const devolver = async (id) => {
-    const comment = window.prompt("Comentario para devolucao:") || "";
+    const comment = window.prompt(t("talentManager.pedidos.prompts.returnComment")) || "";
     if (!comment) return;
     try {
       await api.post(`/api/admin/pedidos/${id}/tm/devolver`, { comment });
       setPedidos((prev) => prev.map((p) => (p.id === id ? { ...p, workflow_status: "open", tm_comment: comment } : p)));
     } catch (err) {
       console.error("Erro ao devolver pedido:", err);
-      alert("Erro ao devolver pedido.");
+      alert(t("talentManager.pedidos.errors.returnFailed"));
     }
   };
 
   const getPedidoHistory = (pedido) => [
     {
-      label: "Criado",
+      label: t("talentManager.pedidos.history.created"),
       date: pedido.created_at,
-      detail: "Pedido registado na plataforma.",
+      detail: t("talentManager.pedidos.history.createdDetail"),
       done: true,
     },
     {
-      label: "Submetido",
+      label: t("talentManager.pedidos.history.submitted"),
       date: pedido.submitted_at,
-      detail: pedido.workflow_status === "open" ? "Ainda nao submetido para validacao." : "Pedido submetido para validacao.",
+      detail: pedido.workflow_status === "open" ? t("talentManager.pedidos.history.notSubmittedDetail") : t("talentManager.pedidos.history.submittedDetail"),
       done: Boolean(pedido.submitted_at) || pedido.workflow_status !== "open",
     },
     {
-      label: "Validacao TM",
+      label: t("talentManager.pedidos.history.tmValidation"),
       date: pedido.updated_at,
-      detail: pedido.tm_comment || "Sem comentario do Talent Manager.",
+      detail: pedido.tm_comment || t("talentManager.pedidos.history.noTmComment"),
       done: ["em_validacao", "fechado"].includes(pedido.workflow_status),
     },
     {
-      label: "Decisao final",
+      label: t("talentManager.pedidos.history.finalDecision"),
       date: pedido.data_atribuicao || pedido.updated_at,
-      detail: pedido.sl_comment || pedido.tm_comment || `Estado atual: ${pedido.status || "pendente"}.`,
+      detail: pedido.sl_comment || pedido.tm_comment || t("talentManager.pedidos.history.currentStatus", { status: pedido.status || "pendente" }),
       done: pedido.status === "obtido" || pedido.status === "rejeitado",
     },
   ];
 
   return (
     <TalentManagerLayout
-      title="Pedidos de Badges"
-      subtitle="Acompanha o estado dos pedidos, valida o fluxo e consulta o historico de cada candidatura."
+      title={t("talentManager.pedidos.title")}
+      subtitle={t("talentManager.pedidos.subtitle")}
       heroStats={[
-        { label: "Pedidos", value: totals.total },
-        { label: "Pendentes", value: totals.pendentes },
-        { label: "Aprovados", value: totals.aprovados },
+        { label: t("talentManager.pedidos.stats.requests"), value: totals.total },
+        { label: t("talentManager.pedidos.stats.pending"), value: totals.pendentes },
+        { label: t("talentManager.pedidos.stats.approved"), value: totals.aprovados },
       ]}
     >
       <div className="mb-4 flex flex-wrap gap-2">
         {[
-          { value: "all", label: "Todos" },
-          { value: "pendente", label: "Pendentes" },
-          { value: "obtido", label: "Aprovados" },
-          { value: "rejeitado", label: "Rejeitados" },
+          { value: "all", label: t("talentManager.pedidos.filters.all") },
+          { value: "pendente", label: t("talentManager.pedidos.filters.pending") },
+          { value: "obtido", label: t("talentManager.pedidos.filters.approved") },
+          { value: "rejeitado", label: t("talentManager.pedidos.filters.rejected") },
         ].map((item) => (
           <button
             key={item.value}
@@ -132,27 +135,27 @@ export default function PedidosTalentManager() {
 
       <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
         <h5 className="mb-3 text-base font-bold text-slate-900">
-          <i className="bi bi-inbox mr-2 text-[#0F62FE]"></i>Lista de Pedidos
+          <i className="bi bi-inbox mr-2 text-[#0F62FE]"></i>{t("talentManager.pedidos.listTitle")}
         </h5>
 
         {loading ? (
-          <EmptyState message="A carregar pedidos..." icon="bi-hourglass-split" />
+          <EmptyState message={t("talentManager.pedidos.loading")} icon="bi-hourglass-split" />
         ) : error ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
         ) : pedidos.length === 0 ? (
-          <EmptyState message="Sem pedidos para apresentar." icon="bi-inbox" />
+          <EmptyState message={t("talentManager.pedidos.empty")} icon="bi-inbox" />
         ) : (
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-100 text-slate-700">
                 <tr>
-                  <SortableTh label="Consultor" sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Badge" sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Nivel" sortKey="level" accessor={(p) => p.badge?.level || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Estado" sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Workflow" sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <SortableTh label="Data" sortKey="created_at" accessor={(p) => (p.created_at ? new Date(p.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
-                  <th className="px-3 py-2 text-right font-semibold">Acoes</th>
+                  <SortableTh label={t("talentManager.pedidos.table.consultant")} sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.pedidos.table.badge")} sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.pedidos.table.level")} sortKey="level" accessor={(p) => p.badge?.level || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.pedidos.table.status")} sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.pedidos.table.workflow")} sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <SortableTh label={t("talentManager.pedidos.table.date")} sortKey="created_at" accessor={(p) => (p.created_at ? new Date(p.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <th className="px-3 py-2 text-right font-semibold">{t("talentManager.pedidos.table.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
@@ -161,7 +164,7 @@ export default function PedidosTalentManager() {
                   return (
                     <tr key={pedido.id}>
                       <td className="px-3 py-2">
-                        <div className="font-semibold text-slate-900">{pedido.user?.name || "Desconhecido"}</div>
+                        <div className="font-semibold text-slate-900">{pedido.user?.name || t("talentManager.pedidos.unknownUser")}</div>
                         <div className="text-xs text-slate-500">{pedido.user?.email}</div>
                       </td>
                       <td className="px-3 py-2">{pedido.badge?.name || pedido.badge?.description || "-"}</td>
@@ -175,15 +178,15 @@ export default function PedidosTalentManager() {
                         {pedido.workflow_status === "submitted" && (
                           <>
                             <button className={`${tmPrimaryActionClass} mr-2 py-1`} onClick={() => validar(pedido.id)}>
-                              Validar
+                              {t("talentManager.pedidos.actions.validate")}
                             </button>
                             <button className={`${tmActionClass} mr-2 py-1`} onClick={() => devolver(pedido.id)}>
-                              Devolver
+                              {t("talentManager.pedidos.actions.return")}
                             </button>
                           </>
                         )}
                         <button className={`${tmActionClass} py-1`} onClick={() => setSelectedPedido(pedido)}>
-                          Historico
+                          {t("talentManager.pedidos.actions.history")}
                         </button>
                       </td>
                     </tr>
@@ -201,14 +204,14 @@ export default function PedidosTalentManager() {
             <div>
               <h5 className="mb-1 text-base font-bold text-slate-900">
                 <i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>
-                Historico do processo
+                {t("talentManager.pedidos.processHistoryTitle")}
               </h5>
               <p className="m-0 text-sm text-slate-500">
-                {selectedPedido.user?.name || "Consultor"} - {selectedPedido.badge?.name || selectedPedido.badge?.description || "Badge"}
+                {selectedPedido.user?.name || t("talentManager.pedidos.consultantFallback")} - {selectedPedido.badge?.name || selectedPedido.badge?.description || t("talentManager.pedidos.badgeFallback")}
               </p>
             </div>
             <button className={tmActionClass} onClick={() => setSelectedPedido(null)}>
-              Fechar
+              {t("talentManager.pedidos.close")}
             </button>
           </div>
 
@@ -219,7 +222,7 @@ export default function PedidosTalentManager() {
                   <i className={`bi ${step.done ? "bi-check-circle-fill text-emerald-600" : "bi-circle text-slate-400"}`}></i>
                   <span className="text-sm font-bold text-slate-900">{step.label}</span>
                 </div>
-                <p className="m-0 text-xs text-slate-500">{formatDateTime(step.date)}</p>
+                <p className="m-0 text-xs text-slate-500">{formatDateTime(step.date, t)}</p>
                 <p className="m-0 mt-2 text-sm text-slate-700">{step.detail}</p>
               </div>
             ))}

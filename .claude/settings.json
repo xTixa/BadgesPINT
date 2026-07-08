@@ -103,7 +103,13 @@
       "Bash(node inspect-sl-dash.js)",
       "Bash(powershell -Command \"Stop-Process -Id 9536 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 25884 -Force -ErrorAction SilentlyContinue\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173)",
-      "Bash(curl -s http://localhost:5173/)"
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\); console.log\\('PT OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('EN OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\)\")",
+      "Bash(node -e \"const d = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\); console.log\\('consultor key exists:', !!d.consultor\\); console.log\\('pages:', Object.keys\\(d.consultor||{}\\)\\);\")",
+      "Bash(node -e \"const d = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('consultor key exists:', !!d.consultor\\); console.log\\('pages:', Object.keys\\(d.consultor||{}\\)\\);\")"
     ]
   }
 }

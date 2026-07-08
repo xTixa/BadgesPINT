@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import PublicGalleryShell from "../components/PublicGalleryShell";
 import avatarPlaceholder from "../assets/avatar-placeholder.svg";
@@ -28,6 +29,7 @@ function Stat({ icon, label, value }) {
 }
 
 export default function GaleriaConsultor() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ export default function GaleriaConsultor() {
         <div className="flex min-h-[60vh] w-full items-center justify-center">
           <div className="text-center">
             <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#0F62FE]" />
-            <p className="mt-3 text-sm font-medium text-slate-500">A carregar perfil...</p>
+            <p className="mt-3 text-sm font-medium text-slate-500">{t("galeriaConsultor.loading")}</p>
           </div>
         </div>
       </PublicGalleryShell>
@@ -65,10 +67,10 @@ export default function GaleriaConsultor() {
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
               <i className="bi bi-lock-fill text-3xl text-slate-400" />
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-900">Perfil privado</h1>
-            <p className="mt-2 max-w-md text-slate-500">Este consultor não tem o perfil público ativo ou não existe.</p>
+            <h1 className="text-2xl font-extrabold text-slate-900">{t("galeriaConsultor.privateProfile.title")}</h1>
+            <p className="mt-2 max-w-md text-slate-500">{t("galeriaConsultor.privateProfile.text")}</p>
             <Link to="/galeria" className="mt-6 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-2.5 text-sm font-bold text-white shadow-md">
-              <i className="bi bi-arrow-left mr-2" />Voltar à galeria
+              <i className="bi bi-arrow-left mr-2" />{t("galeriaConsultor.backToGallery")}
             </Link>
           </div>
         </div>
@@ -84,7 +86,7 @@ export default function GaleriaConsultor() {
           <div className="absolute -bottom-20 right-40 h-44 w-44 rounded-full bg-white/5" />
           <div className="relative z-10">
             <Link to="/galeria" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white">
-              <i className="bi bi-arrow-left" />Galeria Pública
+              <i className="bi bi-arrow-left" />{t("galeriaConsultor.publicGallery")}
             </Link>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="flex flex-col items-start gap-5 text-left sm:flex-row">
@@ -95,7 +97,7 @@ export default function GaleriaConsultor() {
                   className="h-28 w-28 rounded-3xl border-4 border-white/25 bg-white object-cover shadow-xl"
                 />
                 <div>
-                  <p className="mb-1 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">Perfil certificado</p>
+                  <p className="mb-1 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">{t("galeriaConsultor.certifiedProfile")}</p>
                   <h1 className="text-3xl font-extrabold text-white md:text-4xl">{profile.name}</h1>
                   <p className="mt-2 flex items-center justify-start gap-2 text-white/80">
                     <i className="bi bi-diagram-3-fill" />{profile.area_name || "Softinsa"}
@@ -103,9 +105,9 @@ export default function GaleriaConsultor() {
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <Stat icon="bi-award-fill" label="Badges" value={profile.badges?.length || 0} />
-                <Stat icon="bi-star-fill" label="Pontos" value={profile.points_total || 0} />
-                <Stat icon="bi-trophy-fill" label="Ranking" value={profile.ranking ? `#${profile.ranking}` : "-"} />
+                <Stat icon="bi-award-fill" label={t("galeriaConsultor.stats.badges")} value={profile.badges?.length || 0} />
+                <Stat icon="bi-star-fill" label={t("galeriaConsultor.stats.points")} value={profile.points_total || 0} />
+                <Stat icon="bi-trophy-fill" label={t("galeriaConsultor.stats.ranking")} value={profile.ranking ? `#${profile.ranking}` : "-"} />
               </div>
             </div>
           </div>
@@ -114,18 +116,18 @@ export default function GaleriaConsultor() {
         <section className="rounded-3xl border border-[#0F62FE]/10 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] md:p-8">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-bold uppercase tracking-wide text-[#0F62FE]">Competências verificadas</p>
-              <h2 className="mt-1 text-2xl font-extrabold text-slate-900">Badges obtidos</h2>
+              <p className="text-sm font-bold uppercase tracking-wide text-[#0F62FE]">{t("galeriaConsultor.verifiedSkills")}</p>
+              <h2 className="mt-1 text-2xl font-extrabold text-slate-900">{t("galeriaConsultor.earnedBadges")}</h2>
             </div>
             <span className="rounded-full bg-[#0F62FE]/10 px-3 py-1 text-sm font-bold text-[#0F62FE]">
-              {profile.badges?.length || 0} no total
+              {t("galeriaConsultor.totalCount", { count: profile.badges?.length || 0 })}
             </span>
           </div>
 
           {!profile.badges?.length ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
               <i className="bi bi-award mb-3 block text-5xl text-slate-300" />
-              <p className="font-medium text-slate-500">Sem badges públicos disponíveis.</p>
+              <p className="font-medium text-slate-500">{t("galeriaConsultor.noBadges")}</p>
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -144,7 +146,7 @@ export default function GaleriaConsultor() {
                   <h3 className="flex-1 font-extrabold text-slate-900">{badge.name || badge.description}</h3>
                   {badge.area && <p className="mt-1 text-xs text-slate-500">{badge.area}</p>}
                   <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-                    <span className="text-sm font-extrabold text-[#0F62FE]">{badge.points || 0} pontos</span>
+                    <span className="text-sm font-extrabold text-[#0F62FE]">{t("galeriaConsultor.points", { count: badge.points || 0 })}</span>
                     {badge.data_atribuicao && <span className="text-xs text-slate-400">{new Date(badge.data_atribuicao).toLocaleDateString("pt-PT")}</span>}
                   </div>
                 </article>

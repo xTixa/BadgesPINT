@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getTimeGreeting } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
@@ -19,6 +20,7 @@ const chartOptions = {
 };
 
 export default function DashboardServiceLine() {
+  const { t } = useTranslation();
   const defaultEnd = new Date();
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
 
@@ -49,7 +51,7 @@ export default function DashboardServiceLine() {
     labels: badgesByMonth.map((month) => month.month),
     datasets: [
       {
-        label: "Badges obtidos",
+        label: t("serviceLine.dashboard.charts.badgesObtained"),
         data: badgesByMonth.map((month) => Number(month.count)),
         backgroundColor: "#16558C",
         borderRadius: 6,
@@ -62,7 +64,7 @@ export default function DashboardServiceLine() {
     labels: badgesByLevel.map((level) => level.level),
     datasets: [
       {
-        label: "Badges por nivel",
+        label: t("serviceLine.dashboard.charts.badgesByLevel"),
         data: badgesByLevel.map((level) => Number(level.count)),
         backgroundColor: "#04C4D9",
         borderRadius: 6,
@@ -104,16 +106,16 @@ export default function DashboardServiceLine() {
 
   if (loading) {
     return (
-      <ServiceLineLayout title="Dashboard" subtitle="A carregar dados da tua Service Line.">
-        <EmptyState message="A carregar dashboard..." icon="bi-arrow-repeat" />
+      <ServiceLineLayout title={t("serviceLine.dashboard.title")} subtitle={t("serviceLine.dashboard.loadingSubtitle")}>
+        <EmptyState message={t("serviceLine.dashboard.loadingDashboard")} icon="bi-arrow-repeat" />
       </ServiceLineLayout>
     );
   }
 
   if (!sl) {
     return (
-      <ServiceLineLayout title="Dashboard" subtitle="Nao foi possivel carregar os dados da tua Service Line.">
-        <EmptyState message="Nao foi possivel carregar os dados do dashboard." icon="bi-exclamation-triangle" />
+      <ServiceLineLayout title={t("serviceLine.dashboard.title")} subtitle={t("serviceLine.dashboard.errorSubtitle")}>
+        <EmptyState message={t("serviceLine.dashboard.errorMessage")} icon="bi-exclamation-triangle" />
       </ServiceLineLayout>
     );
   }
@@ -121,25 +123,25 @@ export default function DashboardServiceLine() {
   return (
     <ServiceLineLayout
       title={`${getTimeGreeting()}, ${sl.name?.split(" ")[0] || ""}`}
-      subtitle="Acompanha a evolucao da tua Service Line, ranking, badges e progresso por periodo."
+      subtitle={t("serviceLine.dashboard.subtitle")}
       userName={sl.name || "Service Line"}
       heroStats={[
-        { label: "Consultores", value: dados.totalConsultores },
-        { label: "Aguardam SL", value: dados.badgesPendentes },
-        { label: "Progresso", value: `${dados.progressoMedio}%` },
+        { label: t("serviceLine.dashboard.stats.consultants"), value: dados.totalConsultores },
+        { label: t("serviceLine.dashboard.stats.awaitingSl"), value: dados.badgesPendentes },
+        { label: t("serviceLine.dashboard.stats.progress"), value: `${dados.progressoMedio}%` },
       ]}
     >
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <ServiceLineStatCard label="Consultores" value={dados.totalConsultores} icon="bi-person-badge-fill" />
-        <ServiceLineStatCard label="Badges da SL" value={dados.cursosAtivos} icon="bi-award-fill" />
-        <ServiceLineStatCard label="Aguardam validação SL" value={dados.badgesPendentes} icon="bi-patch-exclamation-fill" />
-        <ServiceLineStatCard label="Badges obtidos" value={summary.badgesObtidosTotal} icon="bi-check-circle-fill" />
+        <ServiceLineStatCard label={t("serviceLine.dashboard.stats.consultants")} value={dados.totalConsultores} icon="bi-person-badge-fill" />
+        <ServiceLineStatCard label={t("serviceLine.dashboard.stats.slBadges")} value={dados.cursosAtivos} icon="bi-award-fill" />
+        <ServiceLineStatCard label={t("serviceLine.dashboard.stats.awaitingSlValidation")} value={dados.badgesPendentes} icon="bi-patch-exclamation-fill" />
+        <ServiceLineStatCard label={t("serviceLine.dashboard.stats.badgesObtained")} value={summary.badgesObtidosTotal} icon="bi-check-circle-fill" />
       </div>
 
       <section className={`${slPanelClass} mb-6`}>
         <h5 className="mb-3 text-base font-bold text-slate-900">
           <i className="bi bi-graph-up-arrow mr-2 text-[#0F62FE]"></i>
-          Progresso Global
+          {t("serviceLine.dashboard.globalProgress")}
         </h5>
         <div className="h-2 overflow-hidden rounded-full bg-slate-200">
           <div
@@ -148,7 +150,7 @@ export default function DashboardServiceLine() {
           ></div>
         </div>
         <p className="mt-2 text-sm text-slate-500">
-          Progresso medio de todos os consultores da Service Line.
+          {t("serviceLine.dashboard.globalProgressHelper")}
         </p>
       </section>
 
@@ -156,7 +158,7 @@ export default function DashboardServiceLine() {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h5 className="m-0 text-base font-bold text-slate-900">
             <i className="bi bi-bar-chart-fill mr-2 text-[#0F62FE]"></i>
-            KPIs de Badges
+            {t("serviceLine.dashboard.badgeKpis")}
           </h5>
           <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
             <input
@@ -165,7 +167,7 @@ export default function DashboardServiceLine() {
               onChange={(event) => setStartDate(event.target.value)}
               className="ui-input min-w-[140px] flex-1 sm:flex-none"
             />
-            <span className="text-sm text-slate-500">ate</span>
+            <span className="text-sm text-slate-500">{t("serviceLine.dashboard.dateRangeTo")}</span>
             <input
               type="date"
               value={endDate}
@@ -177,9 +179,9 @@ export default function DashboardServiceLine() {
 
         <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
           {[
-            { label: "Utilizadores na SL", value: summary.totalUsers },
-            { label: "Badges obtidos", value: summary.badgesObtidosTotal },
-            { label: "No periodo", value: badgesByRange?.count || 0 },
+            { label: t("serviceLine.dashboard.stats.usersInSl"), value: summary.totalUsers },
+            { label: t("serviceLine.dashboard.stats.badgesObtained"), value: summary.badgesObtidosTotal },
+            { label: t("serviceLine.dashboard.stats.inPeriod"), value: badgesByRange?.count || 0 },
           ].map((item) => (
             <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
               <div className="text-xs text-slate-500">{item.label}</div>
@@ -192,14 +194,14 @@ export default function DashboardServiceLine() {
           <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <h6 className="mb-3 text-base font-bold text-slate-800">
               <i className="bi bi-calendar3 mr-2 text-[#0F62FE]"></i>
-              Badges obtidos por mes
+              {t("serviceLine.dashboard.charts.badgesByMonthTitle")}
             </h6>
             <div className="h-60">
               {badgesByMonth.length ? (
                 <Bar data={badgesMesChart} options={chartOptions} />
               ) : (
                 <div className="flex h-full items-center text-sm text-slate-500">
-                  Sem registos para o periodo selecionado.
+                  {t("serviceLine.dashboard.charts.noRecordsPeriod")}
                 </div>
               )}
             </div>
@@ -208,14 +210,14 @@ export default function DashboardServiceLine() {
           <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <h6 className="mb-3 text-base font-bold text-slate-800">
               <i className="bi bi-layers mr-2 text-[#0F62FE]"></i>
-              Badges por nivel
+              {t("serviceLine.dashboard.charts.badgesByLevelTitle")}
             </h6>
             <div className="h-60">
               {badgesByLevel.length ? (
                 <Bar data={badgesNivelChart} options={chartOptions} />
               ) : (
                 <div className="flex h-full items-center text-sm text-slate-500">
-                  Sem registos de niveis para o periodo.
+                  {t("serviceLine.dashboard.charts.noRecordsLevels")}
                 </div>
               )}
             </div>

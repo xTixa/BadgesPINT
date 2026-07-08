@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 
@@ -10,6 +11,7 @@ const fallbackRanking = [
 ];
 
 export default function Ranking() {
+  const { t } = useTranslation();
   const [ranking, setRanking] = useState(fallbackRanking);
   const [user, setUser] = useState(() => {
     try {
@@ -32,7 +34,7 @@ export default function Ranking() {
             nome: item.name,
             pontos: item.points_total || item.points || 0,
             badges: item.badge_count || 0,
-            area: item.area_name || "Consultor",
+            area: item.area_name || t("consultor.ranking.defaultAreaLabel"),
           })),
         );
       })
@@ -46,7 +48,7 @@ export default function Ranking() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [t]);
 
   const leader = ranking[0] || fallbackRanking[0];
 
@@ -58,32 +60,31 @@ export default function Ranking() {
         <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
           <div className="relative z-10">
-            <p className="mb-2 text-sm font-medium text-white/80">Area do consultor</p>
-            <h1 className="text-3xl font-bold text-white">Ranking de Consultores</h1>
+            <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
+            <h1 className="text-3xl font-bold text-white">{t("consultor.ranking.title")}</h1>
             <p className="mt-2 max-w-2xl text-white/85">
-              Acompanha os colaboradores com maior pontuacao e conquista o teu
-              lugar no topo.
+              {t("consultor.ranking.subtitle")}
             </p>
           </div>
         </section>
 
         <div className="mb-6 grid gap-4 md:grid-cols-3">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">1 lugar</p>
+            <p className="text-sm text-slate-500">{t("consultor.ranking.firstPlace")}</p>
             <h3 className="mt-2 text-2xl font-bold text-[#0F62FE]">
               {leader.nome}
             </h3>
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">Maior pontuacao</p>
+            <p className="text-sm text-slate-500">{t("consultor.ranking.highestScore")}</p>
             <h3 className="mt-2 text-2xl font-bold text-[#0F62FE]">
               {leader.pontos}
             </h3>
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">Participantes</p>
+            <p className="text-sm text-slate-500">{t("consultor.ranking.participants")}</p>
             <h3 className="mt-2 text-2xl font-bold text-[#0F62FE]">
               {ranking.length}
             </h3>
@@ -94,15 +95,15 @@ export default function Ranking() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-slate-900">
-                Classificacao Geral
+                {t("consultor.ranking.overallRanking")}
               </h2>
               <p className="text-sm text-slate-500">
-                Ranking atualizado dos consultores
+                {t("consultor.ranking.updatedRanking")}
               </p>
             </div>
 
             <div className="rounded-2xl bg-[#0F62FE]/10 px-4 py-2 text-sm font-semibold text-[#0F62FE]">
-              {ranking.length} participantes
+              {t("consultor.ranking.participantsCount", { count: ranking.length })}
             </div>
           </div>
 
@@ -139,8 +140,8 @@ export default function Ranking() {
                   <div className="text-lg font-bold text-slate-900">
                     {r.pontos}
                   </div>
-                  <div className="text-xs text-slate-500">pontos</div>
-                  <div className="text-xs text-slate-400">{r.badges} badges</div>
+                  <div className="text-xs text-slate-500">{t("consultor.ranking.pointsLabel")}</div>
+                  <div className="text-xs text-slate-400">{t("consultor.ranking.badgesCount", { count: r.badges })}</div>
                 </div>
               </div>
             ))}

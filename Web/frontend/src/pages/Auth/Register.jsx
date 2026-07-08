@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import api from "/src/api";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AuthShell from "./AuthShell";
 
 export default function Register() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -28,7 +30,7 @@ export default function Register() {
         if (active) setAreas(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Erro ao carregar areas:", err);
-        if (active) setErro("Nao foi possivel carregar as areas disponiveis.");
+        if (active) setErro(t("auth.register.errors.loadAreasFailed"));
       } finally {
         if (active) setLoadingAreas(false);
       }
@@ -38,7 +40,7 @@ export default function Register() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [t]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -51,7 +53,7 @@ export default function Register() {
 
     try {
       if (!form.area_id) {
-        setErro("Seleciona uma area antes de criar o utilizador.");
+        setErro(t("auth.register.errors.areaRequired"));
         setLoading(false);
         return;
       }
@@ -64,15 +66,15 @@ export default function Register() {
       });
 
       const passwordNote = res.data?.temporaryPassword
-        ? ` Password temporaria: ${res.data.temporaryPassword}`
+        ? ` ${t("auth.register.temporaryPassword", { password: res.data.temporaryPassword })}`
         : "";
       setMensagem(
-        `${res.data?.message || "Registo criado. Verifica o email para receberes os dados de acesso."}${passwordNote}`,
+        `${res.data?.message || t("auth.register.success")}${passwordNote}`,
       );
 
       setTimeout(() => navigate("/login"), 4000);
     } catch (err) {
-      setErro(err.response?.data?.message || "Erro ao criar utilizador.");
+      setErro(err.response?.data?.message || t("auth.register.errors.createFailed"));
     } finally {
       setLoading(false);
     }
@@ -80,13 +82,13 @@ export default function Register() {
 
   return (
     <AuthShell
-      title="Criar conta"
-      description="Preenche os dados para iniciar o pedido de acesso."
-      asideTitle="O teu percurso comeca aqui"
-      asideText="Depois do registo, recebes a confirmacao e podes entrar para consultar badges e progresso."
+      title={t("auth.register.title")}
+      description={t("auth.register.description")}
+      asideTitle={t("auth.register.asideTitle")}
+      asideText={t("auth.register.asideText")}
       asideNote={{
-        label: "Registo simples",
-        text: "Associa o teu perfil a uma service line para ativar a experiencia certa.",
+        label: t("auth.register.asideNote.label"),
+        text: t("auth.register.asideNote.text"),
       }}
       wide
     >
@@ -98,7 +100,7 @@ export default function Register() {
 
         <div className="grid gap-x-4 sm:grid-cols-2">
           <div className="auth-field">
-            <label>Nome</label>
+            <label>{t("auth.register.nameLabel")}</label>
             <input
               type="text"
               name="nome"
@@ -106,12 +108,12 @@ export default function Register() {
               className="auth-input"
               value={form.nome}
               onChange={handleChange}
-              placeholder="Nome completo"
+              placeholder={t("auth.register.namePlaceholder")}
             />
           </div>
 
           <div className="auth-field">
-            <label>Email</label>
+            <label>{t("auth.register.emailLabel")}</label>
             <input
               type="email"
               name="email"
@@ -119,13 +121,13 @@ export default function Register() {
               className="auth-input"
               value={form.email}
               onChange={handleChange}
-              placeholder="exemplo@dominio.com"
+              placeholder={t("auth.register.emailPlaceholder")}
             />
           </div>
         </div>
 
         <div className="auth-field">
-          <label>Area / Service Line</label>
+          <label>{t("auth.register.areaLabel")}</label>
           <select
             name="area_id"
             required
@@ -134,7 +136,7 @@ export default function Register() {
             onChange={handleChange}
             disabled={loadingAreas}
           >
-            <option value="">{loadingAreas ? "A carregar..." : "Selecionar..."}</option>
+            <option value="">{loadingAreas ? t("auth.register.loadingAreas") : t("auth.register.selectPlaceholder")}</option>
             {areas.map((area) => (
               <option key={area.id} value={area.id}>
                 {area.name}
@@ -154,8 +156,7 @@ export default function Register() {
             onChange={(e) => setForm({ ...form, rgpd: e.target.checked })}
           />
           <label htmlFor="rgpd" className="text-sm leading-6 text-slate-700">
-            Aceito a publicacao e partilha dos meus badges e receberei um email
-            de confirmacao antes de usar a plataforma.
+            {t("auth.register.rgpdLabel")}
           </label>
         </div>
 
@@ -165,7 +166,7 @@ export default function Register() {
           className="auth-primary-button"
         >
           <i className="bi bi-person-plus"></i>
-          {loading ? "A criar..." : "Criar utilizador"}
+          {loading ? t("auth.register.creating") : t("auth.register.submit")}
         </button>
       </form>
     </AuthShell>
