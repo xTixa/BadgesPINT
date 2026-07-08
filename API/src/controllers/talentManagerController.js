@@ -42,28 +42,18 @@ const normalizeScope = (scope) => {
 };
 
 const buildTMFilters = (query = {}) => {
-  const end = query.endDate || query.ate
-    ? new Date(query.endDate || query.ate)
-    : new Date();
-  const start = query.startDate || query.de
-    ? new Date(query.startDate || query.de)
-    : new Date(end.getTime() - 90 * 24 * 60 * 60 * 1000);
-
-  if (query.ano) {
-    const month = query.mes ? Number(query.mes) - 1 : 0;
-    start.setFullYear(Number(query.ano), month, 1);
-    start.setHours(0, 0, 0, 0);
-    if (query.mes) {
-      end.setFullYear(Number(query.ano), month + 1, 0);
-    } else {
-      end.setFullYear(Number(query.ano), 11, 31);
-    }
-    end.setHours(23, 59, 59, 999);
-  }
+  const parseDate = (value, endOfDay = false) => {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    if (endOfDay) date.setHours(23, 59, 59, 999);
+    else date.setHours(0, 0, 0, 0);
+    return date;
+  };
 
   return {
-    start,
-    end,
+    start: parseDate(query.startDate || query.de),
+    end: parseDate(query.endDate || query.ate, true),
     consultor: query.consultor ? `%${query.consultor}%` : null,
     badge: query.badge ? `%${query.badge}%` : null,
   };
@@ -80,9 +70,16 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
     limit,
   };
 
+  const eventDate = normalized === "aprovacoes"
+    ? "COALESCE(cb.data_atribuicao, cb.sl_validated_at, cb.tm_validated_at)"
+    : normalized === "rejeicoes"
+      ? "COALESCE(cb.sl_validated_at, cb.tm_validated_at)"
+      : "COALESCE(cb.submitted_at, cb.created_at)";
+
   const whereText = `
     u.area_id IN (:areaIds)
-    AND COALESCE(cb.created_at, cb.submitted_at, cb.data_atribuicao, NOW()) BETWEEN :start AND :end
+    AND (:start IS NULL OR ${eventDate} >= :start)
+    AND (:end IS NULL OR ${eventDate} <= :end)
     AND (:consultor IS NULL OR u.name ILIKE :consultor)
     AND (:badge IS NULL OR b.description ILIKE :badge)
   `;
@@ -125,7 +122,7 @@ const getTMReportRows = async ({ areaIds, scope, filters, limit = null }) => {
   return database.query(
     `SELECT cb.id, :scope AS tipo, u.name AS consultor, COALESCE(b.description, 'Badge #' || b.id) AS badge,
             cb.workflow_status AS detalhe, COALESCE(b.points, 0)::text AS pontos, a.name AS area,
-            cb.status AS situacao, COALESCE(cb.data_atribuicao, cb.submitted_at, cb.created_at) AS data,
+            cb.status AS situacao, ${eventDate} AS data,
             cb.tm_comment, cb.sl_comment, cb.rejection_reason
      FROM consultor_badges cb
      JOIN "Users" u ON u.id = cb.consultor_id
@@ -540,7 +537,10 @@ export async function exportTMReportPDF(req, res) {
     doc.pipe(res);
 
     doc.fontSize(18).font("Helvetica-Bold").fillColor("#111827").text("Relatorio Talent Manager", { align: "center" });
-    doc.fontSize(9).font("Helvetica").fillColor("#475569").text(`Periodo: ${filters.start.toLocaleDateString("pt-PT")} a ${filters.end.toLocaleDateString("pt-PT")}`, { align: "center" });
+    const periodLabel = filters.start || filters.end
+      ? `Periodo: ${filters.start ? filters.start.toLocaleDateString("pt-PT") : "inicio"} a ${filters.end ? filters.end.toLocaleDateString("pt-PT") : "hoje"}`
+      : "Periodo: todos";
+    doc.fontSize(9).font("Helvetica").fillColor("#475569").text(periodLabel, { align: "center" });
     doc.moveDown();
 
     const header = ["Tipo", "Consultor", "Badge", "Situacao", "Data"];

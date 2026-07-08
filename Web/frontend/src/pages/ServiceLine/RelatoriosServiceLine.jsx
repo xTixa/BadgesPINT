@@ -15,13 +15,29 @@ export default function RelatoriosServiceLine() {
     { value: "aprovacoes", label: t("serviceLine.relatorios.scopes.aprovacoes") },
     { value: "rejeicoes", label: t("serviceLine.relatorios.scopes.rejeicoes") },
   ];
-  const [filtros, setFiltros] = useState({ mes: "", ano: "", consultor: "", badge: "", scope: "pedidos" });
+  const emptyFilters = { startDate: "", endDate: "", consultor: "", badge: "", scope: "pedidos" };
+  const [draftFilters, setDraftFilters] = useState(emptyFilters);
+  const [filtros, setFiltros] = useState(emptyFilters);
   const [rows, setRows] = useState([]);
   const [historico, setHistorico] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleFilter = (e) => setFiltros((current) => ({ ...current, [e.target.name]: e.target.value }));
+  const handleFilter = (e) => setDraftFilters((current) => ({ ...current, [e.target.name]: e.target.value }));
+  const changeScope = (e) => {
+    const next = { ...emptyFilters, scope: e.target.value };
+    setDraftFilters(next);
+    setFiltros(next);
+  };
+  const applyFilters = () => setFiltros({ ...draftFilters });
+  const clearFilters = () => {
+    const next = { ...emptyFilters, scope: draftFilters.scope };
+    setDraftFilters(next);
+    setFiltros(next);
+  };
+  const isTransactionScope = ["pedidos", "aprovacoes", "rejeicoes"].includes(draftFilters.scope);
+  const showConsultant = draftFilters.scope !== "badges";
+  const showBadge = draftFilters.scope !== "consultores";
 
   useEffect(() => {
     let mounted = true;
@@ -89,18 +105,17 @@ export default function RelatoriosServiceLine() {
       <section className="mb-4 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
         <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-funnel-fill mr-2 text-[#0F62FE]"></i>{t("serviceLine.relatorios.filtersTitle")}</h5>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
-          <select name="mes" value={filtros.mes} onChange={handleFilter} className="ui-input md:col-span-2">
-            <option value="">{t("serviceLine.relatorios.allMonths")}</option>
-            {["01","02","03","04","05","06","07","08","09","10","11","12"].map((m) => <option key={m} value={m}>{m}</option>)}
-          </select>
-          <input name="ano" value={filtros.ano} onChange={handleFilter} className="ui-input md:col-span-2" placeholder={t("serviceLine.relatorios.yearPlaceholder")} />
-          <input name="consultor" value={filtros.consultor} onChange={handleFilter} className="ui-input md:col-span-3" placeholder={t("serviceLine.relatorios.consultantPlaceholder")} />
-          <input name="badge" value={filtros.badge} onChange={handleFilter} className="ui-input md:col-span-3" placeholder={t("serviceLine.relatorios.badgePlaceholder")} />
-          <select name="scope" value={filtros.scope} onChange={handleFilter} className="ui-input md:col-span-2">
+          {isTransactionScope && <input type="date" aria-label="De" name="startDate" value={draftFilters.startDate} max={draftFilters.endDate || undefined} onChange={handleFilter} className="ui-input md:col-span-2" />}
+          {isTransactionScope && <input type="date" aria-label="Até" name="endDate" value={draftFilters.endDate} min={draftFilters.startDate || undefined} onChange={handleFilter} className="ui-input md:col-span-2" />}
+          {showConsultant && <input name="consultor" value={draftFilters.consultor} onChange={handleFilter} className="ui-input md:col-span-3" placeholder={t("serviceLine.relatorios.consultantPlaceholder")} />}
+          {showBadge && <input name="badge" value={draftFilters.badge} onChange={handleFilter} className="ui-input md:col-span-3" placeholder={t("serviceLine.relatorios.badgePlaceholder")} />}
+          <select name="scope" value={draftFilters.scope} onChange={changeScope} className="ui-input md:col-span-2">
             {scopes.map((scope) => <option key={scope.value} value={scope.value}>{scope.label}</option>)}
           </select>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
+          <button className={slPrimaryActionClass} onClick={applyFilters}><i className="bi bi-search mr-2"></i>{t("common.apply", { defaultValue: "Aplicar filtros" })}</button>
+          <button className={slActionClass} onClick={clearFilters}>{t("common.clear", { defaultValue: "Limpar" })}</button>
           <button className={slPrimaryActionClass} onClick={() => exportar("pdf")}><i className="bi bi-file-earmark-pdf-fill mr-2"></i>PDF</button>
           <button className={slActionClass} onClick={() => exportar("excel")}><i className="bi bi-file-earmark-excel-fill mr-2"></i>Excel</button>
         </div>

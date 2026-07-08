@@ -18,12 +18,29 @@ const getScopeOptions = (t) => [
 export default function RelatoriosTalent() {
   const { t } = useTranslation();
   const scopeOptions = useMemo(() => getScopeOptions(t), [t]);
-  const [filtros, setFiltros] = useState({ mes: "", ano: "", consultor: "", badge: "", scope: "pedidos" });
+  const emptyFilters = { startDate: "", endDate: "", consultor: "", badge: "", scope: "pedidos" };
+  const [draftFilters, setDraftFilters] = useState(emptyFilters);
+  const [filtros, setFiltros] = useState(emptyFilters);
   const [resultados, setResultados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleFilter = (e) => setFiltros({ ...filtros, [e.target.name]: e.target.value });
+  const handleFilter = (e) => setDraftFilters((current) => ({ ...current, [e.target.name]: e.target.value }));
+  const changeScope = (e) => {
+    const scope = e.target.value;
+    const next = { ...emptyFilters, scope };
+    setDraftFilters(next);
+    setFiltros(next);
+  };
+  const applyFilters = () => setFiltros({ ...draftFilters });
+  const clearFilters = () => {
+    const next = { ...emptyFilters, scope: draftFilters.scope };
+    setDraftFilters(next);
+    setFiltros(next);
+  };
+  const isTransactionScope = ["pedidos", "aprovacoes", "rejeicoes"].includes(draftFilters.scope);
+  const showConsultant = draftFilters.scope !== "badges";
+  const showBadge = draftFilters.scope !== "consultores";
 
   useEffect(() => {
     let mounted = true;
@@ -96,34 +113,35 @@ export default function RelatoriosTalent() {
     >
         <SectionCard className="mb-4" title={t("talentManager.relatorios.filters.title")} icon="bi-funnel-fill">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
-            <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.month")}</label>
-              <select name="mes" value={filtros.mes} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200">
-                <option value="">{t("talentManager.relatorios.filters.all")}</option>
-                {["01","02","03","04","05","06","07","08","09","10","11","12"].map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.year")}</label>
-              <input type="number" name="ano" value={filtros.ano} placeholder="2026" onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
-            </div>
-            <div className="md:col-span-2">
+            {isTransactionScope && <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("common.from", { defaultValue: "De" })}</label>
+              <input type="date" name="startDate" value={draftFilters.startDate} max={draftFilters.endDate || undefined} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800" />
+            </div>}
+            {isTransactionScope && <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">{t("common.to", { defaultValue: "Até" })}</label>
+              <input type="date" name="endDate" value={draftFilters.endDate} min={draftFilters.startDate || undefined} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800" />
+            </div>}
+            {showConsultant && <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.consultant")}</label>
-              <input type="text" name="consultor" value={filtros.consultor} placeholder={t("talentManager.relatorios.filters.namePlaceholder")} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
-            </div>
-            <div className="md:col-span-2">
+              <input type="text" name="consultor" value={draftFilters.consultor} placeholder={t("talentManager.relatorios.filters.namePlaceholder")} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
+            </div>}
+            {showBadge && <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.badge")}</label>
-              <input type="text" name="badge" value={filtros.badge} placeholder={t("talentManager.relatorios.filters.badge")} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
-            </div>
+              <input type="text" name="badge" value={draftFilters.badge} placeholder={t("talentManager.relatorios.filters.badge")} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
+            </div>}
             <div className="md:col-span-4">
               <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.relatorios.filters.scope")}</label>
-              <select name="scope" value={filtros.scope} onChange={handleFilter} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200">
+              <select name="scope" value={draftFilters.scope} onChange={changeScope} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200">
                 {scopeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
             </div>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
+            <button className={tmPrimaryActionClass} onClick={applyFilters}>
+              <i className="bi bi-search mr-2"></i>{t("common.apply", { defaultValue: "Aplicar filtros" })}
+            </button>
+            <button className={tmActionClass} onClick={clearFilters}>{t("common.clear", { defaultValue: "Limpar" })}</button>
             <button className={tmPrimaryActionClass} onClick={() => gerar("pdf")}>
               <i className="bi bi-file-earmark-pdf-fill mr-2"></i> {t("talentManager.relatorios.actions.generatePdf")}
             </button>

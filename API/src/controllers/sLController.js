@@ -36,22 +36,17 @@ async function getSLAreaIds(userId) {
 }
 
 function buildFilters(query = {}) {
-  const end = query.endDate ? new Date(query.endDate) : new Date();
-  const start = query.startDate ? new Date(query.startDate) : new Date(end.getTime() - 90 * 24 * 60 * 60 * 1000);
-  if (query.ano) {
-    const month = query.mes ? Number(query.mes) - 1 : 0;
-    start.setFullYear(Number(query.ano), month, 1);
-    start.setHours(0, 0, 0, 0);
-    if (query.mes) {
-      end.setFullYear(Number(query.ano), month + 1, 0);
-    } else {
-      end.setFullYear(Number(query.ano), 11, 31);
-    }
-    end.setHours(23, 59, 59, 999);
-  }
+  const parseDate = (value, endOfDay = false) => {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    if (endOfDay) date.setHours(23, 59, 59, 999);
+    else date.setHours(0, 0, 0, 0);
+    return date;
+  };
   return {
-    start,
-    end,
+    start: parseDate(query.startDate),
+    end: parseDate(query.endDate, true),
     consultor: query.consultor ? `%${query.consultor}%` : null,
     badge: query.badge ? `%${query.badge}%` : null,
   };
@@ -79,7 +74,8 @@ async function getReportRows({ areaIds, scope, filters, limit = null }) {
               b.level AS detalhe, COALESCE(b.points, 0)::text AS pontos, a.name AS area, 'catalogo' AS situacao, NULL::timestamp AS data
        FROM badges b
        LEFT JOIN areas a ON a.id = b.area_id
-       WHERE (:badge IS NULL OR COALESCE(b.description, '') ILIKE :badge)
+       WHERE b.area_id IN (:areaIds)
+         AND (:badge IS NULL OR COALESCE(b.description, '') ILIKE :badge)
        ORDER BY b.id DESC
        ${limit ? "LIMIT :limit" : ""}`,
       { replacements, type: QueryTypes.SELECT },
@@ -100,6 +96,12 @@ async function getReportRows({ areaIds, scope, filters, limit = null }) {
     );
   }
 
+  const eventDate = normalized === "aprovacoes"
+    ? "COALESCE(cb.data_atribuicao, cb.sl_validated_at)"
+    : normalized === "rejeicoes"
+      ? "cb.sl_validated_at"
+      : "COALESCE(cb.submitted_at, cb.created_at)";
+
   const statusFilter =
     normalized === "aprovacoes"
       ? "AND cb.status = 'obtido'"
@@ -110,14 +112,15 @@ async function getReportRows({ areaIds, scope, filters, limit = null }) {
   return database.query(
     `SELECT cb.id, :scope AS tipo, u.name AS consultor, COALESCE(b.description, 'Badge #' || b.id) AS badge,
             cb.workflow_status AS detalhe, COALESCE(b.points, 0)::text AS pontos, a.name AS area,
-            cb.status AS situacao, COALESCE(cb.data_atribuicao, cb.submitted_at, NOW()) AS data,
+            cb.status AS situacao, ${eventDate} AS data,
             cb.tm_comment, cb.sl_comment, cb.rejection_reason
      FROM consultor_badges cb
      JOIN "Users" u ON u.id = cb.consultor_id
      JOIN badges b ON b.id = cb.badge_id
      LEFT JOIN areas a ON a.id = b.area_id
      WHERE u.area_id IN (:areaIds)
-      AND COALESCE(cb.submitted_at, cb.data_atribuicao, NOW()) BETWEEN :start AND :end
+      AND (:start IS NULL OR ${eventDate} >= :start)
+      AND (:end IS NULL OR ${eventDate} <= :end)
        AND (:consultor IS NULL OR u.name ILIKE :consultor)
       AND (:badge IS NULL OR COALESCE(b.description, '') ILIKE :badge)
        ${statusFilter}
