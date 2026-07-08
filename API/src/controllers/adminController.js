@@ -11,7 +11,6 @@ import {
   isEmailConfigured,
   sendMail,
   sendTemporaryPasswordEmail,
-  shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
 import { createAuditLog } from "./auditLogController.js";
 
@@ -220,21 +219,22 @@ export async function createUser(req, res) {
       area_id: area_id || null
     });
 
-    const emailStatus = isEmailConfigured()
-      ? { emailSent: false, emailQueued: true }
-      : { emailSent: false, emailQueued: false, emailError: "Email nao configurado no servidor." };
-
-    if (emailStatus.emailQueued) {
-      sendTemporaryPasswordEmail({
-        to: newUser.email,
-        name: newUser.name,
-        temporaryPassword,
-      }).catch((mailError) => {
+    let emailStatus = { emailSent: false, emailError: "Email nao configurado no servidor." };
+    if (isEmailConfigured()) {
+      try {
+        await sendTemporaryPasswordEmail({
+          to: newUser.email,
+          name: newUser.name,
+          temporaryPassword,
+        });
+        emailStatus = { emailSent: true };
+      } catch (mailError) {
         console.error(
           "Utilizador criado, mas email de convite falhou:",
           getMailErrorDetails(mailError),
         );
-      });
+        emailStatus = { emailSent: false, emailError: "Nao foi possivel enviar o email de acesso." };
+      }
     }
 
     await createAuditLog(req, res, {
@@ -247,16 +247,15 @@ export async function createUser(req, res) {
     });
 
     res.status(201).json({
-      message: emailStatus.emailQueued
-        ? "Utilizador criado com sucesso. O email com a password temporaria esta a ser enviado."
-        : "Utilizador criado, mas o email nao esta configurado no servidor.",
+      message: emailStatus.emailSent
+        ? "Utilizador criado com sucesso. O email com a password temporaria foi enviado."
+        : "Utilizador criado, mas nao foi possivel enviar o email de acesso.",
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
       area_id: newUser.area_id,
-      ...emailStatus,
-      ...(shouldExposeEmailSecretsForDev() ? { temporaryPassword } : {})
+      ...emailStatus
     });
 
   } catch (err) {

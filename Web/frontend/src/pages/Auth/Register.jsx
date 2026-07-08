@@ -65,12 +65,7 @@ export default function Register() {
         rgpdAccepted: form.rgpd,
       });
 
-      const passwordNote = res.data?.temporaryPassword
-        ? ` ${t("auth.register.temporaryPassword", { password: res.data.temporaryPassword })}`
-        : "";
-      setMensagem(
-        `${res.data?.message || t("auth.register.success")}${passwordNote}`,
-      );
+      setMensagem(res.data?.message || t("auth.register.success"));
 
       setTimeout(() => navigate("/login"), 4000);
     } catch (err) {

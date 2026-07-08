@@ -7,7 +7,6 @@ import {
   getMailErrorDetails,
   isEmailConfigured,
   sendTemporaryPasswordEmail,
-  shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
 import { getPasswordPolicyError } from "../utils/passwordPolicy.js";
 import { applyRgpdConsent } from "../utils/rgpd.js";
@@ -81,29 +80,29 @@ export const registerConsultant = async (req, res) => {
     applyRgpdConsent(newUser, true);
     await newUser.save();
 
-    const emailStatus = isEmailConfigured()
-      ? { emailSent: false, emailQueued: true }
-      : { emailSent: false, emailQueued: false, emailError: "Email nao configurado no servidor." };
-
-    if (emailStatus.emailQueued) {
-      sendTemporaryPasswordEmail({
-        to: newUser.email,
-        name: newUser.name,
-        temporaryPassword: generatedPassword,
-      }).catch((mailError) => {
+    let emailStatus = { emailSent: false, emailError: "Email nao configurado no servidor." };
+    if (isEmailConfigured()) {
+      try {
+        await sendTemporaryPasswordEmail({
+          to: newUser.email,
+          name: newUser.name,
+          temporaryPassword: generatedPassword,
+        });
+        emailStatus = { emailSent: true };
+      } catch (mailError) {
         console.error(
           "Utilizador criado, mas email de convite falhou:",
           getMailErrorDetails(mailError),
         );
-      });
+        emailStatus = { emailSent: false, emailError: "Nao foi possivel enviar o email de acesso." };
+      }
     }
 
     res.status(201).json({
-      message: emailStatus.emailQueued
-        ? "Utilizador criado com sucesso. O email com a password temporaria esta a ser enviado."
-        : "Utilizador criado, mas o email nao esta configurado no servidor.",
+      message: emailStatus.emailSent
+        ? "Utilizador criado com sucesso. O email com a password temporaria foi enviado."
+        : "Utilizador criado, mas nao foi possivel enviar o email de acesso. Contacta o administrador.",
       ...emailStatus,
-      ...(shouldExposeEmailSecretsForDev() ? { temporaryPassword: generatedPassword } : {}),
       user: {
         id: newUser.id,
         name: newUser.name,
