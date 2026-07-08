@@ -2,11 +2,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
-import { useSidebar } from "../../context/SidebarContext";
+import AdminHero from "../../components/ui/AdminHero";
 
 export default function ExportacaoAdmin() {
   const { t } = useTranslation();
-  const { collapsed } = useSidebar();
   const [format, setFormat] = useState("excel");
   const [scope, setScope] = useState("todos");
   const [loading, setLoading] = useState(false);
@@ -126,170 +125,119 @@ export default function ExportacaoAdmin() {
     },
   ];
 
+  const selectedScope = cards.find((card) => card.value === scope);
+
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main
-        className={`w-full px-4 pb-6 pt-4 transition-all sm:px-5 md:px-6 lg:pt-6 ${
-          collapsed ? "lg:ml-[80px]" : "lg:ml-[250px]"
-        }`}
-      >
-        {/* HERO */}
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+      <main className="admin-main">
+        <div className="mx-auto max-w-[1400px]">
+          <AdminHero title={t("admin.exportacao.title")} subtitle={t("admin.exportacao.subtitle")} />
 
-          <div className="relative z-10">
-            <h1 className="text-3xl font-bold">{t("admin.exportacao.title")}</h1>
-
-            <p className="mt-2 text-white/80">
-              {t("admin.exportacao.subtitle")}
-            </p>
-          </div>
-        </div>
-
-        {/* STATS */}
-        <div className="mb-8 grid gap-4 md:grid-cols-4">
-          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <i className="bi bi-people-fill text-2xl text-[#0F62FE]"></i>
-            <h3 className="mt-2 text-3xl font-bold text-slate-900">248</h3>
-            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.users")}</p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <i className="bi bi-award-fill text-2xl text-amber-500"></i>
-            <h3 className="mt-2 text-3xl font-bold text-slate-900">87</h3>
-            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.badges")}</p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <i className="bi bi-hourglass-split text-2xl text-emerald-600"></i>
-            <h3 className="mt-2 text-3xl font-bold text-slate-900">14</h3>
-            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.requests")}</p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-5 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <i className="bi bi-file-earmark-arrow-down text-2xl text-purple-600"></i>
-            <h3 className="mt-2 text-3xl font-bold text-slate-900">36</h3>
-            <p className="text-sm text-slate-500">{t("admin.exportacao.stats.exports")}</p>
-          </div>
-        </div>
-
-        {/* FORMATO */}
-        <section className="mb-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">
-            {t("admin.exportacao.formatHeading")}
-          </h2>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => setFormat("excel")}
-              className={`rounded-2xl border p-5 text-left transition ${
-                format === "excel"
-                  ? "border-[#0F62FE] bg-[#0F62FE]/5 ring-2 ring-[#0F62FE]"
-                  : "border-slate-200 hover:border-[#0F62FE]/40"
-              }`}
-            >
-              <i className="bi bi-file-earmark-excel text-2xl text-emerald-600"></i>
-
-              <h3 className="mt-3 font-semibold text-slate-900">
-                Excel (.xlsx)
-              </h3>
-
-              <p className="mt-1 text-sm text-slate-500">
-                {t("admin.exportacao.excelDesc")}
-              </p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setFormat("pdf")}
-              className={`rounded-2xl border p-5 text-left transition ${
-                format === "pdf"
-                  ? "border-[#0F62FE] bg-[#0F62FE]/5 ring-2 ring-[#0F62FE]"
-                  : "border-slate-200 hover:border-[#0F62FE]/40"
-              }`}
-            >
-              <i className="bi bi-file-earmark-pdf text-2xl text-rose-600"></i>
-
-              <h3 className="mt-3 font-semibold text-slate-900">PDF (.pdf)</h3>
-
-              <p className="mt-1 text-sm text-slate-500">
-                {t("admin.exportacao.pdfDesc")}
-              </p>
-            </button>
-          </div>
-        </section>
-
-        {/* ÂMBITO */}
-        <section className="mb-6">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">
-            {t("admin.exportacao.dataToExport")}
-          </h2>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {cards.map((card) => (
-              <button
-                key={card.value}
-                type="button"
-                onClick={() => setScope(card.value)}
-                className={`rounded-3xl bg-white p-5 text-left transition ${
-                  scope === card.value
-                    ? "ring-2 ring-[#0F62FE] shadow-lg"
-                    : "shadow-[0_8px_30px_rgba(15,98,254,0.08)] hover:shadow-lg"
-                }`}
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
-                  <i className={`bi ${card.icon} text-xl text-[#0F62FE]`}></i>
+          <div className="grid gap-5 lg:grid-cols-12">
+            <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-7">
+              <div className="mb-5 flex items-start gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0F62FE]/10 text-xl text-[#0F62FE]">
+                  <i className="bi bi-database-check"></i>
+                </span>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">{t("admin.exportacao.dataToExport")}</h2>
+                  <p className="mt-1 text-sm text-slate-500">Seleciona o conjunto de dados que pretendes descarregar.</p>
                 </div>
+              </div>
 
-                <h3 className="font-semibold text-slate-900">{card.title}</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {cards.map((card) => {
+                  const selected = scope === card.value;
+                  return (
+                    <button
+                      key={card.value}
+                      type="button"
+                      onClick={() => setScope(card.value)}
+                      aria-pressed={selected}
+                      className={`group flex min-h-28 items-start gap-4 rounded-2xl border p-4 text-left transition ${
+                        selected
+                          ? "border-[#0F62FE] bg-[#0F62FE]/5 shadow-[0_8px_24px_rgba(15,98,254,0.12)]"
+                          : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md"
+                      }`}
+                    >
+                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${selected ? "bg-[#0F62FE] text-white" : "bg-slate-100 text-slate-500 group-hover:text-[#0F62FE]"}`}>
+                        <i className={`bi ${card.icon}`}></i>
+                      </span>
+                      <span className="min-w-0">
+                        <span className="flex items-center gap-2 font-bold text-slate-900">
+                          {card.title}
+                          {selected && <i className="bi bi-check-circle-fill text-[#0F62FE]"></i>}
+                        </span>
+                        <span className="mt-1 block text-sm leading-5 text-slate-500">{card.desc}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
 
-                <p className="mt-1 text-sm text-slate-500">{card.desc}</p>
+            <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-5">
+              <div className="mb-5 flex items-start gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-xl text-emerald-600">
+                  <i className="bi bi-file-earmark-arrow-down"></i>
+                </span>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">Configurar exportação</h2>
+                  <p className="mt-1 text-sm text-slate-500">Escolhe o formato e o período do relatório.</p>
+                </div>
+              </div>
+
+              <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">{t("admin.exportacao.formatHeading")}</label>
+              <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1.5">
+                {[
+                  { value: "excel", label: "Excel", icon: "bi-file-earmark-excel", tone: "text-emerald-600" },
+                  { value: "pdf", label: "PDF", icon: "bi-file-earmark-pdf", tone: "text-rose-600" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFormat(option.value)}
+                    className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition ${format === option.value ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+                  >
+                    <i className={`bi ${option.icon} ${option.tone}`}></i>{option.label}
+                  </button>
+                ))}
+              </div>
+
+              <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">{t("admin.exportacao.periodHeading")}</label>
+              <select className="ui-input mb-5" value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
+                <option value="ultima-semana">{t("admin.exportacao.periods.lastWeek")}</option>
+                <option value="ultimo-mes">{t("admin.exportacao.periods.lastMonth")}</option>
+                <option value="ultimo-trimestre">{t("admin.exportacao.periods.lastQuarter")}</option>
+                <option value="ano-atual">{t("admin.exportacao.periods.currentYear")}</option>
+              </select>
+
+              <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm">
+                <div className="flex justify-between gap-4 py-1"><span className="text-slate-500">Dados</span><strong className="text-right text-slate-800">{selectedScope?.title}</strong></div>
+                <div className="flex justify-between gap-4 py-1"><span className="text-slate-500">Formato</span><strong className="uppercase text-slate-800">{format}</strong></div>
+              </div>
+
+              {error && <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
+
+              <button onClick={handleExport} disabled={loading} className="ui-btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-60">
+                <i className={`bi ${loading ? "bi-arrow-repeat animate-spin" : "bi-download"}`}></i>
+                {loading ? t("admin.exportacao.generating") : t("admin.exportacao.exportButton")}
               </button>
-            ))}
+            </section>
           </div>
-        </section>
 
-        {/* PERÍODO */}
-        <section className="mb-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <h2 className="mb-4 text-xl font-bold text-slate-900">{t("admin.exportacao.periodHeading")}</h2>
-
-          <select
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-          >
-            <option value="ultima-semana">{t("admin.exportacao.periods.lastWeek")}</option>
-            <option value="ultimo-mes">{t("admin.exportacao.periods.lastMonth")}</option>
-            <option value="ultimo-trimestre">{t("admin.exportacao.periods.lastQuarter")}</option>
-            <option value="ano-atual">{t("admin.exportacao.periods.currentYear")}</option>
-          </select>
-
-          {error && (
-            <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-700">
-              {error}
+          {lastExport && (
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-emerald-800">
+              <div className="flex items-center gap-3">
+                <i className="bi bi-check-circle-fill text-xl"></i>
+                <div><strong className="block">{t("admin.exportacao.exportSuccess")}</strong><span className="text-sm text-emerald-700">{lastExport.ficheiro}</span></div>
+              </div>
+              <span className="text-sm font-medium text-emerald-700">{lastExport.data}</span>
             </div>
           )}
-
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={handleExport}
-              disabled={loading}
-              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] disabled:opacity-50"
-            >
-              {loading ? t("admin.exportacao.generating") : t("admin.exportacao.exportButton")}
-            </button>
-          </div>
-        </section>
-
-        {lastExport && (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-700">
-            <i className="bi bi-check-circle-fill mr-2"></i>
-            {t("admin.exportacao.exportSuccess")}
-          </div>
-        )}
+        </div>
       </main>
     </div>
   );
