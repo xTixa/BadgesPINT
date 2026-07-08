@@ -1657,7 +1657,65 @@
       "expandMenu": "Expandir menu lateral",
       "collapseMenu": "Recolher menu lateral",
       "navigation": "Navegação",
-      "system": "Sistema"
+      "system": "Sistema",
+      "menus": {
+        "consultant": {
+          "title": "Consultor",
+          "dashboard": "Dashboard",
+          "meusBadges": "Meus Badges",
+          "gamification": "Gamification",
+          "uploadEvidencias": "Upload Evidências",
+          "ranking": "Ranking",
+          "galeriaPublica": "Galeria Pública",
+          "faq": "Ajuda / FAQ",
+          "perfil": "Perfil",
+          "configuracoes": "Configurações",
+          "assinaturaEmail": "Assinatura de Email"
+        },
+        "talentManager": {
+          "title": "Talent Manager",
+          "dashboard": "Dashboard",
+          "pedidosBadges": "Pedidos de Badges",
+          "catalogoBadges": "Catálogo Badges",
+          "equipa": "Equipa",
+          "expiracoesBadges": "Expirações Badges",
+          "compararConsultores": "Comparar Consultores",
+          "evidencias": "Evidências",
+          "relatorios": "Relatórios",
+          "historico": "Histórico",
+          "avisos": "Informações/Avisos",
+          "faq": "Ajuda / FAQ",
+          "perfilConfiguracoes": "Perfil / Configurações"
+        },
+        "serviceLine": {
+          "title": "Service Line",
+          "dashboard": "Dashboard",
+          "pedidosBadges": "Pedidos de Badges",
+          "consultores": "Consultores",
+          "compararConsultores": "Comparar Consultores",
+          "catalogoBadges": "Catálogo Badges",
+          "historico": "Histórico",
+          "gamificacao": "Gamificação",
+          "relatorios": "Relatórios",
+          "avisos": "Informações/Avisos",
+          "faq": "Ajuda / FAQ",
+          "perfilConfiguracoes": "Perfil / Configurações"
+        },
+        "admin": {
+          "title": "Admin",
+          "dashboard": "Dashboard",
+          "pedidosBadges": "Pedidos de Badges",
+          "gestaoBadges": "Gestão de Badges",
+          "learningPaths": "Learning Paths",
+          "sla": "SLA",
+          "utilizadores": "Utilizadores",
+          "exportarDados": "Exportar Dados",
+          "logsAuditoria": "Logs de Auditoria",
+          "configuracoes": "Configurações",
+          "templatesEmail": "Templates de Email",
+          "avisos": "Informações/Avisos"
+        }
+      }
     }
   },
   "components": {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { sidebarMenus } from "../layout/menus";
+import { getSidebarMenus } from "../layout/menus";
 import { useSidebar } from "../context/SidebarContext";
 
 export default function Sidebar({ user }) {
@@ -37,7 +37,7 @@ export default function Sidebar({ user }) {
   };
 
   const normalizedRole = roleAliasMap[user?.role] || user?.role;
-  const menu = sidebarMenus[normalizedRole];
+  const menu = getSidebarMenus(t)[normalizedRole];
 
   if (!menu) {
     console.error("Role inválido ou menu não encontrado:", user?.role);

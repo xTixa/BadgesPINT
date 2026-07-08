@@ -1657,7 +1657,65 @@
       "expandMenu": "Expand side menu",
       "collapseMenu": "Collapse side menu",
       "navigation": "Navigation",
-      "system": "System"
+      "system": "System",
+      "menus": {
+        "consultant": {
+          "title": "Consultant",
+          "dashboard": "Dashboard",
+          "meusBadges": "My Badges",
+          "gamification": "Gamification",
+          "uploadEvidencias": "Upload Evidence",
+          "ranking": "Ranking",
+          "galeriaPublica": "Public Gallery",
+          "faq": "Help / FAQ",
+          "perfil": "Profile",
+          "configuracoes": "Settings",
+          "assinaturaEmail": "Email Signature"
+        },
+        "talentManager": {
+          "title": "Talent Manager",
+          "dashboard": "Dashboard",
+          "pedidosBadges": "Badge Requests",
+          "catalogoBadges": "Badge Catalog",
+          "equipa": "Team",
+          "expiracoesBadges": "Badge Expirations",
+          "compararConsultores": "Compare Consultants",
+          "evidencias": "Evidence",
+          "relatorios": "Reports",
+          "historico": "History",
+          "avisos": "Announcements",
+          "faq": "Help / FAQ",
+          "perfilConfiguracoes": "Profile / Settings"
+        },
+        "serviceLine": {
+          "title": "Service Line",
+          "dashboard": "Dashboard",
+          "pedidosBadges": "Badge Requests",
+          "consultores": "Consultants",
+          "compararConsultores": "Compare Consultants",
+          "catalogoBadges": "Badge Catalog",
+          "historico": "History",
+          "gamificacao": "Gamification",
+          "relatorios": "Reports",
+          "avisos": "Announcements",
+          "faq": "Help / FAQ",
+          "perfilConfiguracoes": "Profile / Settings"
+        },
+        "admin": {
+          "title": "Admin",
+          "dashboard": "Dashboard",
+          "pedidosBadges": "Badge Requests",
+          "gestaoBadges": "Badge Management",
+          "learningPaths": "Learning Paths",
+          "sla": "SLA",
+          "utilizadores": "Users",
+          "exportarDados": "Export Data",
+          "logsAuditoria": "Audit Logs",
+          "configuracoes": "Settings",
+          "templatesEmail": "Email Templates",
+          "avisos": "Announcements"
+        }
+      }
     }
   },
   "components": {
