@@ -122,7 +122,8 @@ export default function DashboardConsultor() {
   };
 
   const shareLinkedIn = () => {
-    const url = `${window.location.origin}/galeria/${user?.id}`;
+    const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
+    const url = `${apiBaseUrl}/share/consultores/${user?.id}`;
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
       "_blank",

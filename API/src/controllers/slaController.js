@@ -345,8 +345,10 @@ export async function runSLAAlertCheck() {
       const notification = await createUniqueNotification({
         titulo,
         mensagem,
+        tipo: "sla",
         utilizador_id: sla.team_id,
         push: sla.push_notification !== false,
+        teamsNotify: true,
         email:
           sla.email_notification && sla.team?.email
             ? {

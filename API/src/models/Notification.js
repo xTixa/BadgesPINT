@@ -12,7 +12,7 @@ const Notification = database.define(
       primaryKey: true,
     },
     tipo: {
-      type: DataTypes.ENUM("ticket_novo", "ticket_resposta", "ticket_resolvido", "ticket_fechado", "geral"),
+      type: DataTypes.ENUM("ticket_novo", "ticket_resposta", "ticket_resolvido", "ticket_fechado", "geral", "sla"),
       allowNull: false,
     },
     titulo: {

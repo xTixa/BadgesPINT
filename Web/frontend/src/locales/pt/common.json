@@ -1929,6 +1929,7 @@
     "configuracoes": {
       "errors": {
         "fillPasswords": "Preencha a password atual e a nova password.",
+        "invalidWebhookUrl": "O URL do webhook Teams/Slack não é válido.",
         "passwordChangeFailed": "Erro ao alterar password.",
         "passwordsDontMatch": "As passwords novas não coincidem.",
         "saveFailed": "Não foi possível guardar as configurações."
@@ -1957,7 +1958,10 @@
         },
         "teams": {
           "desc": "Enviar alertas para ferramentas colaborativas",
-          "label": "Integração Teams / Slack"
+          "label": "Integração Teams / Slack",
+          "webhookHint": "Aceita um Incoming Webhook do Slack ou um conector do Microsoft Teams.",
+          "webhookLabel": "URL do Webhook",
+          "webhookPlaceholder": "https://hooks.slack.com/services/..."
         }
       },
       "privacy": {
@@ -2237,12 +2241,44 @@
         "name": "Nome"
       },
       "confirmDelete": "Apagar este Learning Path?",
+      "confirmDeleteArea": "Apagar esta Área?",
+      "confirmDeleteServiceLine": "Apagar esta Service Line?",
       "errorDelete": "Erro ao apagar Learning Path.",
+      "errorDeleteArea": "Erro ao apagar Área.",
+      "errorDeleteServiceLine": "Erro ao apagar Service Line.",
       "errorLoading": "Não foi possível carregar os Learning Paths.",
       "newLearningPath": "Novo Learning Path",
+      "newArea": "Nova Área",
+      "newServiceLine": "Nova Service Line",
+      "badgesCount": "badges",
+      "serviceLines": "Service Lines",
+      "toggleTree": "Expandir/colapsar",
       "searchPlaceholder": "Procurar por nome",
       "subtitle": "Criar e organizar os percursos de evolução.",
       "title": "Gestão de Learning Paths"
+    },
+    "serviceLineForm": {
+      "createTitle": "Criar Service Line",
+      "editTitle": "Editar Service Line",
+      "learningPathLabel": "Learning Path",
+      "selectLearningPath": "Selecionar Learning Path",
+      "nameLabel": "Nome da Service Line",
+      "descriptionLabel": "Descrição",
+      "errorLoading": "Não foi possível carregar esta Service Line.",
+      "errorSaving": "Erro ao guardar Service Line.",
+      "subtitle": "Define o nome e o Learning Path desta Service Line."
+    },
+    "areaForm": {
+      "createTitle": "Criar Área",
+      "editTitle": "Editar Área",
+      "serviceLineLabel": "Service Line",
+      "selectServiceLine": "Selecionar Service Line",
+      "nameLabel": "Nome da Área",
+      "parentLabel": "Área pai (opcional)",
+      "noParent": "Nenhuma (área de topo)",
+      "errorLoading": "Não foi possível carregar esta Área.",
+      "errorSaving": "Erro ao guardar Área.",
+      "subtitle": "Define o nome, a Service Line e a área pai (se aplicável)."
     },
     "gestaoPedidosBadges": {
       "actions": {

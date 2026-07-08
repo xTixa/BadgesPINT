@@ -68,6 +68,8 @@ import EmailTemplates from "./pages/Admin/EmailTemplates";
 import Avisos from "./pages/Admin/Avisos";
 import BadgeFormAdmin from "./pages/Admin/BadgeFormAdmin";
 import LearningPathFormAdmin from "./pages/Admin/LearningPathFormAdmin";
+import ServiceLineFormAdmin from "./pages/Admin/ServiceLineFormAdmin";
+import AreaFormAdmin from "./pages/Admin/AreaFormAdmin";
 import ExportacaoAdmin from "./pages/Admin/ExportacaoAdmin";
 import VerLogsAuditoria from "./pages/Admin/VerLogsAuditoria";
 import FAQ from "./pages/FAQ";
@@ -174,6 +176,10 @@ function AppContent() {
           <Route path="/admin/badges/:id" element={<ProtectedRoute role="admin"><BadgeFormAdmin /></ProtectedRoute>} />
           <Route path="/admin/learning-paths/novo" element={<ProtectedRoute role="admin"><LearningPathFormAdmin /></ProtectedRoute>} />
           <Route path="/admin/learning-paths/:id" element={<ProtectedRoute role="admin"><LearningPathFormAdmin /></ProtectedRoute>} />
+          <Route path="/admin/service-lines/novo" element={<ProtectedRoute role="admin"><ServiceLineFormAdmin /></ProtectedRoute>} />
+          <Route path="/admin/service-lines/:id" element={<ProtectedRoute role="admin"><ServiceLineFormAdmin /></ProtectedRoute>} />
+          <Route path="/admin/areas/novo" element={<ProtectedRoute role="admin"><AreaFormAdmin /></ProtectedRoute>} />
+          <Route path="/admin/areas/:id" element={<ProtectedRoute role="admin"><AreaFormAdmin /></ProtectedRoute>} />
           <Route path="/admin/exportacao" element={<ProtectedRoute role="admin"><ExportacaoAdmin /></ProtectedRoute>} />
           <Route path="/admin/logs" element={<ProtectedRoute role="admin"><VerLogsAuditoria /></ProtectedRoute>} />
           {/* Shared */}

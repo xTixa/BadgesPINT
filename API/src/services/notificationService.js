@@ -1,5 +1,6 @@
 import Notification from "../models/Notification.js";
 import { sendPushToUser } from "./firebaseService.js";
+import { sendTeamsWebhook } from "./teamsWebhookService.js";
 
 export async function sendPushNotification({ utilizador_id, titulo, mensagem, tipo = "geral", data = {} }) {
   return sendPushToUser(utilizador_id, {
@@ -20,6 +21,7 @@ export async function createNotification({
   transaction = null,
   push = true,
   email = null,
+  teamsNotify = false,
 }) {
   const notification = await Notification.create(
     {
@@ -44,6 +46,12 @@ export async function createNotification({
       );
   }
 
+  if (teamsNotify) {
+    sendTeamsWebhook({ titulo, mensagem }).catch((error) =>
+      console.error(`Webhook Teams/Slack associado a notificacao ${notification.id} falhou:`, error.message)
+    );
+  }
+
   return notification;
 }
 
@@ -55,6 +63,7 @@ export async function createUniqueNotification({
   ticket_id = null,
   email = null,
   push = true,
+  teamsNotify = false,
 }) {
   const existing = await Notification.findOne({
     where: {
@@ -78,6 +87,7 @@ export async function createUniqueNotification({
     ticket_id,
     email,
     push,
+    teamsNotify,
   });
   notification.setDataValue("_existing", false);
   return notification;

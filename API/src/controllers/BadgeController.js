@@ -7,35 +7,7 @@ import {
   BadgeReview,
   User,
 } from "../models/index.js";
-
-function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function getPublicShareBaseUrl(req) {
-  const configuredUrl = process.env.PUBLIC_SITE_URL || process.env.PUBLIC_API_URL || process.env.API_BASE_URL || process.env.APP_BASE_URL;
-
-  if (configuredUrl) {
-    return configuredUrl.replace(/\/$/, "");
-  }
-
-  return `${req.protocol}://${req.get("host")}`;
-}
-
-function getPublicImageBaseUrl(req) {
-  const configuredUrl = process.env.FRONTEND_URL || process.env.PUBLIC_FRONTEND_URL || process.env.APP_BASE_URL;
-
-  if (configuredUrl) {
-    return configuredUrl.replace(/\/$/, "");
-  }
-
-  return `${req.protocol}://${req.get("host")}`;
-}
+import { escapeHtml, getPublicShareBaseUrl, getPublicImageBaseUrl, renderNotFoundSharePage } from "../utils/shareHtml.js";
 
 function renderBadgeSharePage(req, badge) {
   const publicBaseUrl = getPublicShareBaseUrl(req);
@@ -305,13 +277,13 @@ export async function getPublicBadgeShare(req, res) {
     });
 
     if (!badge) {
-      return res.status(404).send(`<!doctype html><html lang="pt"><head><meta charset="UTF-8" /><meta name="robots" content="noindex,nofollow" /><title>Badge nao encontrado</title></head><body><h1>Badge nao encontrado</h1></body></html>`);
+      return res.status(404).send(renderNotFoundSharePage("Badge nao encontrado"));
     }
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(renderBadgeSharePage(req, badge.toJSON()));
   } catch (err) {
     console.error(err);
-    res.status(500).send(`<!doctype html><html lang="pt"><head><meta charset="UTF-8" /><meta name="robots" content="noindex,nofollow" /><title>Erro</title></head><body><h1>Erro ao gerar partilha</h1></body></html>`);
+    res.status(500).send(renderNotFoundSharePage("Erro ao gerar partilha"));
   }
 }

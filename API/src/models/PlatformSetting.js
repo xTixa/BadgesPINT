@@ -13,6 +13,7 @@ const PlatformSetting = database.define(
     notify_email: { type: DataTypes.BOOLEAN, defaultValue: true },
     notify_push: { type: DataTypes.BOOLEAN, defaultValue: false },
     notify_teams: { type: DataTypes.BOOLEAN, defaultValue: false },
+    teams_webhook_url: { type: DataTypes.STRING, allowNull: true },
     rgpd_consent_text: { type: DataTypes.TEXT, allowNull: true },
     public_gallery_enabled: { type: DataTypes.BOOLEAN, defaultValue: true },
   },

@@ -29,6 +29,7 @@ export default function Configuracoes() {
     push: false,
     teams: false,
   });
+  const [teamsWebhookUrl, setTeamsWebhookUrl] = useState("");
   const [privacySettings, setPrivacySettings] = useState({
     publicGallery: true,
     rgpdText: "",
@@ -55,6 +56,7 @@ export default function Configuracoes() {
           push: res.data.notify_push,
           teams: res.data.notify_teams,
         });
+        setTeamsWebhookUrl(res.data.teams_webhook_url || "");
         setPrivacySettings({
           publicGallery: res.data.public_gallery_enabled,
           rgpdText: res.data.rgpd_consent_text || "",
@@ -95,6 +97,15 @@ export default function Configuracoes() {
   };
 
   const handleSave = async () => {
+    if (notificationSettings.teams && teamsWebhookUrl) {
+      try {
+        new URL(teamsWebhookUrl);
+      } catch {
+        setFeedback(t("admin.configuracoes.errors.invalidWebhookUrl"));
+        return;
+      }
+    }
+
     try {
       setSaving(true);
       setFeedback("");
@@ -105,6 +116,7 @@ export default function Configuracoes() {
         notify_email: notificationSettings.email,
         notify_push: notificationSettings.push,
         notify_teams: notificationSettings.teams,
+        teams_webhook_url: teamsWebhookUrl,
         public_gallery_enabled: privacySettings.publicGallery,
         rgpd_consent_text: privacySettings.rgpdText,
       });
@@ -417,6 +429,24 @@ export default function Configuracoes() {
                           className="h-5 w-5 accent-[#0F62FE]"
                         />
                       </div>
+
+                      {notif.key === "teams" && notificationSettings.teams && (
+                        <div className="mt-4">
+                          <label className="mb-2 block text-sm font-medium text-slate-700">
+                            {t("admin.configuracoes.notifications.teams.webhookLabel")}
+                          </label>
+                          <input
+                            type="url"
+                            placeholder={t("admin.configuracoes.notifications.teams.webhookPlaceholder")}
+                            value={teamsWebhookUrl}
+                            onChange={(e) => setTeamsWebhookUrl(e.target.value)}
+                            className={inputClass}
+                          />
+                          <p className="mt-1 text-xs text-slate-500">
+                            {t("admin.configuracoes.notifications.teams.webhookHint")}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

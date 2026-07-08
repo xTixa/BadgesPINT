@@ -44,7 +44,7 @@ async function getPedidoNotificationContext(pedido) {
   };
 }
 
-async function notifyConsultorPedido({ pedido, titulo, mensagem, emailFactory, transaction = null }) {
+async function notifyConsultorPedido({ pedido, titulo, mensagem, emailFactory, transaction = null, teamsNotify = false }) {
   const { consultor, badgeName } = await getPedidoNotificationContext(pedido);
 
   return createNotification({
@@ -52,6 +52,7 @@ async function notifyConsultorPedido({ pedido, titulo, mensagem, emailFactory, t
     mensagem,
     utilizador_id: pedido.consultor_id,
     transaction,
+    teamsNotify,
     email: consultor?.email && emailFactory
       ? {
           to: consultor.email,
@@ -88,6 +89,7 @@ export async function notifySLLeadersOfPendingApproval(pedido) {
           titulo: "Pedido aguarda aprovação",
           mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua aprovação.`,
           utilizador_id: leader.id,
+          teamsNotify: true,
           email: leader.email
             ? {
                 to: leader.email,
@@ -287,6 +289,7 @@ export async function aprovarPedido(req, res) {
       titulo: "Badge aprovado",
       mensagem: "O teu pedido foi aprovado e o badge está disponível.",
       emailFactory: sendBadgeApprovedEmail,
+      teamsNotify: true,
     });
 
     await createAuditLog(req, res, {
@@ -345,6 +348,7 @@ export async function rejeitarPedido(req, res) {
       titulo: "Pedido rejeitado",
       mensagem: motivo ? `O teu pedido foi rejeitado. Motivo: ${motivo}` : "O teu pedido foi rejeitado.",
       emailFactory: (payload) => sendBadgeRejectedEmail({ ...payload, comment: motivo }),
+      teamsNotify: true,
     });
 
     await createAuditLog(req, res, {
@@ -665,6 +669,7 @@ export async function slAprovarPedido(req, res) {
       titulo: "Badge aprovado",
       mensagem: "O teu pedido foi aprovado e o badge está disponível.",
       emailFactory: sendBadgeApprovedEmail,
+      teamsNotify: true,
     });
 
     await createAuditLog(req, res, {
@@ -739,6 +744,7 @@ export async function slRejeitarPedido(req, res) {
         ? `O teu pedido foi rejeitado pela Service Line. Motivo: ${comment}`
         : "O teu pedido foi rejeitado pela Service Line.",
       emailFactory: (payload) => sendBadgeRejectedEmail({ ...payload, comment }),
+      teamsNotify: true,
     });
 
     await createAuditLog(req, res, {

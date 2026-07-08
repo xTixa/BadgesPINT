@@ -28,6 +28,7 @@ export async function updatePlatformSettings(req, res) {
       notify_email,
       notify_push,
       notify_teams,
+      teams_webhook_url,
       rgpd_consent_text,
       public_gallery_enabled,
     } = req.body;
@@ -38,6 +39,7 @@ export async function updatePlatformSettings(req, res) {
     if (notify_email !== undefined) settings.notify_email = notify_email === true;
     if (notify_push !== undefined) settings.notify_push = notify_push === true;
     if (notify_teams !== undefined) settings.notify_teams = notify_teams === true;
+    if (teams_webhook_url !== undefined) settings.teams_webhook_url = teams_webhook_url ? teams_webhook_url.trim() : null;
     if (rgpd_consent_text !== undefined) settings.rgpd_consent_text = rgpd_consent_text || null;
     if (public_gallery_enabled !== undefined) settings.public_gallery_enabled = public_gallery_enabled === true;
 

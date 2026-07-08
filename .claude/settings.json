@@ -126,7 +126,18 @@
       "Bash(echo \"EXIT CODE: $?\")",
       "Bash(cp /tmp/keys_final.txt \"C:/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/5b19c0bc-9c9f-4dc6-a65f-c9421e8ca338/scratchpad/keys_final.txt\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\); console.log\\('pt OK'\\)\")",
-      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('en OK'\\)\")"
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('en OK'\\)\")",
+      "Bash(xargs grep -lni \"fcm\\\\|firebase\\\\|push_token\\\\|device.token\")",
+      "Bash(xargs cat)",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/pt/common.json','utf8'\\)\\); console.log\\('pt OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/en/common.json','utf8'\\)\\); console.log\\('en OK'\\)\")",
+      "Bash(timeout 15 node src/server.js)",
+      "Bash(node --test tests/)",
+      "Bash(node tests/evidenceUploadHelpers.test.js)",
+      "Bash(node tests/passwordPolicy.test.js)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

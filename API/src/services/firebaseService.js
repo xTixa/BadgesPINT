@@ -75,6 +75,7 @@ async function getAccessToken() {
 
 async function sendToToken(accessToken, token, notification) {
   const projectId = process.env.FIREBASE_PROJECT_ID;
+  const isSla = notification.tipo === "sla";
   const response = await fetch(
     `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`,
     {
@@ -93,13 +94,14 @@ async function sendToToken(accessToken, token, notification) {
           data: {
             notificationId: String(notification.id),
             tipo: notification.tipo ?? "geral",
+            type: isSla ? "sla" : "generic",
             titulo: notification.titulo ?? "",
             mensagem: notification.mensagem ?? "",
           },
           android: {
             priority: "HIGH",
             notification: {
-              channel_id: "badges_alerts",
+              channel_id: isSla ? "badges_sla" : "badges_alerts",
             },
           },
         },
