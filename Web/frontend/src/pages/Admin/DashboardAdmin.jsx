@@ -38,10 +38,13 @@ export default function DashboardAdmin() {
       totalBadges: 0,
       totalLearningPaths: 0,
       badgesObtidosTotal: 0,
+      totalBadgeApplications: 0,
+      badgeApprovalPercentage: 0,
     },
     badgesByMonth: [],
     badgesByLearningPath: [],
     badgesByLevel: [],
+    badgesByLearningPathAndLevel: [],
     badgesByRange: { count: 0 },
     usersByRole: [],
   });
@@ -128,6 +131,33 @@ export default function DashboardAdmin() {
     }],
   } : null;
 
+  const approvalChartData = kpis.summary.totalBadgeApplications > 0 ? {
+    labels: ["Aprovados", "Restantes candidaturas"],
+    datasets: [{
+      data: [
+        kpis.summary.badgesObtidosTotal,
+        Math.max(0, kpis.summary.totalBadgeApplications - kpis.summary.badgesObtidosTotal),
+      ],
+      backgroundColor: ["#10b981", "#e2e8f0"],
+      borderWidth: 0,
+    }],
+  } : null;
+
+  const levelOrder = ["Junior", "Intermedio", "Senior", "Especialista", "Lider"];
+  const levelColors = ["#38bdf8", "#04C4D9", "#16558C", "#6366f1", "#7c3aed"];
+  const pathLevelRows = kpis.badgesByLearningPathAndLevel || [];
+  const pathLabels = [...new Map(pathLevelRows.map((row) => [row.learning_path_id, row.learning_path_name])).values()];
+  const learningPathLevelChartData = pathLabels.length ? {
+    labels: pathLabels,
+    datasets: levelOrder.map((level, index) => ({
+      label: level,
+      data: pathLabels.map((pathName) => Number(
+        pathLevelRows.find((row) => row.learning_path_name === pathName && row.level === level)?.count || 0
+      )),
+      backgroundColor: levelColors[index],
+    })),
+  } : null;
+
   const rangeStart = kpis.badgesByRange?.startDate ? kpis.badgesByRange.startDate.slice(0, 10) : t("admin.common.notAvailable");
   const rangeEnd = kpis.badgesByRange?.endDate ? kpis.badgesByRange.endDate.slice(0, 10) : t("admin.common.notAvailable");
 
@@ -155,6 +185,14 @@ export default function DashboardAdmin() {
         grid: { color: 'rgba(107, 140, 174, 0.1)' }
       }
     }
+  };
+
+  const stackedChartOptions = {
+    ...chartOptions,
+    scales: {
+      x: { stacked: true, ticks: { color: "#475569" }, grid: { display: false } },
+      y: { stacked: true, beginAtZero: true, ticks: { precision: 0, color: "#475569" } },
+    },
   };
 
   const shortcuts = [
@@ -265,7 +303,7 @@ export default function DashboardAdmin() {
             </div>
           ) : (
             <>
-              <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 {[
                   {
                     icon: "bi-award-fill",
@@ -289,6 +327,12 @@ export default function DashboardAdmin() {
                     icon: "bi-graph-up",
                     value: kpis.summary.badgesObtidosTotal,
                     label: t("admin.dashboard.stats.totalBadgesObtained"),
+                    color: "text-emerald-600",
+                  },
+                  {
+                    icon: "bi-percent",
+                    value: `${kpis.summary.badgeApprovalPercentage || 0}%`,
+                    label: "Percentagem de badges aprovados",
                     color: "text-emerald-600",
                   },
                 ].map((card) => (
@@ -433,6 +477,7 @@ export default function DashboardAdmin() {
                     </div>
                   )}
                 </div>
+
               </div>
 
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -504,6 +549,34 @@ export default function DashboardAdmin() {
                     ) : (
                       <p className="text-sm text-slate-500">{t("admin.dashboard.charts.noRecordsByLevel")}</p>
                     )}
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                  <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
+                    <i className="bi bi-percent text-emerald-500"></i>
+                    Percentagem de badges aprovados
+                  </h6>
+                  {approvalChartData ? (
+                    <div style={{ height: isMobile ? "250px" : "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Doughnut data={approvalChartData} options={{ ...chartOptions, scales: undefined }} />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">Ainda não existem candidaturas a badges.</p>
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:col-span-2">
+                  <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
+                    <i className="bi bi-bar-chart-steps text-indigo-500"></i>
+                    Badges por nível em cada Learning Path
+                  </h6>
+                  {learningPathLevelChartData ? (
+                    <div style={{ height: isMobile ? "300px" : "360px" }}>
+                      <Bar data={learningPathLevelChartData} options={stackedChartOptions} />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">Sem badges associados a Learning Paths.</p>
+                  )}
                 </div>
               </div>
             </>

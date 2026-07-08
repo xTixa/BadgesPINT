@@ -65,6 +65,10 @@ export async function getAdminKpis(req, res) {
     const totalBadges = await Badge.count();
     const totalLearningPaths = await LearningPath.count();
     const badgesObtidosTotal = await ConsultorBadge.count({ where: { status: "obtido" } });
+    const totalBadgeApplications = await ConsultorBadge.count();
+    const badgeApprovalPercentage = totalBadgeApplications > 0
+      ? Math.round((badgesObtidosTotal / totalBadgeApplications) * 100)
+      : 0;
 
     // Utilizadores por role
     const usersByRole = await User.findAll({
@@ -86,11 +90,6 @@ export async function getAdminKpis(req, res) {
       { type: QueryTypes.SELECT, replacements: { start, end } }
     );
 
-    const monthly = buildMonthlySeries(badgesByMonthRaw, start, end).map((row) => ({
-      ...row,
-      completionRate: totalBadges > 0 ? Math.round((row.count / totalBadges) * 100) : 0,
-    }));
-
     const badgesByRange = await ConsultorBadge.count({
       where: {
         status: "obtido",
@@ -100,15 +99,18 @@ export async function getAdminKpis(req, res) {
       },
     });
 
+    const monthly = buildMonthlySeries(badgesByMonthRaw, start, end).map((row) => ({
+      ...row,
+      completionRate: badgesByRange > 0 ? Math.round((row.count / badgesByRange) * 100) : 0,
+    }));
+
     // Badges por Learning Path
     const badgesByLearningPath = await database.query(
-      `SELECT lp.id, lp.name, COUNT(cb.id)::int AS count
-       FROM consultor_badges cb
-       JOIN badges b ON b.id = cb.badge_id
-       JOIN areas a ON a.id = b.area_id
-       JOIN service_lines sl ON sl.id = a.service_line_id
-       JOIN learning_paths lp ON lp.id = sl.learning_path_id
-       WHERE cb.status = 'obtido'
+      `SELECT lp.id, lp.name, COUNT(DISTINCT b.id)::int AS count
+       FROM learning_paths lp
+       LEFT JOIN service_lines sl ON sl.learning_path_id = lp.id
+       LEFT JOIN areas a ON a.service_line_id = sl.id
+       LEFT JOIN badges b ON b.area_id = a.id
        GROUP BY lp.id, lp.name
        ORDER BY lp.name`,
       { type: QueryTypes.SELECT }
@@ -116,12 +118,26 @@ export async function getAdminKpis(req, res) {
 
     // Badges por nível
     const badgesByLevel = await database.query(
-      `SELECT b.level, COUNT(cb.id)::int AS count
-       FROM consultor_badges cb
-       JOIN badges b ON b.id = cb.badge_id
-       WHERE cb.status = 'obtido'
+      `SELECT b.level, COUNT(b.id)::int AS count
+       FROM badges b
        GROUP BY b.level
-       ORDER BY b.level`,
+       ORDER BY CASE b.level
+         WHEN 'Junior' THEN 1 WHEN 'Intermedio' THEN 2 WHEN 'Senior' THEN 3
+         WHEN 'Especialista' THEN 4 WHEN 'Lider' THEN 5 ELSE 6 END`,
+      { type: QueryTypes.SELECT }
+    );
+
+    const badgesByLearningPathAndLevel = await database.query(
+      `SELECT lp.id AS learning_path_id, lp.name AS learning_path_name,
+              b.level, COUNT(DISTINCT b.id)::int AS count
+       FROM learning_paths lp
+       LEFT JOIN service_lines sl ON sl.learning_path_id = lp.id
+       LEFT JOIN areas a ON a.service_line_id = sl.id
+       LEFT JOIN badges b ON b.area_id = a.id
+       GROUP BY lp.id, lp.name, b.level
+       ORDER BY lp.name, CASE b.level
+         WHEN 'Junior' THEN 1 WHEN 'Intermedio' THEN 2 WHEN 'Senior' THEN 3
+         WHEN 'Especialista' THEN 4 WHEN 'Lider' THEN 5 ELSE 6 END`,
       { type: QueryTypes.SELECT }
     );
 
@@ -131,6 +147,8 @@ export async function getAdminKpis(req, res) {
         totalBadges,
         totalLearningPaths,
         badgesObtidosTotal,
+        totalBadgeApplications,
+        badgeApprovalPercentage,
       },
       usersByRole,
       badgesByMonth: monthly,
@@ -141,6 +159,7 @@ export async function getAdminKpis(req, res) {
       },
       badgesByLearningPath,
       badgesByLevel,
+      badgesByLearningPathAndLevel,
     });
 
   } catch (err) {
