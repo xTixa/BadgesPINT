@@ -1,0 +1,246 @@
+{
+  "navbar": {
+    "links": {
+      "learningPaths": "Learning Paths",
+      "badges": "Badges",
+      "areas": "Areas"
+    },
+    "login": "Log in",
+    "dashboard": "Dashboard",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "logout": "Logout",
+    "points": "points",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "openAccountMenu": "Open account menu",
+    "accountMenu": "Account menu",
+    "endSession": "Log Out",
+    "tagline": "Growth platform"
+  },
+  "footer": {
+    "brand": "Badges PINT",
+    "description": "Skills recognition platform to support professional growth at Softinsa.",
+    "quickLinks": "Quick Links",
+    "badgesCatalog": "Badges Catalog",
+    "contact": "Contact",
+    "contactText": "Questions or suggestions: internal support for the Badges PINT platform.",
+    "copyright": "© {{year}} Badges PINT · Softinsa."
+  },
+  "journeyStepper": {
+    "title": "Exploration Journey",
+    "steps": {
+      "paths": "Path",
+      "serviceLines": "Service Line",
+      "areas": "Area",
+      "badges": "Badge",
+      "requirements": "Requirements"
+    }
+  },
+  "common": {
+    "home": "Home",
+    "back": "Back",
+    "loading": "Loading...",
+    "search": "Search"
+  },
+  "home": {
+    "eyebrow": "Internal skills academy",
+    "title": "Learn, apply and prove your growth with badges.",
+    "subtitle": "Explore paths by area, choose badges aligned with your career and track the validation of your skills in a modern experience.",
+    "searchPlaceholder": "Search Azure, DevOps, VMware...",
+    "searchAriaLabel": "Search skills",
+    "searchButton": "Search badges",
+    "stats": {
+      "badges": "Badges",
+      "paths": "Paths",
+      "areas": "Areas"
+    },
+    "journeyCard": {
+      "eyebrow": "Your journey",
+      "greeting": "Hi, {{name}}",
+      "defaultName": "consultant",
+      "start": "Start here",
+      "steps": {
+        "chooseArea": {
+          "title": "Choose an area",
+          "text": "Filter skills by your professional focus."
+        },
+        "apply": {
+          "title": "Apply",
+          "text": "Send the request and keep the workflow tracked."
+        },
+        "submitEvidence": {
+          "title": "Submit evidence",
+          "text": "Show real work for validation."
+        }
+      }
+    },
+    "errorLoading": "Could not load the homepage data.",
+    "sections": {
+      "exploreByArea": {
+        "eyebrow": "Explore by area",
+        "title": "Find skills for your goal",
+        "viewAll": "View all",
+        "badgesAvailable": "badges available",
+        "loadingLabel": "Loading..."
+      },
+      "guidedPaths": {
+        "eyebrow": "Guided paths",
+        "title": "Learning paths to grow with context",
+        "viewPaths": "View paths",
+        "loading": "Loading paths..."
+      },
+      "featuredBadges": {
+        "eyebrow": "Featured badges",
+        "title": "Skills with the most value to earn",
+        "viewCatalog": "View catalog",
+        "loading": "Loading badges..."
+      },
+      "starterBadges": {
+        "eyebrow": "Start with low risk",
+        "title": "Junior badges to get going",
+        "text": "Ideal for building momentum, understanding the application process and starting your track record.",
+        "points": "points"
+      }
+    }
+  },
+  "badges": {
+    "backToAreas": "Back to areas",
+    "backToHome": "Back to home",
+    "eyebrow": "Badges catalog",
+    "titleForArea": "{{area}} badges",
+    "titleDefault": "Learn skills that count.",
+    "subtitle": "Search, compare levels, view requirements and apply to the badges that make sense for your path.",
+    "searchAriaLabel": "Search badge",
+    "searchPlaceholder": "Search by technology, area or level",
+    "breadcrumbs": {
+      "home": "Home",
+      "areas": "Areas",
+      "badges": "Badges"
+    },
+    "errors": {
+      "loadFailed": "Could not load badges right now.",
+      "loginRequired": "Log in as a consultant to apply for a badge.",
+      "onlyConsultants": "Only consultants can apply for badges.",
+      "applyFailed": "Could not create the application."
+    },
+    "success": {
+      "applied": "Application created and sent for validation."
+    },
+    "stats": {
+      "badges": "Badges",
+      "results": "Results",
+      "areas": "Areas",
+      "points": "Points"
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear",
+      "area": "Area",
+      "allAreas": "All areas",
+      "level": "Level",
+      "allLevels": "All levels",
+      "sort": "Sort",
+      "sortRecommended": "Recommended",
+      "sortPoints": "Most points",
+      "sortAz": "A-Z",
+      "sortLevel": "Level",
+      "premiumOnly": "Premium only"
+    },
+    "results": {
+      "found": "{{count}} badges found",
+      "helper": "Choose a badge to see requirements, points and how to apply.",
+      "loading": "Loading catalog...",
+      "emptyTitle": "No results",
+      "emptyText": "Adjust the search or clear the filters to see all badges again."
+    },
+    "card": {
+      "obtained": "Badge earned",
+      "activeApplication": "Application active"
+    }
+  },
+  "learningPaths": {
+    "backToHome": "Back to home",
+    "eyebrow": "Learning paths",
+    "title": "Choose the path to grow the right skills.",
+    "subtitle": "Browse the available paths and move on to the service lines associated with each development track.",
+    "stats": {
+      "paths": "Paths",
+      "step": "Step",
+      "type": "Type",
+      "catalog": "Catalog"
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "paths": "Paths"
+    },
+    "stepBanner": {
+      "title": "Step 1",
+      "text": "Choose a path to see its service lines."
+    },
+    "errorLoading": "Could not load paths right now.",
+    "loading": "Loading paths...",
+    "defaultDescription": "Structured path to develop essential skills and guide progress through badges.",
+    "explore": "Explore path",
+    "emptyTitle": "No paths available",
+    "emptyText": "There are no published paths to view yet."
+  },
+  "serviceLines": {
+    "backToPaths": "Back to paths",
+    "eyebrow": "Service lines",
+    "titleDefault": "Choose your path's service line.",
+    "subtitle": "Move on to the service line best aligned with your goals and check the available skill areas.",
+    "stats": {
+      "lines": "Lines",
+      "step": "Step",
+      "path": "Path",
+      "active": "Active",
+      "general": "General"
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "paths": "Paths",
+      "serviceLines": "Service Lines"
+    },
+    "stepBanner": {
+      "title": "Step 2",
+      "text": "Choose a service line to see its skill areas."
+    },
+    "errorLoading": "Could not load service lines right now.",
+    "loading": "Loading service lines...",
+    "defaultDescription": "Specialized service line with technical skill areas.",
+    "viewAreas": "View areas",
+    "emptyTitle": "No service lines",
+    "emptyText": "There are no published service lines for this path yet."
+  },
+  "areas": {
+    "backToPaths": "Back to paths",
+    "eyebrow": "Skill areas",
+    "titleDefault": "Explore technical areas and associated badges.",
+    "subtitle": "Choose an area to view badges, specialization levels and application requirements.",
+    "stats": {
+      "areas": "Areas",
+      "levels": "Levels",
+      "step": "Step",
+      "catalog": "Catalog"
+    },
+    "breadcrumbs": {
+      "home": "Home",
+      "paths": "Paths",
+      "serviceLines": "Service Lines",
+      "areas": "Areas"
+    },
+    "stepBanner": {
+      "step3": "Step 3",
+      "catalog": "Catalog",
+      "text": "Choose an area to see the available badges."
+    },
+    "errorLoading": "Could not load areas right now.",
+    "loading": "Loading areas...",
+    "levelsBadge": "5 levels",
+    "cardText": "Check this area's badges and track progress by specialization level.",
+    "viewBadges": "View badges",
+    "emptyTitle": "No areas available",
+    "emptyText": "There are no published areas to view yet."
+  }
+}

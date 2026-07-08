@@ -1,0 +1,246 @@
+{
+  "navbar": {
+    "links": {
+      "learningPaths": "Percursos",
+      "badges": "Badges",
+      "areas": "Áreas"
+    },
+    "login": "Entrar",
+    "dashboard": "Dashboard",
+    "notifications": "Notificações",
+    "settings": "Configurações",
+    "logout": "Logout",
+    "points": "pontos",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "openAccountMenu": "Abrir menu da conta",
+    "accountMenu": "Menu da conta",
+    "endSession": "Terminar Sessão",
+    "tagline": "Plataforma de evolução"
+  },
+  "footer": {
+    "brand": "Badges PINT",
+    "description": "Plataforma de reconhecimento de competências para apoiar a evolução profissional na Softinsa.",
+    "quickLinks": "Links Rápidos",
+    "badgesCatalog": "Catálogo de Badges",
+    "contact": "Contacto",
+    "contactText": "Dúvidas ou sugestões: suporte interno da plataforma Badges PINT.",
+    "copyright": "© {{year}} Badges PINT · Softinsa."
+  },
+  "journeyStepper": {
+    "title": "Jornada de Exploração",
+    "steps": {
+      "paths": "Percurso",
+      "serviceLines": "Linha de Serviço",
+      "areas": "Área",
+      "badges": "Badge",
+      "requirements": "Requisitos"
+    }
+  },
+  "common": {
+    "home": "Início",
+    "back": "Voltar",
+    "loading": "A carregar...",
+    "search": "Pesquisar"
+  },
+  "home": {
+    "eyebrow": "Academia interna de competências",
+    "title": "Aprende, candidata-te e prova o teu crescimento com badges.",
+    "subtitle": "Explora percursos por área, escolhe badges alinhados com a tua carreira e acompanha a validação das tuas competências numa experiência moderna.",
+    "searchPlaceholder": "Pesquisar Azure, DevOps, VMware...",
+    "searchAriaLabel": "Pesquisar competências",
+    "searchButton": "Procurar badges",
+    "stats": {
+      "badges": "Badges",
+      "paths": "Percursos",
+      "areas": "Áreas"
+    },
+    "journeyCard": {
+      "eyebrow": "A tua jornada",
+      "greeting": "Olá, {{name}}",
+      "defaultName": "consultor",
+      "start": "Começa por aqui",
+      "steps": {
+        "chooseArea": {
+          "title": "Escolhe uma área",
+          "text": "Filtra competências pelo teu foco profissional."
+        },
+        "apply": {
+          "title": "Candidata-te",
+          "text": "Envia o pedido e fica com o workflow registado."
+        },
+        "submitEvidence": {
+          "title": "Submete evidências",
+          "text": "Mostra trabalho real para validação."
+        }
+      }
+    },
+    "errorLoading": "Não foi possível carregar os dados da página inicial.",
+    "sections": {
+      "exploreByArea": {
+        "eyebrow": "Explorar por área",
+        "title": "Encontra competências pelo teu objetivo",
+        "viewAll": "Ver todas",
+        "badgesAvailable": "badges disponíveis",
+        "loadingLabel": "A carregar..."
+      },
+      "guidedPaths": {
+        "eyebrow": "Percursos guiados",
+        "title": "Learning paths para evoluir com contexto",
+        "viewPaths": "Ver percursos",
+        "loading": "A carregar percursos..."
+      },
+      "featuredBadges": {
+        "eyebrow": "Badges em destaque",
+        "title": "Competências com mais valor para conquistar",
+        "viewCatalog": "Ver catálogo",
+        "loading": "A carregar badges..."
+      },
+      "starterBadges": {
+        "eyebrow": "Começar com baixo risco",
+        "title": "Badges Junior para arrancar",
+        "text": "Ideal para criares tração, perceberes o processo de candidatura e começares a construir histórico.",
+        "points": "pontos"
+      }
+    }
+  },
+  "badges": {
+    "backToAreas": "Voltar às áreas",
+    "backToHome": "Voltar ao início",
+    "eyebrow": "Catálogo de badges",
+    "titleForArea": "Badges de {{area}}",
+    "titleDefault": "Aprende competências que contam.",
+    "subtitle": "Pesquisa, compara níveis, vê requisitos e candidata-te aos badges que fazem sentido para o teu percurso.",
+    "searchAriaLabel": "Pesquisar badge",
+    "searchPlaceholder": "Pesquisar por tecnologia, área ou nível",
+    "breadcrumbs": {
+      "home": "Início",
+      "areas": "Áreas",
+      "badges": "Badges"
+    },
+    "errors": {
+      "loadFailed": "Não foi possível carregar os badges neste momento.",
+      "loginRequired": "Inicia sessão como consultor para te candidatares a um badge.",
+      "onlyConsultants": "Apenas consultores podem candidatar-se a badges.",
+      "applyFailed": "Não foi possível criar a candidatura."
+    },
+    "success": {
+      "applied": "Candidatura criada e enviada para validação."
+    },
+    "stats": {
+      "badges": "Badges",
+      "results": "Resultados",
+      "areas": "Áreas",
+      "points": "Pontos"
+    },
+    "filters": {
+      "title": "Filtros",
+      "clear": "Limpar",
+      "area": "Área",
+      "allAreas": "Todas as áreas",
+      "level": "Nível",
+      "allLevels": "Todos os níveis",
+      "sort": "Ordenar",
+      "sortRecommended": "Recomendado",
+      "sortPoints": "Mais pontos",
+      "sortAz": "A-Z",
+      "sortLevel": "Nível",
+      "premiumOnly": "Só Premium"
+    },
+    "results": {
+      "found": "{{count}} badges encontrados",
+      "helper": "Escolhe um badge para ver requisitos, pontos e candidatura.",
+      "loading": "A carregar catálogo...",
+      "emptyTitle": "Sem resultados",
+      "emptyText": "Ajusta a pesquisa ou limpa os filtros para voltares a ver todos os badges."
+    },
+    "card": {
+      "obtained": "Badge obtido",
+      "activeApplication": "Candidatura ativa"
+    }
+  },
+  "learningPaths": {
+    "backToHome": "Voltar ao início",
+    "eyebrow": "Percursos de aprendizagem",
+    "title": "Escolhe o percurso para evoluir nas competências certas.",
+    "subtitle": "Navega pelos percursos disponíveis e avança para as linhas de serviço associadas a cada caminho de desenvolvimento.",
+    "stats": {
+      "paths": "Percursos",
+      "step": "Etapa",
+      "type": "Tipo",
+      "catalog": "Catálogo"
+    },
+    "breadcrumbs": {
+      "home": "Início",
+      "paths": "Percursos"
+    },
+    "stepBanner": {
+      "title": "Passo 1",
+      "text": "Escolhe um percurso para veres as respetivas linhas de serviço."
+    },
+    "errorLoading": "Não foi possível carregar os percursos neste momento.",
+    "loading": "A carregar percursos...",
+    "defaultDescription": "Percurso estruturado para desenvolver competências essenciais e orientar a progressão por badges.",
+    "explore": "Explorar percurso",
+    "emptyTitle": "Sem percursos disponíveis",
+    "emptyText": "Ainda não existem percursos publicados para consulta."
+  },
+  "serviceLines": {
+    "backToPaths": "Voltar aos percursos",
+    "eyebrow": "Linhas de serviço",
+    "titleDefault": "Escolhe a linha de serviço do teu percurso.",
+    "subtitle": "Avança para a linha de serviço mais alinhada com os teus objetivos e consulta as áreas de competência disponíveis.",
+    "stats": {
+      "lines": "Linhas",
+      "step": "Etapa",
+      "path": "Percurso",
+      "active": "Ativo",
+      "general": "Geral"
+    },
+    "breadcrumbs": {
+      "home": "Início",
+      "paths": "Percursos",
+      "serviceLines": "Linhas de Serviço"
+    },
+    "stepBanner": {
+      "title": "Passo 2",
+      "text": "Escolhe uma linha de serviço para veres as áreas de competência."
+    },
+    "errorLoading": "Não foi possível carregar as service lines neste momento.",
+    "loading": "A carregar linhas de serviço...",
+    "defaultDescription": "Linha de serviço especializada com áreas de competência técnica.",
+    "viewAreas": "Ver áreas",
+    "emptyTitle": "Sem linhas de serviço",
+    "emptyText": "Ainda não existem linhas de serviço publicadas para este percurso."
+  },
+  "areas": {
+    "backToPaths": "Voltar aos percursos",
+    "eyebrow": "Áreas de competência",
+    "titleDefault": "Explora áreas técnicas e badges associados.",
+    "subtitle": "Escolhe uma área para consultar badges, níveis de especialização e requisitos de candidatura.",
+    "stats": {
+      "areas": "Áreas",
+      "levels": "Níveis",
+      "step": "Etapa",
+      "catalog": "Catálogo"
+    },
+    "breadcrumbs": {
+      "home": "Início",
+      "paths": "Percursos",
+      "serviceLines": "Linhas de Serviço",
+      "areas": "Áreas"
+    },
+    "stepBanner": {
+      "step3": "Passo 3",
+      "catalog": "Catálogo",
+      "text": "Escolhe uma área para veres os badges disponíveis."
+    },
+    "errorLoading": "Não foi possível carregar as áreas neste momento.",
+    "loading": "A carregar áreas...",
+    "levelsBadge": "5 níveis",
+    "cardText": "Consulta os badges desta área e acompanha a progressão por nível de especialização.",
+    "viewBadges": "Ver badges",
+    "emptyTitle": "Sem áreas disponíveis",
+    "emptyText": "Ainda não existem áreas publicadas para consulta."
+  }
+}

@@ -1,18 +1,25 @@
-const JOURNEY_STEPS = [
-  { key: "paths", label: "Percurso" },
-  { key: "service-lines", label: "Linha de Serviço" },
-  { key: "areas", label: "Área" },
-  { key: "badges", label: "Badge" },
-  { key: "requirements", label: "Requisitos" },
+import { useTranslation } from "react-i18next";
+
+const JOURNEY_STEP_KEYS = [
+  { key: "paths", i18nKey: "paths" },
+  { key: "service-lines", i18nKey: "serviceLines" },
+  { key: "areas", i18nKey: "areas" },
+  { key: "badges", i18nKey: "badges" },
+  { key: "requirements", i18nKey: "requirements" },
 ];
 
 export default function PublicJourneyStepper({ currentStep }) {
+  const { t } = useTranslation();
+  const JOURNEY_STEPS = JOURNEY_STEP_KEYS.map((step) => ({
+    key: step.key,
+    label: t(`journeyStepper.steps.${step.i18nKey}`),
+  }));
   const currentIndex = JOURNEY_STEPS.findIndex((step) => step.key === currentStep);
 
   return (
     <div className="mb-6 rounded-xl border border-slate-200/80 bg-white px-4 py-4 shadow-sm">
       <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-        Jornada de Exploração
+        {t("journeyStepper.title")}
       </p>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">

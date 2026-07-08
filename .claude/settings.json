@@ -101,7 +101,9 @@
       "Bash(node viewport-shots.js)",
       "Bash(powershell -Command \"Stop-Process -Id 28160 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 5604 -Force -ErrorAction SilentlyContinue\")",
       "Bash(node inspect-sl-dash.js)",
-      "Bash(powershell -Command \"Stop-Process -Id 9536 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 25884 -Force -ErrorAction SilentlyContinue\")"
+      "Bash(powershell -Command \"Stop-Process -Id 9536 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 25884 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173)",
+      "Bash(curl -s http://localhost:5173/)"
     ]
   }
 }

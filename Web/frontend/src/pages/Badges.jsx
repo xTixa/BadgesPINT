@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../api";
 import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
 import PublicJourneyStepper from "../components/PublicJourneyStepper";
@@ -44,6 +45,7 @@ const writeCachedApplications = (user, applications) => {
 };
 
 export default function Badges() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [badges, setBadges] = useState([]);
@@ -98,7 +100,7 @@ export default function Badges() {
         if (!active) return;
         setBadges([]);
         setAreaName("");
-        setError("Nao foi possivel carregar os badges neste momento.");
+        setError(t("badges.errors.loadFailed"));
       } finally {
         if (active) setLoading(false);
       }
@@ -216,12 +218,12 @@ export default function Badges() {
 
   const handleApply = async (badge) => {
     if (!user) {
-      setError("Inicia sessao como consultor para te candidatares a um badge.");
+      setError(t("badges.errors.loginRequired"));
       return;
     }
 
     if (user.role !== "consultant") {
-      setError("Apenas consultores podem candidatar-se a badges.");
+      setError(t("badges.errors.onlyConsultants"));
       return;
     }
 
@@ -240,10 +242,10 @@ export default function Badges() {
         writeCachedApplications(user, next);
         return next;
       });
-      setSuccess("Candidatura criada e enviada para validacao.");
+      setSuccess(t("badges.success.applied"));
     } catch (err) {
       console.error("Erro ao candidatar:", err);
-      setError(err.response?.data?.message || "Nao foi possivel criar a candidatura.");
+      setError(err.response?.data?.message || t("badges.errors.applyFailed"));
     } finally {
       setApplyingId(null);
     }
@@ -259,32 +261,31 @@ export default function Badges() {
               className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
             >
               <i className="bi bi-arrow-left"></i>
-              {id ? "Voltar as areas" : "Voltar ao inicio"}
+              {id ? t("badges.backToAreas") : t("badges.backToHome")}
             </Link>
 
             <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
               <div>
                 <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
-                  Catalogo de badges
+                  {t("badges.eyebrow")}
                 </p>
                 <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                  {areaName ? `Badges de ${areaName}` : "Aprende competencias que contam."}
+                  {areaName ? t("badges.titleForArea", { area: areaName }) : t("badges.titleDefault")}
                 </h1>
                 <p className="mt-3 max-w-3xl text-base text-white/85">
-                  Pesquisa, compara niveis, ve requisitos e candidata-te aos badges que
-                  fazem sentido para o teu percurso.
+                  {t("badges.subtitle")}
                 </p>
               </div>
 
               <div className="rounded-2xl border border-white/15 bg-white/15 p-3 backdrop-blur">
                 <label className="relative block">
-                  <span className="sr-only">Pesquisar badge</span>
+                  <span className="sr-only">{t("badges.searchAriaLabel")}</span>
                   <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                   <input
                     type="search"
                     value={search}
                     onChange={(event) => updateSearch(event.target.value)}
-                    placeholder="Pesquisar por tecnologia, area ou nivel"
+                    placeholder={t("badges.searchPlaceholder")}
                     className="h-11 w-full rounded-xl border-0 bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
                   />
                 </label>
@@ -299,11 +300,11 @@ export default function Badges() {
           items={
             id
               ? [
-                  { label: "Inicio", to: "/" },
-                  { label: "Areas", to: "/areas" },
-                  { label: "Badges" },
+                  { label: t("badges.breadcrumbs.home"), to: "/" },
+                  { label: t("badges.breadcrumbs.areas"), to: "/areas" },
+                  { label: t("badges.breadcrumbs.badges") },
                 ]
-              : [{ label: "Inicio", to: "/" }, { label: "Badges" }]
+              : [{ label: t("badges.breadcrumbs.home"), to: "/" }, { label: t("badges.breadcrumbs.badges") }]
           }
         />
         <PublicJourneyStepper currentStep="badges" />
@@ -322,10 +323,10 @@ export default function Badges() {
 
         <section className="mb-6 grid gap-4 md:grid-cols-4">
           {[
-            ["Badges", badges.length],
-            ["Resultados", filteredBadges.length],
-            ["Areas", areas.length],
-            ["Pontos", totalPoints],
+            [t("badges.stats.badges"), badges.length],
+            [t("badges.stats.results"), filteredBadges.length],
+            [t("badges.stats.areas"), areas.length],
+            [t("badges.stats.points"), totalPoints],
           ].map(([label, value]) => (
             <div key={label} className="rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
               <p className="text-sm font-semibold text-slate-500">{label}</p>
@@ -337,26 +338,26 @@ export default function Badges() {
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           <aside className="h-fit rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:sticky lg:top-24">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-slate-950">Filtros</h2>
+              <h2 className="text-lg font-extrabold text-slate-950">{t("badges.filters.title")}</h2>
               <button
                 type="button"
                 onClick={clearFilters}
                 disabled={!hasFilters}
                 className="text-sm font-bold text-[#0F62FE] disabled:text-slate-300"
               >
-                Limpar
+                {t("badges.filters.clear")}
               </button>
             </div>
 
             <div className="space-y-4">
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">Area</span>
+                <span className="mb-2 block text-sm font-bold text-slate-700">{t("badges.filters.area")}</span>
                 <select
                   value={selectedArea}
                   onChange={(event) => setSelectedArea(event.target.value)}
                   className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                 >
-                  <option value="todas">Todas as areas</option>
+                  <option value="todas">{t("badges.filters.allAreas")}</option>
                   {areas.map((area) => (
                     <option key={area} value={area}>
                       {area}
@@ -366,13 +367,13 @@ export default function Badges() {
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">Nivel</span>
+                <span className="mb-2 block text-sm font-bold text-slate-700">{t("badges.filters.level")}</span>
                 <select
                   value={selectedLevel}
                   onChange={(event) => setSelectedLevel(event.target.value)}
                   className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                 >
-                  <option value="todos">Todos os niveis</option>
+                  <option value="todos">{t("badges.filters.allLevels")}</option>
                   {levels.map((level) => (
                     <option key={level} value={level}>
                       {level}
@@ -382,16 +383,16 @@ export default function Badges() {
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">Ordenar</span>
+                <span className="mb-2 block text-sm font-bold text-slate-700">{t("badges.filters.sort")}</span>
                 <select
                   value={sortBy}
                   onChange={(event) => setSortBy(event.target.value)}
                   className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                 >
-                  <option value="recommended">Recomendado</option>
-                  <option value="points">Mais pontos</option>
-                  <option value="az">A-Z</option>
-                  <option value="level">Nivel</option>
+                  <option value="recommended">{t("badges.filters.sortRecommended")}</option>
+                  <option value="points">{t("badges.filters.sortPoints")}</option>
+                  <option value="az">{t("badges.filters.sortAz")}</option>
+                  <option value="level">{t("badges.filters.sortLevel")}</option>
                 </select>
               </label>
 
@@ -404,7 +405,7 @@ export default function Badges() {
                     className="h-4 w-4 rounded accent-amber-500"
                   />
                   <span className="text-sm font-bold text-amber-700">
-                    <i className="bi bi-star-fill mr-1 text-amber-500"></i>Só Premium
+                    <i className="bi bi-star-fill mr-1 text-amber-500"></i>{t("badges.filters.premiumOnly")}
                   </span>
                 </label>
               )}
@@ -415,10 +416,10 @@ export default function Badges() {
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-extrabold text-slate-950">
-                  {filteredBadges.length} badges encontrados
+                  {t("badges.results.found", { count: filteredBadges.length })}
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Escolhe um badge para ver requisitos, pontos e candidatura.
+                  {t("badges.results.helper")}
                 </p>
               </div>
             </div>
@@ -426,7 +427,7 @@ export default function Badges() {
             {loading ? (
               <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
                 <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
-                <p className="text-lg font-semibold text-slate-600">A carregar catalogo...</p>
+                <p className="text-lg font-semibold text-slate-600">{t("badges.results.loading")}</p>
               </div>
             ) : filteredBadges.length > 0 ? (
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -443,9 +444,9 @@ export default function Badges() {
                       applied={Boolean(application)}
                       applicationStatus={
                         application?.status === "obtido"
-                          ? "Badge obtido"
+                          ? t("badges.card.obtained")
                           : application
-                            ? "Candidatura ativa"
+                            ? t("badges.card.activeApplication")
                             : ""
                       }
                     />
@@ -455,9 +456,9 @@ export default function Badges() {
             ) : (
               <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
                 <i className="bi bi-search mb-4 block text-6xl text-slate-300"></i>
-                <h2 className="text-xl font-extrabold text-slate-950">Sem resultados</h2>
+                <h2 className="text-xl font-extrabold text-slate-950">{t("badges.results.emptyTitle")}</h2>
                 <p className="mx-auto mt-2 max-w-xl text-slate-500">
-                  Ajusta a pesquisa ou limpa os filtros para voltares a ver todos os badges.
+                  {t("badges.results.emptyText")}
                 </p>
               </div>
             )}

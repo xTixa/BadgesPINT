@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import NotificationCenter from "../components/NotificationCenter";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 import logo from "/src/assets/logo.png";
 import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -12,9 +15,9 @@ export default function Navbar() {
   const location = useLocation();
 
   const publicLinks = [
-    { to: "/learning-paths", label: "Percursos" },
-    { to: "/badges", label: "Badges" },
-    { to: "/areas", label: "Áreas" },
+    { to: "/learning-paths", label: t("navbar.links.learningPaths") },
+    { to: "/badges", label: t("navbar.links.badges") },
+    { to: "/areas", label: t("navbar.links.areas") },
   ];
 
   const roleDashboardMap = {
@@ -128,7 +131,7 @@ export default function Navbar() {
               </span>
               <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-[#00AEEF] sm:block">
                 {" "}
-                Plataforma de evolução
+                {t("navbar.tagline")}
               </span>
             </div>
           </Link>
@@ -146,12 +149,13 @@ export default function Navbar() {
 
           {/* USER / LOGIN */}
           <div className="hidden md:flex items-center gap-4">
+            <LanguageSwitcher />
             {!user ? (
               <Link
                 to="/login"
                 className="rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-2 text-sm font-semibold text-white no-underline shadow-sm transition hover:shadow-md"
               >
-                Entrar
+                {t("navbar.login")}
               </Link>
             ) : (
               <>
@@ -159,8 +163,8 @@ export default function Navbar() {
                 {isConsultor && (
                   <div
                     className="flex items-center gap-1.5 rounded-xl border border-[#0F62FE]/20 bg-[#0F62FE]/10 px-3 py-2 text-sm font-bold text-[#0F62FE] shadow-sm"
-                    title={`${totalPoints} pontos`}
-                    aria-label={`${totalPoints} pontos`}
+                    title={`${totalPoints} ${t("navbar.points")}`}
+                    aria-label={`${totalPoints} ${t("navbar.points")}`}
                   >
                     <i className="bi bi-coin text-[#0F62FE]"></i>
                     <span>{totalPoints}</span>
@@ -179,7 +183,7 @@ export default function Navbar() {
                     aria-haspopup="menu"
                     aria-expanded={dropdownOpen}
                     aria-controls="account-menu"
-                    aria-label="Abrir menu da conta"
+                    aria-label={t("navbar.openAccountMenu")}
                     className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#0F62FE]/20 bg-white px-3 py-2 font-semibold text-slate-800 shadow-sm transition hover:border-[#0F62FE] focus-visible:ring-2 focus-visible:ring-[#0F62FE]/30"
                   >
                     <img
@@ -197,23 +201,23 @@ export default function Navbar() {
                     <div
                       id="account-menu"
                       role="menu"
-                      aria-label="Menu da conta"
+                      aria-label={t("navbar.accountMenu")}
                       className="absolute right-0 z-[1000] mt-2 w-52 rounded-xl border border-[#0F62FE]/15 bg-white p-1.5 text-slate-800 shadow-lg"
                     >
                       {[
                         {
                           to: dashboardPath,
-                          label: "Dashboard",
+                          label: t("navbar.dashboard"),
                           icon: "bi-speedometer2",
                         },
                         {
                           to: "/notificacoes",
-                          label: "Notificações",
+                          label: t("navbar.notifications"),
                           icon: "bi-bell",
                         },
                         {
                           to: settingsPath,
-                          label: "Configurações",
+                          label: t("navbar.settings"),
                           icon: "bi-gear",
                         },
                       ].map(({ to, label, icon }) => (
@@ -234,7 +238,7 @@ export default function Navbar() {
                         className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg border-0 border-t border-[#0F62FE]/20 bg-transparent px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50"
                       >
                         <i className="bi bi-box-arrow-right"></i>
-                        Logout
+                        {t("navbar.logout")}
                       </button>
                     </div>
                   )}
@@ -246,7 +250,7 @@ export default function Navbar() {
           {/* MOBILE BUTTON */}
           <button
             type="button"
-            aria-label={open ? "Fechar menu" : "Abrir menu"}
+            aria-label={open ? t("navbar.closeMenu") : t("navbar.openMenu")}
             aria-expanded={open}
             aria-controls="mobile-menu"
             className="cursor-pointer rounded-lg border border-[#0F62FE]/20 bg-white p-2 text-slate-800 transition hover:border-[#0F62FE] focus-visible:ring-2 focus-visible:ring-[#0F62FE]/30 md:hidden"
@@ -280,7 +284,7 @@ export default function Navbar() {
                 onClick={() => setOpen(false)}
                 className="mt-2 block rounded-md bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-3 py-2 text-center text-sm font-semibold text-white no-underline shadow-sm"
               >
-                Entrar
+                {t("navbar.login")}
               </Link>
             ) : (
               <>
@@ -289,30 +293,31 @@ export default function Navbar() {
                   onClick={() => setOpen(false)}
                   className={mobileLinkClass}
                 >
-                  Dashboard
+                  {t("navbar.dashboard")}
                 </NavLink>
                 <NavLink
                   to={settingsPath}
                   onClick={() => setOpen(false)}
                   className={mobileLinkClass}
                 >
-                  Configurações
+                  {t("navbar.settings")}
                 </NavLink>
                 <NavLink
                   to="/notificacoes"
                   onClick={() => setOpen(false)}
                   className={mobileLinkClass}
                 >
-                  Notificações
+                  {t("navbar.notifications")}
                 </NavLink>
                 <button
                   onClick={handleLogout}
                   className="mt-2 block w-full cursor-pointer rounded-md border-0 bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-3 py-2 text-sm font-semibold text-white shadow-sm"
                 >
-                  Terminar Sessão
+                  {t("navbar.endSession")}
                 </button>
               </>
             )}
+            <LanguageSwitcher className="mt-3" />
           </div>
         )}
       </nav>

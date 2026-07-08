@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../api";
 import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
 import PublicJourneyStepper from "../components/PublicJourneyStepper";
@@ -14,6 +15,7 @@ const areaIcons = [
 ];
 
 export default function Areas() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +61,7 @@ export default function Areas() {
         console.error(err);
         if (!active) return;
         setAreas([]);
-        setError("Nao foi possivel carregar as areas neste momento.");
+        setError(t("areas.errorLoading"));
       } finally {
         if (active) setLoading(false);
       }
@@ -70,15 +72,15 @@ export default function Areas() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, t]);
 
   const stats = useMemo(
     () => [
-      ["Areas", areas.length],
-      ["Niveis", "5"],
-      ["Etapa", id ? "3/4" : "Catalogo"],
+      [t("areas.stats.areas"), areas.length],
+      [t("areas.stats.levels"), "5"],
+      [t("areas.stats.step"), id ? "3/4" : t("areas.stats.catalog")],
     ],
-    [areas.length, id],
+    [areas.length, id, t],
   );
 
   return (
@@ -91,20 +93,19 @@ export default function Areas() {
               className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
             >
               <i className="bi bi-arrow-left"></i>
-              Voltar aos percursos
+              {t("areas.backToPaths")}
             </Link>
 
             <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
               <div>
                 <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
-                  Areas de competencia
+                  {t("areas.eyebrow")}
                 </p>
                 <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                  {serviceLineName || "Explora areas tecnicas e badges associados."}
+                  {serviceLineName || t("areas.titleDefault")}
                 </h1>
                 <p className="mt-3 max-w-3xl text-base text-white/85">
-                  Escolhe uma area para consultar badges, niveis de especializacao
-                  e requisitos de candidatura.
+                  {t("areas.subtitle")}
                 </p>
               </div>
 
@@ -126,12 +127,12 @@ export default function Areas() {
           items={
             id
               ? [
-                  { label: "Inicio", to: "/" },
-                  { label: "Percursos", to: "/learning-paths" },
-                  { label: "Linhas de Servico", to: "/learning-paths" },
-                  { label: "Areas" },
+                  { label: t("areas.breadcrumbs.home"), to: "/" },
+                  { label: t("areas.breadcrumbs.paths"), to: "/learning-paths" },
+                  { label: t("areas.breadcrumbs.serviceLines"), to: "/learning-paths" },
+                  { label: t("areas.breadcrumbs.areas") },
                 ]
-              : [{ label: "Inicio", to: "/" }, { label: "Areas" }]
+              : [{ label: t("areas.breadcrumbs.home"), to: "/" }, { label: t("areas.breadcrumbs.areas") }]
           }
         />
         <PublicJourneyStepper currentStep="areas" />
@@ -142,9 +143,9 @@ export default function Areas() {
               <i className="bi bi-grid"></i>
             </span>
             <div>
-              <p className="text-sm font-extrabold text-slate-950">{id ? "Passo 3" : "Catalogo"}</p>
+              <p className="text-sm font-extrabold text-slate-950">{id ? t("areas.stepBanner.step3") : t("areas.stepBanner.catalog")}</p>
               <p className="text-sm text-slate-500">
-                Escolhe uma area para veres os badges disponiveis.
+                {t("areas.stepBanner.text")}
               </p>
             </div>
           </div>
@@ -159,7 +160,7 @@ export default function Areas() {
         {loading ? (
           <div role="status" aria-live="polite" className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
             <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
-            <p className="text-lg font-semibold text-slate-600">A carregar areas...</p>
+            <p className="text-lg font-semibold text-slate-600">{t("areas.loading")}</p>
           </div>
         ) : areas.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -173,21 +174,20 @@ export default function Areas() {
                     <i className={`bi ${areaIcons[index % areaIcons.length]}`}></i>
                   </span>
                   <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-500">
-                    5 niveis
+                    {t("areas.levelsBadge")}
                   </span>
                 </div>
 
                 <h2 className="text-lg font-extrabold text-slate-950">{area.name}</h2>
                 <p className="mt-3 flex-1 text-sm leading-6 text-slate-500">
-                  Consulta os badges desta area e acompanha a progressao por nivel
-                  de especializacao.
+                  {t("areas.cardText")}
                 </p>
 
                 <Link
                   to={`/areas/${area.id}/badges`}
                   className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-5 text-sm font-bold text-white transition hover:bg-[#16558C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F62FE]/35"
                 >
-                  Ver badges
+                  {t("areas.viewBadges")}
                   <i className="bi bi-arrow-right"></i>
                 </Link>
               </article>
@@ -196,9 +196,9 @@ export default function Areas() {
         ) : (
           <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
             <i className="bi bi-grid mb-4 block text-6xl text-slate-300"></i>
-            <h2 className="text-xl font-extrabold text-slate-950">Sem areas disponiveis</h2>
+            <h2 className="text-xl font-extrabold text-slate-950">{t("areas.emptyTitle")}</h2>
             <p className="mx-auto mt-2 max-w-xl text-slate-500">
-              Ainda nao existem areas publicadas para consulta.
+              {t("areas.emptyText")}
             </p>
           </div>
         )}

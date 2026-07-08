@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../api";
 import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
 import PublicJourneyStepper from "../components/PublicJourneyStepper";
 
 export default function LearningPaths() {
+  const { t } = useTranslation();
   const [paths, setPaths] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,18 +24,18 @@ export default function LearningPaths() {
       .catch((err) => {
         console.error(err);
         setPaths([]);
-        setError("Nao foi possivel carregar os percursos neste momento.");
+        setError(t("learningPaths.errorLoading"));
         setLoading(false);
       });
-  }, []);
+  }, [t]);
 
   const stats = useMemo(
     () => [
-      ["Percursos", paths.length],
-      ["Etapa", "1/4"],
-      ["Tipo", "Catalogo"],
+      [t("learningPaths.stats.paths"), paths.length],
+      [t("learningPaths.stats.step"), "1/4"],
+      [t("learningPaths.stats.type"), t("learningPaths.stats.catalog")],
     ],
-    [paths.length],
+    [paths.length, t],
   );
 
   return (
@@ -46,20 +48,19 @@ export default function LearningPaths() {
               className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
             >
               <i className="bi bi-arrow-left"></i>
-              Voltar ao inicio
+              {t("learningPaths.backToHome")}
             </Link>
 
             <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
               <div>
                 <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
-                  Percursos de aprendizagem
+                  {t("learningPaths.eyebrow")}
                 </p>
                 <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                  Escolhe o percurso para evoluir nas competencias certas.
+                  {t("learningPaths.title")}
                 </h1>
                 <p className="mt-3 max-w-3xl text-base text-white/85">
-                  Navega pelos percursos disponiveis e avanca para as linhas de
-                  servico associadas a cada caminho de desenvolvimento.
+                  {t("learningPaths.subtitle")}
                 </p>
               </div>
 
@@ -78,7 +79,7 @@ export default function LearningPaths() {
 
       <main className="mx-auto w-full max-w-[1600px] px-0 py-4">
         <PublicBreadcrumbs
-          items={[{ label: "Inicio", to: "/" }, { label: "Percursos" }]}
+          items={[{ label: t("learningPaths.breadcrumbs.home"), to: "/" }, { label: t("learningPaths.breadcrumbs.paths") }]}
         />
         <PublicJourneyStepper currentStep="paths" />
 
@@ -88,9 +89,9 @@ export default function LearningPaths() {
               <i className="bi bi-signpost-split"></i>
             </span>
             <div>
-              <p className="text-sm font-extrabold text-slate-950">Passo 1</p>
+              <p className="text-sm font-extrabold text-slate-950">{t("learningPaths.stepBanner.title")}</p>
               <p className="text-sm text-slate-500">
-                Escolhe um percurso para veres as respetivas linhas de servico.
+                {t("learningPaths.stepBanner.text")}
               </p>
             </div>
           </div>
@@ -113,7 +114,7 @@ export default function LearningPaths() {
           >
             <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
             <p className="text-lg font-semibold text-slate-600">
-              A carregar percursos...
+              {t("learningPaths.loading")}
             </p>
           </div>
         ) : paths.length > 0 ? (
@@ -136,15 +137,14 @@ export default function LearningPaths() {
                   {path.name}
                 </h2>
                 <p className="mt-3 flex-1 text-sm leading-6 text-slate-500">
-                  {path.description ||
-                    "Percurso estruturado para desenvolver competencias essenciais e orientar a progressao por badges."}
+                  {path.description || t("learningPaths.defaultDescription")}
                 </p>
 
                 <Link
                   to={`/learning-paths/${path.id}/service-lines`}
                   className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-5 text-sm font-bold text-white transition hover:bg-[#16558C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F62FE]/35"
                 >
-                  Explorar percurso
+                  {t("learningPaths.explore")}
                   <i className="bi bi-arrow-right"></i>
                 </Link>
               </article>
@@ -154,10 +154,10 @@ export default function LearningPaths() {
           <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
             <i className="bi bi-folder2-open mb-4 block text-6xl text-slate-300"></i>
             <h2 className="text-xl font-extrabold text-slate-950">
-              Sem percursos disponiveis
+              {t("learningPaths.emptyTitle")}
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-slate-500">
-              Ainda nao existem percursos publicados para consulta.
+              {t("learningPaths.emptyText")}
             </p>
           </div>
         )}
