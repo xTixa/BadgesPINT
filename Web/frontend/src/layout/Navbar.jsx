@@ -65,11 +65,9 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
     setOpen(false);
     setDropdownOpen(false);
-    navigate("/login");
+    navigate("/logout");
   };
 
   useEffect(() => {

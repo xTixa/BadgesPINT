@@ -1244,7 +1244,10 @@
     },
     "login": {
       "errors": {
-        "invalidCredentials": "Credenciais inválidas. Verifica email e password."
+        "invalidCredentials": "Credenciais inválidas. Verifica email e password.",
+        "emailRequired": "O email é obrigatório.",
+        "emailInvalid": "Introduz um email válido.",
+        "passwordRequired": "A password é obrigatória."
       },
       "title": "Iniciar sessão",
       "description": "Insere os teus dados para entrar na plataforma.",

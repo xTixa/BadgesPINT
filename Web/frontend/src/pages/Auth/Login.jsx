@@ -13,6 +13,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     let active = true;
@@ -29,10 +30,22 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    const normalizedEmail = email.trim();
+    const validationErrors = {};
+
+    if (!normalizedEmail) validationErrors.email = t("auth.login.errors.emailRequired");
+    else if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) validationErrors.email = t("auth.login.errors.emailInvalid");
+    if (!password) validationErrors.password = t("auth.login.errors.passwordRequired");
+
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
+      return;
+    }
+    setFieldErrors({});
 
     try {
       const res = await api.post("/api/auth/login", {
-        email,
+        email: normalizedEmail,
         password,
       });
 
@@ -42,9 +55,9 @@ export default function Login() {
       localStorage.setItem("token", token);
 
       if (rememberMe && firstLogin) {
-        sessionStorage.setItem("rememberCredentialsAfterFirstLogin", JSON.stringify({ email, name: user.name }));
+        sessionStorage.setItem("rememberCredentialsAfterFirstLogin", JSON.stringify({ email: normalizedEmail, name: user.name }));
       } else if (rememberMe) {
-        await storeBrowserCredentials({ email, password, name: user.name });
+        await storeBrowserCredentials({ email: normalizedEmail, password, name: user.name });
       } else {
         sessionStorage.removeItem("rememberCredentialsAfterFirstLogin");
       }
@@ -76,6 +89,7 @@ export default function Login() {
     } catch (err) {
       console.error(err);
       setError(t("auth.login.errors.invalidCredentials"));
+      setFieldErrors({ email: true, password: true });
     }
   };
 
@@ -96,7 +110,7 @@ export default function Login() {
         ],
       }}
     >
-      <form onSubmit={handleLogin} autoComplete="on">
+      <form onSubmit={handleLogin} autoComplete="on" noValidate>
         {error && <p className="auth-message auth-message-error">{error}</p>}
 
         <div className="auth-field">
@@ -107,10 +121,16 @@ export default function Login() {
             autoComplete="username"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="auth-input"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setFieldErrors((current) => ({ ...current, email: undefined }));
+            }}
+            className={`auth-input ${fieldErrors.email ? "auth-input-error" : ""}`}
             placeholder={t("auth.login.emailPlaceholder")}
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? "login-email-error" : undefined}
           />
+          {typeof fieldErrors.email === "string" && <p id="login-email-error" className="auth-field-error">{fieldErrors.email}</p>}
         </div>
 
         <div className="auth-field">
@@ -131,9 +151,14 @@ export default function Login() {
               autoComplete="current-password"
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="auth-input pr-12"
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setFieldErrors((current) => ({ ...current, password: undefined }));
+              }}
+              className={`auth-input pr-12 ${fieldErrors.password ? "auth-input-error" : ""}`}
               placeholder="********"
+              aria-invalid={Boolean(fieldErrors.password)}
+              aria-describedby={fieldErrors.password ? "login-password-error" : undefined}
             />
             <button
               type="button"
@@ -144,6 +169,7 @@ export default function Login() {
               <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
             </button>
           </div>
+          {typeof fieldErrors.password === "string" && <p id="login-password-error" className="auth-field-error">{fieldErrors.password}</p>}
         </div>
 
         <div className="mb-6 flex items-center justify-between gap-4 text-sm">

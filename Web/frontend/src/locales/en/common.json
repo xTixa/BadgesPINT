@@ -1244,7 +1244,10 @@
     },
     "login": {
       "errors": {
-        "invalidCredentials": "Invalid credentials. Check your email and password."
+        "invalidCredentials": "Invalid credentials. Check your email and password.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "passwordRequired": "Password is required."
       },
       "title": "Log in",
       "description": "Enter your details to access the platform.",
