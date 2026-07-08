@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import EmailTemplate from "../models/EmailTemplate.js";
 
-const isProduction = process.env.NODE_ENV === "production";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -421,8 +420,4 @@ export function getMailErrorDetails(error) {
     responseCode: error.responseCode,
     response: error.response,
   };
-}
-
-export function shouldExposeEmailSecretsForDev() {
-  return !isProduction;
 }

@@ -11,7 +11,6 @@ import {
   getMailErrorDetails,
   isEmailConfigured,
   sendPasswordResetEmail,
-  shouldExposeEmailSecretsForDev,
 } from "../services/mailService.js";
 
 export const login = async (req, res) => {
@@ -261,34 +260,23 @@ export const recoverPassword = async (req, res) => {
       expires_at: expiresAt,
     });
 
-    const emailStatus = isEmailConfigured()
-      ? { emailSent: false, emailQueued: true }
-      : { emailSent: false, emailQueued: false, emailError: "Email nao configurado no servidor." };
-
-    if (emailStatus.emailQueued) {
-      sendPasswordResetEmail({
-        to: user.email,
-        name: user.name,
-        token: rawToken,
-      }).catch((mailError) => {
+    if (isEmailConfigured()) {
+      try {
+        await sendPasswordResetEmail({
+          to: user.email,
+          name: user.name,
+          token: rawToken,
+        });
+      } catch (mailError) {
         console.error(
           "Token de recuperacao criado, mas email falhou:",
           getMailErrorDetails(mailError),
         );
-      });
+      }
     }
 
-    const payload = {
-      message: emailStatus.emailQueued
-        ? "Se o email existir, enviamos instrucoes."
-        : "Token de recuperacao criado, mas o email nao esta configurado no servidor.",
-      ...emailStatus,
-    };
-    if (shouldExposeEmailSecretsForDev()) {
-      payload.resetToken = rawToken;
-    }
-
-    return res.json(payload);
+    // Resposta sempre genérica: não expõe o token nem revela se a conta existe.
+    return res.json({ message: "Se o email existir, enviamos instrucoes." });
   } catch (err) {
     console.error("Erro recoverPassword:", err);
     res.status(500).json({ message: "Erro interno." });

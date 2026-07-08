@@ -11,7 +11,6 @@ export default function RecoverPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
-  const [resetToken, setResetToken] = useState("");
   const [tokenInput, setTokenInput] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -26,6 +25,7 @@ export default function RecoverPassword() {
     setSent(true);
     setTokenInput(token);
     setInfo(t("auth.recoverPassword.infoDefineNew"));
+    window.history.replaceState({}, "", window.location.pathname);
   }, [t]);
 
   const handleSend = async (e) => {
@@ -40,14 +40,6 @@ export default function RecoverPassword() {
       setSent(true);
       setInfo(res.data?.message || t("auth.recoverPassword.infoSent"));
 
-      if (res.data?.resetToken) {
-        setResetToken(res.data.resetToken);
-        setTokenInput(res.data.resetToken);
-      }
-
-      if (res.data?.emailSent === false && res.data?.emailError) {
-        setInfo(`${res.data.message} ${res.data.emailError}`);
-      }
     } catch (err) {
       setError(err.response?.data?.message || t("auth.recoverPassword.errors.sendFailed"));
     } finally {
@@ -123,25 +115,8 @@ export default function RecoverPassword() {
         </form>
       )}
 
-      {sent && !done && (
+      {sent && tokenInput && !done && (
         <form onSubmit={handleReset}>
-          <div className="auth-field">
-            <label>{t("auth.recoverPassword.tokenLabel")}</label>
-            <input
-              type="text"
-              required
-              value={tokenInput}
-              onChange={(e) => setTokenInput(e.target.value)}
-              className="auth-input"
-              placeholder={t("auth.recoverPassword.tokenPlaceholder")}
-            />
-            {resetToken && (
-              <p className="mt-2 text-xs text-slate-500">
-                {t("auth.recoverPassword.devToken", { token: resetToken })}
-              </p>
-            )}
-          </div>
-
           <div className="auth-field">
             <label>{t("auth.recoverPassword.newPasswordLabel")}</label>
             <input
@@ -175,6 +150,14 @@ export default function RecoverPassword() {
             {resetting ? t("auth.recoverPassword.saving") : t("auth.recoverPassword.resetSubmit")}
           </button>
         </form>
+      )}
+
+      {sent && !tokenInput && !done && (
+        <div className="text-center">
+          <Link to="/login" className="auth-secondary-button">
+            {t("auth.recoverPassword.backToLogin")}
+          </Link>
+        </div>
       )}
 
       {done && (
