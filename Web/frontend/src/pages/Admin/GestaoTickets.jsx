@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import Sidebar from "../../layout/Sidebar";
@@ -6,6 +7,7 @@ import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function GestaoTickets() {
+  const { t } = useTranslation();
   const { isMobile } = useWindowSize();
   const [tickets, setTickets] = useState([]);
   const { sortedItems: ticketsOrdenados, sortConfig, requestSort } = useSortableData(tickets);
@@ -20,22 +22,23 @@ export default function GestaoTickets() {
   const [novoStatus, setNovoStatus] = useState("");
 
   const statusOptions = [
-    { value: "aberto", label: "🔵 Aberto" },
-    { value: "em_analise", label: "🟡 Em Análise" },
-    { value: "resolvido", label: "🟢 Resolvido" },
-    { value: "fechado", label: "⚪ Fechado" },
+    { value: "aberto", label: t("admin.gestaoTickets.status.open") },
+    { value: "em_analise", label: t("admin.gestaoTickets.status.inAnalysis") },
+    { value: "resolvido", label: t("admin.gestaoTickets.status.resolved") },
+    { value: "fechado", label: t("admin.gestaoTickets.status.closed") },
   ];
 
   const prioridadeOptions = [
-    { value: "baixa", label: "🟢 Baixa" },
-    { value: "media", label: "🟡 Média" },
-    { value: "alta", label: "🔴 Alta" },
-    { value: "critica", label: "🔴🔴 Crítica" },
+    { value: "baixa", label: t("admin.gestaoTickets.priority.low") },
+    { value: "media", label: t("admin.gestaoTickets.priority.medium") },
+    { value: "alta", label: t("admin.gestaoTickets.priority.high") },
+    { value: "critica", label: t("admin.gestaoTickets.priority.critical") },
   ];
 
   useEffect(() => {
     fetchTickets();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, filtroStatus, filtroPrioridade]);
 
   const fetchTickets = async () => {
@@ -111,18 +114,18 @@ export default function GestaoTickets() {
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      aberto: { className: "bg-blue-100 text-blue-700", label: "🔵 Aberto" },
+      aberto: { className: "bg-blue-100 text-blue-700", label: t("admin.gestaoTickets.status.open") },
       em_analise: {
         className: "bg-amber-100 text-amber-700",
-        label: "🟡 Em Análise",
+        label: t("admin.gestaoTickets.status.inAnalysis"),
       },
       resolvido: {
         className: "bg-emerald-100 text-emerald-700",
-        label: "🟢 Resolvido",
+        label: t("admin.gestaoTickets.status.resolved"),
       },
       fechado: {
         className: "bg-slate-100 text-slate-700",
-        label: "⚪ Fechado",
+        label: t("admin.gestaoTickets.status.closed"),
       },
     };
     const s = statusMap[status] || {
@@ -157,11 +160,10 @@ export default function GestaoTickets() {
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold">Gestão de Tickets</h1>
+            <h1 className="text-3xl font-bold">{t("admin.gestaoTickets.title")}</h1>
 
             <p className="mt-2 text-white/80">
-              Monitoriza pedidos de suporte, acompanha estados e responde aos
-              utilizadores.
+              {t("admin.gestaoTickets.subtitle")}
             </p>
           </div>
         </div>
@@ -170,7 +172,7 @@ export default function GestaoTickets() {
           <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl bg-white p-4 shadow-sm">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Total
+                {t("admin.gestaoTickets.total")}
               </div>
               <div className="mt-1 text-3xl font-bold text-slate-800">
                 {stats.total}
@@ -179,7 +181,7 @@ export default function GestaoTickets() {
 
             <div className="rounded-2xl bg-white p-4 shadow-sm">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Abertos
+                {t("admin.gestaoTickets.open")}
               </div>
               <div className="mt-1 text-3xl font-bold text-blue-600">
                 {stats.porStatus?.abertos ?? stats.abertos ?? 0}
@@ -188,7 +190,7 @@ export default function GestaoTickets() {
 
             <div className="rounded-2xl bg-white p-4 shadow-sm">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Resolvidos
+                {t("admin.gestaoTickets.resolved")}
               </div>
               <div className="mt-1 text-3xl font-bold text-emerald-600">
                 {stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}
@@ -197,7 +199,7 @@ export default function GestaoTickets() {
 
             <div className="rounded-2xl bg-white p-4 shadow-sm">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Críticos
+                {t("admin.gestaoTickets.critical")}
               </div>
               <div className="mt-1 text-3xl font-bold text-rose-600">
                 {stats.porPrioridade?.find((p) => p.prioridade === "critica")
@@ -220,7 +222,7 @@ export default function GestaoTickets() {
                   setPage(1);
                 }}
               >
-                <option value="">Todos os Status</option>
+                <option value="">{t("admin.gestaoTickets.allStatuses")}</option>
                 {statusOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -238,7 +240,7 @@ export default function GestaoTickets() {
                   setPage(1);
                 }}
               >
-                <option value="">Todas as Prioridades</option>
+                <option value="">{t("admin.gestaoTickets.allPriorities")}</option>
                 {prioridadeOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -256,7 +258,7 @@ export default function GestaoTickets() {
                   setPage(1);
                 }}
               >
-                <i className="bi bi-arrow-clockwise"></i> Limpar
+                <i className="bi bi-arrow-clockwise"></i> {t("admin.gestaoTickets.clear")}
               </button>
             </div>
           </div>
@@ -264,18 +266,18 @@ export default function GestaoTickets() {
 
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
           {loading ? (
-            <p className="py-10 text-center text-sm text-slate-500">A carregar tickets...</p>
+            <p className="py-10 text-center text-sm text-slate-500">{t("admin.gestaoTickets.loading")}</p>
           ) : !isMobile ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <SortableTh label="Título" sortKey="titulo" accessor={(t) => t.titulo} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Utilizador" sortKey="utilizador" accessor={(t) => t.utilizador?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Status" sortKey="status" accessor={(t) => t.status} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Prioridade" sortKey="prioridade" accessor={(t) => t.prioridade} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Data" sortKey="createdAt" accessor={(t) => (t.createdAt ? new Date(t.createdAt).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
-                    <th className="px-4 py-3">Ação</th>
+                    <SortableTh label={t("admin.gestaoTickets.columns.title")} sortKey="titulo" accessor={(row) => row.titulo} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoTickets.columns.user")} sortKey="utilizador" accessor={(row) => row.utilizador?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoTickets.columns.status")} sortKey="status" accessor={(row) => row.status} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoTickets.columns.priority")} sortKey="prioridade" accessor={(row) => row.prioridade} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoTickets.columns.date")} sortKey="createdAt" accessor={(row) => (row.createdAt ? new Date(row.createdAt).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
+                    <th className="px-4 py-3">{t("admin.gestaoTickets.actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -315,7 +317,7 @@ export default function GestaoTickets() {
                             setNovoStatus(ticket.status);
                           }}
                         >
-                          <i className="bi bi-pencil"></i> Editar
+                          <i className="bi bi-pencil"></i> {t("admin.gestaoTickets.editButton")}
                         </button>
                       </td>
                     </tr>
@@ -327,7 +329,7 @@ export default function GestaoTickets() {
             <div className="space-y-3 p-4">
               {tickets.length === 0 ? (
                 <p className="py-6 text-center text-sm text-slate-500">
-                  Sem tickets para mostrar.
+                  {t("admin.gestaoTickets.noTicketsMobile")}
                 </p>
               ) : (
                 tickets.map((ticket) => (
@@ -364,7 +366,7 @@ export default function GestaoTickets() {
               onClick={() => setPage(page - 1)}
               className="rounded-xl border border-slate-200 px-4 py-2 disabled:opacity-50"
             >
-              Anterior
+              {t("admin.gestaoTickets.previous")}
             </button>
 
             <span className="px-4 py-2 font-medium">
@@ -376,7 +378,7 @@ export default function GestaoTickets() {
               onClick={() => setPage(page + 1)}
               className="rounded-xl border border-slate-200 px-4 py-2 disabled:opacity-50"
             >
-              Seguinte
+              {t("admin.gestaoTickets.next")}
             </button>
           </div>
         </div>
@@ -396,7 +398,7 @@ export default function GestaoTickets() {
 
               <div className="mb-5">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
-                  Novo Status
+                  {t("admin.gestaoTickets.form.newStatus")}
                 </label>
                 <select
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
@@ -413,13 +415,13 @@ export default function GestaoTickets() {
 
               <div className="mb-5">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
-                  Resposta/Notas do Administrador
+                  {t("admin.gestaoTickets.form.responsePlaceholderLabel")}
                 </label>
                 <textarea
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   value={respostaAdmin}
                   onChange={(e) => setRespostaAdmin(e.target.value)}
-                  placeholder="Escreva sua resposta aqui..."
+                  placeholder={t("admin.gestaoTickets.form.responsePlaceholder")}
                   rows={6}
                 />
               </div>
@@ -429,13 +431,13 @@ export default function GestaoTickets() {
                   className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800"
                   onClick={handleAtualizarTicket}
                 >
-                  <i className="bi bi-check"></i> Atualizar
+                  <i className="bi bi-check"></i> {t("admin.gestaoTickets.form.update")}
                 </button>
                 <button
                   className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                   onClick={() => setTicketSelecionado(null)}
                 >
-                  Cancelar
+                  {t("admin.gestaoTickets.form.cancel")}
                 </button>
               </div>
             </div>

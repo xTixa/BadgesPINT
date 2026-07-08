@@ -187,10 +187,10 @@ export default function GestaoSLA() {
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
           <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="mb-2 text-sm font-medium text-white/80">Painel de administracao</p>
-              <h1 className="text-3xl font-bold text-white">Gestao de SLA</h1>
+              <p className="mb-2 text-sm font-medium text-white/80">{t("admin.gestaoSLA.eyebrow")}</p>
+              <h1 className="text-3xl font-bold text-white">{t("admin.gestaoSLA.title")}</h1>
               <p className="mt-2 max-w-2xl text-white/85">
-                Definir limites, notificacoes e acompanhamento dos pedidos por equipa.
+                {t("admin.gestaoSLA.subtitle")}
               </p>
             </div>
             <button
@@ -198,7 +198,7 @@ export default function GestaoSLA() {
               onClick={handleNovoSLA}
             >
               <i className="bi bi-plus-circle"></i>
-              Novo SLA
+              {t("admin.gestaoSLA.newSLA")}
             </button>
           </div>
         </section>
@@ -215,14 +215,14 @@ export default function GestaoSLA() {
             <div>
               <h2 className="flex items-center gap-2 text-sm font-bold text-slate-700">
                 <i className="bi bi-lightning-charge-fill text-[#0F62FE]"></i>
-                Verificação Automática de Alertas SLA
+                {t("admin.gestaoSLA.autoCheck.title")}
               </h2>
               <p className="mt-1 text-xs text-slate-500">
-                O sistema verifica os SLAs automaticamente de hora em hora. Pode disparar uma verificação manual agora.
+                {t("admin.gestaoSLA.autoCheck.description")}
               </p>
               {lastCheckTime && (
                 <p className="mt-1.5 text-xs text-slate-400">
-                  Última verificação manual:{" "}
+                  {t("admin.gestaoSLA.autoCheck.lastCheck")}{" "}
                   <span className="font-medium text-slate-600">
                     {lastCheckTime.toLocaleString("pt-PT")}
                   </span>
@@ -238,12 +238,12 @@ export default function GestaoSLA() {
               {checkLoading ? (
                 <>
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-                  A verificar...
+                  {t("admin.gestaoSLA.autoCheck.checking")}
                 </>
               ) : (
                 <>
                   <i className="bi bi-play-circle-fill"></i>
-                  Disparar Verificação
+                  {t("admin.gestaoSLA.autoCheck.trigger")}
                 </>
               )}
             </button>
@@ -260,15 +260,15 @@ export default function GestaoSLA() {
             <div className="mt-4 grid grid-cols-1 gap-3 xs:grid-cols-3">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
                 <p className="text-xl font-bold text-[#0F62FE]">{checkResult.slas_checked}</p>
-                <p className="mt-0.5 text-xs text-slate-500">SLAs verificados</p>
+                <p className="mt-0.5 text-xs text-slate-500">{t("admin.gestaoSLA.autoCheck.slasChecked")}</p>
               </div>
               <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-center">
                 <p className="text-xl font-bold text-rose-600">{checkResult.overdue_pedidos_checked}</p>
-                <p className="mt-0.5 text-xs text-slate-500">Pedidos em atraso</p>
+                <p className="mt-0.5 text-xs text-slate-500">{t("admin.gestaoSLA.autoCheck.overduePedidosChecked")}</p>
               </div>
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-center">
                 <p className="text-xl font-bold text-amber-600">{checkResult.alerts_created_or_existing}</p>
-                <p className="mt-0.5 text-xs text-slate-500">Novos alertas</p>
+                <p className="mt-0.5 text-xs text-slate-500">{t("admin.gestaoSLA.autoCheck.newAlerts")}</p>
               </div>
             </div>
           )}
@@ -277,9 +277,9 @@ export default function GestaoSLA() {
         {/* Filtros */}
         <section className="mb-6 flex flex-wrap gap-2 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
           {[
-            { value: "all",     label: `Todos (${slas.length})`,                                 tone: "text-slate-700" },
-            { value: "overdue", label: `Atrasados (${slas.filter(s => s.overdue > 0).length})`, tone: "text-rose-700"  },
-            { value: "pending", label: `Pendentes (${slas.filter(s => s.pending > 0).length})`, tone: "text-cyan-700"  }
+            { value: "all",     label: t("admin.gestaoSLA.filters.all", { count: slas.length }),                                 tone: "text-slate-700" },
+            { value: "overdue", label: t("admin.gestaoSLA.filters.overdue", { count: slas.filter(s => s.overdue > 0).length }), tone: "text-rose-700"  },
+            { value: "pending", label: t("admin.gestaoSLA.filters.pending", { count: slas.filter(s => s.pending > 0).length }), tone: "text-cyan-700"  }
           ].map((item) => (
             <button
               key={item.value}
@@ -301,20 +301,20 @@ export default function GestaoSLA() {
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-500">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0F62FE]/20 border-t-[#0F62FE]"></div>
-              <p className="text-sm">A carregar SLAs...</p>
+              <p className="text-sm">{t("admin.gestaoSLA.loading")}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <SortableTh label="Equipa" sortKey="teamName" accessor={(s) => s.teamName} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Tipo" sortKey="teamType" accessor={(s) => s.teamType} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Limite de Horas" sortKey="hoursLimit" accessor={(s) => s.hoursLimit} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Atrasados" sortKey="overdue" accessor={(s) => s.overdue} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Pendentes" sortKey="pending" accessor={(s) => s.pending} sortConfig={sortConfig} onSort={requestSort} />
-                    <th className="px-4 py-3">Alertas</th>
-                    <th className="px-4 py-3">Ações</th>
+                    <SortableTh label={t("admin.gestaoSLA.table.team")} sortKey="teamName" accessor={(s) => s.teamName} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoSLA.table.type")} sortKey="teamType" accessor={(s) => s.teamType} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoSLA.table.hoursLimit")} sortKey="hoursLimit" accessor={(s) => s.hoursLimit} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoSLA.table.overdue")} sortKey="overdue" accessor={(s) => s.overdue} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoSLA.table.pending")} sortKey="pending" accessor={(s) => s.pending} sortConfig={sortConfig} onSort={requestSort} />
+                    <th className="px-4 py-3">{t("admin.gestaoSLA.table.alerts")}</th>
+                    <th className="px-4 py-3">{t("admin.gestaoSLA.table.actions")}</th>
                   </tr>
                 </thead>
 
@@ -323,11 +323,11 @@ export default function GestaoSLA() {
                     <tr key={sla.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <p className="font-semibold text-slate-800">{sla.teamName}</p>
-                        <p className="text-xs text-slate-500">ID: {sla.id}</p>
+                        <p className="text-xs text-slate-500">{t("admin.gestaoSLA.table.id")}: {sla.id}</p>
                       </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${teamTypeBadgeClass(sla.teamType)}`}>
-                          {sla.teamType === "talent_manager" ? "Talent Manager" : "Service Line"}
+                          {sla.teamType === "talent_manager" ? t("admin.gestaoSLA.table.talentManager") : t("admin.gestaoSLA.table.serviceLine")}
                         </span>
                       </td>
                       <td className="px-4 py-3 font-semibold text-slate-800">
@@ -350,23 +350,23 @@ export default function GestaoSLA() {
                             {sla.email_notification && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
                                 <i className="bi bi-envelope-fill text-[10px]"></i>
-                                Email
+                                {t("admin.gestaoSLA.table.email")}
                               </span>
                             )}
                             {sla.push_notification && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700">
                                 <i className="bi bi-bell-fill text-[10px]"></i>
-                                Push
+                                {t("admin.gestaoSLA.table.push")}
                               </span>
                             )}
                             {!sla.email_notification && !sla.push_notification && (
-                              <span className="text-xs text-slate-400">Só in-app</span>
+                              <span className="text-xs text-slate-400">{t("admin.gestaoSLA.table.inAppOnly")}</span>
                             )}
                           </div>
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
                             <i className="bi bi-bell-slash text-[10px]"></i>
-                            Desativado
+                            {t("admin.gestaoSLA.table.disabled")}
                           </span>
                         )}
                       </td>
@@ -377,14 +377,14 @@ export default function GestaoSLA() {
                           onClick={() => handleEditSLA(sla)}
                         >
                           <i className="bi bi-pencil mr-1"></i>
-                          Editar
+                          {t("admin.gestaoSLA.table.edit")}
                         </button>
                         <button
                           className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
                           onClick={() => handleDeleteSLA(sla.id)}
                         >
                           <i className="bi bi-trash mr-1"></i>
-                          Apagar
+                          {t("admin.gestaoSLA.table.delete")}
                         </button>
                       </td>
                     </tr>
@@ -393,7 +393,7 @@ export default function GestaoSLA() {
                   {slasFiltrados.length === 0 && (
                     <tr>
                       <td colSpan="7" className="px-4 py-6 text-center text-sm text-slate-500">
-                        Nenhum SLA encontrado com esses critérios.
+                        {t("admin.gestaoSLA.table.empty")}
                       </td>
                     </tr>
                   )}
@@ -408,26 +408,26 @@ export default function GestaoSLA() {
           <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 shadow-sm">
             <h6 className="mb-2 flex items-center gap-2 text-sm font-bold text-rose-700">
               <i className="bi bi-exclamation-triangle-fill"></i>
-              SLAs Ultrapassados
+              {t("admin.gestaoSLA.summary.overdueTitle")}
             </h6>
             <p className="text-sm text-slate-600">
               <strong className="text-2xl font-bold text-rose-700">
                 {slas.reduce((sum, s) => sum + (s.overdue || 0), 0)}
               </strong>
-              <span className="ml-2">pedidos com SLA ultrapassado</span>
+              <span className="ml-2">{t("admin.gestaoSLA.summary.overdueText")}</span>
             </p>
           </div>
 
           <div className="rounded-2xl border border-[#0F62FE]/20 bg-[#0F62FE]/10 p-4 shadow-sm">
             <h6 className="mb-2 flex items-center gap-2 text-sm font-bold text-[#0F62FE]">
               <i className="bi bi-hourglass-bottom"></i>
-              Pedidos Pendentes
+              {t("admin.gestaoSLA.summary.pendingTitle")}
             </h6>
             <p className="text-sm text-slate-600">
               <strong className="text-2xl font-bold text-[#0F62FE]">
                 {slas.reduce((sum, s) => sum + (s.pending || 0), 0)}
               </strong>
-              <span className="ml-2">pedidos em espera de aprovação</span>
+              <span className="ml-2">{t("admin.gestaoSLA.summary.pendingText")}</span>
             </p>
           </div>
         </div>
@@ -439,7 +439,7 @@ export default function GestaoSLA() {
           <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-[#0F62FE]/15 bg-[#EFF4FF] px-5 py-4">
               <h5 className="text-lg font-bold text-[#0F62FE]">
-                {editingSLA ? "Editar SLA" : "Novo SLA"}
+                {editingSLA ? t("admin.gestaoSLA.modal.editTitle") : t("admin.gestaoSLA.modal.newTitle")}
               </h5>
               <button
                 type="button"
@@ -452,7 +452,7 @@ export default function GestaoSLA() {
 
             <div className="space-y-4 p-5">
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Tipo de Equipa *</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoSLA.modal.teamTypeLabel")}</label>
                 <select
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                   value={formData.team_type}
@@ -460,19 +460,19 @@ export default function GestaoSLA() {
                     setFormData({ ...formData, team_type: e.target.value, team_id: "" })
                   }
                 >
-                  <option value="talent_manager">Talent Manager</option>
-                  <option value="service_line_leader">Service Line</option>
+                  <option value="talent_manager">{t("admin.gestaoSLA.table.talentManager")}</option>
+                  <option value="service_line_leader">{t("admin.gestaoSLA.table.serviceLine")}</option>
                 </select>
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Equipa *</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoSLA.modal.teamLabel")}</label>
                 <select
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
                   value={formData.team_id}
                   onChange={(e) => setFormData({ ...formData, team_id: e.target.value })}
                 >
-                  <option value="">Selecionar equipa</option>
+                  <option value="">{t("admin.gestaoSLA.modal.selectTeam")}</option>
                   {teams
                     .filter((team) => team.role === formData.team_type)
                     .map((team) => (
@@ -484,7 +484,7 @@ export default function GestaoSLA() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Limite de Horas (SLA) *</label>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoSLA.modal.hoursLimitLabel")}</label>
                 <input
                   type="number"
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
@@ -493,11 +493,11 @@ export default function GestaoSLA() {
                   placeholder="24"
                   min="1"
                 />
-                <p className="mt-1 text-xs text-slate-500">Tempo máximo em horas para responder a pedidos</p>
+                <p className="mt-1 text-xs text-slate-500">{t("admin.gestaoSLA.modal.hoursLimitHint")}</p>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-700">Notificações</label>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">{t("admin.gestaoSLA.modal.notificationsLabel")}</label>
                 <div className="space-y-2 text-sm text-slate-700">
                   <label className="flex items-center gap-2">
                     <input
@@ -508,7 +508,7 @@ export default function GestaoSLA() {
                     />
                     <span>
                       <i className="bi bi-microsoft-teams mr-2"></i>
-                      Notificação geral ativa
+                      {t("admin.gestaoSLA.modal.generalNotification")}
                     </span>
                   </label>
 
@@ -522,7 +522,7 @@ export default function GestaoSLA() {
                     />
                     <span>
                       <i className="bi bi-envelope mr-2"></i>
-                      Notificação por Email
+                      {t("admin.gestaoSLA.modal.emailNotification")}
                     </span>
                   </label>
 
@@ -536,7 +536,7 @@ export default function GestaoSLA() {
                     />
                     <span>
                       <i className="bi bi-bell mr-2"></i>
-                      Notificação PUSH
+                      {t("admin.gestaoSLA.modal.pushNotification")}
                     </span>
                   </label>
                 </div>
@@ -549,7 +549,7 @@ export default function GestaoSLA() {
                 className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                 onClick={() => setShowModal(false)}
               >
-                Cancelar
+                {t("admin.gestaoSLA.modal.cancel")}
               </button>
               <button
                 type="button"
@@ -557,7 +557,7 @@ export default function GestaoSLA() {
                 onClick={handleSaveSLA}
               >
                 <i className="bi bi-check-circle"></i>
-                {editingSLA ? "Atualizar" : "Criar"}
+                {editingSLA ? t("admin.gestaoSLA.modal.update") : t("admin.gestaoSLA.modal.create")}
               </button>
             </div>
           </div>

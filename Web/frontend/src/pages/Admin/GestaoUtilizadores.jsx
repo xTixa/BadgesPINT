@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import { useWindowSize } from "../../hooks/useWindowSize";
@@ -7,11 +8,11 @@ import AdminHero from "../../components/ui/AdminHero";
 import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
-const roleLabels = {
-  admin: "Administrador",
-  consultant: "Consultor",
-  talent_manager: "Talent Manager",
-  service_line_leader: "Service Line Leader",
+const roleKeys = {
+  admin: "admin.fichaUtilizador.roles.admin",
+  consultant: "admin.fichaUtilizador.roles.consultant",
+  talent_manager: "admin.fichaUtilizador.roles.talentManager",
+  service_line_leader: "admin.fichaUtilizador.roles.serviceLineLeader",
 };
 
 const roleStyles = {
@@ -20,10 +21,6 @@ const roleStyles = {
   talent_manager: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   service_line_leader: "bg-indigo-50 text-indigo-700 ring-indigo-200",
 };
-
-function getRoleLabel(role) {
-  return roleLabels[role] || role || "Sem perfil";
-}
 
 function getInitials(name = "") {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -35,10 +32,10 @@ function getInitials(name = "") {
     .toUpperCase();
 }
 
-function formatDate(value) {
-  if (!value) return "N/D";
+function formatDate(value, naLabel) {
+  if (!value) return naLabel;
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "N/D";
+  if (Number.isNaN(date.getTime())) return naLabel;
   return date.toLocaleDateString("pt-PT", {
     day: "2-digit",
     month: "2-digit",
@@ -49,6 +46,7 @@ function formatDate(value) {
 }
 
 export default function GestaoUtilizadores() {
+  const { t } = useTranslation();
   const { isMobile } = useWindowSize();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -77,9 +75,13 @@ export default function GestaoUtilizadores() {
     password: "",
   });
 
+  const getRoleLabel = (role) => (roleKeys[role] ? t(roleKeys[role]) : role || t("admin.fichaUtilizador.roles.none"));
+  const getAreaNameFallback = (areaId) => areaId || t("admin.common.notAvailable");
+
   useEffect(() => {
     fetchUsers();
     fetchAreas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function fetchUsers() {
@@ -96,7 +98,7 @@ export default function GestaoUtilizadores() {
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Nao foi possivel carregar os utilizadores.",
+          t("admin.gestaoUtilizadores.errors.loadFailed"),
       );
     } finally {
       setLoading(false);
@@ -118,12 +120,12 @@ export default function GestaoUtilizadores() {
     setSuccess("");
 
     if (!form.nome.trim() || !form.email.trim()) {
-      setError("Preenche o nome e o email do novo utilizador.");
+      setError(t("admin.gestaoUtilizadores.errors.fillNameAndEmail"));
       return;
     }
 
     if (form.role === "service_line_leader" && !form.area_id) {
-      setError("Seleciona uma area para o Service Line Leader.");
+      setError(t("admin.gestaoUtilizadores.errors.selectAreaForLeader"));
       return;
     }
 
@@ -139,7 +141,7 @@ export default function GestaoUtilizadores() {
       setForm({ nome: "", email: "", role: "consultant", area_id: "" });
       setSuccess(
         `${getRoleLabel(response.data?.role)}: ${
-          response.data?.message || "Utilizador criado com sucesso."
+          response.data?.message || t("admin.gestaoUtilizadores.success.created")
         }`,
       );
       fetchUsers();
@@ -148,7 +150,7 @@ export default function GestaoUtilizadores() {
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Nao foi possivel criar o utilizador.",
+          t("admin.gestaoUtilizadores.errors.createFailed"),
       );
     } finally {
       setSaving(false);
@@ -190,12 +192,12 @@ export default function GestaoUtilizadores() {
     setSuccess("");
 
     if (!editForm.name.trim() || !editForm.email.trim()) {
-      setError("Preenche o nome e o email do utilizador.");
+      setError(t("admin.gestaoUtilizadores.errors.fillNameAndEmail"));
       return;
     }
 
     if (editForm.role === "service_line_leader" && !editForm.area_id) {
-      setError("Seleciona uma area para o Service Line Leader.");
+      setError(t("admin.gestaoUtilizadores.errors.selectAreaForLeader"));
       return;
     }
 
@@ -226,13 +228,13 @@ export default function GestaoUtilizadores() {
       );
       setSelectedUser(updatedUser);
       setEditForm((current) => ({ ...current, password: "" }));
-      setSuccess("Utilizador atualizado com sucesso.");
+      setSuccess(t("admin.gestaoUtilizadores.success.updated"));
     } catch (err) {
       console.error("Erro ao atualizar utilizador:", err);
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Nao foi possivel atualizar o utilizador.",
+          t("admin.gestaoUtilizadores.errors.updateFailed"),
       );
     } finally {
       setEditingUser(false);
@@ -244,11 +246,11 @@ export default function GestaoUtilizadores() {
 
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     if (storedUser?.id === selectedUser.id) {
-      setError("Nao podes apagar o teu proprio utilizador.");
+      setError(t("admin.gestaoUtilizadores.errors.cannotDeleteSelf"));
       return;
     }
 
-    if (!window.confirm(`Apagar o utilizador ${selectedUser.name || selectedUser.email}?`)) {
+    if (!window.confirm(t("admin.gestaoUtilizadores.confirmDelete", { name: selectedUser.name || selectedUser.email }))) {
       return;
     }
 
@@ -260,13 +262,13 @@ export default function GestaoUtilizadores() {
       await api.delete(`/api/admin/users/${selectedUser.id}`);
       setUsers((current) => current.filter((user) => user.id !== selectedUser.id));
       setSelectedUser(null);
-      setSuccess("Utilizador removido com sucesso.");
+      setSuccess(t("admin.gestaoUtilizadores.success.deleted"));
     } catch (err) {
       console.error("Erro ao apagar utilizador:", err);
       setError(
         err.response?.data?.message ||
           err.response?.data?.error ||
-          "Nao foi possivel apagar o utilizador.",
+          t("admin.gestaoUtilizadores.errors.deleteFailed"),
       );
     } finally {
       setDeletingUser(false);
@@ -301,16 +303,17 @@ export default function GestaoUtilizadores() {
 
       return matchesRole && matchesQuery;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, query, roleFilter]);
 
-  const roleOptions = Object.entries(roleLabels);
+  const roleOptions = Object.keys(roleKeys).map((value) => [value, t(roleKeys[value])]);
   const areaById = useMemo(
     () => new Map(areas.map((area) => [Number(area.id), area.name])),
     [areas],
   );
 
   function getAreaName(areaId) {
-    return areaById.get(Number(areaId)) || areaId || "N/D";
+    return areaById.get(Number(areaId)) || getAreaNameFallback(areaId);
   }
 
   const { sortedItems: usersOrdenados, sortConfig, requestSort } = useSortableData(filteredUsers);
@@ -321,17 +324,17 @@ export default function GestaoUtilizadores() {
 
       <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
         <AdminHero
-          title="Gestao de Utilizadores"
-          subtitle="Consulta perfis registados, filtra por funcao e cria novos utilizadores para a plataforma."
+          title={t("admin.gestaoUtilizadores.title")}
+          subtitle={t("admin.gestaoUtilizadores.subtitle")}
         />
 
         <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {[
-            { label: "Total", value: stats.total, icon: "bi-people-fill", tone: "text-slate-700" },
-            { label: "Consultants", value: stats.consultants, icon: "bi-person-badge", tone: "text-sky-600" },
-            { label: "Talent Managers", value: stats.talentManagers, icon: "bi-diagram-3", tone: "text-emerald-600" },
-            { label: "Service Line Leaders", value: stats.serviceLineLeaders, icon: "bi-person-workspace", tone: "text-indigo-600" },
-            { label: "Admins", value: stats.admins, icon: "bi-shield-lock", tone: "text-rose-600" },
+            { label: t("admin.gestaoUtilizadores.stats.total"), value: stats.total, icon: "bi-people-fill", tone: "text-slate-700" },
+            { label: t("admin.gestaoUtilizadores.stats.consultants"), value: stats.consultants, icon: "bi-person-badge", tone: "text-sky-600" },
+            { label: t("admin.gestaoUtilizadores.stats.talentManagers"), value: stats.talentManagers, icon: "bi-diagram-3", tone: "text-emerald-600" },
+            { label: t("admin.gestaoUtilizadores.stats.serviceLineLeaders"), value: stats.serviceLineLeaders, icon: "bi-person-workspace", tone: "text-indigo-600" },
+            { label: t("admin.gestaoUtilizadores.stats.admins"), value: stats.admins, icon: "bi-shield-lock", tone: "text-rose-600" },
           ].map((item) => (
             <div key={item.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between">
@@ -354,7 +357,7 @@ export default function GestaoUtilizadores() {
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-12">
               <div className="lg:col-span-6">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
-                  Pesquisar
+                  {t("admin.gestaoUtilizadores.searchLabel")}
                 </label>
                 <div className="relative">
                   <i className="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -362,21 +365,21 @@ export default function GestaoUtilizadores() {
                     className="w-full rounded-xl border border-slate-300 px-9 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Nome, email ou perfil"
+                    placeholder={t("admin.gestaoUtilizadores.searchPlaceholder")}
                   />
                 </div>
               </div>
 
               <div className="lg:col-span-4">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
-                  Perfil
+                  {t("admin.gestaoUtilizadores.profileLabel")}
                 </label>
                 <select
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                   value={roleFilter}
                   onChange={(event) => setRoleFilter(event.target.value)}
                 >
-                  <option value="">Todos os perfis</option>
+                  <option value="">{t("admin.gestaoUtilizadores.allProfiles")}</option>
                   {roleOptions.map(([value, label]) => (
                     <option key={value} value={value}>
                       {label}
@@ -395,7 +398,7 @@ export default function GestaoUtilizadores() {
                   }}
                 >
                   <i className="bi bi-arrow-clockwise"></i>
-                  Limpar
+                  {t("admin.gestaoUtilizadores.clear")}
                 </button>
               </div>
             </div>
@@ -403,12 +406,12 @@ export default function GestaoUtilizadores() {
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <h2 className="mb-3 text-base font-bold text-slate-900">
-              Novo utilizador
+              {t("admin.gestaoUtilizadores.newUser")}
             </h2>
             <form className="space-y-3" onSubmit={handleCreateUser}>
               <div>
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
-                  Nome
+                  {t("admin.gestaoUtilizadores.nameLabel")}
                 </label>
                 <input
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -416,13 +419,13 @@ export default function GestaoUtilizadores() {
                   onChange={(event) =>
                     setForm((current) => ({ ...current, nome: event.target.value }))
                   }
-                  placeholder="Nome do utilizador"
+                  placeholder={t("admin.gestaoUtilizadores.namePlaceholder")}
                 />
               </div>
 
               <div>
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
-                  Email
+                  {t("admin.gestaoUtilizadores.emailLabel")}
                 </label>
                 <input
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -431,13 +434,13 @@ export default function GestaoUtilizadores() {
                   onChange={(event) =>
                     setForm((current) => ({ ...current, email: event.target.value }))
                   }
-                  placeholder="email@softinsa.pt"
+                  placeholder={t("admin.gestaoUtilizadores.emailPlaceholder")}
                 />
               </div>
 
               <div>
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
-                  Perfil
+                  {t("admin.gestaoUtilizadores.roleLabel")}
                 </label>
                 <select
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -464,7 +467,7 @@ export default function GestaoUtilizadores() {
               {form.role === "service_line_leader" && (
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-slate-700">
-                    Area
+                    {t("admin.gestaoUtilizadores.areaLabel")}
                   </label>
                   <select
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -473,7 +476,7 @@ export default function GestaoUtilizadores() {
                       setForm((current) => ({ ...current, area_id: event.target.value }))
                     }
                   >
-                    <option value="">Selecionar area</option>
+                    <option value="">{t("admin.gestaoUtilizadores.selectArea")}</option>
                     {areas.map((area) => (
                       <option key={area.id} value={area.id}>
                         {area.name}
@@ -489,7 +492,7 @@ export default function GestaoUtilizadores() {
                 disabled={saving}
               >
                 <i className="bi bi-person-plus"></i>
-                {saving ? "A criar..." : "Criar utilizador"}
+                {saving ? t("admin.gestaoUtilizadores.creating") : t("admin.gestaoUtilizadores.createButton")}
               </button>
             </form>
           </section>
@@ -513,10 +516,10 @@ export default function GestaoUtilizadores() {
           <div className="flex flex-col gap-2 border-b border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-bold text-slate-900">
-                Utilizadores
+                {t("admin.gestaoUtilizadores.usersTitle")}
               </h2>
               <p className="text-sm text-slate-500">
-                {filteredUsers.length} de {users.length} registos
+                {t("admin.gestaoUtilizadores.records", { shown: filteredUsers.length, total: users.length })}
               </p>
             </div>
 
@@ -527,19 +530,19 @@ export default function GestaoUtilizadores() {
               disabled={loading}
             >
               <i className="bi bi-arrow-repeat"></i>
-              Atualizar
+              {t("admin.gestaoUtilizadores.refresh")}
             </button>
           </div>
 
           {loading ? (
             <div className="flex items-center justify-center gap-3 px-4 py-12 text-sm text-slate-500">
               <span className="h-5 w-5 animate-spin rounded-full border-2 border-sky-600 border-r-transparent"></span>
-              A carregar utilizadores...
+              {t("admin.gestaoUtilizadores.loading")}
             </div>
           ) : filteredUsers.length === 0 ? (
             <div className="px-4 py-12 text-center text-sm text-slate-500">
               <i className="bi bi-inbox mb-2 block text-3xl text-slate-300"></i>
-              Sem utilizadores para os filtros selecionados.
+              {t("admin.gestaoUtilizadores.emptyState")}
             </div>
           ) : isMobile ? (
             <div className="space-y-3 p-4">
@@ -555,9 +558,9 @@ export default function GestaoUtilizadores() {
                       </h3>
                       <p className="truncate text-xs text-slate-500">{user.email}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
-                        <RoleBadge role={user.role} />
+                        <RoleBadge role={user.role} t={t} />
                         <span className="text-xs text-slate-500">
-                          {Number(user.points_total || 0)} pontos
+                          {Number(user.points_total || 0)} {t("admin.gestaoUtilizadores.pointsSuffix")}
                         </span>
                       </div>
                       <div className="mt-3 flex flex-wrap gap-2">
@@ -567,7 +570,7 @@ export default function GestaoUtilizadores() {
                           onClick={() => openUserProfile(user, "preview")}
                         >
                           <i className="bi bi-eye"></i>
-                          Preview
+                          {t("admin.gestaoUtilizadores.preview")}
                         </button>
                         <button
                           type="button"
@@ -575,7 +578,7 @@ export default function GestaoUtilizadores() {
                           onClick={() => navigate(`/admin/users/${user.id}`)}
                         >
                           <i className="bi bi-file-earmark-person"></i>
-                          Ficha completa
+                          {t("admin.gestaoUtilizadores.fullProfile")}
                         </button>
                       </div>
                     </div>
@@ -588,12 +591,12 @@ export default function GestaoUtilizadores() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
-                    <SortableTh label="Utilizador" sortKey="name" accessor={(u) => u.name || ""} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Email" sortKey="email" accessor={(u) => u.email || ""} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Perfil" sortKey="role" accessor={(u) => u.role || ""} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Area" sortKey="area" accessor={(u) => getAreaName(u.area_id)} sortConfig={sortConfig} onSort={requestSort} />
-                    <SortableTh label="Pontos" sortKey="points_total" accessor={(u) => Number(u.points_total || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-right" />
-                    <th className="px-4 py-3 text-right">Acoes</th>
+                    <SortableTh label={t("admin.gestaoUtilizadores.columns.user")} sortKey="name" accessor={(u) => u.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoUtilizadores.columns.email")} sortKey="email" accessor={(u) => u.email || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoUtilizadores.columns.role")} sortKey="role" accessor={(u) => u.role || ""} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoUtilizadores.columns.area")} sortKey="area" accessor={(u) => getAreaName(u.area_id)} sortConfig={sortConfig} onSort={requestSort} />
+                    <SortableTh label={t("admin.gestaoUtilizadores.columns.points")} sortKey="points_total" accessor={(u) => Number(u.points_total || 0)} sortConfig={sortConfig} onSort={requestSort} className="text-right" />
+                    <th className="px-4 py-3 text-right">{t("admin.gestaoUtilizadores.columns.actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -609,15 +612,15 @@ export default function GestaoUtilizadores() {
                           </div>
                           <div>
                             <div className="font-semibold text-slate-900">
-                              {user.name || "Sem nome"}
+                              {user.name || t("admin.gestaoUtilizadores.noName")}
                             </div>
                             <div className="text-xs text-slate-400">ID {user.id}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3">{user.email || "N/D"}</td>
+                      <td className="px-4 py-3">{user.email || t("admin.common.notAvailable")}</td>
                       <td className="px-4 py-3">
-                        <RoleBadge role={user.role} />
+                        <RoleBadge role={user.role} t={t} />
                       </td>
                       <td className="px-4 py-3">{getAreaName(user.area_id)}</td>
                       <td className="px-4 py-3 text-right font-semibold text-slate-900">
@@ -631,7 +634,7 @@ export default function GestaoUtilizadores() {
                             onClick={() => openUserProfile(user, "preview")}
                           >
                             <i className="bi bi-eye"></i>
-                            Preview
+                            {t("admin.gestaoUtilizadores.preview")}
                           </button>
                           <button
                             type="button"
@@ -639,7 +642,7 @@ export default function GestaoUtilizadores() {
                             onClick={() => navigate(`/admin/users/${user.id}`)}
                           >
                             <i className="bi bi-file-earmark-person"></i>
-                            Ficha
+                            {t("admin.gestaoUtilizadores.fullProfileShort")}
                           </button>
                         </div>
                       </td>
@@ -661,10 +664,10 @@ export default function GestaoUtilizadores() {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-slate-900">
-                      {profileMode === "preview" ? "Preview de perfil" : "Ficha completa"}
+                      {profileMode === "preview" ? t("admin.gestaoUtilizadores.previewProfile") : t("admin.gestaoUtilizadores.fullProfile")}
                     </h2>
                     <p className="text-sm text-slate-500">
-                      {selectedUser.name || "Sem nome"} · {selectedUser.email || "N/D"}
+                      {selectedUser.name || t("admin.gestaoUtilizadores.noName")} · {selectedUser.email || t("admin.common.notAvailable")}
                     </p>
                   </div>
                 </div>
@@ -674,7 +677,7 @@ export default function GestaoUtilizadores() {
                   className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-500 transition hover:bg-slate-50"
                   onClick={closeUserProfile}
                   disabled={editingUser || deletingUser}
-                  aria-label="Fechar perfil"
+                  aria-label={t("admin.gestaoUtilizadores.closeProfile")}
                 >
                   <i className="bi bi-x-lg"></i>
                 </button>
@@ -685,9 +688,9 @@ export default function GestaoUtilizadores() {
                   <div className="rounded-xl border border-slate-200 p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Perfil
+                        {t("admin.gestaoUtilizadores.profileLabel")}
                       </span>
-                      <RoleBadge role={selectedUser.role} />
+                      <RoleBadge role={selectedUser.role} t={t} />
                     </div>
                     <dl className="space-y-3 text-sm">
                       <div>
@@ -698,13 +701,13 @@ export default function GestaoUtilizadores() {
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                          Area
+                          {t("admin.gestaoUtilizadores.areaLabel")}
                         </dt>
                         <dd className="mt-1 text-slate-700">{getAreaName(selectedUser.area_id)}</dd>
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                          Pontos
+                          {t("admin.fichaUtilizador.pointsLabel")}
                         </dt>
                         <dd className="mt-1 font-semibold text-slate-800">
                           {Number(selectedUser.points_total || 0)}
@@ -712,15 +715,15 @@ export default function GestaoUtilizadores() {
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                          Criado em
+                          {t("admin.fichaUtilizador.createdAtLabel")}
                         </dt>
-                        <dd className="mt-1 text-slate-700">{formatDate(selectedUser.createdAt)}</dd>
+                        <dd className="mt-1 text-slate-700">{formatDate(selectedUser.createdAt, t("admin.common.notAvailable"))}</dd>
                       </div>
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                          Atualizado em
+                          {t("admin.fichaUtilizador.updatedAtLabel")}
                         </dt>
-                        <dd className="mt-1 text-slate-700">{formatDate(selectedUser.updatedAt)}</dd>
+                        <dd className="mt-1 text-slate-700">{formatDate(selectedUser.updatedAt, t("admin.common.notAvailable"))}</dd>
                       </div>
                     </dl>
                   </div>
@@ -732,7 +735,7 @@ export default function GestaoUtilizadores() {
                     disabled={editingUser || deletingUser}
                   >
                     <i className="bi bi-trash"></i>
-                    {deletingUser ? "A apagar..." : "Apagar utilizador"}
+                    {deletingUser ? t("admin.gestaoUtilizadores.deleting") : t("admin.gestaoUtilizadores.deleteUser")}
                   </button>
                 </aside>
 
@@ -740,15 +743,15 @@ export default function GestaoUtilizadores() {
                   <section className="space-y-4">
                     <div className="rounded-xl border border-slate-200 p-4">
                       <h3 className="mb-4 text-base font-bold text-slate-900">
-                        Resumo do utilizador
+                        {t("admin.gestaoUtilizadores.summary")}
                       </h3>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <InfoItem label="Nome" value={selectedUser.name || "N/D"} />
-                        <InfoItem label="Email" value={selectedUser.email || "N/D"} />
-                        <InfoItem label="Perfil" value={getRoleLabel(selectedUser.role)} />
-                        <InfoItem label="Area" value={getAreaName(selectedUser.area_id)} />
-                        <InfoItem label="Pontos" value={Number(selectedUser.points_total || 0)} />
-                        <InfoItem label="Criado em" value={formatDate(selectedUser.createdAt)} />
+                        <InfoItem label={t("admin.gestaoUtilizadores.nameLabel")} value={selectedUser.name || t("admin.common.notAvailable")} />
+                        <InfoItem label={t("admin.gestaoUtilizadores.emailLabel")} value={selectedUser.email || t("admin.common.notAvailable")} />
+                        <InfoItem label={t("admin.gestaoUtilizadores.profileLabel")} value={getRoleLabel(selectedUser.role)} />
+                        <InfoItem label={t("admin.gestaoUtilizadores.areaLabel")} value={getAreaName(selectedUser.area_id)} />
+                        <InfoItem label={t("admin.fichaUtilizador.pointsLabel")} value={Number(selectedUser.points_total || 0)} />
+                        <InfoItem label={t("admin.fichaUtilizador.createdAtLabel")} value={formatDate(selectedUser.createdAt, t("admin.common.notAvailable"))} />
                       </div>
                     </div>
 
@@ -758,7 +761,7 @@ export default function GestaoUtilizadores() {
                         className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                         onClick={closeUserProfile}
                       >
-                        Fechar
+                        {t("admin.gestaoUtilizadores.closeProfile")}
                       </button>
                       <button
                         type="button"
@@ -766,7 +769,7 @@ export default function GestaoUtilizadores() {
                         onClick={() => navigate(`/admin/users/${selectedUser.id}`)}
                       >
                         <i className="bi bi-file-earmark-person"></i>
-                        Abrir ficha completa
+                        {t("admin.gestaoUtilizadores.openFullProfile")}
                       </button>
                     </div>
                   </section>
@@ -775,7 +778,7 @@ export default function GestaoUtilizadores() {
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label className="mb-1 block text-sm font-semibold text-slate-700">
-                        Nome
+                        {t("admin.gestaoUtilizadores.nameLabel")}
                       </label>
                       <input
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -788,7 +791,7 @@ export default function GestaoUtilizadores() {
 
                     <div>
                       <label className="mb-1 block text-sm font-semibold text-slate-700">
-                        Email
+                        {t("admin.gestaoUtilizadores.emailLabel")}
                       </label>
                       <input
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -802,7 +805,7 @@ export default function GestaoUtilizadores() {
 
                     <div>
                       <label className="mb-1 block text-sm font-semibold text-slate-700">
-                        Perfil
+                        {t("admin.gestaoUtilizadores.roleLabel")}
                       </label>
                       <select
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -824,7 +827,7 @@ export default function GestaoUtilizadores() {
 
                     <div>
                       <label className="mb-1 block text-sm font-semibold text-slate-700">
-                        Area
+                        {t("admin.gestaoUtilizadores.areaLabel")}
                       </label>
                       <select
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -833,7 +836,7 @@ export default function GestaoUtilizadores() {
                           setEditForm((current) => ({ ...current, area_id: event.target.value }))
                         }
                       >
-                        <option value="">Sem area</option>
+                        <option value="">{t("admin.gestaoUtilizadores.noArea")}</option>
                         {areas.map((area) => (
                           <option key={area.id} value={area.id}>
                             {area.name}
@@ -845,7 +848,7 @@ export default function GestaoUtilizadores() {
 
                   <div>
                     <label className="mb-1 block text-sm font-semibold text-slate-700">
-                      Nova password
+                      {t("admin.gestaoUtilizadores.newPasswordLabel")}
                     </label>
                     <input
                       className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
@@ -854,7 +857,7 @@ export default function GestaoUtilizadores() {
                       onChange={(event) =>
                         setEditForm((current) => ({ ...current, password: event.target.value }))
                       }
-                      placeholder="Deixar vazio para manter a password atual"
+                      placeholder={t("admin.gestaoUtilizadores.newPasswordPlaceholder")}
                     />
                   </div>
 
@@ -865,7 +868,7 @@ export default function GestaoUtilizadores() {
                       onClick={closeUserProfile}
                       disabled={editingUser || deletingUser}
                     >
-                      Cancelar
+                      {t("admin.common.cancel")}
                     </button>
                     <button
                       type="submit"
@@ -873,7 +876,7 @@ export default function GestaoUtilizadores() {
                       disabled={editingUser || deletingUser}
                     >
                       <i className="bi bi-save"></i>
-                      {editingUser ? "A guardar..." : "Guardar alteracoes"}
+                      {editingUser ? t("admin.gestaoUtilizadores.saving") : t("admin.gestaoUtilizadores.saveChanges")}
                     </button>
                   </div>
                 </form>
@@ -887,14 +890,14 @@ export default function GestaoUtilizadores() {
   );
 }
 
-function RoleBadge({ role }) {
+function RoleBadge({ role, t }) {
   return (
     <span
       className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
         roleStyles[role] || "bg-slate-50 text-slate-700 ring-slate-200"
       }`}
     >
-      {getRoleLabel(role)}
+      {roleKeys[role] ? t(roleKeys[role]) : role || t("admin.fichaUtilizador.roles.none")}
     </span>
   );
 }

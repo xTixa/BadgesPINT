@@ -109,7 +109,28 @@
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\)\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\)\")",
       "Bash(node -e \"const d = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\); console.log\\('consultor key exists:', !!d.consultor\\); console.log\\('pages:', Object.keys\\(d.consultor||{}\\)\\);\")",
-      "Bash(node -e \"const d = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('consultor key exists:', !!d.consultor\\); console.log\\('pages:', Object.keys\\(d.consultor||{}\\)\\);\")"
+      "Bash(node -e \"const d = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('consultor key exists:', !!d.consultor\\); console.log\\('pages:', Object.keys\\(d.consultor||{}\\)\\);\")",
+      "Bash(mkdir -p \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\.admin_before_snapshot\" *)",
+      "Bash(cd \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\" && mkdir -p .admin_before_snapshot && cp /tmp/admin_before/*.jsx .admin_before_snapshot/ && ls .admin_before_snapshot)",
+      "Bash(node -e \"const j=JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\); console.log\\(Object.keys\\(j\\)\\); console.log\\('admin' in j\\)\")",
+      "Bash(cd \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\" && grep -oh 't\\(\"admin\\\\.[a-zA-Z0-9_.]*\"' src/pages/Admin/*.jsx | sed 's/t\\(\"//' | sed 's/\"//' | sort -u > /tmp/keys_used.txt && wc -l /tmp/keys_used.txt)",
+      "Bash(cat /tmp/keys_used.txt)",
+      "Bash(tail -n +251 /tmp/keys_used.txt)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('C:/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/5b19c0bc-9c9f-4dc6-a65f-c9421e8ca338/scratchpad/admin_pt.json'\\)\\); console.log\\('valid'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('C:/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/5b19c0bc-9c9f-4dc6-a65f-c9421e8ca338/scratchpad/admin_en.json'\\)\\); console.log\\('valid'\\)\")",
+      "Bash(cd \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\" && grep -oh 't\\(\"admin\\\\.[a-zA-Z0-9_.]*\"' src/pages/Admin/*.jsx | sed 's/t\\(\"//' | sed 's/\"//' | sort -u > /tmp/keys_used2.txt && wc -l /tmp/keys_used2.txt)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\); console.log\\('pt valid'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('en valid'\\)\")",
+      "Bash(node \"C:/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/5b19c0bc-9c9f-4dc6-a65f-c9421e8ca338/scratchpad/verify_keys.js\")",
+      "Bash(cp /tmp/keys_used2.txt \"C:/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/5b19c0bc-9c9f-4dc6-a65f-c9421e8ca338/scratchpad/keys_used2.txt\")",
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(cp /tmp/keys_final.txt \"C:/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/5b19c0bc-9c9f-4dc6-a65f-c9421e8ca338/scratchpad/keys_final.txt\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json'\\)\\); console.log\\('pt OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json'\\)\\); console.log\\('en OK'\\)\")"
+    ],
+    "additionalDirectories": [
+      "\\tmp\\admin_before",
+      "\\tmp"
     ]
   }
 }

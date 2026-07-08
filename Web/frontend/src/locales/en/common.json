@@ -41,7 +41,11 @@
     "home": "Home",
     "back": "Back",
     "loading": "Loading...",
-    "search": "Search"
+    "search": "Search",
+    "apply": "Apply filters",
+    "clear": "Clear",
+    "from": "From",
+    "to": "To"
   },
   "home": {
     "eyebrow": "Internal skills academy",
@@ -1774,6 +1778,725 @@
     },
     "pageHeader": {
       "eyebrow": "Admin panel"
+    }
+  },
+  "admin": {
+    "common": {
+      "actions": "Actions",
+      "adminPanel": "Admin panel",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "loading": "Loading...",
+      "noResults": "No results.",
+      "notAvailable": "N/A",
+      "remove": "Remove",
+      "save": "Save",
+      "saving": "Saving...",
+      "search": "Search"
+    },
+    "avisos": {
+      "allCategories": "All",
+      "cancelEdit": "Cancel edit",
+      "confirmDelete": "Delete this announcement for all recipients?",
+      "editTitle": "Edit announcement",
+      "emptyState": "No announcements found.",
+      "errors": {
+        "deleteFailed": "Could not delete the announcement.",
+        "fillTitleAndMessage": "Fill in the title and the message.",
+        "loadFailed": "Could not load the announcements.",
+        "saveFailed": "Could not save the announcement."
+      },
+      "eyebrow": "Push notifications",
+      "form": {
+        "categoryLabel": "Category",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Message to be made immediately available to users.",
+        "publish": "Publish announcement",
+        "saveChanges": "Save changes",
+        "titleLabel": "Title",
+        "titlePlaceholder": "E.g.: New learning path available"
+      },
+      "loading": "Loading announcements...",
+      "newTitle": "New announcement",
+      "noPermission": "No permission to manage Information/Announcements.",
+      "recipients": "{{count}} recipient",
+      "recipients_other": "{{count}} recipients",
+      "searchPlaceholder": "Search by title or message...",
+      "stats": {
+        "info": "Information",
+        "requests": "Requests",
+        "total": "Total",
+        "warnings": "Warnings"
+      },
+      "subtitle": "Create, view and edit communications made immediately available to portal users.",
+      "title": "Information / Announcements / Requests",
+      "types": {
+        "aviso": "Warning",
+        "info": "Information",
+        "pedido": "Request",
+        "urgente": "Urgent"
+      },
+      "unread": "{{count}} unread",
+      "unread_other": "{{count}} unread"
+    },
+    "badgeForm": {
+      "addRequirement": "Add requirement",
+      "areaLabel": "Area",
+      "badgeNameLabel": "Badge name",
+      "createTitle": "Create Badge",
+      "editTitle": "Edit Badge",
+      "errors": {
+        "imageTooLarge": "The image must be at most 3 MB.",
+        "noToken": "No token. Please log in again.",
+        "saveFailed": "Error saving badge.",
+        "selectImageFile": "Select an image file.",
+        "uploadFailed": "Error uploading image."
+      },
+      "expiryLabel": "Expires in (days)",
+      "imagePreviewAlt": "Badge preview",
+      "imageUrlLabel": "Image (URL)",
+      "levelLabel": "Level",
+      "levelRequirements": "Level requirements",
+      "optionalPlaceholder": "Optional",
+      "pointsLabel": "Points",
+      "requirementCodeLabel": "Code",
+      "requirementDescriptionLabel": "Description / Evidence",
+      "requirementTitleLabel": "Title",
+      "selectArea": "Select an area",
+      "uploadHint": "PNG/JPG/WebP up to 3 MB. The URL is stored in the field above.",
+      "uploadImageLabel": "Upload badge image",
+      "uploadingImage": "Uploading image..."
+    },
+    "configuracoes": {
+      "errors": {
+        "fillPasswords": "Fill in the current password and the new password.",
+        "passwordChangeFailed": "Error changing password.",
+        "passwordsDontMatch": "The new passwords do not match.",
+        "saveFailed": "Could not save the settings."
+      },
+      "gamification": {
+        "badgeExpiration": "Badge Expiration",
+        "badgeExpirationDesc": "Allow certain badges to have a limited validity.",
+        "defaultSLA": "Default SLA (days)",
+        "globalConfigDesc": "These settings will be applied by default to new badges and new validation requests created on the platform.",
+        "globalConfigTitle": "Global Configuration",
+        "heading": "Gamification and Validation",
+        "pointsPerBadge": "Points per Badge"
+      },
+      "notifications": {
+        "configureTemplates": "Configure Templates",
+        "email": {
+          "desc": "Send emails for important events",
+          "label": "Email notifications"
+        },
+        "emailTemplatesDesc": "Customize the automated messages sent by the platform.",
+        "emailTemplatesTitle": "Email Templates",
+        "heading": "Notifications and Integrations",
+        "push": {
+          "desc": "Alerts on mobile devices",
+          "label": "Push notifications"
+        },
+        "teams": {
+          "desc": "Send alerts to collaboration tools",
+          "label": "Teams / Slack integration"
+        }
+      },
+      "privacy": {
+        "complianceDesc": "Settings related to privacy, consent and publication of employee information.",
+        "complianceTitle": "GDPR Compliance",
+        "consentTextLabel": "GDPR Consent Text",
+        "consentTextPlaceholder": "Enter the consent terms...",
+        "heading": "GDPR and Privacy",
+        "publicGalleryDesc": "Allow earned badges to be displayed publicly.",
+        "publicGalleryTitle": "Public Badge Gallery",
+        "warningDesc": "Changes to privacy settings may affect all platform users and future badge publications.",
+        "warningTitle": "Warning"
+      },
+      "saveChanges": "Save Changes",
+      "security": {
+        "changeButton": "Change Password",
+        "changing": "Changing...",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm the password",
+        "currentPassword": "Current Password",
+        "currentPasswordPlaceholder": "Enter the current password",
+        "heading": "Account Security",
+        "newPassword": "New Password",
+        "newPasswordPlaceholder": "Enter the new password"
+      },
+      "subtitle": "Manage security, notifications, gamification and global platform preferences.",
+      "success": {
+        "passwordChanged": "Password changed successfully!",
+        "saved": "Settings saved successfully!"
+      },
+      "tabs": {
+        "gamification": "Gamification",
+        "notifications": "Notifications",
+        "privacy": "GDPR",
+        "security": "Security"
+      },
+      "title": "System Settings"
+    },
+    "dashboard": {
+      "badgeGenerator": {
+        "defaultPrompt": "Golden circular badge, star icon, flat style, dark blue background",
+        "descriptionLabel": "Badge description",
+        "download": "Download",
+        "errors": {
+          "generateFailed": "Could not generate the image.",
+          "generateFailedWithDetails": "Could not generate the image. {{details}}",
+          "generateFirst": "Generate an image first.",
+          "modelUnavailable": "Model unavailable. Try changing HF_MODEL_ID or accept the model terms on Hugging Face.",
+          "noImageReturned": "The response did not include an image.",
+          "noToken": "No token. Please log in again.",
+          "noUrlReturned": "The response did not include a URL.",
+          "uploadFailed": "Could not save the image.",
+          "writeDescription": "Write a badge description."
+        },
+        "generate": "Generate",
+        "generatedBadgeAlt": "Generated badge",
+        "generating": "Generating...",
+        "heading": "Generate Badge with AI",
+        "saveToCloudinary": "Save to Cloudinary",
+        "sizeLabel": "Size"
+      },
+      "badgesInPeriod": "Badges obtained in period ({{start}} to {{end}})",
+      "charts": {
+        "badgesByLearningPath": "Badges by Learning Path",
+        "badgesByLevel": "Badges by Level",
+        "badgesObtained": "Badges obtained",
+        "badgesObtainedPercent": "% of badges obtained",
+        "badgesObtainedPercentMonthly": "% of badges obtained (monthly)",
+        "badgesPerMonth": "Badges obtained per month",
+        "noRecordsByLearningPath": "No badge records by learning path.",
+        "noRecordsByLevel": "No badge records by level.",
+        "noRecordsForPeriod": "No records for the selected period.",
+        "noUsersInContext": "No users in this context.",
+        "userTypeDistribution": "Distribution by User Type"
+      },
+      "loading": "Loading dashboard data...",
+      "quickShortcuts": "Quick Shortcuts",
+      "shortcuts": {
+        "announcements": {
+          "subtitle": "Internal broadcast",
+          "title": "Announcements"
+        },
+        "badgeManagement": {
+          "subtitle": "Create/Edit",
+          "title": "Badge Management"
+        },
+        "badgeRequests": {
+          "subtitle": "Approve/Reject",
+          "title": "Badge Requests"
+        },
+        "exportData": {
+          "subtitle": "Excel/PDF",
+          "title": "Export Data"
+        },
+        "learningPaths": {
+          "subtitle": "Configure",
+          "title": "Learning Paths"
+        },
+        "settings": {
+          "subtitle": "Notifications and GDPR",
+          "title": "Settings"
+        },
+        "teamSLA": {
+          "subtitle": "Set deadlines",
+          "title": "Team SLA"
+        },
+        "users": {
+          "subtitle": "Profiles and permissions",
+          "title": "Users"
+        }
+      },
+      "stats": {
+        "activeBadges": "Active Badges",
+        "learningPaths": "Learning Paths",
+        "registeredUsers": "Registered Users",
+        "totalBadgesObtained": "Badges obtained (total)"
+      },
+      "subtitle": "Overview of management, metrics and operations for the badges program.",
+      "until": "until"
+    },
+    "emailTemplates": {
+      "active": "Active",
+      "confirmReset": "Reset this template to the default?",
+      "customized": "Customized",
+      "defaultLabel": "Default",
+      "errors": {
+        "loadFailed": "Could not load the templates.",
+        "saveFailed": "Could not save the template."
+      },
+      "eyebrow": "Automated communications",
+      "htmlContent": "HTML content",
+      "loading": "Loading templates...",
+      "plainTextVersion": "Plain text version",
+      "preview": "Preview",
+      "resetDefault": "Reset to Default",
+      "saveTemplate": "Save Template",
+      "saving": "Saving...",
+      "subject": "Subject",
+      "subtitle": "Customize the automated messages sent by the platform.",
+      "success": {
+        "reset": "Template reset to default.",
+        "saved": "Template saved successfully."
+      },
+      "title": "Email Templates",
+      "variables": "Variables"
+    },
+    "exportacao": {
+      "cards": {
+        "all": {
+          "desc": "All available data",
+          "title": "All"
+        },
+        "badges": {
+          "desc": "Catalog and requirements",
+          "title": "Badges"
+        },
+        "requests": {
+          "desc": "Approval workflows",
+          "title": "Requests"
+        },
+        "users": {
+          "desc": "Complete data and profiles",
+          "title": "Users"
+        }
+      },
+      "dataToExport": "Data to Export",
+      "errors": {
+        "exportFailed": "Error exporting data. Please try again.",
+        "selectScope": "Please select an export scope."
+      },
+      "exportButton": "Export Data",
+      "exportSuccess": "Export completed successfully.",
+      "formatHeading": "Export Format",
+      "generating": "Generating...",
+      "periodHeading": "Period",
+      "periods": {
+        "currentYear": "Current year",
+        "lastMonth": "Last month",
+        "lastQuarter": "Last quarter",
+        "lastWeek": "Last week"
+      },
+      "subtitle": "Export users, badges and requests in Excel or PDF.",
+      "title": "Data Export"
+    },
+    "fichaUtilizador": {
+      "areaLabel": "Area",
+      "backToManagement": "Back to management",
+      "confirmDelete": "Delete user {{name}}?",
+      "createdAtLabel": "Created at",
+      "deleteUser": "Delete user",
+      "deleting": "Deleting...",
+      "editableData": "Editable data",
+      "emailLabel": "Email",
+      "errors": {
+        "cannotDeleteSelf": "You cannot delete your own user.",
+        "deleteFailed": "Could not delete the user.",
+        "fillNameAndEmail": "Fill in the user's name and email.",
+        "loadFailed": "Could not load the user profile.",
+        "selectAreaForLeader": "Select an area for the Service Line Leader.",
+        "updateFailed": "Could not update the profile."
+      },
+      "loading": "Loading profile...",
+      "nameLabel": "Name",
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "Leave empty to keep the current password",
+      "noArea": "No area",
+      "noName": "No name",
+      "notFound": "User not found.",
+      "pointsLabel": "Points",
+      "roleLabel": "Role",
+      "roles": {
+        "admin": "Administrator",
+        "consultant": "Consultant",
+        "none": "No role",
+        "serviceLineLeader": "Service Line Leader",
+        "talentManager": "Talent Manager"
+      },
+      "saveChanges": "Save changes",
+      "subtitle": "View and edit the user's full details.",
+      "success": {
+        "updated": "Profile updated successfully."
+      },
+      "summary": "Summary",
+      "title": "User Profile",
+      "updatedAtLabel": "Updated at"
+    },
+    "gestaoBadges": {
+      "allAreas": "All areas",
+      "allLevels": "All levels",
+      "columns": {
+        "expiry": "Expiry (days)",
+        "name": "Name",
+        "points": "Points"
+      },
+      "confirmDelete": "Are you sure you want to delete this badge?",
+      "createNew": "Create new Badge",
+      "days": "{{count}} day",
+      "days_other": "{{count}} days",
+      "errors": {
+        "certificateFailed": "Error generating certificate.",
+        "deleteFailed": "Error deleting badge.",
+        "loadConsultantsFailed": "Error loading collaborators.",
+        "loadFailed": "Error loading badges.",
+        "updateFailed": "Error updating badge."
+      },
+      "modal": {
+        "collaboratorsWithBadge": "{{count}} collaborator has completed this badge",
+        "collaboratorsWithBadge_other": "{{count}} collaborators have completed this badge",
+        "completionDate": "Completion Date",
+        "expiryDaysLabel": "Days until Expiry",
+        "expiryDaysPlaceholder": "Leave blank if no expiry",
+        "generating": "Generating...",
+        "levelLabel": "Level *",
+        "loadingConsultants": "Loading collaborators...",
+        "nameLabel": "Name",
+        "noConsultants": "No collaborator has completed this badge.",
+        "pointsLabel": "Points *",
+        "rectify": "Rectify"
+      },
+      "noExpiry": "No expiry",
+      "noResults": "No badges found.",
+      "noResultsFiltered": "No badges found matching these criteria.",
+      "pts": "pts",
+      "rectifyCertificate": "Rectify Certificate",
+      "searchPlaceholder": "Badge name...",
+      "subtitle": "Create, edit and manage badges, points, levels and expiry.",
+      "success": {
+        "deleted": "Badge deleted successfully!",
+        "updated": "Badge updated successfully!"
+      },
+      "title": "Badge Management"
+    },
+    "gestaoLearningPaths": {
+      "columns": {
+        "actions": "Actions",
+        "description": "Description",
+        "name": "Name"
+      },
+      "confirmDelete": "Delete this Learning Path?",
+      "errorDelete": "Error deleting Learning Path.",
+      "errorLoading": "Could not load the Learning Paths.",
+      "newLearningPath": "New Learning Path",
+      "searchPlaceholder": "Search by name",
+      "subtitle": "Create and organize evolution paths.",
+      "title": "Learning Path Management"
+    },
+    "gestaoPedidosBadges": {
+      "actions": {
+        "approve": "Approve",
+        "none": "No actions",
+        "processed": "Processed",
+        "reject": "Reject",
+        "return": "Return",
+        "validate": "Validate"
+      },
+      "columns": {
+        "badge": "Badge",
+        "date": "Date",
+        "status": "Status",
+        "user": "User",
+        "workflow": "Workflow"
+      },
+      "commentPromptOptional": "Comment (optional):",
+      "commentPromptReturn": "Comment for return:",
+      "confirmApprove": "Are you sure you want to approve this request?",
+      "confirmReject": "Are you sure you want to reject this request?",
+      "emptyState": "No requests found.",
+      "errors": {
+        "approveFailed": "Error approving request.",
+        "loadFailed": "Error loading requests. Please try again.",
+        "rejectFailed": "Error rejecting request.",
+        "returnFailed": "Error returning request.",
+        "validateFailed": "Error validating request."
+      },
+      "filters": {
+        "all": "All",
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      },
+      "loading": "Loading requests...",
+      "noEmail": "No email",
+      "roles": {
+        "admin": "Admin",
+        "serviceLine": "Service Line",
+        "talentManager": "Talent Manager"
+      },
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected",
+        "unknown": "Unknown"
+      },
+      "subtitle": "View submitted requests, track the workflow and perform approvals or rejections.",
+      "success": {
+        "approved": "Request approved successfully!",
+        "rejected": "Request rejected successfully!"
+      },
+      "title": "Badge Request Management",
+      "unknown": "Unknown",
+      "workflow": {
+        "closed": "Closed",
+        "inValidation": "In validation",
+        "open": "Open",
+        "submitted": "Submitted"
+      }
+    },
+    "gestaoSLA": {
+      "eyebrow": "Admin panel",
+      "title": "SLA Management",
+      "subtitle": "Set limits, notifications and track requests by team.",
+      "newSLA": "New SLA",
+      "confirmDelete": "Are you sure you want to delete this SLA?",
+      "autoCheck": {
+        "title": "Automatic SLA Alert Check",
+        "description": "The system checks SLAs automatically every hour. You can trigger a manual check now.",
+        "lastCheck": "Last manual check:",
+        "checking": "Checking...",
+        "trigger": "Trigger Check",
+        "slasChecked": "SLAs checked",
+        "overduePedidosChecked": "Overdue requests",
+        "newAlerts": "New alerts"
+      },
+      "filters": {
+        "all": "All ({{count}})",
+        "overdue": "Overdue ({{count}})",
+        "pending": "Pending ({{count}})"
+      },
+      "loading": "Loading SLAs...",
+      "table": {
+        "team": "Team",
+        "type": "Type",
+        "hoursLimit": "Hour Limit",
+        "overdue": "Overdue",
+        "pending": "Pending",
+        "alerts": "Alerts",
+        "actions": "Actions",
+        "id": "ID",
+        "talentManager": "Talent Manager",
+        "serviceLine": "Service Line",
+        "email": "Email",
+        "push": "Push",
+        "inAppOnly": "In-app only",
+        "disabled": "Disabled",
+        "edit": "Edit",
+        "delete": "Delete",
+        "empty": "No SLAs found matching these criteria."
+      },
+      "summary": {
+        "overdueTitle": "Overdue SLAs",
+        "overdueText": "requests with overdue SLA",
+        "pendingTitle": "Pending Requests",
+        "pendingText": "requests awaiting approval"
+      },
+      "modal": {
+        "editTitle": "Edit SLA",
+        "newTitle": "New SLA",
+        "teamTypeLabel": "Team Type *",
+        "teamLabel": "Team *",
+        "selectTeam": "Select team",
+        "hoursLimitLabel": "Hour Limit (SLA) *",
+        "hoursLimitHint": "Maximum time in hours to respond to requests",
+        "notificationsLabel": "Notifications",
+        "generalNotification": "General notification active",
+        "emailNotification": "Email notification",
+        "pushNotification": "PUSH notification",
+        "cancel": "Cancel",
+        "update": "Update",
+        "create": "Create"
+      },
+      "errors": {
+        "checkFailed": "Error checking SLA alerts.",
+        "deleteFailed": "Error deleting SLA.",
+        "loadFailed": "Error loading SLAs",
+        "saveFailed": "Error saving SLA.",
+        "selectTeam": "Please select a team."
+      },
+      "success": {
+        "deleted": "SLA removed successfully!",
+        "saved": "SLA saved successfully!"
+      }
+    },
+    "gestaoTickets": {
+      "actions": "Action",
+      "clear": "Clear",
+      "columns": {
+        "date": "Date",
+        "priority": "Priority",
+        "status": "Status",
+        "title": "Title",
+        "user": "User"
+      },
+      "critical": "Critical",
+      "editButton": "Edit",
+      "form": {
+        "cancel": "Cancel",
+        "newStatus": "New Status",
+        "responsePlaceholder": "Write your response here...",
+        "responsePlaceholderLabel": "Administrator Response/Notes",
+        "update": "Update"
+      },
+      "loading": "Loading tickets...",
+      "next": "Next",
+      "noTicketsMobile": "No tickets to show.",
+      "open": "Open",
+      "previous": "Previous",
+      "priority": {
+        "critical": "🔴🔴 Critical",
+        "high": "🔴 High",
+        "low": "🟢 Low",
+        "medium": "🟡 Medium"
+      },
+      "resolved": "Resolved",
+      "status": {
+        "closed": "⚪ Closed",
+        "inAnalysis": "🟡 In Analysis",
+        "open": "🔵 Open",
+        "resolved": "🟢 Resolved"
+      },
+      "subtitle": "Monitor support requests, track statuses and respond to users.",
+      "title": "Ticket Management",
+      "total": "Total",
+      "allPriorities": "All Priorities",
+      "allStatuses": "All Statuses"
+    },
+    "gestaoUtilizadores": {
+      "areaLabel": "Area",
+      "clear": "Clear",
+      "closeProfile": "Close profile",
+      "columns": {
+        "actions": "Actions",
+        "area": "Area",
+        "email": "Email",
+        "points": "Points",
+        "role": "Role",
+        "user": "User"
+      },
+      "confirmDelete": "Delete user {{name}}?",
+      "createButton": "Create user",
+      "creating": "Creating...",
+      "deleteUser": "Delete user",
+      "deleting": "Deleting...",
+      "emailLabel": "Email",
+      "emailPlaceholder": "email@softinsa.pt",
+      "emptyState": "No users match the selected filters.",
+      "errors": {
+        "cannotDeleteSelf": "You cannot delete your own user.",
+        "createFailed": "Could not create the user.",
+        "deleteFailed": "Could not delete the user.",
+        "fillNameAndEmail": "Fill in the name and email of the new user.",
+        "loadFailed": "Could not load the users.",
+        "selectAreaForLeader": "Select an area for the Service Line Leader.",
+        "updateFailed": "Could not update the user."
+      },
+      "fullProfile": "Full profile",
+      "fullProfileShort": "Profile",
+      "loading": "Loading users...",
+      "nameLabel": "Name",
+      "namePlaceholder": "User's name",
+      "newUser": "New user",
+      "noArea": "No area",
+      "noName": "No name",
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "Leave empty to keep the current password",
+      "openFullProfile": "Open full profile",
+      "pointsSuffix": "points",
+      "preview": "Preview",
+      "previewProfile": "Profile preview",
+      "profileLabel": "Role",
+      "records": "{{shown}} of {{total}} records",
+      "refresh": "Refresh",
+      "roleLabel": "Role",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "searchLabel": "Search",
+      "searchPlaceholder": "Name, email or role",
+      "selectArea": "Select area",
+      "stats": {
+        "admins": "Admins",
+        "consultants": "Consultants",
+        "serviceLineLeaders": "Service Line Leaders",
+        "talentManagers": "Talent Managers",
+        "total": "Total"
+      },
+      "subtitle": "View registered profiles, filter by role and create new users for the platform.",
+      "success": {
+        "created": "User created successfully.",
+        "deleted": "User removed successfully.",
+        "updated": "User updated successfully."
+      },
+      "summary": "User summary",
+      "title": "User Management",
+      "usersTitle": "Users",
+      "allProfiles": "All roles"
+    },
+    "learningPathForm": {
+      "createTitle": "Create Learning Path",
+      "descriptionLabel": "Description",
+      "editTitle": "Edit Learning Path",
+      "errorLoading": "Could not load this Learning Path.",
+      "errorSaving": "Error saving Learning Path.",
+      "nameLabel": "Learning Path name",
+      "subtitle": "Define the name and description of this path."
+    },
+    "logsAuditoria": {
+      "actionColumn": "Action",
+      "actionLabel": "Action",
+      "actions": {
+        "access": "Access",
+        "create": "Create",
+        "delete": "Delete",
+        "login": "Login",
+        "logout": "Logout",
+        "update": "Update"
+      },
+      "actionsLabel": "Actions",
+      "allActions": "All actions",
+      "allEntities": "All entities",
+      "allStatuses": "All statuses",
+      "clear": "Clear",
+      "columns": {
+        "description": "Description",
+        "ip": "IP"
+      },
+      "csv": "CSV",
+      "description": "Complete monitoring of actions performed on the platform.",
+      "entities": {
+        "area": "Area",
+        "badge": "Badge",
+        "learningPath": "Learning Path",
+        "requirement": "Requirement",
+        "serviceLine": "Service Line",
+        "user": "User"
+      },
+      "entityLabel": "Entity",
+      "export": "Export",
+      "filters": "Filters",
+      "first": "First",
+      "last": "Last",
+      "loading": "Loading...",
+      "next": "Next",
+      "noLogsFound": "No logs found",
+      "noTableMobile": "Table not available on mobile devices. Use the filters above.",
+      "pageInfo": "Page {{page}} of {{pages}} • Total: {{total}} records",
+      "previous": "Previous",
+      "statusLabel": "Status",
+      "statuses": {
+        "failure": "Failure",
+        "success": "Success",
+        "warning": "Warning"
+      },
+      "title": "Audit Logs",
+      "totalLogs": "Total Logs",
+      "totalFailures": "Failures",
+      "totalSuccesses": "Successes",
+      "totalWarnings": "Warnings",
+      "unknownUser": "Unknown"
     }
   }
 }

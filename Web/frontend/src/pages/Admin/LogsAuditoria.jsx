@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import SortableTh from "../../components/ui/SortableTh";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function LogsAuditoria() {
+  const { t } = useTranslation();
   const { isMobile, isTablet } = useWindowSize();
   const [logs, setLogs] = useState([]);
   const [stats, setStats] = useState(null);
@@ -23,35 +25,37 @@ export default function LogsAuditoria() {
   const { sortedItems: logsOrdenados, sortConfig, requestSort } = useSortableData(logs);
 
   const actionOptions = [
-    { value: "CREATE", label: "Criar" },
-    { value: "UPDATE", label: "Atualizar" },
-    { value: "DELETE", label: "Eliminar" },
-    { value: "LOGIN", label: "Login" },
-    { value: "LOGOUT", label: "Logout" },
-    { value: "ACCESS", label: "Acesso" },
+    { value: "CREATE", label: t("admin.logsAuditoria.actions.create") },
+    { value: "UPDATE", label: t("admin.logsAuditoria.actions.update") },
+    { value: "DELETE", label: t("admin.logsAuditoria.actions.delete") },
+    { value: "LOGIN", label: t("admin.logsAuditoria.actions.login") },
+    { value: "LOGOUT", label: t("admin.logsAuditoria.actions.logout") },
+    { value: "ACCESS", label: t("admin.logsAuditoria.actions.access") },
   ];
 
   const entityOptions = [
-    { value: "User", label: "Utilizador" },
-    { value: "Badge", label: "Badge" },
-    { value: "LearningPath", label: "Learning Path" },
-    { value: "Requirement", label: "Requisito" },
-    { value: "ServiceLine", label: "Service Line" },
-    { value: "Area", label: "Área" },
+    { value: "User", label: t("admin.logsAuditoria.entities.user") },
+    { value: "Badge", label: t("admin.logsAuditoria.entities.badge") },
+    { value: "LearningPath", label: t("admin.logsAuditoria.entities.learningPath") },
+    { value: "Requirement", label: t("admin.logsAuditoria.entities.requirement") },
+    { value: "ServiceLine", label: t("admin.logsAuditoria.entities.serviceLine") },
+    { value: "Area", label: t("admin.logsAuditoria.entities.area") },
   ];
 
   const statusOptions = [
-    { value: "success", label: "Sucesso", color: "success" },
-    { value: "failure", label: "Falha", color: "danger" },
-    { value: "warning", label: "Aviso", color: "warning" },
+    { value: "success", label: t("admin.logsAuditoria.statuses.success"), color: "success" },
+    { value: "failure", label: t("admin.logsAuditoria.statuses.failure"), color: "danger" },
+    { value: "warning", label: t("admin.logsAuditoria.statuses.warning"), color: "warning" },
   ];
 
   useEffect(() => {
     fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, JSON.stringify(filters)]);
 
   useEffect(() => {
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(filters)]);
 
   const fetchLogs = async () => {
@@ -123,7 +127,7 @@ export default function LogsAuditoria() {
     const headers = ["Data", "Utilizador", "Ação", "Entidade", "Status", "IP"];
     const rows = data.map((log) => [
       new Date(log.createdAt).toLocaleString("pt-PT"),
-      log.user?.name || "Desconhecido",
+      log.user?.name || t("admin.logsAuditoria.unknownUser"),
       log.action,
       log.entity,
       log.status,
@@ -177,7 +181,7 @@ export default function LogsAuditoria() {
           className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500"
           role="status"
         >
-          <span className="sr-only">Carregando...</span>
+          <span className="sr-only">{t("admin.logsAuditoria.loading")}</span>
         </div>
       </div>
     );
@@ -189,10 +193,10 @@ export default function LogsAuditoria() {
         <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
 
         <div className="relative z-10">
-          <h1 className="text-3xl font-bold">Logs de Auditoria</h1>
+          <h1 className="text-3xl font-bold">{t("admin.logsAuditoria.title")}</h1>
 
           <p className="mt-2 text-white/80">
-            Monitorização completa das ações realizadas na plataforma.
+            {t("admin.logsAuditoria.description")}
           </p>
         </div>
       </div>
@@ -201,7 +205,7 @@ export default function LogsAuditoria() {
         <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Total de Logs
+              {t("admin.logsAuditoria.totalLogs")}
             </div>
             <div className="text-3xl font-bold text-slate-800">
               {stats.totalLogs}
@@ -210,7 +214,7 @@ export default function LogsAuditoria() {
 
           <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Sucessos
+              {t("admin.logsAuditoria.totalSuccesses")}
             </div>
             <div className="text-3xl font-bold text-emerald-600">
               {stats.logsByStatus?.find((s) => s.status === "success")?.count ||
@@ -220,7 +224,7 @@ export default function LogsAuditoria() {
 
           <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Falhas
+              {t("admin.logsAuditoria.totalFailures")}
             </div>
             <div className="text-3xl font-bold text-rose-600">
               {stats.logsByStatus?.find((s) => s.status === "failure")?.count ||
@@ -230,7 +234,7 @@ export default function LogsAuditoria() {
 
           <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Avisos
+              {t("admin.logsAuditoria.totalWarnings")}
             </div>
             <div className="text-3xl font-bold text-amber-500">
               {stats.logsByStatus?.find((s) => s.status === "warning")?.count ||
@@ -241,17 +245,17 @@ export default function LogsAuditoria() {
       )}
 
       <div className="mb-8 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] sm:p-6">
-        <h5 className="mb-4 text-lg font-semibold text-slate-800">Filtros</h5>
+        <h5 className="mb-4 text-lg font-semibold text-slate-800">{t("admin.logsAuditoria.filters")}</h5>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm text-slate-500">Ação</label>
+            <label className="mb-2 block text-sm text-slate-500">{t("admin.logsAuditoria.actionLabel")}</label>
             <select
               name="action"
               value={filters.action}
               onChange={handleFilterChange}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             >
-              <option value="">Todas as ações</option>
+              <option value="">{t("admin.logsAuditoria.allActions")}</option>
               {actionOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -262,7 +266,7 @@ export default function LogsAuditoria() {
 
           <div>
             <label className="mb-2 block text-sm text-slate-500">
-              Entidade
+              {t("admin.logsAuditoria.entityLabel")}
             </label>
             <select
               name="entity"
@@ -270,7 +274,7 @@ export default function LogsAuditoria() {
               onChange={handleFilterChange}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             >
-              <option value="">Todas as entidades</option>
+              <option value="">{t("admin.logsAuditoria.allEntities")}</option>
               {entityOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -280,14 +284,14 @@ export default function LogsAuditoria() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-500">Status</label>
+            <label className="mb-2 block text-sm text-slate-500">{t("admin.logsAuditoria.statusLabel")}</label>
             <select
               name="status"
               value={filters.status}
               onChange={handleFilterChange}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
             >
-              <option value="">Todos os status</option>
+              <option value="">{t("admin.logsAuditoria.allStatuses")}</option>
               {statusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -297,17 +301,17 @@ export default function LogsAuditoria() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-500">Ações</label>
+            <label className="mb-2 block text-sm text-slate-500">{t("admin.logsAuditoria.actionsLabel")}</label>
             <div className={`flex gap-2 ${isMobile ? "flex-col" : "flex-row"}`}>
               <button
                 onClick={handleClearFilters}
                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-700 hover:bg-slate-100"
               >
                 {isMobile ? (
-                  "Limpar"
+                  t("admin.logsAuditoria.clear")
                 ) : (
                   <>
-                    <i className="bi bi-arrow-clockwise"></i> Limpar
+                    <i className="bi bi-arrow-clockwise"></i> {t("admin.logsAuditoria.clear")}
                   </>
                 )}
               </button>
@@ -316,10 +320,10 @@ export default function LogsAuditoria() {
                 className="rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 font-semibold text-emerald-700 hover:bg-emerald-100"
               >
                 {isMobile ? (
-                  "CSV"
+                  t("admin.logsAuditoria.csv")
                 ) : (
                   <>
-                    <i className="bi bi-download"></i> Exportar
+                    <i className="bi bi-download"></i> {t("admin.logsAuditoria.export")}
                   </>
                 )}
               </button>
@@ -334,13 +338,13 @@ export default function LogsAuditoria() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-[#0F62FE]/5">
                 <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <SortableTh label="Data" sortKey="createdAt" accessor={(l) => (l.createdAt ? new Date(l.createdAt).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label="Utilizador" sortKey="user" accessor={(l) => l.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label="Ação" sortKey="action" accessor={(l) => l.action || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label="Entidade" sortKey="entity" accessor={(l) => l.entity || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label="Status" sortKey="status" accessor={(l) => l.status || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <th className="px-4 py-3">Descrição</th>
-                  <th className="px-4 py-3">IP</th>
+                  <SortableTh label={t("admin.gestaoTickets.columns.date")} sortKey="createdAt" accessor={(l) => (l.createdAt ? new Date(l.createdAt).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label={t("admin.gestaoPedidosBadges.columns.user")} sortKey="user" accessor={(l) => l.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label={t("admin.logsAuditoria.actionColumn")} sortKey="action" accessor={(l) => l.action || ""} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label={t("admin.logsAuditoria.entityLabel")} sortKey="entity" accessor={(l) => l.entity || ""} sortConfig={sortConfig} onSort={requestSort} />
+                  <SortableTh label={t("admin.logsAuditoria.statusLabel")} sortKey="status" accessor={(l) => l.status || ""} sortConfig={sortConfig} onSort={requestSort} />
+                  <th className="px-4 py-3">{t("admin.logsAuditoria.columns.description")}</th>
+                  <th className="px-4 py-3">{t("admin.logsAuditoria.columns.ip")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -356,7 +360,7 @@ export default function LogsAuditoria() {
                         {new Date(log.createdAt).toLocaleString("pt-PT")}
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-800">
-                        {log.user?.name || "Desconhecido"}
+                        {log.user?.name || t("admin.logsAuditoria.unknownUser")}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         <span className="mr-2">
@@ -387,7 +391,7 @@ export default function LogsAuditoria() {
                       colSpan="7"
                       className="px-4 py-8 text-center text-sm text-slate-500"
                     >
-                      Nenhum log encontrado
+                      {t("admin.logsAuditoria.noLogsFound")}
                     </td>
                   </tr>
                 )}
@@ -396,7 +400,7 @@ export default function LogsAuditoria() {
           </div>
         ) : (
           <div className="p-8 text-center text-sm text-slate-500">
-            Tabela não disponível em dispositivos móveis. Use filtros acima.
+            {t("admin.logsAuditoria.noTableMobile")}
           </div>
         )}
 
@@ -410,7 +414,7 @@ export default function LogsAuditoria() {
                     onClick={() => setPage(1)}
                     disabled={page === 1}
                   >
-                    Primeira
+                    {t("admin.logsAuditoria.first")}
                   </button>
                 </li>
                 <li>
@@ -419,7 +423,7 @@ export default function LogsAuditoria() {
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
                   >
-                    Anterior
+                    {t("admin.logsAuditoria.previous")}
                   </button>
                 </li>
 
@@ -450,7 +454,7 @@ export default function LogsAuditoria() {
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.pages}
                   >
-                    Próxima
+                    {t("admin.logsAuditoria.next")}
                   </button>
                 </li>
                 <li>
@@ -459,14 +463,13 @@ export default function LogsAuditoria() {
                     onClick={() => setPage(pagination.pages)}
                     disabled={page === pagination.pages}
                   >
-                    Última
+                    {t("admin.logsAuditoria.last")}
                   </button>
                 </li>
               </ul>
             </nav>
             <p className="mt-4 text-center text-sm text-slate-500">
-              Página {page} de {pagination.pages} • Total: {pagination.total}{" "}
-              registos
+              {t("admin.logsAuditoria.pageInfo", { page, pages: pagination.pages, total: pagination.total })}
             </p>
           </div>
         )}
