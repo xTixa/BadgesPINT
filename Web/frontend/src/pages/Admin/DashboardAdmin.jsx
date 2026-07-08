@@ -169,20 +169,30 @@ export default function DashboardAdmin() {
         display: true,
         position: 'bottom',
         labels: {
-          color: '#16558C',
-          font: { size: 11 }
+          color: '#475569',
+          usePointStyle: true,
+          pointStyle: 'circle',
+          padding: 18,
+          font: { size: 11, weight: 600 }
         }
+      },
+      tooltip: {
+        backgroundColor: '#0f172a',
+        padding: 12,
+        cornerRadius: 10,
+        titleFont: { size: 12, weight: 700 },
+        bodyFont: { size: 12 },
       }
     },
     scales: {
       y: {
         beginAtZero: true,
-        ticks: { color: '#04C4D9' },
-        grid: { color: 'rgba(107, 140, 174, 0.1)' }
+        ticks: { color: '#64748b', precision: 0 },
+        grid: { color: 'rgba(148, 163, 184, 0.14)' }
       },
       x: {
-        ticks: { color: '#04C4D9' },
-        grid: { color: 'rgba(107, 140, 174, 0.1)' }
+        ticks: { color: '#64748b' },
+        grid: { display: false }
       }
     }
   };
@@ -205,6 +215,8 @@ export default function DashboardAdmin() {
     { icon: "bi-megaphone-fill", title: t("admin.dashboard.shortcuts.announcements.title"), subtitle: t("admin.dashboard.shortcuts.announcements.subtitle"), color: "#16558C", route: "/admin/avisos" },
     { icon: "bi-gear-fill", title: t("admin.dashboard.shortcuts.settings.title"), subtitle: t("admin.dashboard.shortcuts.settings.subtitle"), color: "#6f42c1", route: "/admin/configuracoes" }
   ];
+
+  const reportCardClass = "group overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_12px_35px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-[0_18px_45px_rgba(15,98,254,0.12)] sm:p-6";
 
   async function handleGenerateBadge() {
     setBadgeError("");
@@ -310,62 +322,74 @@ export default function DashboardAdmin() {
                     value: kpis.summary.totalBadges,
                     label: t("admin.dashboard.stats.activeBadges"),
                     color: "text-sky-600",
+                    accent: "from-sky-500 to-cyan-400",
                   },
                   {
                     icon: "bi-people-fill",
                     value: kpis.summary.totalUsers,
                     label: t("admin.dashboard.stats.registeredUsers"),
                     color: "text-slate-600",
+                    accent: "from-slate-600 to-slate-400",
                   },
                   {
                     icon: "bi-diagram-3-fill",
                     value: kpis.summary.totalLearningPaths,
                     label: t("admin.dashboard.stats.learningPaths"),
                     color: "text-indigo-500",
+                    accent: "from-indigo-600 to-violet-400",
                   },
                   {
                     icon: "bi-graph-up",
                     value: kpis.summary.badgesObtidosTotal,
                     label: t("admin.dashboard.stats.totalBadgesObtained"),
                     color: "text-emerald-600",
+                    accent: "from-emerald-600 to-teal-400",
                   },
                   {
                     icon: "bi-percent",
                     value: `${kpis.summary.badgeApprovalPercentage || 0}%`,
                     label: "Percentagem de badges aprovados",
                     color: "text-emerald-600",
+                    accent: "from-amber-500 to-orange-400",
                   },
                 ].map((card) => (
                   <div
                     key={card.label}
-                    className="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm sm:p-6"
+                    className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 text-left shadow-[0_10px_30px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(15,23,42,0.12)] sm:p-6"
                   >
-                    <i className={`bi ${card.icon} mb-2 block text-3xl sm:text-4xl ${card.color}`}></i>
-                    <h4 className="mb-1 text-3xl font-bold text-slate-800">{card.value}</h4>
-                    <p className="m-0 text-sm text-slate-500">{card.label}</p>
+                    <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${card.accent}`}></div>
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-50 text-xl ${card.color}`}>
+                        <i className={`bi ${card.icon}`}></i>
+                      </span>
+                      <i className="bi bi-arrow-up-right text-sm text-slate-300"></i>
+                    </div>
+                    <h4 className="mb-1 text-3xl font-extrabold tracking-tight text-slate-900">{card.value}</h4>
+                    <p className="m-0 text-sm font-medium text-slate-500">{card.label}</p>
                   </div>
                 ))}
               </div>
 
               <div className="mb-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm sm:px-5 sm:py-4">
-                  <span className="font-semibold">
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-sky-100 bg-gradient-to-r from-slate-900 via-[#16558C] to-[#0F62FE] px-5 py-5 text-white shadow-[0_18px_45px_rgba(15,98,254,0.18)] sm:px-6">
+                  <span className="flex items-center gap-3 font-semibold">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15"><i className="bi bi-calendar3"></i></span>
                       {t("admin.dashboard.badgesInPeriod", { start: rangeStart, end: rangeEnd })}
                   </span>
-                  <span className="text-xl font-bold text-emerald-600">{kpis.badgesByRange?.count || 0}</span>
+                  <span className="rounded-2xl bg-white/15 px-4 py-2 text-2xl font-extrabold">{kpis.badgesByRange?.count || 0}</span>
                   <div className="flex items-center gap-2">
                     <input
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="ui-input"
+                      className="rounded-xl border border-white/20 bg-white/95 px-3 py-2 text-sm font-semibold text-slate-700 outline-none"
                     />
-                    <span className="text-sm text-slate-500">{t("admin.dashboard.until")}</span>
+                    <span className="text-sm text-white/70">{t("admin.dashboard.until")}</span>
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="ui-input"
+                      className="rounded-xl border border-white/20 bg-white/95 px-3 py-2 text-sm font-semibold text-slate-700 outline-none"
                     />
                   </div>
                 </div>
@@ -400,7 +424,7 @@ export default function DashboardAdmin() {
                 <h5 className="mb-4 text-lg font-semibold text-slate-800">
                   {t("admin.dashboard.badgeGenerator.heading")}
                 </h5>
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                <div className={reportCardClass}>
                   <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:items-end">
                     <div className="lg:col-span-7">
                       <label className="mb-1 block text-sm font-semibold text-slate-700">
@@ -480,7 +504,20 @@ export default function DashboardAdmin() {
 
               </div>
 
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <section className="rounded-[2rem] border border-slate-200/70 bg-gradient-to-br from-slate-50 via-white to-sky-50/70 p-4 shadow-inner sm:p-6">
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <span className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#0F62FE]/10 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[#0F62FE]">
+                      <i className="bi bi-activity"></i> Reporting
+                    </span>
+                    <h2 className="m-0 text-2xl font-extrabold tracking-tight text-slate-900">Visão global da plataforma</h2>
+                    <p className="mt-1 text-sm text-slate-500">Analisa adesão, evolução mensal e distribuição do catálogo.</p>
+                  </div>
+                  <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 shadow-sm">
+                    <i className="bi bi-arrow-repeat mr-2 text-emerald-500"></i>Dados atualizados
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                     <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                       <i className="bi bi-bar-chart-fill text-slate-500"></i>
@@ -578,7 +615,8 @@ export default function DashboardAdmin() {
                     <p className="text-sm text-slate-500">Sem badges associados a Learning Paths.</p>
                   )}
                 </div>
-              </div>
+                </div>
+              </section>
             </>
           )}
         </div>
