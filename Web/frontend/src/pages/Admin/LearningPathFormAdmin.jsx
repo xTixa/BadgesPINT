@@ -46,7 +46,7 @@ export default function LearningPathFormAdmin() {
       } else {
         await api.put(`/learning-paths/${id}`, form);
       }
-      navigate("/admin/learning-paths");
+      navigate("/admin/gestao-learning-paths");
     } catch (err) {
       setError(err.response?.data?.error || t("admin.learningPathForm.errorSaving"));
     } finally {
@@ -113,7 +113,7 @@ export default function LearningPathFormAdmin() {
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => navigate("/admin/learning-paths")}
+                  onClick={() => navigate("/admin/gestao-learning-paths")}
                   className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                 >
                   {t("admin.common.cancel")}
