@@ -1350,9 +1350,17 @@
       "loadingAreas": "Loading...",
       "selectPlaceholder": "Select...",
       "rgpdLabel": "I agree to the publication and sharing of my badges and I'll receive a confirmation email before using the platform.",
+      "rgpdViewTerms": "View full terms",
       "creating": "Creating...",
       "submit": "Create user"
     }
+  },
+  "termosRgpd": {
+    "title": "Terms and Privacy Policy (GDPR)",
+    "subtitle": "Information about how your personal data is handled on the Badges platform.",
+    "loading": "Loading terms...",
+    "loadError": "Could not load the terms. Please try again later.",
+    "empty": "No GDPR text has been configured by the administrator yet."
   },
   "criarTicket": {
     "defaultUserName": "User",

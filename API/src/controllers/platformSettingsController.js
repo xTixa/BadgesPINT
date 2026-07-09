@@ -16,6 +16,25 @@ export async function getPlatformSettings(req, res) {
   }
 }
 
+// Endpoint público (sem autenticação) — expõe apenas o texto de RGPD, para
+// ser lido na página de termos e no registo de conta antes do login.
+export async function getPublicRgpdText(req, res) {
+  try {
+    const settings = await PlatformSetting.findOne({
+      where: { id: 1 },
+      attributes: ["rgpd_consent_text", "updated_at"],
+    });
+
+    res.json({
+      rgpd_consent_text: settings?.rgpd_consent_text || "",
+      updated_at: settings?.updated_at || null,
+    });
+  } catch (err) {
+    console.error("Erro ao obter texto de RGPD:", err);
+    res.status(500).json({ message: "Erro ao obter texto de RGPD" });
+  }
+}
+
 export async function updatePlatformSettings(req, res) {
   try {
     const settings = await getOrCreateSettings();

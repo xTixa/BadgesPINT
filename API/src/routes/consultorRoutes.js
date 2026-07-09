@@ -19,6 +19,7 @@ import {
 import { submitEvidence, getConsultorEvidencesByBadge, uploadEvidenceFile } from "../controllers/evidenceController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { getMyEmailSignature, previewMyEmailSignature, updateMyEmailSignature } from "../controllers/emailSignatureController.js";
+import { getPublicRgpdText } from "../controllers/platformSettingsController.js";
 
 const router = Router();
 
@@ -42,6 +43,7 @@ router.get("/consultor/badges/:badgeId/evidencias", authMiddleware, getConsultor
 
 router.get("/public/certificates/:code", verifyPublicCertificate);
 router.get("/public/galeria", getPublicGallery);
+router.get("/public/rgpd-text", getPublicRgpdText);
 router.get("/consultor/recomendados", authMiddleware, getRecomendados);
 router.get("/consultor/badges-expirar", authMiddleware, getBadgesExpirar);
 

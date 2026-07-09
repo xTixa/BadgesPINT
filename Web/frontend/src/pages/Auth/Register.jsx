@@ -151,7 +151,15 @@ export default function Register() {
             onChange={(e) => setForm({ ...form, rgpd: e.target.checked })}
           />
           <label htmlFor="rgpd" className="text-sm leading-6 text-slate-700">
-            {t("auth.register.rgpdLabel")}
+            {t("auth.register.rgpdLabel")}{" "}
+            <a
+              href="/termos-rgpd"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-[#0F62FE] underline hover:text-[#0B55DD]"
+            >
+              {t("auth.register.rgpdViewTerms")}
+            </a>
           </label>
         </div>
 

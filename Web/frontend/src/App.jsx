@@ -76,9 +76,10 @@ import FAQ from "./pages/FAQ";
 import NotificacoesPage from "./pages/NotificacoesPage";
 import Galeria from "./pages/Galeria";
 import GaleriaConsultor from "./pages/GaleriaConsultor";
+import TermosRgpd from "./pages/TermosRgpd";
 
 // Rotas que escondem navbar/footer/sidebar
-const NO_LAYOUT_ROUTES = ["/login", "/first-login", "/recover", "/register"];
+const NO_LAYOUT_ROUTES = ["/login", "/first-login", "/recover", "/register", "/termos-rgpd"];
 const SIDEBAR_LAYOUT_PREFIXES = ["/consultor", "/tm", "/sl", "/admin"];
 const SIDEBAR_LAYOUT_ROUTES = [
   "/dashboard",
@@ -111,6 +112,7 @@ function AppContent() {
           <Route path="/recover" element={<RecoverPassword />} />
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/termos-rgpd" element={<TermosRgpd />} />
 
           {/* Public */}
           <Route path="/" element={<Home />} />

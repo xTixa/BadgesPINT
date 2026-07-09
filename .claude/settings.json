@@ -176,7 +176,17 @@
       "Bash(node --check src/services/teamWebhookLookup.js)",
       "Bash(node --check src/services/notificationService.js)",
       "Bash(rm -f webhook.log)",
-      "Bash(taskkill //F //PID 13236)"
+      "Bash(taskkill //F //PID 13236)",
+      "Bash(node --check src/controllers/platformSettingsController.js)",
+      "Bash(curl -s -o /dev/null -w \"API local: %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3000/api/public/rgpd-text)",
+      "Bash(taskkill //F //PID 28336)",
+      "Bash(rm -f api-dev.log)",
+      "Bash(curl -s -o /dev/null -w \"vite 5175: %{http_code}\\\\n\" http://localhost:5175/termos-rgpd)",
+      "Bash(cmd.exe /c start \"\" \"http://localhost:5175/termos-rgpd\")",
+      "Bash(cmd.exe /c start \"\" \"http://localhost:5175/register\")",
+      "PowerShell(Start-Process \"http://localhost:5175/register\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://badgespint.onrender.com/api/public/rgpd-text --max-time 15)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

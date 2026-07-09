@@ -1350,9 +1350,17 @@
       "loadingAreas": "A carregar...",
       "selectPlaceholder": "Selecionar...",
       "rgpdLabel": "Aceito a publicação e partilha dos meus badges e receberei um email de confirmação antes de usar a plataforma.",
+      "rgpdViewTerms": "Ver os termos completos",
       "creating": "A criar...",
       "submit": "Criar utilizador"
     }
+  },
+  "termosRgpd": {
+    "title": "Termos e Política de Privacidade (RGPD)",
+    "subtitle": "Informação sobre o tratamento dos teus dados pessoais na plataforma de Badges.",
+    "loading": "A carregar termos...",
+    "loadError": "Não foi possível carregar os termos. Tenta novamente mais tarde.",
+    "empty": "Ainda não há texto de RGPD configurado pelo administrador."
   },
   "criarTicket": {
     "defaultUserName": "Utilizador",
