@@ -131,6 +131,7 @@ class _BadgeCard extends StatelessWidget {
       alignment: Alignment.center,
       child: BadgeMedal(
         imageUrl: badge.imageUrl,
+        badgeId: badge.id,
         label: badge.levelLabel,
         size: 68,
       ),

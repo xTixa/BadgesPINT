@@ -1146,6 +1146,7 @@ class _DashboardPageState extends State<DashboardPage>
               children: <Widget>[
                 BadgeMedal(
                   imageUrl: badge.imageUrl,
+                  badgeId: badge.id,
                   label: badge.isObtained ? 'Obtido' : 'Badge',
                   size: 56,
                 ),
@@ -1277,6 +1278,7 @@ class _DashboardPageState extends State<DashboardPage>
                   children: <Widget>[
                     BadgeMedal(
                       imageUrl: badge.imageUrl,
+                      badgeId: badge.id,
                       label: badge.isObtained ? 'Obtido' : 'Badge',
                       size: 52,
                     ),

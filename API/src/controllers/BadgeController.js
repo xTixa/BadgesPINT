@@ -1,3 +1,4 @@
+import sharp from "sharp";
 import {
   Badge,
   Area,
@@ -8,6 +9,30 @@ import {
   User,
 } from "../models/index.js";
 import { escapeHtml, getPublicShareBaseUrl, getPublicImageBaseUrl, renderNotFoundSharePage } from "../utils/shareHtml.js";
+
+// Cache em memoria do processo: evita reconverter o mesmo SVG em cada pedido.
+// A app mobile nao consegue renderizar os SVGs vetoriais dos badges de forma
+// fiavel (bug de renderizacao no flutter_svg/vector_graphics), por isso pede
+// esta versao rasterizada em PNG em vez do .svg original.
+const badgePngCache = new Map();
+const BADGE_PNG_SIZE = 512;
+
+async function renderBadgeImagePng(imageUrl) {
+  if (badgePngCache.has(imageUrl)) return badgePngCache.get(imageUrl);
+
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(`Falha ao obter imagem do badge (status ${response.status})`);
+  }
+  const svgBuffer = Buffer.from(await response.arrayBuffer());
+  const pngBuffer = await sharp(svgBuffer)
+    .resize(BADGE_PNG_SIZE, BADGE_PNG_SIZE, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png()
+    .toBuffer();
+
+  badgePngCache.set(imageUrl, pngBuffer);
+  return pngBuffer;
+}
 
 function renderBadgeSharePage(req, badge) {
   const publicBaseUrl = getPublicShareBaseUrl(req);
@@ -195,6 +220,25 @@ export async function getAllBadges(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao obter badges" });
+  }
+}
+
+export async function getBadgeImagePng(req, res) {
+  try {
+    const { id } = req.params;
+    const badge = await Badge.findByPk(id, { attributes: ["id", "image_url"] });
+
+    if (!badge || !badge.image_url) {
+      return res.status(404).json({ message: "Badge sem imagem disponivel" });
+    }
+
+    const pngBuffer = await renderBadgeImagePng(badge.image_url);
+    res.setHeader("Content-Type", "image/png");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(pngBuffer);
+  } catch (err) {
+    console.error("Erro ao converter imagem do badge para PNG:", err);
+    res.status(500).json({ message: "Erro ao gerar imagem do badge" });
   }
 }
 

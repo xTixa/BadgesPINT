@@ -1,14 +1,41 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/app_config.dart';
+
 class BadgeMedal extends StatelessWidget {
-  const BadgeMedal({this.imageUrl, this.label, this.size = 64, super.key});
+  const BadgeMedal({
+    this.imageUrl,
+    this.badgeId,
+    this.label,
+    this.size = 64,
+    super.key,
+  });
 
   final String? imageUrl;
+  final int? badgeId;
   final String? label;
   final double size;
 
-  bool get _hasImage {
+  // O flutter_svg/vector_graphics tem um bug de renderizacao nao
+  // deterministico com os SVGs vetoriais dos badges em alguns dispositivos
+  // Android (aparecem com blocos de estatica que mudam a cada abertura).
+  // Por isso, quando conhecemos o id do badge, pedimos ao backend a versao
+  // ja rasterizada em PNG (GET /badges/:id/image.png) em vez de tentar
+  // renderizar o SVG original no dispositivo.
+  String? get _resolvedImageUrl {
+    if (badgeId != null) {
+      final base = AppConfig.apiBaseUrl.replaceAll(RegExp(r'/$'), '');
+      return '$base/badges/$badgeId/image.png';
+    }
+
     final url = imageUrl?.trim();
+    if (url == null || url.isEmpty) return null;
+    if (url.toLowerCase().endsWith('.svg')) return null;
+    return url;
+  }
+
+  bool get _hasImage {
+    final url = _resolvedImageUrl;
     if (url == null || url.isEmpty) return false;
 
     final lowerUrl = url.toLowerCase();
@@ -19,114 +46,25 @@ class BadgeMedal extends StatelessWidget {
         lowerUrl.contains('placeholder.com')) {
       return false;
     }
-    if (lowerUrl.endsWith('.svg')) return false;
 
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    final ribbonHeight = size * 0.24;
-    return SizedBox(
-      width: size,
-      height: size + ribbonHeight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.topCenter,
-        children: [
-          Positioned(
-            bottom: 0,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.skewX(-0.28),
-                  child: Container(
-                    width: size * 0.18,
-                    height: ribbonHeight,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF0F62FE),
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(4),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: size * 0.03),
-                Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.skewX(0.28),
-                  child: Container(
-                    width: size * 0.18,
-                    height: ribbonHeight,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF00AEEF),
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(4),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: size,
-            height: size,
-            padding: EdgeInsets.all(size * 0.075),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFFF4BF),
-                  Color(0xFFF59E0B),
-                  Color(0xFFB45309),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.18),
-                  blurRadius: size * 0.16,
-                  offset: Offset(0, size * 0.07),
-                ),
-              ],
-            ),
-            child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF111827),
-                    Color(0xFF0F62FE),
-                    Color(0xFF00AEEF),
-                  ],
-                ),
-                border: Border.all(
-                  color: const Color(0xFFFFF7D6),
-                  width: size * 0.035,
-                ),
-              ),
-              child:
-                  _hasImage
-                      ? Container(
-                        color: Colors.white,
-                        padding: EdgeInsets.all(size * 0.08),
-                        child: Image.network(
-                          imageUrl!,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => _fallbackContent(),
-                        ),
-                      )
-                      : _fallbackContent(),
-            ),
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(size * 0.28),
+      child: SizedBox(
+        width: size,
+        height: size,
+        child:
+            _hasImage
+                ? Image.network(
+                    _resolvedImageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _fallbackContent(),
+                  )
+                : _fallbackContent(),
       ),
     );
   }
@@ -136,6 +74,13 @@ class BadgeMedal extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.all(size * 0.12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF020617), Color(0xFF0F62FE), Color(0xFF00AEEF)],
+        ),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

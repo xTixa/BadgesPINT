@@ -442,7 +442,7 @@ class _ProfilePageState extends State<ProfilePage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _BadgeThumb(imageUrl: badge.imageUrl),
+                    _BadgeThumb(imageUrl: badge.imageUrl, badgeId: badge.id),
                     const SizedBox(height: 6),
                     Flexible(
                       child: Text(
@@ -502,7 +502,7 @@ class _ProfilePageState extends State<ProfilePage>
             ),
             child: Row(
               children: [
-                _BadgeThumb(imageUrl: badge.imageUrl),
+                _BadgeThumb(imageUrl: badge.imageUrl, badgeId: badge.id),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -1110,12 +1110,13 @@ class _ProfilePageState extends State<ProfilePage>
 }
 
 class _BadgeThumb extends StatelessWidget {
-  const _BadgeThumb({required this.imageUrl});
+  const _BadgeThumb({required this.imageUrl, this.badgeId});
 
   final String? imageUrl;
+  final int? badgeId;
 
   @override
   Widget build(BuildContext context) {
-    return BadgeMedal(imageUrl: imageUrl, size: 42);
+    return BadgeMedal(imageUrl: imageUrl, badgeId: badgeId, size: 42);
   }
 }

@@ -314,8 +314,10 @@ class ConsultorRepository {
         }
       }
 
+      debugPrint('updateProfile: resposta inesperada da API: $payload');
       return null;
-    } catch (_) {
+    } catch (error) {
+      debugPrint('updateProfile falhou: $error');
       return null;
     }
   }
@@ -521,7 +523,8 @@ class ConsultorRepository {
       );
       await _syncService.syncInitialUserData();
       return getMyProfile();
-    } catch (_) {
+    } catch (error) {
+      debugPrint('updatePreferences falhou: $error');
       return null;
     }
   }

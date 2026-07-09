@@ -279,7 +279,7 @@ class _BadgesGrid extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    _BadgeThumb(imageUrl: badge.imageUrl),
+                    _BadgeThumb(imageUrl: badge.imageUrl, badgeId: badge.id),
                     const SizedBox(height: 8),
                     Text(
                       badge.name,
@@ -346,7 +346,7 @@ class _LatestBadges extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      _BadgeThumb(imageUrl: badge.imageUrl),
+                      _BadgeThumb(imageUrl: badge.imageUrl, badgeId: badge.id),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
@@ -418,12 +418,13 @@ CatalogBadgeItem _catalogBadgeFor(ConsultorController controller, BadgeItem badg
 }
 
 class _BadgeThumb extends StatelessWidget {
-  const _BadgeThumb({required this.imageUrl});
+  const _BadgeThumb({required this.imageUrl, this.badgeId});
 
   final String? imageUrl;
+  final int? badgeId;
 
   @override
   Widget build(BuildContext context) {
-    return BadgeMedal(imageUrl: imageUrl, size: 42);
+    return BadgeMedal(imageUrl: imageUrl, badgeId: badgeId, size: 42);
   }
 }

@@ -485,6 +485,7 @@ class _HomePageState extends State<HomePage> {
       ),
       child: BadgeMedal(
         imageUrl: badge.imageUrl,
+        badgeId: badge.id,
         label: badge.levelLabel,
         size: height >= 80 ? 64 : 54,
       ),

@@ -583,6 +583,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
       ),
       child: BadgeMedal(
         imageUrl: badge.imageUrl,
+        badgeId: badge.id,
         label: badge.levelLabel,
         size: 136,
       ),
