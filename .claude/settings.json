@@ -137,7 +137,17 @@
       "Bash(timeout 15 node src/server.js)",
       "Bash(node --test tests/)",
       "Bash(node tests/evidenceUploadHelpers.test.js)",
-      "Bash(node tests/passwordPolicy.test.js)"
+      "Bash(node tests/passwordPolicy.test.js)",
+      "Bash(sleep 2 && cat /tmp/server2.log)",
+      "Bash(curl -s -w \"\\\\nHTTP_CODE:%{http_code}\\\\n\" -X POST http://localhost:3000/api/users/register -H \"Content-Type: application/json\" -d '{\"nome\":\"Teste Diagnostico\",\"email\":\"teste.diagnostico.pint@example.com\",\"area_id\":1,\"rgpdAccepted\":true}')",
+      "Bash(nohup node src/server.js)",
+      "Bash(disown)",
+      "Bash(curl -s -m 5 -w \"\\\\nHTTP:%{http_code}\\\\n\" http://localhost:3000/api/areas)",
+      "Bash(curl -s -m 10 -w \"\\\\nHTTP:%{http_code}\\\\n\" -X POST http://localhost:3000/api/auth/recover-password -H \"Content-Type: application/json\" -d '{\"email\":\"guilherme@softinsa.pt\"}')",
+      "Bash(curl -s -i -m 10 -X POST http://localhost:3000/api/auth/recover-password -H \"Content-Type: application/json\" -d '{\"email\":\"guilherme@softinsa.pt\"}')",
+      "Bash(node --input-type=module -e ' *)",
+      "Bash(taskkill //F //PID 32708)",
+      "Bash(node --check src/services/mailService.js)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

@@ -1,5 +1,6 @@
 import logo from "/src/assets/logo.png";
 import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 const particles = Array.from({ length: 14 }, (_, index) => index);
 
@@ -24,6 +25,8 @@ export default function AuthShell({
       </div>
 
       <section className={`auth-card ${wide ? "auth-card-wide" : ""}`}>
+        <LanguageSwitcher className="absolute right-4 top-4 z-20" />
+
         <aside className="auth-aside">
           <span className="auth-eyebrow">{eyebrow || t("auth.shell.eyebrow")}</span>
           <div>
