@@ -254,8 +254,8 @@ export default function Requirements() {
 
           <aside className="hidden lg:block">
             <div className="sticky top-24 overflow-hidden rounded-2xl border border-white/25 bg-white text-slate-950 shadow-[0_12px_40px_rgba(15,98,254,0.18)]">
-              <div className="flex h-40 items-center justify-center bg-[linear-gradient(135deg,#EAF6FF_0%,#D9F7FF_46%,#BFEFFF_100%)]">
-                <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} size="hero" />
+              <div className="aspect-square w-full">
+                <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} className="h-full w-full" rounded="rounded-none" />
               </div>
               <div className="p-4">
                 <div className="mb-3">
