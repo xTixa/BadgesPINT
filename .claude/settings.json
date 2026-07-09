@@ -188,7 +188,10 @@
       "PowerShell(Start-Process \"http://localhost:5175/register\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://badgespint.onrender.com/api/public/rgpd-text --max-time 15)",
       "Bash(curl -s -o /dev/null -w \"vite: %{http_code}\\\\n\" http://localhost:5175/admin/learning-paths)",
-      "PowerShell(Start-Process \"http://localhost:5175/admin/learning-paths\")"
+      "PowerShell(Start-Process \"http://localhost:5175/admin/learning-paths\")",
+      "Bash(xargs grep -ln \"admin-shell\")",
+      "Bash(curl -s -o /dev/null -w \"vite: %{http_code}\\\\n\" http://localhost:5175/admin/dashboard)",
+      "PowerShell(Start-Process \"http://localhost:5175/admin/dashboard\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

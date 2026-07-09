@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NotificationCenter from "../components/NotificationCenter";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import api from "/src/api";
 import logo from "/src/assets/logo.png";
 import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
@@ -11,6 +12,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -67,7 +69,19 @@ export default function Navbar() {
   const handleLogout = () => {
     setOpen(false);
     setDropdownOpen(false);
-    navigate("/logout");
+    setLogoutConfirmOpen(true);
+  };
+
+  const confirmLogout = () => {
+    // Tentar registar no backend, mas não bloquear UX
+    api.post("/api/auth/logout").catch(() => {});
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("greeting");
+
+    setLogoutConfirmOpen(false);
+    navigate("/login", { replace: true });
   };
 
   useEffect(() => {
@@ -86,6 +100,7 @@ export default function Navbar() {
       if (event.key === "Escape") {
         setOpen(false);
         setDropdownOpen(false);
+        setLogoutConfirmOpen(false);
       }
     };
     window.addEventListener("keydown", onEscape);
@@ -319,6 +334,43 @@ export default function Navbar() {
           </div>
         )}
       </nav>
+
+      {logoutConfirmOpen && (
+        <div
+          className="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/50 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("auth.logout.title")}
+          onClick={() => setLogoutConfirmOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="mb-6 text-2xl font-bold text-slate-800">
+              {t("auth.logout.title")}
+            </h2>
+
+            <p className="mb-8 text-gray-600">{t("auth.logout.text")}</p>
+
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={confirmLogout}
+                className="w-full rounded-lg bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700"
+              >
+                {t("auth.logout.confirm")}
+              </button>
+
+              <button
+                onClick={() => setLogoutConfirmOpen(false)}
+                className="w-full rounded-lg border border-gray-300 py-3 text-gray-700 transition hover:bg-gray-100"
+              >
+                {t("auth.logout.cancel")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
