@@ -36,10 +36,9 @@ export default function BadgeCard({
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-200 hover:-translate-y-1 hover:border-[#0F62FE]/30 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
       <Link to={detailUrl} className="block">
-        <div className="relative aspect-[16/9] overflow-hidden bg-[linear-gradient(135deg,#EAF6FF_0%,#D9F7FF_46%,#BFEFFF_100%)]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(15,98,254,0.20),transparent_48%)]"></div>
-          <div className="flex h-full w-full items-center justify-center transition duration-300 group-hover:scale-105">
-            <BadgeMedal imageUrl={imageUrl} name={name} level={level} size="hero" />
+        <div className="relative aspect-[16/9] overflow-hidden">
+          <div className="h-full w-full transition duration-300 group-hover:scale-105">
+            <BadgeMedal imageUrl={imageUrl} name={name} level={level} className="h-full w-full" rounded="rounded-none" />
           </div>
           <div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#0F62FE] shadow-sm ring-1 ring-[#0F62FE]/10">
             {level}
@@ -49,11 +48,11 @@ export default function BadgeCard({
               <i className="bi bi-star-fill text-[10px]"></i>Premium
             </div>
           )}
-          <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-[#16558C]">
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-4 pb-4 pt-10">
+            <p className="text-xs font-bold uppercase tracking-wide text-white/90">
               {areaName}
             </p>
-            <h3 className="mt-1 line-clamp-2 text-xl font-extrabold leading-tight text-slate-950">
+            <h3 className="mt-1 line-clamp-2 text-xl font-extrabold leading-tight text-white">
               {name}
             </h3>
           </div>

@@ -13,6 +13,7 @@ export default function BadgeMedal({
   name,
   level,
   size = "md",
+  rounded = "rounded-2xl",
   className = "",
 }) {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ export default function BadgeMedal({
 
   return (
     <div className={`relative inline-flex ${sizeClasses[size] || sizeClasses.md} ${className}`}>
-      <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl shadow-xl">
+      <div className={`flex h-full w-full items-center justify-center overflow-hidden shadow-xl ${rounded}`}>
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -31,7 +32,7 @@ export default function BadgeMedal({
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-slate-950 via-[#0F62FE] to-[#00AEEF] px-3 text-center text-white">
+          <div className={`flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-[#0F62FE] to-[#00AEEF] px-3 text-center text-white ${rounded}`}>
             <i className="bi bi-star-fill text-4xl text-yellow-200 drop-shadow"></i>
             <span className="mt-2 text-[11px] font-black uppercase tracking-wide">
               {label}
