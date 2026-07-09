@@ -151,6 +151,18 @@ class ConsultorRepository {
     await _syncService.syncBadgeDetails(badgeId);
   }
 
+  Future<BadgeDetailExtra> getBadgeDetail(int badgeId) async {
+    try {
+      final response = await _apiClient.get('/badges/$badgeId', token: _token);
+      if (response is Map<String, dynamic>) {
+        return BadgeDetailExtra.fromJson(response);
+      }
+    } catch (_) {
+      // Sem ligacao ou falha na API: mantem apenas os dados ja sincronizados.
+    }
+    return BadgeDetailExtra(learningOutcomes: const [], sections: const []);
+  }
+
   Future<bool> registerDeviceToken(String fcmToken) async {
     if ((_token ?? '').isEmpty || fcmToken.isEmpty) return false;
 

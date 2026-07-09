@@ -396,6 +396,85 @@ class CatalogBadgeItem {
   }
 }
 
+class BadgeLessonItem {
+  BadgeLessonItem({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.durationMinutes,
+    required this.contentType,
+  });
+
+  final int id;
+  final String title;
+  final String description;
+  final int durationMinutes;
+  final String contentType;
+
+  factory BadgeLessonItem.fromJson(Map<String, dynamic> json) {
+    return BadgeLessonItem(
+      id: _readInt(json['id']) ?? 0,
+      title: (json['title'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      durationMinutes: _readInt(json['duration_minutes']) ?? 0,
+      contentType: (json['content_type'] ?? 'article').toString(),
+    );
+  }
+}
+
+class BadgeSectionItem {
+  BadgeSectionItem({
+    required this.id,
+    required this.title,
+    required this.lessons,
+  });
+
+  final int id;
+  final String title;
+  final List<BadgeLessonItem> lessons;
+
+  factory BadgeSectionItem.fromJson(Map<String, dynamic> json) {
+    final rawLessons = json['lessons'];
+    return BadgeSectionItem(
+      id: _readInt(json['id']) ?? 0,
+      title: (json['title'] ?? '').toString(),
+      lessons:
+          rawLessons is List
+              ? rawLessons
+                  .whereType<Map<String, dynamic>>()
+                  .map(BadgeLessonItem.fromJson)
+                  .toList()
+              : <BadgeLessonItem>[],
+    );
+  }
+}
+
+class BadgeDetailExtra {
+  BadgeDetailExtra({required this.learningOutcomes, required this.sections});
+
+  final List<String> learningOutcomes;
+  final List<BadgeSectionItem> sections;
+
+  factory BadgeDetailExtra.fromJson(Map<String, dynamic> json) {
+    final rawOutcomes = json['learning_outcomes'];
+    final rawSections = json['sections'];
+
+    return BadgeDetailExtra(
+      learningOutcomes:
+          rawOutcomes is List
+              ? rawOutcomes.map((item) => item.toString()).toList()
+              : <String>[],
+      sections:
+          rawSections is List
+              ? rawSections
+                  .whereType<Map<String, dynamic>>()
+                  .map(BadgeSectionItem.fromJson)
+                  .toList()
+              : <BadgeSectionItem>[],
+    );
+  }
+}
+
 class PedidoBadgeStatus {
   PedidoBadgeStatus({
     required this.id,

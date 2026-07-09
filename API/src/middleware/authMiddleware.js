@@ -42,6 +42,21 @@ export const authMiddleware = (req, res, next) => {
   }
 };
 
+export const optionalAuthMiddleware = (req, res, next) => {
+  const header = req.headers.authorization;
+  if (!header) return next();
+
+  const token = header.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.id;
+    req.userRole = decoded.role;
+  } catch {
+    // Token invalido/expirado: trata o pedido como anonimo em vez de bloquear.
+  }
+  next();
+};
+
 export const adminMiddleware = (req, res, next) => {
   if (req.userRole !== "admin") {
     return res.status(403).json({ message: "Acesso negado. Apenas admins." });

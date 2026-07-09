@@ -870,7 +870,7 @@ class _DashboardPageState extends State<DashboardPage>
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: draftArea,
+                      value: draftArea,
                       isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Area',

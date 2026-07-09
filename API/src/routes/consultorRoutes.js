@@ -17,14 +17,14 @@ import {
   getPublicGallery,
 } from "../controllers/consultorController.js";
 import { submitEvidence, getConsultorEvidencesByBadge, uploadEvidenceFile } from "../controllers/evidenceController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware, { optionalAuthMiddleware } from "../middleware/authMiddleware.js";
 import { getMyEmailSignature, previewMyEmailSignature, updateMyEmailSignature } from "../controllers/emailSignatureController.js";
 import { getPublicRgpdText } from "../controllers/platformSettingsController.js";
 
 const router = Router();
 
 router.get("/consultores/ranking", authMiddleware, getConsultantsRanking);
-router.get("/consultor/:id/profile", authMiddleware, getConsultantPublicProfile);
+router.get("/consultor/:id/profile", optionalAuthMiddleware, getConsultantPublicProfile);
 router.get("/consultor/learning-paths/progress", authMiddleware, getLearningPathProgress);
 router.get("/consultor/certificates", authMiddleware, getConsultorCertificates);
 router.get("/consultor/gamification", authMiddleware, getConsultorGamification);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../shared/db_viewer_page.dart';
 import '../../shared/notification_service.dart';
 import '../consultor_controller.dart';
 
@@ -519,25 +518,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   onTap: () => _openChangePasswordSheet(),
                 ),
               ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          _buildSectionLabel(context, 'Desenvolvimento', Icons.bug_report_outlined),
-          const SizedBox(height: 8),
-          _buildCard(
-            child: ListTile(
-              leading: const Icon(Icons.storage_outlined),
-              title: const Text('Ver Base de Dados Local'),
-              subtitle: const Text('Inspecionar tabelas SQLite da app'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) => const DbViewerPage(),
-                ),
-              ),
             ),
           ),
 

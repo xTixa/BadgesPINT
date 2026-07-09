@@ -38,6 +38,10 @@ class ConsultorController extends ChangeNotifier {
   int? selectedBadgeId;
   List<RequirementItem> requirements = <RequirementItem>[];
   List<EvidenceItem> evidences = <EvidenceItem>[];
+  BadgeDetailExtra badgeDetail = BadgeDetailExtra(
+    learningOutcomes: const [],
+    sections: const [],
+  );
   bool uploadLoading = false;
   bool isOnline = ConnectivityService.instance.isOnline;
   int pendingSyncCount = 0;
@@ -305,10 +309,12 @@ class ConsultorController extends ChangeNotifier {
     final results = await Future.wait<dynamic>(<Future<dynamic>>[
       _repository.getRequirementsByBadge(badgeId),
       _repository.getEvidencesByBadge(badgeId),
+      _repository.getBadgeDetail(badgeId),
     ]);
 
     requirements = results[0] as List<RequirementItem>;
     evidences = results[1] as List<EvidenceItem>;
+    badgeDetail = results[2] as BadgeDetailExtra;
     uploadLoading = false;
     notifyListeners();
   }

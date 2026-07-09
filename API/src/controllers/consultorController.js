@@ -93,6 +93,7 @@ export async function getConsultantsRanking(req, res) {
 export async function getConsultantPublicProfile(req, res) {
   try {
     const { id } = req.params;
+    const isInternalRequest = Boolean(req.userId);
 
     const rows = await database.query(
       `SELECT
@@ -102,6 +103,8 @@ export async function getConsultantPublicProfile(req, res) {
          u.area_id,
          u.avatar_url,
          u.points_total,
+         u.public_profile_enabled,
+         u.rgpd_publication_accepted,
          a.name AS area_name,
          ranked.ranking
        FROM (
@@ -125,6 +128,13 @@ export async function getConsultantPublicProfile(req, res) {
 
     if (!rows.length) {
       return res.status(404).json({ message: "Consultor nao encontrado" });
+    }
+
+    if (
+      !isInternalRequest &&
+      (!rows[0].public_profile_enabled || !rows[0].rgpd_publication_accepted)
+    ) {
+      return res.status(404).json({ message: "Perfil nao disponivel publicamente" });
     }
 
     const badges = await database.query(
