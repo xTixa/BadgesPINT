@@ -1262,9 +1262,9 @@
         "text": "Usa uma destas contas para validar a plataforma:",
         "items": {
           "admin": "Admin: admin@example.com | Password123",
-          "talentManager": "Talent Manager: natalia.neves@softinsa.pt | qwerty",
+          "talentManager": "Talent Manager: natalia.neves@yopmail.com | qwerty",
           "serviceLineLeader": "Service Line Leader: monica@yopmail.com | qwerty123",
-          "consultant": "Consultant: guilherme@softinsa.pt | Password123"
+          "consultant": "Consultant: guilherme@yopmail.com | Password123"
         }
       },
       "emailLabel": "Email",
