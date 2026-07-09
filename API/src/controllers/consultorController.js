@@ -519,7 +519,7 @@ export async function getConsultantBadges(req, res) {
 
     const consultorBadges = await ConsultorBadge.findAll({
       where: { consultor_id: id },
-      attributes: ["badge_id", "status", "workflow_status", "submitted_at", "data_atribuicao"],
+      attributes: ["badge_id", "status", "workflow_status", "submitted_at", "data_atribuicao", "certificate_code"],
     });
 
     if (!consultorBadges.length) {
@@ -533,6 +533,7 @@ export async function getConsultantBadges(req, res) {
         workflow_status: cb.workflow_status,
         submitted_at: cb.submitted_at,
         data_atribuicao: cb.data_atribuicao,
+        certificate_code: cb.certificate_code,
       }])
     );
 

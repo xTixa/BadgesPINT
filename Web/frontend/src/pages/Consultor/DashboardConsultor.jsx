@@ -5,6 +5,7 @@ import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import BadgeCelebration, { getCelebratedIds, markAsCelebrated } from "../../components/BadgeCelebration";
 import { getTimeGreeting } from "../../utils/greeting";
+import { openLinkedInAddCertification } from "../../utils/linkedin";
 import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
 const PLACEHOLDER = avatarPlaceholder;
@@ -121,14 +122,27 @@ export default function DashboardConsultor() {
     }
   };
 
+  const latestObtainedBadge = useMemo(() => {
+    const obtidos = badges.filter((b) => b.status === "obtido");
+    if (obtidos.length === 0) return null;
+    return obtidos.reduce((latest, current) => {
+      const latestDate = new Date(latest.data_atribuicao || 0).getTime();
+      const currentDate = new Date(current.data_atribuicao || 0).getTime();
+      return currentDate > latestDate ? current : latest;
+    });
+  }, [badges]);
+
   const shareLinkedIn = () => {
+    if (!latestObtainedBadge) return;
     const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
-    const url = `${apiBaseUrl}/share/consultores/${user?.id}`;
-    window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    const badgeName = latestObtainedBadge.name || latestObtainedBadge.subtitle || t("consultor.dashboard.thisBadge");
+    const level = latestObtainedBadge.level ? ` (${latestObtainedBadge.level})` : "";
+    openLinkedInAddCertification({
+      name: `${badgeName}${level}`,
+      certUrl: `${apiBaseUrl}/share/badges/${latestObtainedBadge.id}`,
+      issueDate: latestObtainedBadge.data_atribuicao,
+      certId: latestObtainedBadge.certificate_code,
+    });
   };
 
   if (loading || !user) {
@@ -342,7 +356,13 @@ export default function DashboardConsultor() {
             <i className="bi bi-share mr-2 text-cyan-600"></i>{t("consultor.dashboard.shareAndVisibility")}
           </h5>
           <div className="flex flex-wrap gap-2">
-            <button className={btnSecondaryLg} onClick={shareLinkedIn}>
+            <button
+              className={btnSecondaryLg}
+              onClick={shareLinkedIn}
+              disabled={!latestObtainedBadge}
+              title={!latestObtainedBadge ? t("consultor.dashboard.noBadgeToShare") : undefined}
+              style={!latestObtainedBadge ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
+            >
               <i className="bi bi-linkedin mr-1"></i>{t("consultor.dashboard.shareOnLinkedIn")}
             </button>
             <button

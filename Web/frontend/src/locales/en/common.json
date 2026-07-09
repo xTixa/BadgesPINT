@@ -599,6 +599,7 @@
       "noAchievements": "Start submitting badges to unlock achievements.",
       "shareAndVisibility": "Sharing and Visibility",
       "shareOnLinkedIn": "Share on LinkedIn",
+      "noBadgeToShare": "You don't have an earned badge yet to add as a certification",
       "linkCopied": "Link copied!",
       "copyPublicLink": "Copy public link",
       "viewPublicGallery": "View public gallery",

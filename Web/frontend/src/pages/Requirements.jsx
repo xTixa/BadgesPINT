@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../api";
 import BadgeMedal from "../components/BadgeMedal";
+import { openLinkedInAddCertification } from "../utils/linkedin";
 
 const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
 const getBadgeArea = (badge, t) =>
@@ -37,14 +38,6 @@ const writeCachedApplicationId = (user, badgeId) => {
 const getPublicBadgeUrl = (badgeId) => {
   const baseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
   return `${baseUrl}/share/badges/${badgeId}`;
-};
-
-const openLinkedInShare = (url) => {
-  window.open(
-    `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-    "_blank",
-    "noopener,noreferrer"
-  );
 };
 
 export default function Requirements() {
@@ -165,6 +158,13 @@ export default function Requirements() {
   const points = getBadgePoints(badge);
   const description = getBadgeDescription(badge, t);
   const publicBadgeUrl = getPublicBadgeUrl(id);
+  const handleShareLinkedIn = () =>
+    openLinkedInAddCertification({
+      name: `${badgeName} (${level})`,
+      certUrl: publicBadgeUrl,
+      issueDate: application?.data_atribuicao,
+      certId: application?.certificate_code,
+    });
 
   const learningOutcomes = Array.isArray(badge?.learning_outcomes) && badge.learning_outcomes.length > 0
     ? badge.learning_outcomes
@@ -285,7 +285,7 @@ export default function Requirements() {
 
                 <button
                   type="button"
-                  onClick={() => openLinkedInShare(publicBadgeUrl)}
+                  onClick={handleShareLinkedIn}
                   className="mb-3 flex h-10 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
                 >
                   {t("requirements.card.shareLinkedIn")}
@@ -477,7 +477,7 @@ export default function Requirements() {
             )}
             <button
               type="button"
-              onClick={() => openLinkedInShare(publicBadgeUrl)}
+              onClick={handleShareLinkedIn}
               className="mt-3 flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
             >
               {t("requirements.card.shareLinkedIn")}
