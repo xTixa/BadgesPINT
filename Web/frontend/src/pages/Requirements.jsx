@@ -248,7 +248,7 @@ export default function Requirements() {
             </div>
           </div>
 
-          <aside className="hidden -mb-24 lg:block">
+          <aside className="hidden -mb-[26rem] lg:block">
             <div className="overflow-hidden rounded-2xl border border-white/40 bg-white text-slate-950 shadow-[0_20px_50px_rgba(15,98,254,0.25)]">
               <div className="aspect-square w-full">
                 <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} className="h-full w-full" rounded="rounded-none" />
