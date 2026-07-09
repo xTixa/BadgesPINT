@@ -103,6 +103,7 @@ database
       database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS promo_video_url TEXT'),
       database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT FALSE'),
       database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS published BOOLEAN DEFAULT TRUE'),
+      database.query('ALTER TABLE platform_settings ADD COLUMN IF NOT EXISTS teams_webhook_url VARCHAR(255)'),
     ]);
   })
   .then(() => {

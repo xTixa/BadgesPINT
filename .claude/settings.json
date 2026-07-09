@@ -168,7 +168,10 @@
       "Bash(curl -s \"http://localhost:3000/badges\")",
       "Bash(cmd.exe /c start \"\" \"http://localhost:5175/badges\")",
       "Bash(curl -s -o /dev/null -w \"vite: %{http_code}\\\\n\" http://localhost:5175/)",
-      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/pt/common.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/en/common.json','utf8'\\)\\); console.log\\('valid json'\\)\")"
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/pt/common.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/en/common.json','utf8'\\)\\); console.log\\('valid json'\\)\")",
+      "Bash(curl -s -X POST \"https://webhook.site/token\" -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(nohup node fake-teams-webhook.mjs)",
+      "Bash(taskkill //F //PID 30544)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",
