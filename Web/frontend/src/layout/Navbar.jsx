@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NotificationCenter from "../components/NotificationCenter";
@@ -335,42 +336,44 @@ export default function Navbar() {
         )}
       </nav>
 
-      {logoutConfirmOpen && (
-        <div
-          className="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/50 px-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("auth.logout.title")}
-          onClick={() => setLogoutConfirmOpen(false)}
-        >
+      {logoutConfirmOpen &&
+        createPortal(
           <div
-            className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/50 px-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("auth.logout.title")}
+            onClick={() => setLogoutConfirmOpen(false)}
           >
-            <h2 className="mb-6 text-2xl font-bold text-slate-800">
-              {t("auth.logout.title")}
-            </h2>
+            <div
+              className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="mb-6 text-2xl font-bold text-slate-800">
+                {t("auth.logout.title")}
+              </h2>
 
-            <p className="mb-8 text-gray-600">{t("auth.logout.text")}</p>
+              <p className="mb-8 text-gray-600">{t("auth.logout.text")}</p>
 
-            <div className="flex flex-col gap-4">
-              <button
-                onClick={confirmLogout}
-                className="w-full rounded-lg bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700"
-              >
-                {t("auth.logout.confirm")}
-              </button>
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={confirmLogout}
+                  className="w-full rounded-lg bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700"
+                >
+                  {t("auth.logout.confirm")}
+                </button>
 
-              <button
-                onClick={() => setLogoutConfirmOpen(false)}
-                className="w-full rounded-lg border border-gray-300 py-3 text-gray-700 transition hover:bg-gray-100"
-              >
-                {t("auth.logout.cancel")}
-              </button>
+                <button
+                  onClick={() => setLogoutConfirmOpen(false)}
+                  className="w-full rounded-lg border border-gray-300 py-3 text-gray-700 transition hover:bg-gray-100"
+                >
+                  {t("auth.logout.cancel")}
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </header>
   );
 }
