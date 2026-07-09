@@ -166,7 +166,8 @@
       "Bash(curl -s -o /dev/null -w \"API: %{http_code}\\\\n\" http://localhost:3000/)",
       "Bash(curl -s \"http://localhost:3000/api/badges\")",
       "Bash(curl -s \"http://localhost:3000/badges\")",
-      "Bash(cmd.exe /c start \"\" \"http://localhost:5175/badges\")"
+      "Bash(cmd.exe /c start \"\" \"http://localhost:5175/badges\")",
+      "Bash(curl -s -o /dev/null -w \"vite: %{http_code}\\\\n\" http://localhost:5175/)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",
