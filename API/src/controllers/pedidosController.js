@@ -53,6 +53,7 @@ async function notifyConsultorPedido({ pedido, titulo, mensagem, emailFactory, t
     utilizador_id: pedido.consultor_id,
     transaction,
     teamsNotify,
+    teamsBadgeId: teamsNotify ? pedido.badge_id : null,
     email: consultor?.email && emailFactory
       ? {
           to: consultor.email,
@@ -90,6 +91,7 @@ export async function notifySLLeadersOfPendingApproval(pedido) {
           mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua aprovação.`,
           utilizador_id: leader.id,
           teamsNotify: true,
+          teamsBadgeId: pedido.badge_id,
           email: leader.email
             ? {
                 to: leader.email,

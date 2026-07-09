@@ -16,6 +16,7 @@ const DEFAULT_SETTINGS = {
   showTimeline: true,
   language: "pt",
   theme: "light",
+  teams_webhook_url: "",
 };
 
 export default function TalentManagerSettingsPage() {
@@ -52,6 +53,15 @@ export default function TalentManagerSettingsPage() {
   };
 
   const handleSave = async () => {
+    if (settings.teams_webhook_url) {
+      try {
+        new URL(settings.teams_webhook_url);
+      } catch {
+        setFeedback(t("talentManager.settings.invalidWebhookUrl"));
+        return;
+      }
+    }
+
     try {
       setSaving(true);
       setFeedback("");
@@ -121,6 +131,23 @@ export default function TalentManagerSettingsPage() {
               <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyNew} onChange={(e) => handleChange("notifyNew", e.target.checked)} /> {t("talentManager.settings.notifications.newApplications")}</label>
               <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifySla} onChange={(e) => handleChange("notifySla", e.target.checked)} /> {t("talentManager.settings.notifications.slaExceeded")}</label>
               <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyStatus} onChange={(e) => handleChange("notifyStatus", e.target.checked)} /> {t("talentManager.settings.notifications.statusUpdates")}</label>
+            </div>
+
+            <div className="mt-3 rounded-xl border border-slate-200 p-3">
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                <i className="bi bi-microsoft-teams mr-1 text-[#0F62FE]"></i>
+                {t("talentManager.settings.notifications.teamsWebhookLabel")}
+              </label>
+              <input
+                type="url"
+                placeholder={t("talentManager.settings.notifications.teamsWebhookPlaceholder")}
+                value={settings.teams_webhook_url}
+                onChange={(e) => handleChange("teams_webhook_url", e.target.value)}
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {t("talentManager.settings.notifications.teamsWebhookHint")}
+              </p>
             </div>
           </section>
 

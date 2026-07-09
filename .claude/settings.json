@@ -171,7 +171,12 @@
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/pt/common.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('Web/frontend/src/locales/en/common.json','utf8'\\)\\); console.log\\('valid json'\\)\")",
       "Bash(curl -s -X POST \"https://webhook.site/token\" -H \"Content-Type: application/json\" -d '{}')",
       "Bash(nohup node fake-teams-webhook.mjs)",
-      "Bash(taskkill //F //PID 30544)"
+      "Bash(taskkill //F //PID 30544)",
+      "Bash(node --check src/services/teamsWebhookService.js)",
+      "Bash(node --check src/services/teamWebhookLookup.js)",
+      "Bash(node --check src/services/notificationService.js)",
+      "Bash(rm -f webhook.log)",
+      "Bash(taskkill //F //PID 13236)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

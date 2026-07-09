@@ -1,6 +1,7 @@
 import Notification from "../models/Notification.js";
 import { sendPushToUser } from "./firebaseService.js";
-import { sendTeamsWebhook } from "./teamsWebhookService.js";
+import { sendTeamsWebhook, sendTeamsWebhookToUrls } from "./teamsWebhookService.js";
+import { getTeamWebhooksForBadge } from "./teamWebhookLookup.js";
 
 export async function sendPushNotification({ utilizador_id, titulo, mensagem, tipo = "geral", data = {} }) {
   return sendPushToUser(utilizador_id, {
@@ -22,6 +23,7 @@ export async function createNotification({
   push = true,
   email = null,
   teamsNotify = false,
+  teamsBadgeId = null,
 }) {
   const notification = await Notification.create(
     {
@@ -50,6 +52,14 @@ export async function createNotification({
     sendTeamsWebhook({ titulo, mensagem }).catch((error) =>
       console.error(`Webhook Teams/Slack associado a notificacao ${notification.id} falhou:`, error.message)
     );
+
+    if (teamsBadgeId) {
+      getTeamWebhooksForBadge(teamsBadgeId)
+        .then((urls) => sendTeamsWebhookToUrls(urls, { titulo, mensagem }))
+        .catch((error) =>
+          console.error(`Webhooks Teams de equipa para notificacao ${notification.id} falharam:`, error.message)
+        );
+    }
   }
 
   return notification;
@@ -64,6 +74,7 @@ export async function createUniqueNotification({
   email = null,
   push = true,
   teamsNotify = false,
+  teamsBadgeId = null,
 }) {
   const existing = await Notification.findOne({
     where: {
@@ -88,6 +99,7 @@ export async function createUniqueNotification({
     email,
     push,
     teamsNotify,
+    teamsBadgeId,
   });
   notification.setDataValue("_existing", false);
   return notification;

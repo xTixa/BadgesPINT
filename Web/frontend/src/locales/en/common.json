@@ -547,6 +547,10 @@
       "notifications": "Notifications",
       "notifyValidacao": "Applications in Service Line validation",
       "notifySla": "SLA exceeded in my Service Line",
+      "teamsWebhookLabel": "Microsoft Teams webhook (team)",
+      "teamsWebhookPlaceholder": "https://outlook.office.com/webhook/...",
+      "teamsWebhookHint": "Notifications for this Service Line (applications and SLA) will also be sent to this Teams channel, in addition to the global notifications set by the Admin.",
+      "invalidWebhookUrl": "The Teams webhook URL is not valid.",
       "reports": "Reports",
       "exportFormat": "Default export format",
       "topN": "Show Top N consultants ranking",
@@ -1140,6 +1144,7 @@
     "settings": {
       "saveSuccess": "Settings saved successfully.",
       "saveFailed": "Could not save the settings.",
+      "invalidWebhookUrl": "The Teams webhook URL is not valid.",
       "title": "Talent Manager Settings",
       "subtitle": "Customize notifications, reports and work preferences.",
       "profile": "Profile",
@@ -1153,7 +1158,10 @@
         "title": "Notifications",
         "newApplications": "New applications",
         "slaExceeded": "Applications with exceeded SLA",
-        "statusUpdates": "Status updates (approved/rejected)"
+        "statusUpdates": "Status updates (approved/rejected)",
+        "teamsWebhookLabel": "Microsoft Teams webhook (team)",
+        "teamsWebhookPlaceholder": "https://outlook.office.com/webhook/...",
+        "teamsWebhookHint": "Notifications for your areas will also be sent to this Teams channel, in addition to the global notifications set by the Admin."
       },
       "reports": {
         "title": "Reports and Exports",

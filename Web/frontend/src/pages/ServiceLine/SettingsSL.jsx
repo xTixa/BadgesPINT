@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS = {
   language: "pt",
   theme: "light",
   compararConsultores: true,
+  teams_webhook_url: "",
 };
 
 export default function ServiceLineSettingsPage() {
@@ -46,6 +47,15 @@ export default function ServiceLineSettingsPage() {
   };
 
   const handleSave = async () => {
+    if (settings.teams_webhook_url) {
+      try {
+        new URL(settings.teams_webhook_url);
+      } catch {
+        setFeedback(t("serviceLine.settings.invalidWebhookUrl"));
+        return;
+      }
+    }
+
     try {
       setSaving(true);
       setFeedback("");
@@ -97,6 +107,23 @@ export default function ServiceLineSettingsPage() {
                 className="h-4 w-4"
               />
             </label>
+
+            <div className="rounded-2xl border border-slate-200 px-4 py-3">
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                <i className="bi bi-microsoft-teams mr-1 text-[#0F62FE]"></i>
+                {t("serviceLine.settings.teamsWebhookLabel")}
+              </label>
+              <input
+                type="url"
+                placeholder={t("serviceLine.settings.teamsWebhookPlaceholder")}
+                value={settings.teams_webhook_url}
+                onChange={(e) => handleChange("teams_webhook_url", e.target.value)}
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {t("serviceLine.settings.teamsWebhookHint")}
+              </p>
+            </div>
           </div>
         </section>
 

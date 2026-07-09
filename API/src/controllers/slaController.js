@@ -349,6 +349,7 @@ export async function runSLAAlertCheck() {
         utilizador_id: sla.team_id,
         push: sla.push_notification !== false,
         teamsNotify: true,
+        teamsBadgeId: pedido.badge_id,
         email:
           sla.email_notification && sla.team?.email
             ? {

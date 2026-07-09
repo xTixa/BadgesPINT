@@ -547,6 +547,10 @@
       "notifications": "Notificações",
       "notifyValidacao": "Candidaturas em validação da Service Line",
       "notifySla": "SLA ultrapassado na minha Service Line",
+      "teamsWebhookLabel": "Webhook do Microsoft Teams (equipa)",
+      "teamsWebhookPlaceholder": "https://outlook.office.com/webhook/...",
+      "teamsWebhookHint": "As notificações desta Service Line (pedidos e SLA) também serão enviadas para este canal do Teams, além das notificações globais definidas pelo Admin.",
+      "invalidWebhookUrl": "O URL do webhook do Teams não é válido.",
       "reports": "Relatórios",
       "exportFormat": "Formato padrão de exportação",
       "topN": "Mostrar ranking Top N consultores",
@@ -1140,6 +1144,7 @@
     "settings": {
       "saveSuccess": "Definições guardadas com sucesso.",
       "saveFailed": "Não foi possível guardar as definições.",
+      "invalidWebhookUrl": "O URL do webhook do Teams não é válido.",
       "title": "Definições do Talent Manager",
       "subtitle": "Personaliza notificações, relatórios e preferências de trabalho.",
       "profile": "Perfil",
@@ -1153,7 +1158,10 @@
         "title": "Notificações",
         "newApplications": "Novas candidaturas",
         "slaExceeded": "Candidaturas com SLA ultrapassado",
-        "statusUpdates": "Atualizações de estado (aprovado/rejeitado)"
+        "statusUpdates": "Atualizações de estado (aprovado/rejeitado)",
+        "teamsWebhookLabel": "Webhook do Microsoft Teams (equipa)",
+        "teamsWebhookPlaceholder": "https://outlook.office.com/webhook/...",
+        "teamsWebhookHint": "As notificações das tuas áreas também serão enviadas para este canal do Teams, além das notificações globais definidas pelo Admin."
       },
       "reports": {
         "title": "Relatórios e Exportações",
