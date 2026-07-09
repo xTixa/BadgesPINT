@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ring-databases-Especialista" x1="0" x2="1" y1="1" y2="0">
+      <stop offset="0" stop-color="#0F62FE"/>
+      <stop offset="1" stop-color="#93C5FD"/>
+    </linearGradient>
+  </defs>
+  
+  <defs>
+    <linearGradient id="g-databases" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0f62fe"/>
+      <stop offset="1" stop-color="#00aeef"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g-databases)"/>
+  <ellipse cx="256" cy="160" rx="96" ry="38" fill="#fff"/>
+      <path d="M160 160v192c0 21 43 38 96 38s96-17 96-38V160" fill="none" stroke="#fff" stroke-width="20"/>
+      <path d="M160 256c0 21 43 38 96 38s96-17 96-38" fill="none" stroke="#fff" stroke-width="20" opacity=".6"/>
+
+  <rect x="10" y="10" width="492" height="492" rx="92" fill="none" stroke="url(#ring-databases-Especialista)" stroke-width="20"/>
+  <circle cx="256" cy="454" r="34" fill="url(#ring-databases-Especialista)" stroke="#fff" stroke-width="6"/>
+  <text x="256" y="462" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#fff" text-anchor="middle">ESP</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g-tech-innovation-sl2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#9333ea"/>
+      <stop offset="1" stop-color="#00aeef"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g-tech-innovation-sl2)"/>
+  <path d="M170 342 302 130l40 24-90 148 90 16-4 40z" fill="#fff"/>
+</svg>

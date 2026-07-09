@@ -9,18 +9,34 @@ const frontendUrl = (
   "http://localhost:5173"
 ).replace(/\/$/, "");
 
-const imageByArea = new Map([
-  ["Azure Administration", "azure-administration.svg"],
-  ["VMware & Virtualization", "vmware-virtualization.svg"],
-  ["DevOps & CI/CD", "devops-cicd.svg"],
-  ["IT Automation & IaC", "automation-iac.svg"],
-  ["Tech Recruitment", "tech-recruitment.svg"],
-  ["Competency & Talent Growth", "talent-growth.svg"],
+const slugByArea = new Map([
+  ["API & Integration", "api-integration"],
+  ["Advanced Analytics", "advanced-analytics"],
+  ["Agile Delivery", "agile-delivery"],
+  ["Artificial Intelligence", "artificial-intelligence"],
+  ["Azure Administration", "azure-administration"],
+  ["Cloud & DevOps", "cloud-devops"],
+  ["Competency & Talent Growth", "talent-growth"],
+  ["Cybersecurity", "cybersecurity"],
+  ["Data Engineering", "data-engineering"],
+  ["Data Strategy", "data-strategy"],
+  ["Data Visualization", "data-visualization"],
+  ["Databases", "databases"],
+  ["DevOps & CI/CD", "devops-cicd"],
+  ["IT Automation & IaC", "automation-iac"],
+  ["Inovação & Transformação Digital - SL1", "tech-innovation-sl1"],
+  ["Inovação & Transformação Digital - SL2", "tech-innovation-sl2"],
+  ["Mobile Development", "mobile-development"],
+  ["Onboarding & Boas Praticas", "onboarding-boas-praticas"],
+  ["Quality Assurance", "quality-assurance"],
+  ["Tech Recruitment", "tech-recruitment"],
+  ["VMware & Virtualization", "vmware-virtualization"],
+  ["Web Development", "web-development"],
 ]);
 
 async function main() {
   const badges = await database.query(
-    `SELECT b.id, a.name AS area
+    `SELECT b.id, b.level, a.name AS area
      FROM badges b
      JOIN areas a ON a.id = b.area_id
      ORDER BY b.id`,
@@ -29,8 +45,10 @@ async function main() {
 
   let updated = 0;
   for (const badge of badges) {
-    const filename = imageByArea.get(badge.area);
-    if (!filename) continue;
+    const slug = slugByArea.get(badge.area);
+    if (!slug) continue;
+
+    const filename = `${slug}-${String(badge.level).toLowerCase()}.svg`;
 
     await database.query(
       "UPDATE badges SET image_url = :imageUrl WHERE id = :id",

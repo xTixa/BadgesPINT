@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ring-tech-innovation-sl1-Junior" x1="0" x2="1" y1="1" y2="0">
+      <stop offset="0" stop-color="#B45309"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  
+  <defs>
+    <linearGradient id="g-tech-innovation-sl1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#db2777"/>
+      <stop offset="1" stop-color="#0f62fe"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g-tech-innovation-sl1)"/>
+  <path d="M256 108c56 0 96 42 96 92 0 40-22 62-38 82-10 12-14 22-14 36h-88c0-14-4-24-14-36-16-20-38-42-38-82 0-50 40-92 96-92z" fill="#fff"/>
+      <rect x="212" y="352" width="88" height="24" rx="10" fill="#fff" opacity=".8"/>
+
+  <rect x="10" y="10" width="492" height="492" rx="92" fill="none" stroke="url(#ring-tech-innovation-sl1-Junior)" stroke-width="20"/>
+  <circle cx="256" cy="454" r="34" fill="url(#ring-tech-innovation-sl1-Junior)" stroke="#fff" stroke-width="6"/>
+  <text x="256" y="462" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#fff" text-anchor="middle">JR</text>
+</svg>

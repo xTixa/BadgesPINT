@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ring-talent-growth-Lider" x1="0" x2="1" y1="1" y2="0">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#DDD6FE"/>
+    </linearGradient>
+  </defs>
+  
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#16a34a"/>
+      <stop offset="1" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)"/>
+  <path d="M256 104c78 58 116 119 116 183 0 74-51 121-116 121s-116-47-116-121c0-64 38-125 116-183z" fill="#fff" opacity=".95"/>
+  <path d="M256 190v154m0 0 70-70m-70 70-70-70" fill="none" stroke="#14532d" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" opacity=".65"/>
+
+  <rect x="10" y="10" width="492" height="492" rx="92" fill="none" stroke="url(#ring-talent-growth-Lider)" stroke-width="20"/>
+  <circle cx="256" cy="454" r="34" fill="url(#ring-talent-growth-Lider)" stroke="#fff" stroke-width="6"/>
+  <text x="256" y="462" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#fff" text-anchor="middle">LDR</text>
+</svg>

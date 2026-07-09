@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ring-data-visualization-Especialista" x1="0" x2="1" y1="1" y2="0">
+      <stop offset="0" stop-color="#0F62FE"/>
+      <stop offset="1" stop-color="#93C5FD"/>
+    </linearGradient>
+  </defs>
+  
+  <defs>
+    <linearGradient id="g-data-visualization" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#0f62fe"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g-data-visualization)"/>
+  <circle cx="256" cy="256" r="120" fill="#fff" opacity=".2"/>
+      <path d="M256 136a120 120 0 0 1 104 180l-104-60z" fill="#fff"/>
+      <path d="M256 256l-104 60a120 120 0 0 1 0-120z" fill="#fff" opacity=".7"/>
+
+  <rect x="10" y="10" width="492" height="492" rx="92" fill="none" stroke="url(#ring-data-visualization-Especialista)" stroke-width="20"/>
+  <circle cx="256" cy="454" r="34" fill="url(#ring-data-visualization-Especialista)" stroke="#fff" stroke-width="6"/>
+  <text x="256" y="462" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#fff" text-anchor="middle">ESP</text>
+</svg>
