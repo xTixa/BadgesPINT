@@ -210,8 +210,8 @@ export default function Requirements() {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <section className="w-full bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] px-6 pb-6 pt-6 text-white lg:px-10">
-        <div className="mx-auto grid max-w-[1600px] gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <section className="w-full bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] px-6 py-5 text-white lg:px-10">
+        <div className="mx-auto grid max-w-[1600px] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="max-w-5xl">
             <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-bold text-[#BFEFFF]">
               <Link to="/" className="hover:text-white">{t("requirements.breadcrumbs.home")}</Link>
@@ -248,7 +248,7 @@ export default function Requirements() {
             </div>
           </div>
 
-          <aside className="hidden -mb-20 lg:block">
+          <aside className="hidden -mb-24 lg:block">
             <div className="overflow-hidden rounded-2xl border border-white/40 bg-white text-slate-950 shadow-[0_20px_50px_rgba(15,98,254,0.25)]">
               <div className="aspect-square w-full">
                 <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} className="h-full w-full" rounded="rounded-none" />
