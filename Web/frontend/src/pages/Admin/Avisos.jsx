@@ -134,6 +134,16 @@ export default function Avisos() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const toggleAtivo = async (aviso) => {
+    try {
+      await api.put(`/api/notifications/announcements/${aviso.id}/toggle`, { ativo: !aviso.ativo });
+      await loadAvisos();
+    } catch (err) {
+      console.error("Erro ao alternar estado do aviso:", err);
+      setError(err.response?.data?.message || t("admin.avisos.errors.toggleFailed"));
+    }
+  };
+
   const apagar = async (id) => {
     if (!window.confirm(t("admin.avisos.confirmDelete"))) return;
     try {
@@ -282,6 +292,10 @@ export default function Avisos() {
                           <i className={`bi ${config.icon}`}></i>
                           {t(config.labelKey)}
                         </span>
+                        <span className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold ${aviso.ativo ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"}`}>
+                          <i className={`bi ${aviso.ativo ? "bi-check-circle-fill" : "bi-pause-circle-fill"}`}></i>
+                          {aviso.ativo ? t("admin.avisos.status.active") : t("admin.avisos.status.inactive")}
+                        </span>
                         <h3 className="mt-2 text-base font-bold text-slate-900">{stripTitlePrefix(aviso.titulo)}</h3>
                         <p className="m-0 mt-1 text-sm text-slate-600">{aviso.mensagem}</p>
                         <p className="m-0 mt-2 text-xs text-slate-500">
@@ -289,6 +303,10 @@ export default function Avisos() {
                         </p>
                       </div>
                       <div className="flex shrink-0 gap-2">
+                        <button className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => toggleAtivo(aviso)}>
+                          <i className={`bi ${aviso.ativo ? "bi-pause-fill" : "bi-play-fill"} mr-1`}></i>
+                          {aviso.ativo ? t("admin.avisos.deactivate") : t("admin.avisos.activate")}
+                        </button>
                         <button className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => editar(aviso)}>
                           <i className="bi bi-pencil mr-1"></i>{t("admin.common.edit")}
                         </button>

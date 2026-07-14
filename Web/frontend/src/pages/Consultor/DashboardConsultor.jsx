@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import BadgeCelebration, { getCelebratedIds, markAsCelebrated } from "../../components/BadgeCelebration";
-import { getTimeGreetingKey } from "../../utils/greeting";
+import { consumeGreetingKey } from "../../utils/greeting";
 import { openLinkedInAddCertification } from "../../utils/linkedin";
 import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
@@ -35,9 +35,11 @@ export default function DashboardConsultor() {
   const [recomendados, setRecom]      = useState([]);
   const [alertsExpiracao, setExp]     = useState([]);
   const [achievements, setAchiev]     = useState([]);
+  const [preferredAreaBadges, setPreferredAreaBadges] = useState([]);
   const [loading, setLoading]         = useState(true);
   const [celebrationQueue, setCelebrationQueue] = useState([]);
   const [currentCelebration, setCurrentCelebration] = useState(null);
+  const [greetingKey] = useState(() => consumeGreetingKey());
 
   useEffect(() => {
     let mounted = true;
@@ -47,12 +49,13 @@ export default function DashboardConsultor() {
         if (!mounted) return;
         setUser(me);
 
-        const [badgeRes, lpRes, recRes, expRes, gamifRes] = await Promise.allSettled([
+        const [badgeRes, lpRes, recRes, expRes, gamifRes, preferredRes] = await Promise.allSettled([
           api.get(`/api/consultor/${me.id}/badges`),
           api.get("/api/consultor/learning-paths/progress"),
           api.get("/api/consultor/recomendados"),
           api.get("/api/consultor/badges-expirar"),
           api.get("/api/consultor/gamification"),
+          api.get("/api/consultor/badges-preferenciais"),
         ]);
 
         if (!mounted) return;
@@ -93,6 +96,10 @@ export default function DashboardConsultor() {
 
         if (gamifRes.status === "fulfilled") {
           setAchiev(Array.isArray(gamifRes.value.data?.achievements) ? gamifRes.value.data.achievements : []);
+        }
+
+        if (preferredRes.status === "fulfilled") {
+          setPreferredAreaBadges(Array.isArray(preferredRes.value.data) ? preferredRes.value.data : []);
         }
       } catch (err) {
         console.error("Erro ao carregar dashboard:", err);
@@ -171,7 +178,7 @@ export default function DashboardConsultor() {
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.dashboard.personalDashboard")}</p>
-              <h1 className="mb-2 text-3xl font-bold">{t(getTimeGreetingKey())}, {user.name.split(" ")[0]}</h1>
+              <h1 className="mb-2 text-3xl font-bold">{t(greetingKey)}, {user.name.split(" ")[0]}</h1>
               <p className="max-w-xl text-white/85">
                 {t("consultor.dashboard.heroText")}
               </p>
@@ -278,6 +285,37 @@ export default function DashboardConsultor() {
             </div>
           </div>
         </div>
+
+        {/* Badges preferenciais da área */}
+        {preferredAreaBadges.length > 0 && (
+          <div className="mb-6">
+            <div className={panelClass}>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h5 className="m-0 text-base font-bold text-slate-900">
+                  <i className="bi bi-geo-alt-fill mr-2 text-[#0F62FE]"></i>{t("consultor.dashboard.preferredAreaBadges")}
+                </h5>
+                <Link to="/badges" className="text-xs text-slate-500 hover:text-[#0F62FE]">{t("consultor.dashboard.viewCatalog")}</Link>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {preferredAreaBadges.map((badge) => (
+                  <Link
+                    key={badge.id}
+                    to={`/badges/${badge.id}`}
+                    className="rounded-2xl border border-slate-200 p-3 transition hover:border-[#0F62FE]/40 hover:bg-[#0F62FE]/5"
+                  >
+                    <div className="text-sm font-semibold text-slate-900">{badge.name}</div>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 font-semibold">{badge.level}</span>
+                      <span className="rounded-full bg-[#0F62FE]/10 px-2 py-0.5 font-bold text-[#0F62FE]">
+                        {t("consultor.dashboard.pointsAbbrev", { points: badge.points })}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Recomendações + Conquistas */}
         <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">

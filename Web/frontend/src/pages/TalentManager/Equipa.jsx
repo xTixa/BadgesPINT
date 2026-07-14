@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
@@ -19,6 +19,12 @@ export default function Equipa() {
   const [signatureMessage, setSignatureMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const timelineRef = useRef(null);
+
+  const viewConsultorTimeline = (consultor) => {
+    setSelectedConsultor(consultor);
+    timelineRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -186,8 +192,8 @@ export default function Equipa() {
                               </div>
                             </td>
                             <td className="px-3 py-2 text-right">
-                              <button className="rounded-lg border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => setSelectedConsultor(c)}>
-                                {t("talentManager.equipa.table.view")}
+                              <button className="rounded-lg border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50" onClick={() => viewConsultorTimeline(c)}>
+                                <i className="bi bi-clock-history mr-1"></i>{t("talentManager.equipa.table.view")}
                               </button>
                             </td>
                           </tr>
@@ -230,7 +236,7 @@ export default function Equipa() {
                 </SectionCard>
 
                 <SectionCard title={t("talentManager.equipa.timelineSection.title")} icon="bi-clock-history">
-                  <div className="mb-2 text-sm font-semibold text-slate-900">{selectedConsultor?.name || t("talentManager.equipa.timelineSection.selectConsultant")}</div>
+                  <div ref={timelineRef} className="mb-2 text-sm font-semibold text-slate-900">{selectedConsultor?.name || t("talentManager.equipa.timelineSection.selectConsultant")}</div>
                   {signatureMessage && (
                     <div className="mb-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
                       {signatureMessage}

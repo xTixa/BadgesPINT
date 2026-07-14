@@ -66,10 +66,14 @@ export const login = async (req, res) => {
 
       return res.json({
         firstLogin: true,
+        greetingType: "welcome",
         token,
         user
       });
     }
+
+    const diffDays = (now - new Date(user.last_login)) / (1000 * 60 * 60 * 24);
+    const greetingType = diffDays >= 15 ? "welcomeBack" : "timeOfDay";
 
     // Atualizar last_login
     await user.update({ last_login: now });
@@ -83,7 +87,7 @@ export const login = async (req, res) => {
       description: "Login bem-sucedido",
       status: "success",
     });
-    return res.json({ token, user });
+    return res.json({ token, user, greetingType });
 
   } catch (error) {
     console.error("Erro login:", error);

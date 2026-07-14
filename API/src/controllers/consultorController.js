@@ -632,6 +632,37 @@ export async function generateConsultorBadgeCertificate(req, res) {
 
 // PROGRESSO DO CONSULTOR POR BADGE (x/y requisitos aprovados)
 // RECOMENDAÇÕES — próximo nível na área do consultor
+// Badges preferenciais da área do consultor, mostrados ao iniciar a aplicação.
+export async function getPreferredAreaBadges(req, res) {
+  try {
+    const user = await User.findByPk(req.userId, { attributes: ["area_id"] });
+    if (!user?.area_id) return res.json([]);
+
+    const badges = await Badge.findAll({
+      where: { area_id: user.area_id },
+      include: [{ model: Area, as: "area" }],
+      order: [["level", "ASC"]],
+      limit: 6,
+    });
+
+    res.json(
+      badges.map((badge) => ({
+        id: badge.id,
+        name: badge.description || `Badge #${badge.id}`,
+        description: badge.description,
+        level: badge.level,
+        points: badge.points || 0,
+        area_id: badge.area_id,
+        area_name: badge.area?.name,
+        image_url: badge.image_url,
+      }))
+    );
+  } catch (err) {
+    console.error("Erro ao obter badges preferenciais da área:", err);
+    res.status(500).json({ message: "Erro ao obter badges preferenciais da área" });
+  }
+}
+
 export async function getRecomendados(req, res) {
   try {
     const consultorId = req.userId;

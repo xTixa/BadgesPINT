@@ -48,7 +48,7 @@ function validBadgeIds(value, available) {
 export async function getMyEmailSignature(req, res) {
   try {
     const user = await User.findByPk(req.userId);
-    if (!user || user.role !== "consultant") return res.status(404).json({ message: "Consultor não encontrado" });
+    if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
     res.json(responseFor(user, await loadObtainedBadges(user.id)));
   } catch (error) {
     console.error("Erro ao carregar assinatura de email:", error);
@@ -59,7 +59,7 @@ export async function getMyEmailSignature(req, res) {
 export async function updateMyEmailSignature(req, res) {
   try {
     const user = await User.findByPk(req.userId);
-    if (!user || user.role !== "consultant") return res.status(404).json({ message: "Consultor não encontrado" });
+    if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
     const available = await loadObtainedBadges(user.id);
     const requestedIds = validBadgeIds(req.body?.badge_ids, available);
     if (requestedIds.length > 6) return res.status(400).json({ message: "Seleciona no máximo 6 badges" });
@@ -76,7 +76,7 @@ export async function updateMyEmailSignature(req, res) {
 export async function previewMyEmailSignature(req, res) {
   try {
     const user = await User.findByPk(req.userId);
-    if (!user || user.role !== "consultant") return res.status(404).json({ message: "Consultor não encontrado" });
+    if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
     const available = await loadObtainedBadges(user.id);
     const requestedIds = validBadgeIds(req.body?.badge_ids, available);
     if (requestedIds.length > 6) return res.status(400).json({ message: "Seleciona no máximo 6 badges" });

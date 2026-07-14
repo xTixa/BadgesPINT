@@ -442,7 +442,9 @@ class CatalogBadgeItem {
       points: _readInt(json['points']) ?? 0,
       level: _readLevel(rawLevel),
       levelLabel: rawLevel?.toString() ?? 'Nivel 1',
-      areaName: area is Map<String, dynamic> ? area['name']?.toString() : null,
+      areaName:
+          json['area_name']?.toString() ??
+          (area is Map<String, dynamic> ? area['name']?.toString() : null),
       areaId: _readInt(json['area_id']),
       imageUrl: json['image_url']?.toString(),
     );

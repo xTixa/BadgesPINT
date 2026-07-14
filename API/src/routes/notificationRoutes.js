@@ -18,6 +18,11 @@ router.put(
   rolesMiddleware(["admin", "service_line_leader", "talent_manager"]),
   notificationController.atualizarAvisoBroadcast
 );
+router.put(
+  "/announcements/:id/toggle",
+  rolesMiddleware(["admin", "service_line_leader", "talent_manager"]),
+  notificationController.alternarAvisoBroadcast
+);
 router.delete(
   "/announcements/:id",
   rolesMiddleware(["admin", "service_line_leader", "talent_manager"]),

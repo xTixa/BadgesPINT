@@ -50,7 +50,9 @@
   "greeting": {
     "morning": "Bom dia",
     "afternoon": "Boa tarde",
-    "evening": "Boa noite"
+    "evening": "Boa noite",
+    "welcome": "Bem-vindo",
+    "welcomeBack": "Seja bem-vindo novamente"
   },
   "home": {
     "eyebrow": "Academia interna de competências",
@@ -601,6 +603,7 @@
       "noUpcomingExpirations": "Sem expirações próximas.",
       "view": "Ver",
       "recommendedBadges": "Badges Recomendados",
+      "preferredAreaBadges": "Badges preferenciais da tua área",
       "viewCatalog": "Ver catálogo",
       "noRecommendations": "Obtém o teu primeiro badge para receberes recomendações personalizadas.",
       "pointsAbbrev": "{{points}} pts",
@@ -1707,6 +1710,7 @@
           "historico": "Histórico",
           "avisos": "Informações/Avisos",
           "faq": "Ajuda / FAQ",
+          "assinaturaEmail": "Assinatura de Email",
           "perfilConfiguracoes": "Perfil / Configurações"
         },
         "serviceLine": {
@@ -1721,6 +1725,7 @@
           "relatorios": "Relatórios",
           "avisos": "Informações/Avisos",
           "faq": "Ajuda / FAQ",
+          "assinaturaEmail": "Assinatura de Email",
           "perfilConfiguracoes": "Perfil / Configurações"
         },
         "admin": {
@@ -1770,6 +1775,9 @@
       },
       "loading": "A carregar comparação...",
       "selectConsultants": "Selecionar consultores",
+      "experienceFilter": "Nível de experiência",
+      "experienceAll": "Todos os níveis",
+      "noConsultantsForFilter": "Sem consultores para o nível de experiência selecionado.",
       "maxFour": "Máximo 4",
       "selectToCompare": "Seleciona consultores para comparar.",
       "chart": {
@@ -1876,16 +1884,19 @@
       "search": "Pesquisar"
     },
     "avisos": {
+      "activate": "Ativar",
       "allCategories": "Todas",
       "cancelEdit": "Cancelar edição",
       "confirmDelete": "Apagar este aviso para todos os destinatários?",
+      "deactivate": "Desativar",
       "editTitle": "Editar aviso",
       "emptyState": "Nenhum aviso encontrado.",
       "errors": {
         "deleteFailed": "Não foi possível apagar o aviso.",
         "fillTitleAndMessage": "Preenche o título e a mensagem.",
         "loadFailed": "Não foi possível carregar os avisos.",
-        "saveFailed": "Não foi possível guardar o aviso."
+        "saveFailed": "Não foi possível guardar o aviso.",
+        "toggleFailed": "Não foi possível alternar o estado do aviso."
       },
       "eyebrow": "Notificações PUSH",
       "form": {
@@ -1908,6 +1919,10 @@
         "requests": "Pedidos",
         "total": "Total",
         "warnings": "Avisos"
+      },
+      "status": {
+        "active": "Ativo",
+        "inactive": "Inativo"
       },
       "subtitle": "Cria, consulta e edita comunicações disponibilizadas imediatamente aos utilizadores do portal.",
       "title": "Informações / Avisos / Pedidos",

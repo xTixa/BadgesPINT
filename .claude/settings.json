@@ -224,7 +224,20 @@
       "Bash(git stash *)",
       "Bash(git restore *)",
       "Bash(dart format *)",
-      "Bash(curl -s -o /tmp/badge_test.png -w \"%{http_code} %{content_type} %{size_download}\\\\n\" \"https://badgespint.onrender.com/badges/1/image.png\")"
+      "Bash(curl -s -o /tmp/badge_test.png -w \"%{http_code} %{content_type} %{size_download}\\\\n\" \"https://badgespint.onrender.com/badges/1/image.png\")",
+      "Bash(grep -rn \"i18n\" main.jsx App.jsx)",
+      "Bash(find . -name \"i18n*\" -maxdepth 2)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json','utf8'\\)\\); console.log\\('OK'\\)\")",
+      "Bash(node --check src/controllers/notificationController.js)",
+      "Bash(node --check src/models/Notification.js)",
+      "Bash(node --check src/routes/notificationRoutes.js)",
+      "Bash(node --check scripts/ensure-schema.js)",
+      "Bash(node scripts/ensure-schema.js)",
+      "Bash(node --check src/controllers/comparisonController.js)",
+      "Bash(timeout 8 node src/server.js)",
+      "Bash(echo \"started with pid $!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/api/auth/me)",
+      "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"naoexiste@test.com\",\"password\":\"x\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

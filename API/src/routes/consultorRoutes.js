@@ -15,6 +15,7 @@ import {
   getRecomendados,
   getBadgesExpirar,
   getPublicGallery,
+  getPreferredAreaBadges,
 } from "../controllers/consultorController.js";
 import { submitEvidence, getConsultorEvidencesByBadge, uploadEvidenceFile } from "../controllers/evidenceController.js";
 import authMiddleware, { optionalAuthMiddleware } from "../middleware/authMiddleware.js";
@@ -28,6 +29,7 @@ router.get("/consultor/:id/profile", optionalAuthMiddleware, getConsultantPublic
 router.get("/consultor/learning-paths/progress", authMiddleware, getLearningPathProgress);
 router.get("/consultor/certificates", authMiddleware, getConsultorCertificates);
 router.get("/consultor/gamification", authMiddleware, getConsultorGamification);
+router.get("/consultor/badges-preferenciais", authMiddleware, getPreferredAreaBadges);
 router.get("/consultor/email-signature", authMiddleware, getMyEmailSignature);
 router.post("/consultor/email-signature/preview", authMiddleware, previewMyEmailSignature);
 router.put("/consultor/email-signature", authMiddleware, updateMyEmailSignature);

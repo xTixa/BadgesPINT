@@ -36,6 +36,7 @@ export function getSidebarMenus(t) {
         { to: "/faq", label: t("layout.sidebar.menus.talentManager.faq"), icon: "bi-question-circle-fill" },
       ],
       footer: [
+        { to: "/tm/assinatura-email", label: t("layout.sidebar.menus.talentManager.assinaturaEmail"), icon: "bi-envelope-paper-fill" },
         { to: "/tm/settings", label: t("layout.sidebar.menus.talentManager.perfilConfiguracoes"), icon: "bi-gear-fill" },
       ],
     },
@@ -56,6 +57,7 @@ export function getSidebarMenus(t) {
         { to: "/faq", label: t("layout.sidebar.menus.serviceLine.faq"), icon: "bi-question-circle-fill" },
       ],
       footer: [
+        { to: "/sl/assinatura-email", label: t("layout.sidebar.menus.serviceLine.assinaturaEmail"), icon: "bi-envelope-paper-fill" },
         { to: "/sl/settings", label: t("layout.sidebar.menus.serviceLine.perfilConfiguracoes"), icon: "bi-gear-fill" },
       ],
     },

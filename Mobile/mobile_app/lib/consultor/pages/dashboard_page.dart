@@ -31,15 +31,32 @@ class _DashboardPageState extends State<DashboardPage>
   _DashboardSort _sort = _DashboardSort.name;
   String _personalGoal = '';
   String _goalDeadline = '';
+  String? _greeting;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
     _loadGoal();
+    _loadGreeting();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _celebratePendingBadges();
       await _showMilestoneIfNeeded();
+    });
+  }
+
+  Future<void> _loadGreeting() async {
+    final prefs = await SharedPreferences.getInstance();
+    final pendingType = prefs.getString('pending_greeting_type');
+    await prefs.remove('pending_greeting_type');
+    if (!mounted) return;
+
+    setState(() {
+      _greeting = switch (pendingType) {
+        'welcome' => 'Bem-vindo',
+        'welcomeBack' => 'Seja bem-vindo novamente',
+        _ => _timeGreeting(),
+      };
     });
   }
 
@@ -121,6 +138,7 @@ class _DashboardPageState extends State<DashboardPage>
             _buildGamificationShortcut(context),
             _buildTimelineShortcut(context),
             _buildNextActionCard(context),
+            _buildPreferredAreaBadges(context),
             _buildLearningPaths(context),
             _buildSpecialAchievements(context),
             _buildRecommendationsAndAlerts(context),
@@ -501,7 +519,7 @@ class _DashboardPageState extends State<DashboardPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${_timeGreeting()}, ${firstName?.isEmpty == false ? firstName : 'Consultor'}',
+              '${_greeting ?? _timeGreeting()}, ${firstName?.isEmpty == false ? firstName : 'Consultor'}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 22,
@@ -565,6 +583,91 @@ class _DashboardPageState extends State<DashboardPage>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPreferredAreaBadges(BuildContext context) {
+    final controller = widget.controller;
+    final items = controller.preferredAreaBadges.take(6).toList();
+    if (items.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: Row(
+            children: [
+              Icon(Icons.location_on_outlined, color: AppColors.primary, size: 18),
+              SizedBox(width: 6),
+              Text(
+                'Badges preferenciais da tua area',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 108,
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final badge = items[index];
+              return SizedBox(
+                width: 200,
+                child: Card(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BadgeDetailPage(
+                          badge: badge,
+                          controller: controller,
+                        ),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            badge.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                badge.levelLabel,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              const Spacer(),
+                              Text(
+                                '${badge.points} pts',
+                                style: const TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

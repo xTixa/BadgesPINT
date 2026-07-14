@@ -2,7 +2,7 @@ import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 import FcmToken from "../models/FcmToken.js";
 import database from "../config/database.js";
-import { QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import { createNotifications } from "../services/notificationService.js";
 
 // Obter notificações do utilizador
@@ -11,7 +11,10 @@ export const obterNotificacoes = async (req, res) => {
     const utilizador_id = req.userId;
     const { lido, page = 1, limit = 20 } = req.query;
 
-    let where = { utilizador_id };
+    let where = {
+      utilizador_id,
+      [Op.or]: [{ tipo: { [Op.ne]: "geral" } }, { ativo: true }],
+    };
     if (lido !== undefined) where.lido = lido === "true";
 
     const offset = (page - 1) * limit;
@@ -28,7 +31,7 @@ export const obterNotificacoes = async (req, res) => {
       data: rows,
       total: count,
       pages: Math.ceil(count / limit),
-      naoLidas: await Notification.count({ where: { utilizador_id, lido: false } }),
+      naoLidas: await Notification.count({ where: { ...where, lido: false } }),
     });
   } catch (error) {
     console.error("Erro ao obter notificações:", error);
@@ -299,6 +302,7 @@ export const listarAvisosBroadcast = async (req, res) => {
               titulo,
               mensagem,
               tipo,
+              bool_and(ativo) AS ativo,
               MIN("createdAt") AS "createdAt",
               MAX("updatedAt") AS "updatedAt",
               COUNT(*)::int AS destinatarios,
@@ -316,6 +320,52 @@ export const listarAvisosBroadcast = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Erro ao listar avisos",
+      error: error.message,
+    });
+  }
+};
+
+export const alternarAvisoBroadcast = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ativo } = req.body;
+
+    if (typeof ativo !== "boolean") {
+      return res.status(400).json({
+        success: false,
+        message: "Campo 'ativo' (boolean) é obrigatório",
+      });
+    }
+
+    const original = await Notification.findByPk(id);
+    if (!original || original.tipo !== "geral") {
+      return res.status(404).json({
+        success: false,
+        message: "Aviso nao encontrado",
+      });
+    }
+
+    const [updated] = await Notification.update(
+      { ativo },
+      {
+        where: {
+          tipo: "geral",
+          titulo: original.titulo,
+          mensagem: original.mensagem,
+        },
+      }
+    );
+
+    res.json({
+      success: true,
+      message: `Aviso ${ativo ? "ativado" : "desativado"} em ${updated} notificacao(oes)`,
+      atualizados: updated,
+    });
+  } catch (error) {
+    console.error("Erro ao alternar estado do aviso:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao alternar estado do aviso",
       error: error.message,
     });
   }

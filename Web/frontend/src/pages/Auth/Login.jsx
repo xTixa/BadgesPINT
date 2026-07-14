@@ -49,10 +49,15 @@ export default function Login() {
         password,
       });
 
-      const { user, token, firstLogin } = res.data;
+      const { user, token, firstLogin, greetingType } = res.data;
 
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
+      if (greetingType) {
+        localStorage.setItem("greetingType", greetingType);
+      } else {
+        localStorage.removeItem("greetingType");
+      }
 
       if (rememberMe && firstLogin) {
         sessionStorage.setItem("rememberCredentialsAfterFirstLogin", JSON.stringify({ email: normalizedEmail, name: user.name }));

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
-import { getTimeGreetingKey } from "../../utils/greeting";
+import { consumeGreetingKey } from "../../utils/greeting";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import AdminHero from "../../components/ui/AdminHero";
 import EmptyState from "../../components/ui/EmptyState";
@@ -19,6 +19,7 @@ export default function DashboardAdmin() {
   const adminName = (() => {
     try { return JSON.parse(localStorage.getItem("user"))?.name?.split(" ")[0] || ""; } catch { return ""; }
   })();
+  const [greetingKey] = useState(() => consumeGreetingKey());
   const toDateInput = (date) => date.toISOString().slice(0, 10);
   const defaultEnd = new Date();
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -306,7 +307,7 @@ export default function DashboardAdmin() {
       <main className="admin-main">
         <div className="mx-auto max-w-[1400px]">
           <AdminHero
-            title={`${t(getTimeGreetingKey())}${adminName ? `, ${adminName}` : ""}`}
+            title={`${t(greetingKey)}${adminName ? `, ${adminName}` : ""}`}
             subtitle={t("admin.dashboard.subtitle")}
           />
 

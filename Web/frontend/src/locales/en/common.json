@@ -50,7 +50,9 @@
   "greeting": {
     "morning": "Good morning",
     "afternoon": "Good afternoon",
-    "evening": "Good evening"
+    "evening": "Good evening",
+    "welcome": "Welcome",
+    "welcomeBack": "Welcome back"
   },
   "home": {
     "eyebrow": "Internal skills academy",
@@ -601,6 +603,7 @@
       "noUpcomingExpirations": "No upcoming expirations.",
       "view": "View",
       "recommendedBadges": "Recommended Badges",
+      "preferredAreaBadges": "Preferred badges for your area",
       "viewCatalog": "View catalog",
       "noRecommendations": "Earn your first badge to receive personalized recommendations.",
       "pointsAbbrev": "{{points}} pts",
@@ -1707,6 +1710,7 @@
           "historico": "History",
           "avisos": "Announcements",
           "faq": "Help / FAQ",
+          "assinaturaEmail": "Email Signature",
           "perfilConfiguracoes": "Profile / Settings"
         },
         "serviceLine": {
@@ -1721,6 +1725,7 @@
           "relatorios": "Reports",
           "avisos": "Announcements",
           "faq": "Help / FAQ",
+          "assinaturaEmail": "Email Signature",
           "perfilConfiguracoes": "Profile / Settings"
         },
         "admin": {
@@ -1770,6 +1775,9 @@
       },
       "loading": "Loading comparison...",
       "selectConsultants": "Select consultants",
+      "experienceFilter": "Experience level",
+      "experienceAll": "All levels",
+      "noConsultantsForFilter": "No consultants for the selected experience level.",
       "maxFour": "Maximum 4",
       "selectToCompare": "Select consultants to compare.",
       "chart": {
@@ -1876,16 +1884,19 @@
       "search": "Search"
     },
     "avisos": {
+      "activate": "Activate",
       "allCategories": "All",
       "cancelEdit": "Cancel edit",
       "confirmDelete": "Delete this announcement for all recipients?",
+      "deactivate": "Deactivate",
       "editTitle": "Edit announcement",
       "emptyState": "No announcements found.",
       "errors": {
         "deleteFailed": "Could not delete the announcement.",
         "fillTitleAndMessage": "Fill in the title and the message.",
         "loadFailed": "Could not load the announcements.",
-        "saveFailed": "Could not save the announcement."
+        "saveFailed": "Could not save the announcement.",
+        "toggleFailed": "Could not toggle the announcement's status."
       },
       "eyebrow": "Push notifications",
       "form": {
@@ -1908,6 +1919,10 @@
         "requests": "Requests",
         "total": "Total",
         "warnings": "Warnings"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
       },
       "subtitle": "Create, view and edit communications made immediately available to portal users.",
       "title": "Information / Announcements / Requests",

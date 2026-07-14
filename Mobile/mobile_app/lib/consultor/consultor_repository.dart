@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/services/connectivity_service.dart';
 import '../core/services/sync_service.dart';
@@ -103,6 +104,7 @@ class ConsultorRepository {
       }
 
       final firstLogin = payload['firstLogin'] == true;
+      final greetingType = payload['greetingType']?.toString();
 
       final role = (user['role'] ?? '').toString();
       if (role != 'consultant') {
@@ -118,6 +120,10 @@ class ConsultorRepository {
       }
 
       await _sessionStorage.setSession(tokenValue: token, userIdValue: userId);
+      if (greetingType != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('pending_greeting_type', greetingType);
+      }
       return LoginResult(success: true, requiresPasswordChange: firstLogin);
     } on ApiException catch (error) {
       return LoginResult(success: false, message: _extractApiMessage(error.message));
@@ -419,6 +425,27 @@ class ConsultorRepository {
     }
 
     return kDebugMode ? getRankingMock() : <RankingItem>[];
+  }
+
+  Future<List<CatalogBadgeItem>> getPreferredAreaBadges() async {
+    if ((_token ?? '').isEmpty) return <CatalogBadgeItem>[];
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultor/badges-preferenciais',
+        token: _token,
+      );
+      if (payload is List) {
+        return payload
+            .whereType<Map<String, dynamic>>()
+            .map(CatalogBadgeItem.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      return <CatalogBadgeItem>[];
+    }
+
+    return <CatalogBadgeItem>[];
   }
 
   Future<List<LearningPathProgressItem>> getLearningPathProgress() async {
@@ -770,9 +797,12 @@ class ConsultorRepository {
       if (createPayload is! Map<String, dynamic>) {
         return ActionResult(success: false, message: 'Resposta invalida da API.');
       }
-      if (createPayload['id'] == null) {
+      final pedidoId = createPayload['id'];
+      if (pedidoId == null) {
         return ActionResult(success: false, message: 'A API nao devolveu o pedido criado.');
       }
+
+      await _apiClient.post('/api/pedidos/$pedidoId/submeter', token: _token);
 
       await syncRealtimeData();
       return ActionResult(success: true, message: 'Pedido submetido com sucesso.');

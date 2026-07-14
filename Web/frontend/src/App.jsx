@@ -42,6 +42,7 @@ import PedidosTalentManager from "./pages/TalentManager/PedidosTalentManager";
 import CatalogoBadgesTM from "./pages/TalentManager/CatalogoBadgesTM";
 import ComparacaoConsultores from "./pages/TalentManager/ComparacaoConsultores";
 import ExpiracoesBadgesTM from "./pages/TalentManager/ExpiracoesBadgesTM";
+import EmailSignatureTM from "./pages/TalentManager/EmailSignatureTM";
 
 // Service Line
 import DashboardServiceLine from "./pages/ServiceLine/DashboardServiceLine";
@@ -53,6 +54,7 @@ import RelatoriosServiceLine from "./pages/ServiceLine/RelatoriosServiceLine";
 import HistoricoSL from "./pages/ServiceLine/HistoricoSL";
 import GamificacaoSL from "./pages/ServiceLine/GamificacaoSL";
 import ComparacaoConsultoresSL from "./pages/ServiceLine/ComparacaoConsultoresSL";
+import EmailSignatureSL from "./pages/ServiceLine/EmailSignatureSL";
 
 // Admin
 import DashboardAdmin from "./pages/Admin/DashboardAdmin";
@@ -149,6 +151,7 @@ function AppContent() {
           <Route path="/tm/relatorios" element={<ProtectedRoute role="talent_manager"><RelatoriosTalent /></ProtectedRoute>} />
           <Route path="/tm/avisos" element={<ProtectedRoute role="talent_manager"><Avisos /></ProtectedRoute>} />
           <Route path="/tm/settings" element={<ProtectedRoute role="talent_manager"><TalentManagerSettingsPage /></ProtectedRoute>} />
+          <Route path="/tm/assinatura-email" element={<ProtectedRoute role="talent_manager"><EmailSignatureTM /></ProtectedRoute>} />
 
           {/* Service Line */}
           <Route path="/sl/dashboard" element={<ProtectedRoute role="service_line_leader"><DashboardServiceLine /></ProtectedRoute>} />
@@ -161,6 +164,7 @@ function AppContent() {
           <Route path="/sl/estatisticas" element={<ProtectedRoute role="service_line_leader"><RelatoriosServiceLine /></ProtectedRoute>} />
           <Route path="/sl/avisos" element={<ProtectedRoute role="service_line_leader"><Avisos /></ProtectedRoute>} />
           <Route path="/sl/settings" element={<ProtectedRoute role="service_line_leader"><ServiceLineSettingsPage /></ProtectedRoute>} />
+          <Route path="/sl/assinatura-email" element={<ProtectedRoute role="service_line_leader"><EmailSignatureSL /></ProtectedRoute>} />
 
           {/* Admin */}
           <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><DashboardAdmin /></ProtectedRoute>} />

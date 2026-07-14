@@ -425,15 +425,8 @@ export async function criarPedido(req, res) {
       consultor_id,
       badge_id: badgeId,
       status: "pendente",
-      workflow_status: "submitted",
-      submitted_at: new Date()
+      workflow_status: "open",
     });
-
-    try {
-      await notifyBadgeApplication(pedido);
-    } catch (notificationError) {
-      console.error("Pedido criado, mas falhou notificação de candidatura:", notificationError);
-    }
 
     res.status(201).json(pedido);
 

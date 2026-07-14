@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getTimeGreetingKey } from "/src/utils/greeting";
+import { consumeGreetingKey } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { TalentStatCard, tmPanelClass } from "./TalentManagerLayout";
@@ -23,6 +23,7 @@ function showBrowserNotification(title, body) {
 export default function DashboardTalentManager() {
   const { t } = useTranslation();
   const [tm, setTM] = useState(null);
+  const [greetingKey] = useState(() => consumeGreetingKey());
   const [stats, setStats] = useState({ totalEquipa: 0, evidenciasPendentes: 0, progressoMedio: 0 });
   const [kpis, setKpis] = useState({
     summary: { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 },
@@ -103,7 +104,7 @@ export default function DashboardTalentManager() {
 
   return (
     <TalentManagerLayout
-      title={tm ? `${t(getTimeGreetingKey())}, ${tm.name.split(" ")[0]}` : t("talentManager.dashboard.defaultTitle")}
+      title={tm ? `${t(greetingKey)}, ${tm.name.split(" ")[0]}` : t("talentManager.dashboard.defaultTitle")}
       subtitle={t("talentManager.dashboard.subtitle")}
       userName={tm?.name || t("talentManager.dashboard.defaultTitle")}
       heroStats={[

@@ -43,6 +43,10 @@ const Notification = database.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    ativo: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
     data_leitura: {
       type: DataTypes.DATE,
       allowNull: true,

@@ -20,6 +20,21 @@ async function getAreaIds(req) {
   return rows.map((row) => Number(row.id));
 }
 
+const LEVEL_ORDER = ["Junior", "Intermedio", "Senior", "Especialista", "Lider"];
+
+function highestLevel(levels) {
+  let best = null;
+  let bestIdx = -1;
+  for (const level of Object.keys(levels || {})) {
+    const idx = LEVEL_ORDER.indexOf(level);
+    if (idx > bestIdx) {
+      bestIdx = idx;
+      best = level;
+    }
+  }
+  return best;
+}
+
 function monthKeys(count = 6) {
   const keys = [];
   const date = new Date();
@@ -43,11 +58,44 @@ export async function getConsultantComparison(req, res) {
        ORDER BY u.name`,
       { replacements: { areaIds }, type: QueryTypes.SELECT },
     );
-    const allowed = new Set(available.map((item) => Number(item.id)));
+
+    const availableLevels = await database.query(
+      `SELECT cb.consultor_id, b.level
+       FROM consultor_badges cb
+       JOIN badges b ON b.id = cb.badge_id
+       JOIN "Users" u ON u.id = cb.consultor_id
+       WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)`,
+      { replacements: { areaIds }, type: QueryTypes.SELECT },
+    );
+    const levelsByConsultor = {};
+    for (const row of availableLevels) {
+      const id = Number(row.consultor_id);
+      levelsByConsultor[id] = levelsByConsultor[id] || {};
+      levelsByConsultor[id][row.level] = (levelsByConsultor[id][row.level] || 0) + 1;
+    }
+    const availableWithExperience = available.map((item) => ({
+      ...item,
+      experience_level: highestLevel(levelsByConsultor[Number(item.id)]) || null,
+    }));
+
+    const experienceFilter = (req.query.experienceLevel || "").trim();
+    const experienceFiltered = experienceFilter
+      ? availableWithExperience.filter((item) => item.experience_level === experienceFilter)
+      : availableWithExperience;
+
+    const allowed = new Set(experienceFiltered.map((item) => Number(item.id)));
     const requested = String(req.query.ids || "").split(",").map(Number).filter((id) => allowed.has(id));
     const selectedIds = [...new Set(requested)].slice(0, 4);
-    if (!selectedIds.length) selectedIds.push(...available.slice(0, 2).map((item) => Number(item.id)));
-    if (!selectedIds.length) return res.json({ available, consultants: [], benchmark: null, months: monthKeys() });
+    if (!selectedIds.length) selectedIds.push(...experienceFiltered.slice(0, 2).map((item) => Number(item.id)));
+    if (!selectedIds.length) {
+      return res.json({
+        available: availableWithExperience,
+        consultants: [],
+        benchmark: null,
+        months: monthKeys(),
+        experienceLevels: LEVEL_ORDER,
+      });
+    }
 
     const metrics = await database.query(
       `SELECT u.id, u.name, u.email, a.name AS area, COALESCE(u.points_total, 0)::int AS points,
@@ -78,14 +126,15 @@ export async function getConsultantComparison(req, res) {
       const own = details.filter((row) => Number(row.consultor_id) === Number(item.id));
       const levels = own.reduce((result, row) => ({ ...result, [row.level]: (result[row.level] || 0) + 1 }), {});
       const trend = months.map((month) => own.filter((row) => row.data_atribuicao && new Date(row.data_atribuicao).toISOString().slice(0, 7) === month).length);
-      return { ...item, points: Number(item.points), applications: Number(item.applications), obtained: Number(item.obtained), pending: Number(item.pending), rejected: Number(item.rejected), obtained_90_days: Number(item.obtained_90_days), approval_rate: Number(item.approval_rate), avg_validation_days: Number(item.avg_validation_days), levels, trend };
+      return { ...item, points: Number(item.points), applications: Number(item.applications), obtained: Number(item.obtained), pending: Number(item.pending), rejected: Number(item.rejected), obtained_90_days: Number(item.obtained_90_days), approval_rate: Number(item.approval_rate), avg_validation_days: Number(item.avg_validation_days), levels, trend, experience_level: highestLevel(levels) };
     });
     const average = (key) => consultants.length ? Math.round((consultants.reduce((sum, item) => sum + Number(item[key] || 0), 0) / consultants.length) * 10) / 10 : 0;
     res.json({
-      available,
+      available: availableWithExperience,
       consultants,
       months,
       benchmark: { points: average("points"), obtained: average("obtained"), approval_rate: average("approval_rate"), avg_validation_days: average("avg_validation_days") },
+      experienceLevels: LEVEL_ORDER,
     });
   } catch (error) {
     console.error("Erro ao comparar consultores:", error);
