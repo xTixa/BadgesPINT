@@ -428,6 +428,8 @@ export async function criarPedido(req, res) {
       workflow_status: "open",
     });
 
+    await notifyBadgeApplication(pedido);
+
     res.status(201).json(pedido);
 
   } catch (err) {
@@ -491,8 +493,6 @@ export async function submeterPedido(req, res) {
     pedido.workflow_status = "submitted";
     pedido.submitted_at = new Date();
     await pedido.save();
-
-    await notifyBadgeApplication(pedido);
 
     return res.json(pedido);
   } catch (err) {

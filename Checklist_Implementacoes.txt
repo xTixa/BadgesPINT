@@ -15,27 +15,27 @@
 [X] 3. Consultar badges de outras áreas
 [X] 4. Dashboard pessoal
 [X] 5. Upload de evidências
-[] 6. Estado dos pedidos em tempo real
-[] 7. Histórico de badges
-[] 8. Catálogo de badges
-[] 9. Consultar requisitos
+[X] 6. Estado dos pedidos em tempo real
+[X] 7. Histórico de badges
+[X] 8. Catálogo de badges
+[X] 9. Consultar requisitos
 [] 10. Aceitação RGPD
 [] 11. Partilha no LinkedIn
-[] 13. Sistema de pontos
+[X] 13. Sistema de pontos
 [] 14. Badges especiais
 [] 15. Métricas de progresso
 [X] 16. Celebração de marcos
 [X] 17. Recomendações
-[] 18. Download de certificado PDF
+[X] 18. Download de certificado PDF
 [] 19. Email de candidatura
-[] 20. Notificações
+[X] 20. Notificações
 [] 21. Alertas de expiração
 [] 22. Lembretes
 [] 24. Galeria pública
-[] 25. Página pública do badge
+[X] 25. Página pública do badge
 [] 26. Verificação por link
-[ ] 27. Competências certificadas
-[ ] 28. Integração Softinsa
+[] 27. Competências certificadas
+[] 28. Integração Softinsa
 
 ## Bónus
 
