@@ -80,29 +80,14 @@ export const registerConsultant = async (req, res) => {
     applyRgpdConsent(newUser, true);
     await newUser.save();
 
-    let emailStatus = { emailSent: false, emailError: "Email nao configurado no servidor." };
-    if (isEmailConfigured()) {
-      try {
-        await sendTemporaryPasswordEmail({
-          to: newUser.email,
-          name: newUser.name,
-          temporaryPassword: generatedPassword,
-        });
-        emailStatus = { emailSent: true };
-      } catch (mailError) {
-        console.error(
-          "Utilizador criado, mas email de convite falhou:",
-          getMailErrorDetails(mailError),
-        );
-        emailStatus = { emailSent: false, emailError: "Nao foi possivel enviar o email de acesso." };
-      }
-    }
+    const emailWillBeSent = isEmailConfigured();
 
     res.status(201).json({
-      message: emailStatus.emailSent
-        ? "Utilizador criado com sucesso. O email com a password temporaria foi enviado."
-        : "Utilizador criado, mas nao foi possivel enviar o email de acesso. Usa a recuperacao de password para definires uma nova password.",
-      ...emailStatus,
+      message: emailWillBeSent
+        ? "Utilizador criado com sucesso. O email com a password temporaria vai ser enviado em breve."
+        : "Utilizador criado, mas o email nao esta configurado no servidor. Usa a recuperacao de password para definires uma nova password.",
+      emailSent: false,
+      emailPending: emailWillBeSent,
       user: {
         id: newUser.id,
         name: newUser.name,
@@ -111,6 +96,19 @@ export const registerConsultant = async (req, res) => {
         area_id: newUser.area_id,
       },
     });
+
+    if (emailWillBeSent) {
+      sendTemporaryPasswordEmail({
+        to: newUser.email,
+        name: newUser.name,
+        temporaryPassword: generatedPassword,
+      }).catch((mailError) => {
+        console.error(
+          "Utilizador criado, mas email de convite falhou:",
+          getMailErrorDetails(mailError),
+        );
+      });
+    }
 
   } catch (err) {
     console.error("Erro ao registar utilizador:", err);

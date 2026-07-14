@@ -238,24 +238,6 @@ export async function createUser(req, res) {
       area_id: area_id || null
     });
 
-    let emailStatus = { emailSent: false, emailError: "Email nao configurado no servidor." };
-    if (isEmailConfigured()) {
-      try {
-        await sendTemporaryPasswordEmail({
-          to: newUser.email,
-          name: newUser.name,
-          temporaryPassword,
-        });
-        emailStatus = { emailSent: true };
-      } catch (mailError) {
-        console.error(
-          "Utilizador criado, mas email de convite falhou:",
-          getMailErrorDetails(mailError),
-        );
-        emailStatus = { emailSent: false, emailError: "Nao foi possivel enviar o email de acesso." };
-      }
-    }
-
     await createAuditLog(req, res, {
       action: "CRIAR_UTILIZADOR",
       entity: "User",
@@ -265,17 +247,33 @@ export async function createUser(req, res) {
       newValues: { name: newUser.name, email: newUser.email, role: newUser.role, area_id: newUser.area_id },
     });
 
+    const emailWillBeSent = isEmailConfigured();
+
     res.status(201).json({
-      message: emailStatus.emailSent
-        ? "Utilizador criado com sucesso. O email com a password temporaria foi enviado."
-        : "Utilizador criado, mas nao foi possivel enviar o email de acesso.",
+      message: emailWillBeSent
+        ? "Utilizador criado com sucesso. O email com a password temporaria vai ser enviado em breve."
+        : "Utilizador criado, mas o email nao esta configurado no servidor.",
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
       area_id: newUser.area_id,
-      ...emailStatus
+      emailSent: false,
+      emailPending: emailWillBeSent,
     });
+
+    if (emailWillBeSent) {
+      sendTemporaryPasswordEmail({
+        to: newUser.email,
+        name: newUser.name,
+        temporaryPassword,
+      }).catch((mailError) => {
+        console.error(
+          "Utilizador criado, mas email de convite falhou:",
+          getMailErrorDetails(mailError),
+        );
+      });
+    }
 
   } catch (err) {
     console.error("Erro ao criar user:", err);
