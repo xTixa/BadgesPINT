@@ -49,7 +49,7 @@ export default function Login() {
         password,
       });
 
-      const { user, token, greeting, firstLogin } = res.data;
+      const { user, token, firstLogin } = res.data;
 
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
@@ -60,10 +60,6 @@ export default function Login() {
         await storeBrowserCredentials({ email: normalizedEmail, password, name: user.name });
       } else {
         sessionStorage.removeItem("rememberCredentialsAfterFirstLogin");
-      }
-
-      if (greeting) {
-        localStorage.setItem("greeting", greeting);
       }
 
       if (firstLogin) {

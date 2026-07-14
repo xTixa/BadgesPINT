@@ -79,7 +79,6 @@ export default function Navbar() {
 
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    localStorage.removeItem("greeting");
 
     setLogoutConfirmOpen(false);
     navigate("/login", { replace: true });

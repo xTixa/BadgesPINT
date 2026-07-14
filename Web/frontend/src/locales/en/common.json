@@ -47,6 +47,11 @@
     "from": "From",
     "to": "To"
   },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  },
   "home": {
     "eyebrow": "Internal skills academy",
     "title": "Learn, apply and prove your growth with badges.",
@@ -2042,12 +2047,16 @@
       },
       "badgesInPeriod": "Badges obtained in period ({{start}} to {{end}})",
       "charts": {
+        "approvalPercentage": "Percentage of approved badges",
+        "badgesByLevelInPath": "Badges by level in each Learning Path",
         "badgesByLearningPath": "Badges by Learning Path",
         "badgesByLevel": "Badges by Level",
         "badgesObtained": "Badges obtained",
         "badgesObtainedPercent": "% of badges obtained",
         "badgesObtainedPercentMonthly": "% of badges obtained (monthly)",
         "badgesPerMonth": "Badges obtained per month",
+        "noApprovalRequests": "There are no badge applications yet.",
+        "noBadgesByLevelInPath": "No badges associated with Learning Paths.",
         "noRecordsByLearningPath": "No badge records by learning path.",
         "noRecordsByLevel": "No badge records by level.",
         "noRecordsForPeriod": "No records for the selected period.",
@@ -2056,6 +2065,21 @@
       },
       "loading": "Loading dashboard data...",
       "quickShortcuts": "Quick Shortcuts",
+      "reporting": {
+        "dataUpdated": "Data updated",
+        "eyebrow": "Reporting",
+        "subtitle": "Analyze adoption, monthly evolution and catalog distribution.",
+        "tabs": {
+          "approval": "Approval",
+          "levels": "Levels",
+          "monthly": "Monthly",
+          "monthlyPercent": "% monthly",
+          "paths": "Learning Paths",
+          "pathLevels": "Levels by LP",
+          "users": "Users"
+        },
+        "title": "Platform overview"
+      },
       "shortcuts": {
         "announcements": {
           "subtitle": "Internal broadcast",

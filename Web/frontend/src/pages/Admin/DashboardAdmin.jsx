@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
-import { getTimeGreeting } from "../../utils/greeting";
+import { getTimeGreetingKey } from "../../utils/greeting";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import AdminHero from "../../components/ui/AdminHero";
 import EmptyState from "../../components/ui/EmptyState";
@@ -306,7 +306,7 @@ export default function DashboardAdmin() {
       <main className="admin-main">
         <div className="mx-auto max-w-[1400px]">
           <AdminHero
-            title={`${getTimeGreeting()}${adminName ? `, ${adminName}` : ""}`}
+            title={`${t(getTimeGreetingKey())}${adminName ? `, ${adminName}` : ""}`}
             subtitle={t("admin.dashboard.subtitle")}
           />
 
@@ -509,24 +509,24 @@ export default function DashboardAdmin() {
                 <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <span className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#0F62FE]/10 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[#0F62FE]">
-                      <i className="bi bi-activity"></i> Reporting
+                      <i className="bi bi-activity"></i> {t("admin.dashboard.reporting.eyebrow")}
                     </span>
-                    <h2 className="m-0 text-2xl font-extrabold tracking-tight text-slate-900">Visão global da plataforma</h2>
-                    <p className="mt-1 text-sm text-slate-500">Analisa adesão, evolução mensal e distribuição do catálogo.</p>
+                    <h2 className="m-0 text-2xl font-extrabold tracking-tight text-slate-900">{t("admin.dashboard.reporting.title")}</h2>
+                    <p className="mt-1 text-sm text-slate-500">{t("admin.dashboard.reporting.subtitle")}</p>
                   </div>
                   <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 shadow-sm">
-                    <i className="bi bi-arrow-repeat mr-2 text-emerald-500"></i>Dados atualizados
+                    <i className="bi bi-arrow-repeat mr-2 text-emerald-500"></i>{t("admin.dashboard.reporting.dataUpdated")}
                   </span>
                 </div>
                 <div className="mb-6 flex w-full gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/80 p-1.5 shadow-sm sm:w-fit">
                   {[
-                    { id: "approval", label: "Aprovação", icon: "bi-percent" },
-                    { id: "monthly", label: "Mensal", icon: "bi-bar-chart-fill" },
-                    { id: "monthlyPercent", label: "% mensal", icon: "bi-graph-up-arrow" },
-                    { id: "users", label: "Utilizadores", icon: "bi-people-fill" },
-                    { id: "paths", label: "Learning Paths", icon: "bi-diagram-3-fill" },
-                    { id: "levels", label: "Níveis", icon: "bi-layers-fill" },
-                    { id: "pathLevels", label: "Níveis por LP", icon: "bi-bar-chart-steps" },
+                    { id: "approval", label: t("admin.dashboard.reporting.tabs.approval"), icon: "bi-percent" },
+                    { id: "monthly", label: t("admin.dashboard.reporting.tabs.monthly"), icon: "bi-bar-chart-fill" },
+                    { id: "monthlyPercent", label: t("admin.dashboard.reporting.tabs.monthlyPercent"), icon: "bi-graph-up-arrow" },
+                    { id: "users", label: t("admin.dashboard.reporting.tabs.users"), icon: "bi-people-fill" },
+                    { id: "paths", label: t("admin.dashboard.reporting.tabs.paths"), icon: "bi-diagram-3-fill" },
+                    { id: "levels", label: t("admin.dashboard.reporting.tabs.levels"), icon: "bi-layers-fill" },
+                    { id: "pathLevels", label: t("admin.dashboard.reporting.tabs.pathLevels"), icon: "bi-bar-chart-steps" },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -617,28 +617,28 @@ export default function DashboardAdmin() {
                 <div className={`${reportCardClass} ${reportTab === "approval" ? "lg:col-span-2" : "hidden"}`}>
                   <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                     <i className="bi bi-percent text-emerald-500"></i>
-                    Percentagem de badges aprovados
+                    {t("admin.dashboard.charts.approvalPercentage")}
                   </h6>
                   {approvalChartData ? (
                     <div style={{ height: isMobile ? "250px" : "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <Doughnut data={approvalChartData} options={{ ...chartOptions, scales: undefined }} />
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-500">Ainda não existem candidaturas a badges.</p>
+                    <p className="text-sm text-slate-500">{t("admin.dashboard.charts.noApprovalRequests")}</p>
                   )}
                 </div>
 
                 <div className={`${reportCardClass} ${reportTab === "pathLevels" ? "lg:col-span-2" : "hidden"}`}>
                   <h6 className="mb-4 flex items-center gap-2 text-base font-semibold text-slate-800">
                     <i className="bi bi-bar-chart-steps text-indigo-500"></i>
-                    Badges por nível em cada Learning Path
+                    {t("admin.dashboard.charts.badgesByLevelInPath")}
                   </h6>
                   {learningPathLevelChartData ? (
                     <div style={{ height: isMobile ? "300px" : "360px" }}>
                       <Bar data={learningPathLevelChartData} options={stackedChartOptions} />
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-500">Sem badges associados a Learning Paths.</p>
+                    <p className="text-sm text-slate-500">{t("admin.dashboard.charts.noBadgesByLevelInPath")}</p>
                   )}
                 </div>
                 </div>

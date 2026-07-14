@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getTimeGreeting } from "/src/utils/greeting";
+import { getTimeGreetingKey } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slPanelClass } from "./ServiceLineLayout";
@@ -122,7 +122,7 @@ export default function DashboardServiceLine() {
 
   return (
     <ServiceLineLayout
-      title={`${getTimeGreeting()}, ${sl.name?.split(" ")[0] || ""}`}
+      title={`${t(getTimeGreetingKey())}, ${sl.name?.split(" ")[0] || ""}`}
       subtitle={t("serviceLine.dashboard.subtitle")}
       userName={sl.name || "Service Line"}
       heroStats={[

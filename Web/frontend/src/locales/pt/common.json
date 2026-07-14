@@ -47,6 +47,11 @@
     "from": "De",
     "to": "Até"
   },
+  "greeting": {
+    "morning": "Bom dia",
+    "afternoon": "Boa tarde",
+    "evening": "Boa noite"
+  },
   "home": {
     "eyebrow": "Academia interna de competências",
     "title": "Aprende, candidata-te e prova o teu crescimento com badges.",
@@ -2042,12 +2047,16 @@
       },
       "badgesInPeriod": "Badges obtidos no período ({{start}} a {{end}})",
       "charts": {
+        "approvalPercentage": "Percentagem de badges aprovados",
+        "badgesByLevelInPath": "Badges por nível em cada Learning Path",
         "badgesByLearningPath": "Badges por Learning Path",
         "badgesByLevel": "Badges por Nível",
         "badgesObtained": "Badges obtidos",
         "badgesObtainedPercent": "% de badges obtidos",
         "badgesObtainedPercentMonthly": "% de badges obtidos (mensal)",
         "badgesPerMonth": "Badges obtidos por mês",
+        "noApprovalRequests": "Ainda não existem candidaturas a badges.",
+        "noBadgesByLevelInPath": "Sem badges associados a Learning Paths.",
         "noRecordsByLearningPath": "Sem registos de badges por learning path.",
         "noRecordsByLevel": "Sem registos de badges por nível.",
         "noRecordsForPeriod": "Sem registos para o período selecionado.",
@@ -2056,6 +2065,21 @@
       },
       "loading": "A carregar dados do dashboard...",
       "quickShortcuts": "Atalhos Rápidos",
+      "reporting": {
+        "dataUpdated": "Dados atualizados",
+        "eyebrow": "Reporting",
+        "subtitle": "Analisa adesão, evolução mensal e distribuição do catálogo.",
+        "tabs": {
+          "approval": "Aprovação",
+          "levels": "Níveis",
+          "monthly": "Mensal",
+          "monthlyPercent": "% mensal",
+          "paths": "Learning Paths",
+          "pathLevels": "Níveis por LP",
+          "users": "Utilizadores"
+        },
+        "title": "Visão global da plataforma"
+      },
       "shortcuts": {
         "announcements": {
           "subtitle": "Broadcast interno",

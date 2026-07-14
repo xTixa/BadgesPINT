@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getTimeGreeting } from "/src/utils/greeting";
+import { getTimeGreetingKey } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { TalentStatCard, tmPanelClass } from "./TalentManagerLayout";
@@ -103,7 +103,7 @@ export default function DashboardTalentManager() {
 
   return (
     <TalentManagerLayout
-      title={tm ? `${getTimeGreeting()}, ${tm.name.split(" ")[0]}` : t("talentManager.dashboard.defaultTitle")}
+      title={tm ? `${t(getTimeGreetingKey())}, ${tm.name.split(" ")[0]}` : t("talentManager.dashboard.defaultTitle")}
       subtitle={t("talentManager.dashboard.subtitle")}
       userName={tm?.name || t("talentManager.dashboard.defaultTitle")}
       heroStats={[

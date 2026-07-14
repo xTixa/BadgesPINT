@@ -34,7 +34,6 @@ api.interceptors.response.use(
     if (status === 401 && !isAuthEndpoint && localStorage.getItem("token")) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      localStorage.removeItem("greeting");
       if (window.location.pathname !== "/login") {
         window.location.assign("/login?session=expired");
       }

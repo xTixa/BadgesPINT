@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import BadgeCelebration, { getCelebratedIds, markAsCelebrated } from "../../components/BadgeCelebration";
-import { getTimeGreeting } from "../../utils/greeting";
+import { getTimeGreetingKey } from "../../utils/greeting";
 import { openLinkedInAddCertification } from "../../utils/linkedin";
 import avatarPlaceholder from "../../assets/avatar-placeholder.svg";
 
@@ -171,7 +171,7 @@ export default function DashboardConsultor() {
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.dashboard.personalDashboard")}</p>
-              <h1 className="mb-2 text-3xl font-bold">{getTimeGreeting()}, {user.name.split(" ")[0]}</h1>
+              <h1 className="mb-2 text-3xl font-bold">{t(getTimeGreetingKey())}, {user.name.split(" ")[0]}</h1>
               <p className="max-w-xl text-white/85">
                 {t("consultor.dashboard.heroText")}
               </p>

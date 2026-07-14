@@ -58,35 +58,17 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Password incorreta" });
     }
 
-    let greeting = "";
     const now = new Date();
 
     // Primeiro login: utilizador autenticado sem histórico de login
     if (!user.last_login) {
-      greeting = "Bem-vindo";
       const token = generateToken(user);
 
       return res.json({
         firstLogin: true,
         token,
-        greeting,
         user
       });
-    }
-
-    // Verificar último login
-    {
-      const diffDays =
-        (now - new Date(user.last_login)) / (1000 * 60 * 60 * 24);
-
-      if (diffDays >= 15) {
-        greeting = "Seja bem-vindo novamente";
-      } else {
-        const hour = now.getHours();
-        if (hour < 12) greeting = "Bom dia";
-        else if (hour < 18) greeting = "Boa tarde";
-        else greeting = "Boa noite";
-      }
     }
 
     // Atualizar last_login
@@ -101,7 +83,7 @@ export const login = async (req, res) => {
       description: "Login bem-sucedido",
       status: "success",
     });
-    return res.json({ token, user, greeting });
+    return res.json({ token, user });
 
   } catch (error) {
     console.error("Erro login:", error);
