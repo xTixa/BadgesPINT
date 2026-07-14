@@ -353,6 +353,59 @@ class PublicConsultantProfile {
   }
 }
 
+class PublicGalleryTopBadge {
+  PublicGalleryTopBadge({required this.name, this.level});
+
+  final String name;
+  final String? level;
+
+  factory PublicGalleryTopBadge.fromJson(Map<String, dynamic> json) {
+    return PublicGalleryTopBadge(
+      name: (json['nome'] ?? json['name'] ?? '').toString(),
+      level: json['level']?.toString(),
+    );
+  }
+}
+
+class PublicGalleryEntry {
+  PublicGalleryEntry({
+    required this.id,
+    required this.name,
+    required this.badgeCount,
+    required this.pointsTotal,
+    required this.topBadges,
+    this.avatarUrl,
+    this.areaName,
+  });
+
+  final int id;
+  final String name;
+  final int badgeCount;
+  final int pointsTotal;
+  final List<PublicGalleryTopBadge> topBadges;
+  final String? avatarUrl;
+  final String? areaName;
+
+  factory PublicGalleryEntry.fromJson(Map<String, dynamic> json) {
+    final rawTopBadges = json['top_badges'];
+    return PublicGalleryEntry(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? '').toString(),
+      badgeCount: _readInt(json['badge_count']) ?? 0,
+      pointsTotal: _readInt(json['points_total']) ?? 0,
+      avatarUrl: json['avatar_url']?.toString(),
+      areaName: json['area_name']?.toString(),
+      topBadges:
+          rawTopBadges is List
+              ? rawTopBadges
+                  .whereType<Map<String, dynamic>>()
+                  .map(PublicGalleryTopBadge.fromJson)
+                  .toList()
+              : <PublicGalleryTopBadge>[],
+    );
+  }
+}
+
 class CatalogBadgeItem {
   CatalogBadgeItem({
     required this.id,
@@ -549,6 +602,96 @@ class UserNotificationItem {
       title: (json['titulo'] ?? '').toString(),
       message: (json['mensagem'] ?? '').toString(),
       read: json['lido'] == true,
+    );
+  }
+}
+
+class GamificationLevel {
+  GamificationLevel({
+    required this.name,
+    required this.minPoints,
+    required this.progress,
+    required this.pointsToNext,
+    this.nextPoints,
+  });
+
+  final String name;
+  final int minPoints;
+  final int? nextPoints;
+  final int progress;
+  final int pointsToNext;
+
+  factory GamificationLevel.fromJson(Map<String, dynamic> json) {
+    return GamificationLevel(
+      name: (json['name'] ?? 'Rookie').toString(),
+      minPoints: _readInt(json['min_points']) ?? 0,
+      nextPoints: _readInt(json['next_points']),
+      progress: _readInt(json['progress']) ?? 0,
+      pointsToNext: _readInt(json['points_to_next']) ?? 0,
+    );
+  }
+}
+
+class GamificationAchievement {
+  GamificationAchievement({
+    required this.code,
+    required this.title,
+    required this.description,
+    required this.unlocked,
+    required this.progress,
+    required this.target,
+  });
+
+  final String code;
+  final String title;
+  final String description;
+  final bool unlocked;
+  final int progress;
+  final int target;
+
+  factory GamificationAchievement.fromJson(Map<String, dynamic> json) {
+    return GamificationAchievement(
+      code: (json['code'] ?? '').toString(),
+      title: (json['title'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      unlocked: json['unlocked'] == true,
+      progress: _readInt(json['progress']) ?? 0,
+      target: _readInt(json['target']) ?? 1,
+    );
+  }
+}
+
+class GamificationData {
+  GamificationData({
+    required this.points,
+    required this.level,
+    required this.ranking,
+    required this.achievements,
+  });
+
+  final int points;
+  final GamificationLevel level;
+  final int? ranking;
+  final List<GamificationAchievement> achievements;
+
+  factory GamificationData.fromJson(Map<String, dynamic> json) {
+    final rawAchievements = json['achievements'];
+    final rawLevel = json['level'];
+
+    return GamificationData(
+      points: _readInt(json['points']) ?? 0,
+      level:
+          rawLevel is Map<String, dynamic>
+              ? GamificationLevel.fromJson(rawLevel)
+              : GamificationLevel(name: 'Rookie', minPoints: 0, progress: 0, pointsToNext: 0),
+      ranking: _readInt(json['ranking']),
+      achievements:
+          rawAchievements is List
+              ? rawAchievements
+                  .whereType<Map<String, dynamic>>()
+                  .map(GamificationAchievement.fromJson)
+                  .toList()
+              : <GamificationAchievement>[],
     );
   }
 }

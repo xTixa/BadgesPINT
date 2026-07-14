@@ -219,7 +219,10 @@
       "Bash(node --check src/routes/BadgeRoutes.js)",
       "Bash(curl -s -o /tmp/badge11.png -w \"HTTP_STATUS:%{http_code} SIZE:%{size_download} TYPE:%{content_type}\\\\n\" http://localhost:3000/badges/11/image.png)",
       "Bash(cp /tmp/badge11.png \"C:/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/1a5cc199-f8a3-4a87-909b-def63909ee3b/scratchpad/badge11.png\")",
-      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json','utf8'\\)\\); console.log\\('OK: JSON valido'\\)\")"
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json','utf8'\\)\\); console.log\\('OK: JSON valido'\\)\")",
+      "Bash(git checkout *)",
+      "Bash(git stash *)",
+      "Bash(git restore *)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

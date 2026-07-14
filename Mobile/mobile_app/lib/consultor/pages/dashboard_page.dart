@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../consultor_models.dart';
 import '../consultor_controller.dart';
+import '../widgets/badge_celebration.dart';
 import '../widgets/badge_medal.dart';
 import '../../shared/app_theme.dart';
 import 'badge_detail_page.dart';
@@ -36,9 +37,25 @@ class _DashboardPageState extends State<DashboardPage>
     super.initState();
     _searchController = TextEditingController();
     _loadGoal();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _showMilestoneIfNeeded(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _celebratePendingBadges();
+      await _showMilestoneIfNeeded();
+    });
+  }
+
+  Future<void> _celebratePendingBadges() async {
+    final obtainedBadges =
+        widget.controller.badges.where((b) => b.isObtained).toList();
+    if (obtainedBadges.isEmpty || !mounted) return;
+
+    final celebratedIds = await getCelebratedBadgeIds();
+    final pending =
+        obtainedBadges.where((b) => !celebratedIds.contains(b.id)).toList();
+
+    for (final badge in pending) {
+      if (!mounted) return;
+      await showBadgeCelebration(context, badge);
+    }
   }
 
   @override

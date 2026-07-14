@@ -20,6 +20,7 @@ import 'consultor/pages/upload_page.dart';
 import 'consultor/pages/history_page.dart';
 import 'consultor/pages/profile_page.dart';
 import 'consultor/pages/consultant_profile_page.dart';
+import 'consultor/pages/gallery_page.dart';
 import 'consultor/pages/notifications_page.dart';
 import 'consultor/pages/settings_page.dart';
 import 'consultor/pages/timeline_page.dart';
@@ -87,6 +88,7 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
         if (location.startsWith('/app') ||
             location == '/ranking' ||
             location.startsWith('/consultants') ||
+            location == '/gallery' ||
             location == '/notifications' ||
             location == '/settings' ||
             location == '/timeline' ||
@@ -230,6 +232,16 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             }
             return ConsultantProfilePage(controller: ctrl, consultantId: id);
+          },
+        ),
+        GoRoute(
+          path: '/gallery',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return GalleryPage(controller: ctrl);
           },
         ),
         GoRoute(

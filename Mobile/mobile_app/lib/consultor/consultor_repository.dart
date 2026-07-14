@@ -442,6 +442,40 @@ class ConsultorRepository {
     return <LearningPathProgressItem>[];
   }
 
+  Future<List<PublicGalleryEntry>> getPublicGallery() async {
+    try {
+      final payload = await _apiClient.get('/api/public/galeria', token: _token);
+      if (payload is List) {
+        return payload
+            .whereType<Map<String, dynamic>>()
+            .map(PublicGalleryEntry.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      return <PublicGalleryEntry>[];
+    }
+
+    return <PublicGalleryEntry>[];
+  }
+
+  Future<GamificationData?> getGamification() async {
+    if ((_token ?? '').isEmpty) return null;
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultor/gamification',
+        token: _token,
+      );
+      if (payload is Map<String, dynamic>) {
+        return GamificationData.fromJson(payload);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
   Future<List<CertificateItem>> getCertificates() async {
     if ((_token ?? '').isEmpty) return <CertificateItem>[];
 
@@ -664,6 +698,31 @@ class ConsultorRepository {
     }
   }
 
+  Future<String?> uploadAvatar({
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    if ((_token ?? '').isEmpty) return null;
+
+    try {
+      final payload = await _apiClient.post(
+        '/api/users/avatar',
+        token: _token,
+        body: <String, dynamic>{
+          'image': 'data:${_mimeTypeForFile(fileName)};base64,${base64Encode(bytes)}',
+        },
+      );
+
+      if (payload is Map<String, dynamic>) {
+        return payload['avatar_url']?.toString();
+      }
+
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   String _mimeTypeForFile(String fileName) {
     final extension = fileName.split('.').last.toLowerCase();
     switch (extension) {
@@ -711,14 +770,10 @@ class ConsultorRepository {
       if (createPayload is! Map<String, dynamic>) {
         return ActionResult(success: false, message: 'Resposta invalida da API.');
       }
-      final pedidoId = createPayload['id'];
-      if (pedidoId == null) {
+      if (createPayload['id'] == null) {
         return ActionResult(success: false, message: 'A API nao devolveu o pedido criado.');
       }
 
-      if (createPayload['workflow_status'] == 'open') {
-        await _apiClient.post('/api/pedidos/$pedidoId/submeter', token: _token);
-      }
       await syncRealtimeData();
       return ActionResult(success: true, message: 'Pedido submetido com sucesso.');
     } on ApiException catch (error) {

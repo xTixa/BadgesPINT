@@ -29,6 +29,7 @@ class ConsultorController extends ChangeNotifier {
   List<RankingItem> ranking = <RankingItem>[];
   List<LearningPathProgressItem> learningPaths = <LearningPathProgressItem>[];
   List<CertificateItem> certificates = <CertificateItem>[];
+  GamificationData? gamification;
   List<AreaItem> areas = <AreaItem>[];
   List<CatalogBadgeItem> catalogBadges = <CatalogBadgeItem>[];
   List<CatalogBadgeItem> preferredAreaBadges = <CatalogBadgeItem>[];
@@ -83,6 +84,7 @@ class ConsultorController extends ChangeNotifier {
       _repository.getLearningPathProgress(),
       _repository.getCertificates(),
       _repository.getExpiryAlerts(),
+      _repository.getGamification(),
     ]);
 
     profile = results[0] as ConsultantUser?;
@@ -96,6 +98,7 @@ class ConsultorController extends ChangeNotifier {
     learningPaths = results[8] as List<LearningPathProgressItem>;
     certificates = results[9] as List<CertificateItem>;
     expiryAlerts = results[10] as List<ExpiryAlert>;
+    gamification = results[11] as GamificationData?;
     _updateRankingPosition();
 
     final areaId = profile?.areaId;
@@ -142,6 +145,7 @@ class ConsultorController extends ChangeNotifier {
       _repository.getLearningPathProgress(),
       _repository.getCertificates(),
       _repository.getExpiryAlerts(),
+      _repository.getGamification(),
     ]);
 
     pedidosStatus = results[0] as List<PedidoBadgeStatus>;
@@ -150,6 +154,7 @@ class ConsultorController extends ChangeNotifier {
     learningPaths = results[3] as List<LearningPathProgressItem>;
     certificates = results[4] as List<CertificateItem>;
     expiryAlerts = results[5] as List<ExpiryAlert>;
+    gamification = results[6] as GamificationData?;
     _updateRankingPosition();
     pendingSyncCount = await _repository.getPendingMutationCount();
     _scheduleLocalNotifications();
@@ -181,6 +186,13 @@ class ConsultorController extends ChangeNotifier {
     } else {
       NotificationService.cancelGoalReminder();
     }
+  }
+
+  Future<String?> uploadAvatar({
+    required String fileName,
+    required Uint8List bytes,
+  }) {
+    return _repository.uploadAvatar(fileName: fileName, bytes: bytes);
   }
 
   Future<bool> updateProfile({

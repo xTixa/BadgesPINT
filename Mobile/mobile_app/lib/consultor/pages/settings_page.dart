@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../shared/notification_service.dart';
@@ -511,6 +512,13 @@ class _SettingsPageState extends State<SettingsPage> {
           _buildCard(
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_library_outlined),
+                  title: const Text("Ver galeria pública"),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/gallery'),
+                ),
+                const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.password),
                   title: const Text("Alterar Password"),

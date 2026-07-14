@@ -703,6 +703,7 @@ class _ProfilePageState extends State<ProfilePage>
       useSafeArea: true,
       builder: (ctx) {
         bool saving = false;
+        bool uploadingAvatar = false;
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
             return Padding(
@@ -742,39 +743,61 @@ class _ProfilePageState extends State<ProfilePage>
                           bottom: -6,
                           child: IconButton.filled(
                             tooltip: 'Escolher foto',
-                            onPressed: () async {
-                              final picked = await FilePicker.platform.pickFiles(
-                                type: FileType.image,
-                                withData: true,
-                              );
-                              final file = picked?.files.single;
-                              final bytes = file?.bytes;
-                              if (bytes == null) return;
+                            onPressed: uploadingAvatar
+                                ? null
+                                : () async {
+                                    final picked = await FilePicker.platform.pickFiles(
+                                      type: FileType.image,
+                                      withData: true,
+                                    );
+                                    final file = picked?.files.single;
+                                    final bytes = file?.bytes;
+                                    if (bytes == null) return;
 
-                              if (bytes.length > 4 * 1024 * 1024) {
-                                if (!ctx.mounted) return;
-                                ScaffoldMessenger.of(ctx).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Escolhe uma imagem com menos de 4 MB.',
-                                    ),
-                                  ),
-                                );
-                                return;
-                              }
+                                    if (bytes.length > 4 * 1024 * 1024) {
+                                      if (!ctx.mounted) return;
+                                      ScaffoldMessenger.of(ctx).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Escolhe uma imagem com menos de 4 MB.',
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
 
-                              final ext = (file!.extension ?? 'png').toLowerCase();
-                              final mime = ext == 'jpg' || ext == 'jpeg'
-                                  ? 'image/jpeg'
-                                  : ext == 'webp'
-                                      ? 'image/webp'
-                                      : 'image/png';
-                              setSheetState(() {
-                                selectedAvatarUrl =
-                                    'data:$mime;base64,${base64Encode(bytes)}';
-                              });
-                            },
-                            icon: const Icon(Icons.photo_camera_outlined),
+                                    setSheetState(() => uploadingAvatar = true);
+                                    final uploadedUrl = await widget.controller
+                                        .uploadAvatar(
+                                      fileName: file!.name,
+                                      bytes: bytes,
+                                    );
+                                    if (!ctx.mounted) return;
+
+                                    if (uploadedUrl == null) {
+                                      setSheetState(() => uploadingAvatar = false);
+                                      ScaffoldMessenger.of(ctx).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Nao foi possivel enviar a imagem.',
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    setSheetState(() {
+                                      selectedAvatarUrl = uploadedUrl;
+                                      uploadingAvatar = false;
+                                    });
+                                  },
+                            icon: uploadingAvatar
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.photo_camera_outlined),
                           ),
                         ),
                       ],
