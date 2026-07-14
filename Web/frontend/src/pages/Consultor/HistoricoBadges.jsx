@@ -50,6 +50,11 @@ export default function HistoricoBadges() {
         {},
         { responseType: "blob" }
       );
+
+      if (!response.data || response.data.size === 0) {
+        throw new Error("Resposta vazia do servidor");
+      }
+
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -60,8 +65,9 @@ export default function HistoricoBadges() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Erro ao gerar certificado:", err);
-      alert(t("consultor.historicoBadges.certificateError"));
+      console.error("Erro ao gerar certificado:", err.response?.data || err.message);
+      const errorMsg = err.response?.data?.details || err.response?.data?.error || err.message || t("consultor.historicoBadges.certificateError");
+      alert(`${t("consultor.historicoBadges.certificateError")}\n\nDetalhes: ${errorMsg}`);
     } finally {
       setDownloading(null);
     }

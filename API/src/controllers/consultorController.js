@@ -592,6 +592,11 @@ export async function generateConsultorBadgeCertificate(req, res) {
     }
 
     const badgeName = badge.name || badge.title || badge.description || `Badge #${badge.id}`;
+
+    if (!badgeName) {
+      return res.status(400).json({ error: "Badge sem nome/descrição" });
+    }
+
     const certificateCode = ensureCertificateCode(consultorBadge);
     await consultorBadge.save();
     const verificationUrl = `${publicBaseUrl(req)}/api/public/certificates/${certificateCode}`;
@@ -602,15 +607,26 @@ export async function generateConsultorBadgeCertificate(req, res) {
     let badgeImageBuffer = null;
     if (badge.image_url) {
       try {
-        const imgRes = await fetch(badge.image_url);
-        if (imgRes.ok) badgeImageBuffer = Buffer.from(await imgRes.arrayBuffer());
-      } catch { /* continua sem imagem */ }
+        const imgRes = await fetch(badge.image_url, { timeout: 5000 });
+        if (imgRes.ok) {
+          const buffer = await imgRes.arrayBuffer();
+          badgeImageBuffer = Buffer.from(buffer);
+        }
+      } catch (imgErr) {
+        console.warn("Aviso: Não foi possível carregar imagem do badge:", imgErr.message);
+      }
     }
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="certificado-badge-${badge.id}.pdf"`);
 
     const doc = new PDFDocument({ size: "A4", margin: 0 });
+    doc.on("error", (err) => {
+      console.error("Erro no PDFDocument:", err.message);
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Erro ao gerar PDF", details: err.message });
+      }
+    });
     doc.pipe(res);
 
     renderCertificatePdf(doc, {
@@ -625,8 +641,8 @@ export async function generateConsultorBadgeCertificate(req, res) {
 
     doc.end();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro ao gerar certificado" });
+    console.error("Erro ao gerar certificado:", err.message, err.stack);
+    res.status(500).json({ error: "Erro ao gerar certificado", details: err.message });
   }
 }
 

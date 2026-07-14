@@ -1,0 +1,199 @@
+# Checklist de Validação - Plataforma de Badges
+# Estado de Implementação Atual (07-2026)
+
+> Estado:
+> - [ ] Não implementado
+> - [x] Implementado e Validado
+> - [?] Parcialmente Implementado
+
+---
+
+# 👤 Consultor (Web)
+
+[X] 1. Confirmação de registo + alteração de password
+[X] 2. Escolha da área no registo
+[X] 3. Consultar badges de outras áreas
+[X] 4. Dashboard pessoal
+[X] 5. Upload de evidências
+[] 6. Estado dos pedidos em tempo real
+[] 7. Histórico de badges
+[] 8. Catálogo de badges
+[] 9. Consultar requisitos
+[] 10. Aceitação RGPD
+[] 11. Partilha no LinkedIn
+[] 13. Sistema de pontos
+[] 14. Badges especiais
+[] 15. Métricas de progresso
+[X] 16. Celebração de marcos
+[X] 17. Recomendações
+[] 18. Download de certificado PDF
+[] 19. Email de candidatura
+[] 20. Notificações
+[] 21. Alertas de expiração
+[] 22. Lembretes
+[] 24. Galeria pública
+[] 25. Página pública do badge
+[] 26. Verificação por link
+[ ] 27. Competências certificadas
+[ ] 28. Integração Softinsa
+
+## Bónus
+
+[] 12. Badge na assinatura do email
+[] 23. Template de email
+
+---
+
+# 👨‍💼 Talent Manager
+
+[] 1. Consultar badges
+[] 2. Dashboard
+[] 3. Verificação de evidências
+[] 4. Estado dos pedidos
+[] 5. Histórico
+[] 6. Catálogo
+[] 7. Consultar requisitos
+[] 8. Relatórios
+[] 9. Exportação pedidos
+[] 10. Exportação badges
+[] 11. Exportação consultores
+[] 12. Exportação aprovações
+[] 13. Exportação rejeições
+[] 14. Badge na assinatura
+[] 15. Sistema de pontos
+[] 16. Badges especiais
+[] 17. Certificados PDF
+[] 18. Emails
+[] 19. Notificações
+[] 20. Badges prestes a expirar
+[] 21. Histórico da candidatura
+
+## Bónus
+
+[] Timeline profissional (ComparacaoConsultores.jsx)
+
+---
+
+# 👨‍💼 Service Line
+
+[] 1. Consultar badges
+[] 2. Dashboard
+[] 3. Estado dos pedidos
+[] 4. Histórico
+[] 5. Catálogo
+[] 6. Consultar requisitos
+[] 8. Sistema de pontos
+[] 9. Badges especiais
+[] 10. Relatórios
+[] 11. Exportar pedidos
+[] 12. Exportar badges
+[] 13. Exportar consultores
+[] 14. Exportar aprovações
+[] 15. Certificados PDF
+[] 16. Emails
+[] 17. Notificações
+[] 18. Ranking
+[] 19. Histórico
+
+## Bónus
+
+[] Comparação entre consultores
+[] Badge na assinatura
+
+---
+
+# 🛠 Administrador
+
+[] 1. Gestão de utilizadores
+[] 2. Criar utilizadores
+[] 3. Gestão de badges
+[] 4. Gestão de Learning Paths
+[] 5. Exportação Excel/PDF
+[] 6. Gestão de pontos/expiração
+[] 7. Configuração de notificações
+[] 8. Configuração RGPD
+[] 9. Gestão dos pedidos
+[] 12. Informações/Avisos
+
+## Bónus
+
+[] Notificação SLA
+[] Gestão SLA
+[] Push SLA
+
+---
+
+# 📱 Mobile (Consultor) - Flutter
+
+[] 1. Confirmação de registo
+[] 2. Escolha da área
+[] 3. Consultar badges
+[] 4. Dashboard
+[] 5. Upload de evidências
+[] 6. Estado dos pedidos
+[] 7. Histórico
+[] 8. Catálogo
+[] 9. Requisitos
+[] 10. RGPD
+[] 11. LinkedIn
+[] 13. Pontos
+[] 14. Badges especiais
+[] 15. Métricas
+[] 16. Celebrações
+[] 17. Recomendações
+[] 18. Certificados PDF
+[] 19. Email candidatura
+[] 20. Notificações
+[] 21. Alertas
+[] 22. Lembretes
+[] 24. Página pública
+[] 25. Verificação por link
+[] 26. Competências certificadas
+
+## Bónus
+
+[ ] Timeline
+[ ] Push SLA
+
+---
+
+# 🌍 Requisitos Gerais
+
+## Login
+
+[X] Login
+[] Recuperação de password
+[X] Logout
+[] Remember Me
+
+## Segurança
+
+[] HTTPS
+[] RGPD
+
+## Dashboard
+
+[X] Responsivo
+
+## Workflow
+
+[] Histórico de aprovações
+
+## Reporting
+
+[X] KPIs
+[] Badges por mês
+[] Badges por Learning Path
+[] Badges por nível
+[] Utilizadores registados
+
+## Extras
+
+[X] Português
+[X] Inglês
+[ ] Espanhol
+[X] Saudações
+[X] Página de avisos
+[] Integração Teams/Slack
+
+---
