@@ -5,6 +5,7 @@ import Area from "../models/Area.js";
 import database from "../config/database.js";
 import { QueryTypes, Op } from "sequelize";
 import {
+  sendBadgeApplicationStartedEmail,
   sendBadgeApplicationEmail,
   sendBadgeApprovedEmail,
   sendBadgeRejectedEmail,
@@ -106,6 +107,34 @@ export async function notifySLLeadersOfPendingApproval(pedido) {
   }
 }
 
+async function notifyBadgeApplicationStarted(pedido) {
+  const badge = await Badge.findByPk(pedido.badge_id, {
+    attributes: ["id", "description"],
+  });
+  const consultor = await User.findByPk(pedido.consultor_id, {
+    attributes: ["id", "name", "email"],
+  });
+  const badgeName = badge?.description || `#${pedido.badge_id}`;
+
+  await createNotification({
+    titulo: "Candidatura iniciada",
+    mensagem: `Candidataste-te ao badge ${badgeName}.`,
+    utilizador_id: pedido.consultor_id,
+  });
+
+  if (consultor?.email) {
+    try {
+      await sendBadgeApplicationStartedEmail({
+        to: consultor.email,
+        name: consultor.name,
+        badgeName,
+      });
+    } catch (error) {
+      console.error("Notificacao criada, mas email de candidatura falhou:", error.message);
+    }
+  }
+}
+
 async function notifyBadgeApplication(pedido) {
   const badge = await Badge.findByPk(pedido.badge_id, {
     attributes: ["id", "description"],
@@ -117,7 +146,7 @@ async function notifyBadgeApplication(pedido) {
 
   await createNotification({
     titulo: "Candidatura submetida",
-    mensagem: `Candidataste-te ao badge ${badgeName}.`,
+    mensagem: `Submeteste as evidências do badge ${badgeName} para validação.`,
     utilizador_id: pedido.consultor_id,
   });
 
@@ -129,7 +158,7 @@ async function notifyBadgeApplication(pedido) {
         badgeName,
       });
     } catch (error) {
-      console.error("Notificacao criada, mas email de candidatura falhou:", error.message);
+      console.error("Notificacao criada, mas email de submissao falhou:", error.message);
     }
   }
 }
@@ -428,7 +457,7 @@ export async function criarPedido(req, res) {
       workflow_status: "open",
     });
 
-    await notifyBadgeApplication(pedido);
+    await notifyBadgeApplicationStarted(pedido);
 
     res.status(201).json(pedido);
 
@@ -493,6 +522,8 @@ export async function submeterPedido(req, res) {
     pedido.workflow_status = "submitted";
     pedido.submitted_at = new Date();
     await pedido.save();
+
+    await notifyBadgeApplication(pedido);
 
     return res.json(pedido);
   } catch (err) {

@@ -218,6 +218,28 @@ export async function sendTemporaryPasswordEmail({ to, name, temporaryPassword }
   });
 }
 
+export async function sendBadgeApplicationStartedEmail({ to, name, badgeName }) {
+  const displayName = name || "consultor";
+
+  return sendMail({
+    templateKey: "badge_application_started",
+    variables: { name: displayName, badge_name: badgeName },
+    to,
+    subject: "Candidatura recebida - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `Obrigado por te candidatares ao badge ${badgeName}.`,
+      "Agora podes reunir e submeter as evidencias dos requisitos para validacao.",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>Obrigado por te candidatares ao badge <strong>${badgeName}</strong>.</p>
+      <p>Agora podes reunir e submeter as evidencias dos requisitos para validacao.</p>
+    `,
+  });
+}
+
 export async function sendBadgeApplicationEmail({ to, name, badgeName }) {
   const displayName = name || "consultor";
 
