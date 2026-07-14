@@ -51,9 +51,9 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
   Future<void> _copyPublicLink(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: _publicBadgeUrl));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link publico copiado')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Link publico copiado')));
   }
 
   Future<void> _openInBrowser(BuildContext context) async {
@@ -88,171 +88,169 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Detalhes do Badge')),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                _courseHeader(context, badge, estado),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            _courseHeader(context, badge, estado),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sobre este badge',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    badge.description.isEmpty
+                        ? 'Completa os requisitos definidos e submete evidencias para validacao.'
+                        : badge.description,
+                    style: TextStyle(color: Colors.grey.shade800, height: 1.45),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
                     children: [
-                      Text(
-                        'Sobre este badge',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        badge.description.isEmpty
-                            ? 'Completa os requisitos definidos e submete evidencias para validacao.'
-                            : badge.description,
-                        style: TextStyle(
-                          color: Colors.grey.shade800,
-                          height: 1.45,
+                      Expanded(
+                        child: _summaryTile(
+                          Icons.star_rounded,
+                          '${badge.points}',
+                          'pontos',
                         ),
                       ),
-                      const SizedBox(height: 18),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _summaryTile(
-                              Icons.star_rounded,
-                              '${badge.points}',
-                              'pontos',
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _summaryTile(
-                              Icons.workspace_premium_rounded,
-                              badge.levelLabel,
-                              'badge',
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _summaryTile(
-                              Icons.fact_check_rounded,
-                              '${requisitos.length}',
-                              'requisitos',
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _summaryTile(
+                          Icons.workspace_premium_rounded,
+                          badge.levelLabel,
+                          'badge',
+                        ),
                       ),
-                      const SizedBox(height: 18),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          _softChip(
-                            Icons.category_outlined,
-                            badge.areaName ?? 'Geral',
-                          ),
-                          _softChip(Icons.flag_outlined, estado),
-                          InkWell(
-                            onTap: () => _copyPublicLink(context),
-                            borderRadius: BorderRadius.circular(999),
-                            child: _softChip(Icons.link, 'Link publico'),
-                          ),
-                        ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _summaryTile(
+                          Icons.fact_check_rounded,
+                          '${requisitos.length}',
+                          'requisitos',
+                        ),
                       ),
-                      if (candidaturaAtiva) ...[
-                        const SizedBox(height: 18),
-                        LinearProgressIndicator(
-                          value: requisitos.isEmpty
-                              ? 0
-                              : controller.evidences.length / requisitos.length,
-                          minHeight: 8,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${controller.evidences.length}/${requisitos.length} requisitos concluidos',
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                      if (controller.badgeDetail.learningOutcomes.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        Text(
-                          'Resultados de aprendizagem',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w900),
-                        ),
-                        const SizedBox(height: 10),
-                        ...controller.badgeDetail.learningOutcomes.map(
-                          (outcome) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Icon(
-                                  Icons.check_rounded,
-                                  size: 18,
-                                  color: Color(0xFF0F62FE),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    outcome,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade800,
-                                      height: 1.35,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
-                      Text(
-                        'Conteudo do badge',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      const SizedBox(height: 10),
-                      if (requisitos.isEmpty)
-                        Text(
-                          'Ainda nao ha requisitos definidos para este badge.',
-                          style: TextStyle(color: Colors.grey.shade600),
-                        )
-                      else
-                        ...requisitos.asMap().entries.map(
-                          (entry) => _requirementCard(
-                            entry.value,
-                            entry.key,
-                            controller.latestEvidenceForRequirement(
-                                  entry.value.id,
-                                ) !=
-                                null,
-                            candidaturaAtiva,
-                          ),
-                        ),
-                      if (controller.badgeDetail.sections.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        Text(
-                          'Curriculo',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w900),
-                        ),
-                        const SizedBox(height: 10),
-                        ...controller.badgeDetail.sections.map(
-                          _sectionCard,
-                        ),
-                      ],
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 18),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _softChip(
+                        Icons.category_outlined,
+                        badge.areaName ?? 'Geral',
+                      ),
+                      _softChip(Icons.flag_outlined, estado),
+                      InkWell(
+                        onTap: () => _copyPublicLink(context),
+                        borderRadius: BorderRadius.circular(999),
+                        child: _softChip(Icons.link, 'Link publico'),
+                      ),
+                    ],
+                  ),
+                  if (candidaturaAtiva) ...[
+                    const SizedBox(height: 18),
+                    LinearProgressIndicator(
+                      value:
+                          requisitos.isEmpty
+                              ? 0
+                              : controller.evidences.length / requisitos.length,
+                      minHeight: 8,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${controller.evidences.length}/${requisitos.length} requisitos concluidos',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                  if (controller.badgeDetail.learningOutcomes.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'Resultados de aprendizagem',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ...controller.badgeDetail.learningOutcomes.map(
+                      (outcome) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.check_rounded,
+                              size: 18,
+                              color: Color(0xFF0F62FE),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                outcome,
+                                style: TextStyle(
+                                  color: Colors.grey.shade800,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  Text(
+                    'Conteudo do badge',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (requisitos.isEmpty)
+                    Text(
+                      'Ainda nao ha requisitos definidos para este badge.',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    )
+                  else
+                    ...requisitos.asMap().entries.map(
+                      (entry) => _requirementCard(
+                        entry.value,
+                        entry.key,
+                        controller.latestEvidenceForRequirement(
+                              entry.value.id,
+                            ) !=
+                            null,
+                        candidaturaAtiva,
+                      ),
+                    ),
+                  if (controller.badgeDetail.sections.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'Curriculo',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ...controller.badgeDetail.sections.map(_sectionCard),
+                  ],
+                ],
+              ),
             ),
-          ),
-          _bottomActions(context, controller, estado, candidaturaAtiva),
-        ],
+            const SizedBox(height: 8),
+            _bottomActions(context, controller, estado, candidaturaAtiva),
+          ],
+        ),
       ),
     );
   }
@@ -322,7 +320,10 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                   runSpacing: 8,
                   children: [
                     _darkChip(Icons.star_rounded, '${badge.points} pontos'),
-                    _darkChip(Icons.workspace_premium_rounded, badge.levelLabel),
+                    _darkChip(
+                      Icons.workspace_premium_rounded,
+                      badge.levelLabel,
+                    ),
                     _darkChip(Icons.flag_outlined, estado),
                   ],
                 ),
@@ -341,17 +342,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     bool candidaturaAtiva,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -364,29 +355,30 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontSize: 16),
               ),
-              onPressed: estado != 'Nao Candidatado'
-                  ? null
-                  : () async {
-                      final result = await controller.submitPedido();
+              onPressed:
+                  estado != 'Nao Candidatado'
+                      ? null
+                      : () async {
+                        final result = await controller.submitPedido();
 
-                      if (result.success) {
-                        await controller.selectBadge(widget.badge.id);
-                        if (mounted) setState(() {});
-                      }
+                        if (result.success) {
+                          await controller.selectBadge(widget.badge.id);
+                          if (mounted) setState(() {});
+                        }
 
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              result.message ??
-                                  (result.success
-                                      ? 'Pedido submetido com sucesso'
-                                      : 'Erro ao submeter pedido'),
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                result.message ??
+                                    (result.success
+                                        ? 'Pedido submetido com sucesso'
+                                        : 'Erro ao submeter pedido'),
+                              ),
                             ),
-                          ),
-                        );
-                      }
-                    },
+                          );
+                        }
+                      },
               icon: const Icon(Icons.workspace_premium),
               label: Text(
                 estado == 'Nao Candidatado' ? 'Candidatar-me' : 'Em Progresso',
@@ -451,14 +443,16 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     bool completed,
     bool candidaturaAtiva,
   ) {
-    final statusLabel = !candidaturaAtiva
-        ? 'Obrigatorio'
-        : completed
+    final statusLabel =
+        !candidaturaAtiva
+            ? 'Obrigatorio'
+            : completed
             ? 'Concluido'
             : 'Pendente';
-    final statusColor = !candidaturaAtiva
-        ? Colors.grey
-        : completed
+    final statusColor =
+        !candidaturaAtiva
+            ? Colors.grey
+            : completed
             ? Colors.green
             : Colors.orange;
 
@@ -536,26 +530,27 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
           style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
         ),
         childrenPadding: const EdgeInsets.only(bottom: 8),
-        children: section.lessons
-            .map(
-              (lesson) => ListTile(
-                leading: const Icon(
-                  Icons.play_circle_outline_rounded,
-                  color: Color(0xFF0F62FE),
-                ),
-                title: Text(
-                  lesson.title,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                subtitle: Text(
-                  lesson.description.isNotEmpty
-                      ? '${lesson.description}\n${lesson.durationMinutes} min - ${lesson.contentType}'
-                      : '${lesson.durationMinutes} min - ${lesson.contentType}',
-                  style: TextStyle(color: Colors.grey.shade600),
-                ),
-              ),
-            )
-            .toList(),
+        children:
+            section.lessons
+                .map(
+                  (lesson) => ListTile(
+                    leading: const Icon(
+                      Icons.play_circle_outline_rounded,
+                      color: Color(0xFF0F62FE),
+                    ),
+                    title: Text(
+                      lesson.title,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    subtitle: Text(
+                      lesson.description.isNotEmpty
+                          ? '${lesson.description}\n${lesson.durationMinutes} min - ${lesson.contentType}'
+                          : '${lesson.durationMinutes} min - ${lesson.contentType}',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  ),
+                )
+                .toList(),
       ),
     );
   }

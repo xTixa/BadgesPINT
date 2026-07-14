@@ -222,7 +222,9 @@
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/pt/common.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/locales/en/common.json','utf8'\\)\\); console.log\\('OK: JSON valido'\\)\")",
       "Bash(git checkout *)",
       "Bash(git stash *)",
-      "Bash(git restore *)"
+      "Bash(git restore *)",
+      "Bash(dart format *)",
+      "Bash(curl -s -o /tmp/badge_test.png -w \"%{http_code} %{content_type} %{size_download}\\\\n\" \"https://badgespint.onrender.com/badges/1/image.png\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

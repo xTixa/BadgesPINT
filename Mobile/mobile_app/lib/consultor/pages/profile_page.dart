@@ -578,8 +578,7 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   void _openBadgeDetail(BadgeItem badge) {
-    Navigator.push(
-      context,
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => BadgeDetailPage(
           badge: _catalogBadgeFor(badge),

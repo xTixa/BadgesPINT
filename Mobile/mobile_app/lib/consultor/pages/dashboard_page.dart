@@ -392,8 +392,7 @@ class _DashboardPageState extends State<DashboardPage>
             matches.isEmpty
                 ? null
                 : () {
-                  Navigator.push(
-                    context,
+                  Navigator.of(context, rootNavigator: true).push(
                     MaterialPageRoute(
                       builder:
                           (_) => BadgeDetailPage(
@@ -1383,8 +1382,7 @@ class _DashboardPageState extends State<DashboardPage>
 
   void _openBadge(BuildContext context, BadgeItem badge) {
     final catalogBadge = _catalogBadgeFor(badge);
-    Navigator.push(
-      context,
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder:
             (_) => BadgeDetailPage(

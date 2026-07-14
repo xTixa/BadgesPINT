@@ -34,8 +34,7 @@ class BadgesPage extends StatelessWidget {
             (badge) => _BadgeCard(
               badge: badge,
               onTap: () {
-                Navigator.push(
-                  context,
+                Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (_) => BadgeDetailPage(
                       badge: badge,

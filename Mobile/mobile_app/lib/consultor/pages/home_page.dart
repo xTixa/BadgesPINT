@@ -461,8 +461,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _openBadge(BuildContext context, CatalogBadgeItem badge) {
-    Navigator.push(
-      context,
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => BadgeDetailPage(badge: badge, controller: controller),
       ),

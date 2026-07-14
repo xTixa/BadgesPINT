@@ -52,19 +52,40 @@ class BadgeMedal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(size * 0.28),
-      child: SizedBox(
-        width: size,
-        height: size,
-        child:
-            _hasImage
-                ? Image.network(
+    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final cacheSize = (size * pixelRatio).round();
+
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size * 0.28),
+        child: SizedBox(
+          width: size,
+          height: size,
+          child:
+              _hasImage
+                  ? Image.network(
                     _resolvedImageUrl!,
                     fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                    cacheWidth: cacheSize,
+                    cacheHeight: cacheSize,
                     errorBuilder: (_, __, ___) => _fallbackContent(),
+                    frameBuilder: (
+                      context,
+                      child,
+                      frame,
+                      wasSynchronouslyLoaded,
+                    ) {
+                      if (wasSynchronouslyLoaded) return child;
+                      return AnimatedOpacity(
+                        opacity: frame == null ? 0 : 1,
+                        duration: const Duration(milliseconds: 150),
+                        child: frame == null ? _fallbackContent() : child,
+                      );
+                    },
                   )
-                : _fallbackContent(),
+                  : _fallbackContent(),
+        ),
       ),
     );
   }
