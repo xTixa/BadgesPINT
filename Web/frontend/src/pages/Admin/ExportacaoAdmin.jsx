@@ -89,10 +89,19 @@ export default function ExportacaoAdmin() {
       });
     } catch (err) {
       console.error("Erro na exportação:", err);
-      setError(
-        err.response?.data?.message ||
-          t("admin.exportacao.errors.exportFailed"),
-      );
+      let message = t("admin.exportacao.errors.exportFailed");
+      const errData = err.response?.data;
+      if (errData instanceof Blob) {
+        try {
+          const parsed = JSON.parse(await errData.text());
+          message = parsed.message || message;
+        } catch {
+          // resposta não é JSON, mantém a mensagem genérica
+        }
+      } else if (errData?.message) {
+        message = errData.message;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }

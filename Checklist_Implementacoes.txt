@@ -27,9 +27,9 @@
 [X] 16. Celebração de marcos
 [X] 17. Recomendações
 [X] 18. Download de certificado PDF
-[] 19. Email de candidatura
+[X] 19. Email de candidatura
 [X] 20. Notificações
-[] 21. Alertas de expiração
+[X] 21. Alertas de expiração
 [] 22. Lembretes
 [X] 24. Galeria pública
 [X] 25. Página pública do badge
@@ -104,10 +104,10 @@
 
 # 🛠 Administrador
 
-[] 1. Gestão de utilizadores
-[] 2. Criar utilizadores
-[] 3. Gestão de badges
-[] 4. Gestão de Learning Paths
+[X] 1. Gestão de utilizadores
+[X] 2. Criar utilizadores
+[X] 3. Gestão de badges
+[X] 4. Gestão de Learning Paths
 [] 5. Exportação Excel/PDF
 [] 6. Gestão de pontos/expiração
 [] 7. Configuração de notificações
