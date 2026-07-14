@@ -23,7 +23,7 @@
 [] 11. Partilha no LinkedIn
 [X] 13. Sistema de pontos
 [] 14. Badges especiais
-[] 15. Métricas de progresso
+[X] 15. Métricas de progresso
 [X] 16. Celebração de marcos
 [X] 17. Recomendações
 [X] 18. Download de certificado PDF
@@ -31,7 +31,7 @@
 [X] 20. Notificações
 [] 21. Alertas de expiração
 [] 22. Lembretes
-[] 24. Galeria pública
+[X] 24. Galeria pública
 [X] 25. Página pública do badge
 [] 26. Verificação por link
 [] 27. Competências certificadas

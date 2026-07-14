@@ -48,16 +48,38 @@ export default function Home() {
         setLoading(true);
         setError("");
 
-        const [badgesResponse, pathsResponse] = await Promise.all([
+        const hasToken = Boolean(localStorage.getItem("token"));
+
+        const [badgesResponse, pathsResponse, progressResponse] = await Promise.all([
           api.get("/badges"),
           api.get("/learning-paths"),
+          hasToken
+            ? api.get("/api/consultor/learning-paths/progress").catch(() => null)
+            : Promise.resolve(null),
         ]);
 
         setBadges(
           Array.isArray(badgesResponse.data) ? badgesResponse.data : [],
         );
+
+        const paths = Array.isArray(pathsResponse.data) ? pathsResponse.data : [];
+        const progressById = new Map(
+          Array.isArray(progressResponse?.data)
+            ? progressResponse.data.map((entry) => [Number(entry.id), entry])
+            : [],
+        );
         setLearningPaths(
-          Array.isArray(pathsResponse.data) ? pathsResponse.data : [],
+          paths.map((path) => {
+            const progress = progressById.get(Number(path.id));
+            return progress
+              ? {
+                  ...path,
+                  progress: progress.progress,
+                  obtained_badges: progress.obtained_badges,
+                  total_badges: progress.total_badges,
+                }
+              : path;
+          }),
         );
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
