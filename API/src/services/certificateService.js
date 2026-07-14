@@ -47,6 +47,12 @@ export function renderCertificatePdf(doc, {
   verificationUrl,
   badgeImageBuffer,
 }) {
+  // Validações básicas
+  if (!doc) throw new Error("PDFDocument é obrigatório");
+  if (!consultor || !consultor.name) throw new Error("Consultor sem nome");
+  if (!badge) throw new Error("Badge é obrigatório");
+  if (!badgeName) throw new Error("badgeName é obrigatório");
+  if (!awardedAt) throw new Error("awardedAt é obrigatório");
   const W  = doc.page.width;
   const H  = doc.page.height;
   const BM = 44;
@@ -98,11 +104,16 @@ export function renderCertificatePdf(doc, {
     const D   = 80;
     const icx = W / 2;
     const icy = Y + D / 2;
-    doc.save().circle(icx, icy, D / 2).clip();
-    doc.image(badgeImageBuffer, (W - D) / 2, Y, { width: D, height: D });
-    doc.restore();
-    doc.circle(icx, icy, D / 2 + 3).lineWidth(1.8).strokeColor(P.gold).stroke();
-    Y += D + 22;
+    try {
+      doc.save().circle(icx, icy, D / 2).clip();
+      doc.image(badgeImageBuffer, (W - D) / 2, Y, { width: D, height: D });
+      doc.restore();
+      doc.circle(icx, icy, D / 2 + 3).lineWidth(1.8).strokeColor(P.gold).stroke();
+      Y += D + 22;
+    } catch (imgErr) {
+      doc.restore();
+      console.warn("Aviso: não foi possível desenhar a imagem do badge no certificado:", imgErr.message);
+    }
   }
 
   // ── "Certifica-se que" ──────────────────────────────────────

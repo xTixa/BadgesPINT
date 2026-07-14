@@ -65,8 +65,17 @@ export default function HistoricoBadges() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Erro ao gerar certificado:", err.response?.data || err.message);
-      const errorMsg = err.response?.data?.details || err.response?.data?.error || err.message || t("consultor.historicoBadges.certificateError");
+      let serverData = err.response?.data;
+      // Com responseType: "blob", uma resposta de erro em JSON chega como Blob, não como objeto.
+      if (serverData instanceof Blob) {
+        try {
+          serverData = JSON.parse(await serverData.text());
+        } catch {
+          serverData = null;
+        }
+      }
+      console.error("Erro ao gerar certificado:", serverData || err.message);
+      const errorMsg = serverData?.details || serverData?.error || err.message || t("consultor.historicoBadges.certificateError");
       alert(`${t("consultor.historicoBadges.certificateError")}\n\nDetalhes: ${errorMsg}`);
     } finally {
       setDownloading(null);

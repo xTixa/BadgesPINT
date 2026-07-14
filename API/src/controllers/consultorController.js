@@ -27,6 +27,14 @@ function ensureCertificateCode(consultorBadge) {
   return consultorBadge.certificate_code;
 }
 
+// pdfkit só sabe desenhar JPEG e PNG; verificamos os magic bytes antes de usar a imagem no PDF.
+function isJpegOrPng(buffer) {
+  if (!buffer || buffer.length < 8) return false;
+  const isPng = buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47;
+  const isJpeg = buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+  return isPng || isJpeg;
+}
+
 function normalizeDateOnly(value) {
   if (!value) return null;
   const raw = String(value).trim();
@@ -597,9 +605,10 @@ export async function generateConsultorBadgeCertificate(req, res) {
       return res.status(400).json({ error: "Badge sem nome/descrição" });
     }
 
-    const certificateCode = ensureCertificateCode(consultorBadge);
+    ensureCertificateCode(consultorBadge);
     await consultorBadge.save();
-    const verificationUrl = `${publicBaseUrl(req)}/api/public/certificates/${certificateCode}`;
+
+    const verificationUrl = `${publicBaseUrl(req)}/api/public/certificates/${consultorBadge.certificate_code}`;
     const awardedAt = consultorBadge.data_atribuicao
       ? new Date(consultorBadge.data_atribuicao)
       : new Date();
@@ -609,8 +618,13 @@ export async function generateConsultorBadgeCertificate(req, res) {
       try {
         const imgRes = await fetch(badge.image_url, { timeout: 5000 });
         if (imgRes.ok) {
-          const buffer = await imgRes.arrayBuffer();
-          badgeImageBuffer = Buffer.from(buffer);
+          const buffer = Buffer.from(await imgRes.arrayBuffer());
+          // pdfkit só suporta JPEG e PNG; outros formatos (ex.: WEBP) fazem doc.image() rebentar.
+          if (isJpegOrPng(buffer)) {
+            badgeImageBuffer = buffer;
+          } else {
+            console.warn(`Aviso: imagem do badge ${badge.id} não é JPEG/PNG, a ignorar no certificado.`);
+          }
         }
       } catch (imgErr) {
         console.warn("Aviso: Não foi possível carregar imagem do badge:", imgErr.message);
@@ -622,7 +636,7 @@ export async function generateConsultorBadgeCertificate(req, res) {
 
     const doc = new PDFDocument({ size: "A4", margin: 0 });
     doc.on("error", (err) => {
-      console.error("Erro no PDFDocument:", err.message);
+      console.error("Erro no PDFDocument:", err.message, err.stack);
       if (!res.headersSent) {
         res.status(500).json({ error: "Erro ao gerar PDF", details: err.message });
       }
@@ -634,7 +648,7 @@ export async function generateConsultorBadgeCertificate(req, res) {
       badge,
       badgeName,
       awardedAt,
-      certificateCode,
+      certificateCode: consultorBadge.certificate_code,
       verificationUrl,
       badgeImageBuffer,
     });
