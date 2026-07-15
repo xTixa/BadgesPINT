@@ -46,26 +46,26 @@
 
 # 👨‍💼 Talent Manager
 
-[] 1. Consultar badges
+[X] 1. Consultar badges
 [X] 2. Dashboard
 [X] 3. Verificação de evidências
 [X] 4. Estado dos pedidos
-[] 5. Histórico
-[] 6. Catálogo
-[] 7. Consultar requisitos
-[] 8. Relatórios
-[] 9. Exportação pedidos
-[] 10. Exportação badges
-[] 11. Exportação consultores
-[] 12. Exportação aprovações
-[] 13. Exportação rejeições
+[X] 5. Histórico
+[X] 6. Catálogo
+[X] 7. Consultar requisitos
+[X] 8. Relatórios
+[X] 9. Exportação pedidos
+[X] 10. Exportação badges
+[X] 11. Exportação consultores
+[X] 12. Exportação aprovações
+[X] 13. Exportação rejeições
 [] 14. Badge na assinatura
-[] 15. Sistema de pontos
+[X] 15. Sistema de pontos
 [] 16. Badges especiais
 [] 17. Certificados PDF
 [] 18. Emails
-[] 19. Notificações
-[] 20. Badges prestes a expirar
+[x] 19. Notificações
+[X] 20. Badges prestes a expirar
 [] 21. Histórico da candidatura
 
 ## Bónus

@@ -422,7 +422,12 @@ export function getEmailSignature({ user, badges = [] } = {}) {
             ? `<img src="${escapeHtml(imageUrl)}" width="28" height="28" alt="${badgeName}" style="display:inline-block;width:28px;height:28px;margin-right:6px;vertical-align:middle;object-fit:contain;" />${badgeName}`
             : badgeName;
           const level = escapeHtml(badge?.level || badge?.nivel || "");
-          return `<span style="display:inline-block;margin:0 6px 6px 0;padding:5px 8px;border:1px solid #BFEFFF;border-radius:999px;background:#F8FBFF;color:#16558C;font-size:11px;font-weight:700;">${name}${level ? ` · ${level}` : ""}</span>`;
+          const pillStyle = "display:inline-block;margin:0 6px 6px 0;padding:5px 8px;border:1px solid #BFEFFF;border-radius:999px;background:#F8FBFF;color:#16558C;font-size:11px;font-weight:700;";
+          const content = `${name}${level ? ` · ${level}` : ""}`;
+          const badgePageUrl = badge?.id ? getDashboardUrl(`/badges/${badge.id}`) : "";
+          return badgePageUrl
+            ? `<a href="${escapeHtml(badgePageUrl)}" target="_blank" rel="noreferrer noopener" style="${pillStyle}text-decoration:none;">${content}</a>`
+            : `<span style="${pillStyle}">${content}</span>`;
         })
         .join("")
     : '<span style="font-size:12px;color:#64748b;">Sem badges publicados na assinatura.</span>';

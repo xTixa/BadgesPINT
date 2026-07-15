@@ -132,7 +132,11 @@ export default function GaleriaConsultor() {
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {profile.badges.map((badge) => (
-                <article key={badge.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#0F62FE]/30 hover:shadow-lg">
+                <Link
+                  key={badge.id}
+                  to={`/badges/${badge.id}`}
+                  className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#0F62FE]/30 hover:shadow-lg"
+                >
                   <div className="mb-4 flex h-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0F62FE]/5 to-[#00AEEF]/10">
                     {badge.image_url ? (
                       <img src={badge.image_url} alt={badge.name} className="h-16 w-16 object-contain" />
@@ -149,7 +153,7 @@ export default function GaleriaConsultor() {
                     <span className="text-sm font-extrabold text-[#0F62FE]">{t("galeriaConsultor.points", { count: badge.points || 0 })}</span>
                     {badge.data_atribuicao && <span className="text-xs text-slate-400">{new Date(badge.data_atribuicao).toLocaleDateString("pt-PT")}</span>}
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           )}
