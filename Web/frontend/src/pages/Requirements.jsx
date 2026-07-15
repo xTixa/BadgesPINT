@@ -157,6 +157,8 @@ export default function Requirements() {
   const level = getBadgeLevel(badge, t);
   const points = getBadgePoints(badge);
   const description = getBadgeDescription(badge, t);
+  const isSpecial = Boolean(badge?.special_deadline);
+  const isSpecialClosed = isSpecial && new Date(badge.special_deadline) < new Date();
   const publicBadgeUrl = getPublicBadgeUrl(id);
   const handleShareLinkedIn = () =>
     openLinkedInAddCertification({
@@ -184,6 +186,11 @@ export default function Requirements() {
 
     if (user.role !== "consultant") {
       setError(t("requirements.errors.onlyConsultants"));
+      return;
+    }
+
+    if (isSpecialClosed) {
+      setError(t("requirements.errors.specialClosed"));
       return;
     }
 
@@ -228,6 +235,14 @@ export default function Requirements() {
               <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
                 {areaName}
               </span>
+              {isSpecial && (
+                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-extrabold ${isSpecialClosed ? "bg-slate-900/60 text-white" : "bg-amber-400 text-amber-950"}`}>
+                  <i className="bi bi-hourglass-split"></i>
+                  {isSpecialClosed
+                    ? t("requirements.card.specialClosedLabel")
+                    : t("requirements.card.specialEndsOn", { date: new Date(badge.special_deadline).toLocaleString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) })}
+                </span>
+              )}
             </div>
 
             <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white md:text-4xl">
@@ -263,16 +278,26 @@ export default function Requirements() {
                   <button
                     type="button"
                     onClick={handleApply}
-                    disabled={applying || applied}
+                    disabled={applying || applied || isSpecialClosed}
                     className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {applied
                       ? application?.status === "obtido"
                         ? t("requirements.card.obtained")
                         : t("requirements.card.activeApplication")
-                      : applying
-                        ? t("requirements.card.applying")
-                        : t("requirements.card.applyNow")}
+                      : isSpecialClosed
+                        ? t("requirements.card.specialClosedLabel")
+                        : applying
+                          ? t("requirements.card.applying")
+                          : t("requirements.card.applyNow")}
+                  </button>
+                ) : isSpecialClosed ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="mb-3 flex h-10 w-full cursor-not-allowed items-center justify-center rounded-xl bg-slate-300 px-4 text-sm font-extrabold text-slate-600"
+                  >
+                    {t("requirements.card.specialClosedLabel")}
                   </button>
                 ) : (
                   <Link

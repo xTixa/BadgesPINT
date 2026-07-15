@@ -4,6 +4,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 
+function toDatetimeLocalValue(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 export default function BadgeFormAdmin() {
   const { t } = useTranslation();
   const { id } = useParams(); // "novo" ou um id numérico
@@ -18,7 +26,8 @@ export default function BadgeFormAdmin() {
     level: "Junior",
     points: 100,
     expiry_days: "",
-    image_url: ""
+    image_url: "",
+    special_deadline: ""
   });
 
   const [requirements, setRequirements] = useState([
@@ -57,7 +66,8 @@ export default function BadgeFormAdmin() {
           level: badge.level || "Junior",
           points: badge.points || 0,
           expiry_days: badge.expiry_days || "",
-          image_url: badge.image_url || ""
+          image_url: badge.image_url || "",
+          special_deadline: toDatetimeLocalValue(badge.special_deadline)
         });
 
         const reqs = (badge.requirements || []).map((r, idx) => ({
@@ -96,6 +106,7 @@ export default function BadgeFormAdmin() {
       area_id: Number(form.area_id),
       points: Number(form.points),
       expiry_days: form.expiry_days ? Number(form.expiry_days) : null,
+      special_deadline: form.special_deadline ? new Date(form.special_deadline).toISOString() : null,
       requirements
     };
 
@@ -278,6 +289,18 @@ export default function BadgeFormAdmin() {
                   placeholder="https://..."
                 />
               </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.specialDeadlineLabel")}</label>
+              <input
+                type="datetime-local"
+                className="w-full max-w-xs rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+                name="special_deadline"
+                value={form.special_deadline}
+                onChange={handleChange}
+              />
+              <p className="mt-1 text-xs text-slate-500">{t("admin.badgeForm.specialDeadlineHint")}</p>
             </div>
 
             <div className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">

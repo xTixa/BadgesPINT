@@ -1624,7 +1624,8 @@
       "loadFailed": "Could not load the details of this badge.",
       "loginRequired": "Log in as a consultant to apply for this badge.",
       "onlyConsultants": "Only consultants can apply for badges.",
-      "applyFailed": "Could not create the application."
+      "applyFailed": "Could not create the application.",
+      "specialClosed": "The deadline for this special badge has already passed. Applications are no longer possible."
     },
     "success": {
       "applied": "Application created and sent for validation."
@@ -1652,6 +1653,9 @@
       "applying": "Creating application...",
       "applyNow": "Apply now",
       "loginToApply": "Log in to apply",
+      "specialBadge": "Special badge",
+      "specialEndsOn": "Ends {{date}}",
+      "specialClosedLabel": "Closed",
       "shareLinkedIn": "Share on LinkedIn",
       "viewOtherBadges": "View other badges",
       "includesTitle": "This badge includes:",
@@ -1683,6 +1687,17 @@
     },
     "descriptionTitle": "Description"
   },
+  "specialBadgeForm": {
+    "title": "Create special badge",
+    "subtitle": "Time-limited badge: only consultants who submit their request before the deadline get it. After that it closes automatically and can no longer be requested.",
+    "deadlineLabel": "Special deadline",
+    "deadlineHint": "Required. From this date and time onward the badge closes.",
+    "deadlineRequired": "Set a future deadline for the special badge.",
+    "successMessage": "Special badge created successfully.",
+    "saveFailed": "Error creating special badge.",
+    "createButton": "Create special badge",
+    "creating": "Creating..."
+  },
   "layout": {
     "sidebar": {
       "closeMenu": "Close side menu",
@@ -1711,6 +1726,7 @@
           "dashboard": "Dashboard",
           "pedidosBadges": "Badge Requests",
           "catalogoBadges": "Badge Catalog",
+          "badgeEspecial": "Special Badge",
           "equipa": "Team",
           "expiracoesBadges": "Badge Expirations",
           "compararConsultores": "Compare Consultants",
@@ -1726,6 +1742,7 @@
           "title": "Service Line",
           "dashboard": "Dashboard",
           "pedidosBadges": "Badge Requests",
+          "badgeEspecial": "Special Badge",
           "consultores": "Consultants",
           "compararConsultores": "Compare Consultants",
           "catalogoBadges": "Badge Catalog",
@@ -1765,7 +1782,8 @@
       "activeApplication": "Application active",
       "applying": "Applying...",
       "apply": "Apply",
-      "exploreBadge": "Explore badge"
+      "exploreBadge": "Explore badge",
+      "specialClosed": "Closed"
     },
     "badgeCelebration": {
       "congrats": "CONGRATULATIONS!",
@@ -1968,6 +1986,8 @@
       "requirementDescriptionLabel": "Description / Evidence",
       "requirementTitleLabel": "Title",
       "selectArea": "Select an area",
+      "specialDeadlineLabel": "Special deadline (optional)",
+      "specialDeadlineHint": "Leave blank for a regular badge. Set a date to make this a time-limited special badge — once the deadline passes, it can no longer be applied for.",
       "uploadHint": "PNG/JPG/WebP up to 3 MB. The URL is stored in the field above.",
       "uploadImageLabel": "Upload badge image",
       "uploadingImage": "Uploading image..."

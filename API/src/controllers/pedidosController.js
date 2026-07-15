@@ -461,11 +461,15 @@ export async function criarPedido(req, res) {
     }
 
     const badge = await Badge.findByPk(badgeId, {
-      attributes: ["id"]
+      attributes: ["id", "special_deadline"]
     });
 
     if (!badge) {
       return res.status(404).json({ message: "Badge não encontrado" });
+    }
+
+    if (badge.special_deadline && new Date(badge.special_deadline) < new Date()) {
+      return res.status(400).json({ message: "O prazo para este badge especial já terminou" });
     }
 
     // Verificar se já existe pedido pendente/obtido para este badge

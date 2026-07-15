@@ -97,56 +97,84 @@ export async function adminGetBadge(req, res) {
   }
 }
 
+async function persistNewBadge(req, badgeData, requirements, sections, auditAction) {
+  const newBadge = await Badge.create(badgeData);
+
+  if (Array.isArray(requirements) && requirements.length > 0) {
+    const formatted = requirements.map((r, idx) => ({
+      badge_id: newBadge.id,
+      title: r.title || `Requisito ${idx + 1}`,
+      code: r.code || `A${idx + 1}`,
+      description: r.description || "",
+      image_url: r.image_url || null
+    }));
+    await Requirement.bulkCreate(formatted);
+  }
+
+  await replaceBadgeCurriculum(newBadge.id, sections);
+
+  const created = await Badge.findByPk(newBadge.id, {
+    include: [
+      { model: Area, as: "area", attributes: ["id", "name"] },
+      { model: Requirement, as: "requirements" },
+      {
+        model: BadgeSection,
+        as: "sections",
+        include: [{ model: BadgeLesson, as: "lessons" }]
+      }
+    ]
+  });
+
+  await createAuditLog(req, null, {
+    action: auditAction,
+    entity: "Badge",
+    userId: req.userId,
+    entityId: newBadge.id,
+    description: `Badge #${newBadge.id} criado`,
+    newValues: badgeData,
+  });
+
+  return created;
+}
+
+function handleBadgeCreationError(err, res) {
+  console.error(err);
+  if (err.name === "SequelizeUniqueConstraintError") {
+    if (err.fields?.area_id !== undefined && err.fields?.level !== undefined) {
+      return res.status(409).json({ error: "Já existe um badge com este nível nesta área. Escolhe outro nível ou edita o badge existente." });
+    }
+    return res.status(409).json({ error: "Já existe um badge com esses dados." });
+  }
+  res.status(500).json({ error: "Erro ao criar badge" });
+}
+
 // CRIAR BADGE
 export async function adminCreateBadge(req, res) {
   try {
     const { requirements, sections, ...badgeData } = req.body;
-    const newBadge = await Badge.create(badgeData);
-
-    if (Array.isArray(requirements) && requirements.length > 0) {
-      const formatted = requirements.map((r, idx) => ({
-        badge_id: newBadge.id,
-        title: r.title || `Requisito ${idx + 1}`,
-        code: r.code || `A${idx + 1}`,
-        description: r.description || "",
-        image_url: r.image_url || null
-      }));
-      await Requirement.bulkCreate(formatted);
-    }
-
-    await replaceBadgeCurriculum(newBadge.id, sections);
-
-    const created = await Badge.findByPk(newBadge.id, {
-      include: [
-        { model: Area, as: "area", attributes: ["id", "name"] },
-        { model: Requirement, as: "requirements" },
-        {
-          model: BadgeSection,
-          as: "sections",
-          include: [{ model: BadgeLesson, as: "lessons" }]
-        }
-      ]
-    });
-
-    await createAuditLog(req, res, {
-      action: "CRIAR_BADGE",
-      entity: "Badge",
-      userId: req.userId,
-      entityId: newBadge.id,
-      description: `Badge #${newBadge.id} criado`,
-      newValues: badgeData,
-    });
-
+    const created = await persistNewBadge(req, badgeData, requirements, sections, "CRIAR_BADGE");
     res.status(201).json(created);
   } catch (err) {
-    console.error(err);
-    if (err.name === "SequelizeUniqueConstraintError") {
-      if (err.fields?.area_id !== undefined && err.fields?.level !== undefined) {
-        return res.status(409).json({ error: "Já existe um badge com este nível nesta área. Escolhe outro nível ou edita o badge existente." });
-      }
-      return res.status(409).json({ error: "Já existe um badge com esses dados." });
+    handleBadgeCreationError(err, res);
+  }
+}
+
+// CRIAR BADGE ESPECIAL (tempo limitado) — acessível a admin, talent_manager e service_line_leader.
+// Ao contrário de adminCreateBadge, exige um special_deadline futuro: fora do admin,
+// esta é a única forma de criar badges, e só badges com prazo.
+export async function createSpecialBadge(req, res) {
+  try {
+    const { requirements, sections, ...badgeData } = req.body;
+
+    const deadline = badgeData.special_deadline ? new Date(badgeData.special_deadline) : null;
+    if (!deadline || Number.isNaN(deadline.getTime()) || deadline <= new Date()) {
+      return res.status(400).json({ error: "Prazo especial é obrigatório e tem de ser uma data futura" });
     }
-    res.status(500).json({ error: "Erro ao criar badge" });
+
+    const created = await persistNewBadge(req, badgeData, requirements, sections, "CRIAR_BADGE_ESPECIAL");
+    res.status(201).json(created);
+  } catch (err) {
+    handleBadgeCreationError(err, res);
   }
 }
 

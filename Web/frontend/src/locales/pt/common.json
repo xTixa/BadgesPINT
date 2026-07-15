@@ -1624,7 +1624,8 @@
       "loadFailed": "Não foi possível carregar os detalhes deste badge.",
       "loginRequired": "Inicia sessão como consultor para te candidatares a este badge.",
       "onlyConsultants": "Apenas consultores podem candidatar-se a badges.",
-      "applyFailed": "Não foi possível criar a candidatura."
+      "applyFailed": "Não foi possível criar a candidatura.",
+      "specialClosed": "O prazo para este badge especial já terminou. Já não é possível candidatar-te."
     },
     "success": {
       "applied": "Candidatura criada e enviada para validação."
@@ -1652,6 +1653,9 @@
       "applying": "A criar candidatura...",
       "applyNow": "Candidatar-me agora",
       "loginToApply": "Entrar para candidatar",
+      "specialBadge": "Badge especial",
+      "specialEndsOn": "Termina em {{date}}",
+      "specialClosedLabel": "Encerrado",
       "shareLinkedIn": "Partilhar no LinkedIn",
       "viewOtherBadges": "Ver outros badges",
       "includesTitle": "Este badge inclui:",
@@ -1683,6 +1687,17 @@
     },
     "descriptionTitle": "Descrição"
   },
+  "specialBadgeForm": {
+    "title": "Criar badge especial",
+    "subtitle": "Badge de tempo limitado: só quem submeter o pedido antes do prazo fica com ele. Depois disso o badge encerra automaticamente e deixa de poder ser pedido.",
+    "deadlineLabel": "Prazo especial (data limite)",
+    "deadlineHint": "Obrigatório. A partir desta data e hora o badge encerra.",
+    "deadlineRequired": "Define um prazo futuro para o badge especial.",
+    "successMessage": "Badge especial criado com sucesso.",
+    "saveFailed": "Erro ao criar badge especial.",
+    "createButton": "Criar badge especial",
+    "creating": "A criar..."
+  },
   "layout": {
     "sidebar": {
       "closeMenu": "Fechar menu lateral",
@@ -1711,6 +1726,7 @@
           "dashboard": "Dashboard",
           "pedidosBadges": "Pedidos de Badges",
           "catalogoBadges": "Catálogo Badges",
+          "badgeEspecial": "Badge Especial",
           "equipa": "Equipa",
           "expiracoesBadges": "Expirações Badges",
           "compararConsultores": "Comparar Consultores",
@@ -1726,6 +1742,7 @@
           "title": "Service Line",
           "dashboard": "Dashboard",
           "pedidosBadges": "Pedidos de Badges",
+          "badgeEspecial": "Badge Especial",
           "consultores": "Consultores",
           "compararConsultores": "Comparar Consultores",
           "catalogoBadges": "Catálogo Badges",
@@ -1765,7 +1782,8 @@
       "activeApplication": "Candidatura ativa",
       "applying": "A candidatar...",
       "apply": "Candidatar-me",
-      "exploreBadge": "Explorar badge"
+      "exploreBadge": "Explorar badge",
+      "specialClosed": "Encerrado"
     },
     "badgeCelebration": {
       "congrats": "PARABÉNS!",
@@ -1968,6 +1986,8 @@
       "requirementDescriptionLabel": "Descrição / Evidência",
       "requirementTitleLabel": "Título",
       "selectArea": "Seleciona uma área",
+      "specialDeadlineLabel": "Prazo especial (opcional)",
+      "specialDeadlineHint": "Deixa em branco para um badge normal. Define uma data para criar um badge especial de tempo limitado — passado o prazo, deixa de poder ser pedido.",
       "uploadHint": "PNG/JPG/WebP até 3 MB. O URL fica guardado no campo acima.",
       "uploadImageLabel": "Upload da imagem do badge",
       "uploadingImage": "A enviar imagem..."

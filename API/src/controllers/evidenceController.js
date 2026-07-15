@@ -166,6 +166,13 @@ export async function submitEvidence(req, res) {
       return res.status(404).json({ error: "Requisito não encontrado" });
     }
 
+    const requirementBadge = await Badge.findByPk(requirement.badge_id, {
+      attributes: ["id", "special_deadline"]
+    });
+    if (requirementBadge?.special_deadline && new Date(requirementBadge.special_deadline) < new Date()) {
+      return res.status(400).json({ error: "O prazo para este badge especial já terminou" });
+    }
+
     const evidence = await RequirementEvidence.create({
       consultor_id: consultorId,
       requirement_id: requirement.id,

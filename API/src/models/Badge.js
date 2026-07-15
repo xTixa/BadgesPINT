@@ -83,6 +83,10 @@ const Badge = database.define("badges", {
   is_premium: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  special_deadline: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, { timestamps: false, tableName: "badges" });
 

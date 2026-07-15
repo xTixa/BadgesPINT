@@ -22,7 +22,7 @@
 [] 10. Aceitação RGPD
 [] 11. Partilha no LinkedIn
 [X] 13. Sistema de pontos
-[] 14. Badges especiais
+[X] 14. Badges especiais
 [X] 15. Métricas de progresso
 [X] 16. Celebração de marcos
 [X] 17. Recomendações
