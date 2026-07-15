@@ -1685,7 +1685,12 @@
       "lessonsCount": "{{count}} lessons",
       "durationInfo": "{{minutes}} min · {{type}}"
     },
-    "descriptionTitle": "Description"
+    "descriptionTitle": "Description",
+    "softinsaIntegration": {
+      "title": "Softinsa Skills",
+      "text": "This skill is part of Softinsa's service lines and areas of expertise. Find out more institutional information at softinsa.pt.",
+      "cta": "Visit softinsa.pt"
+    }
   },
   "specialBadgeForm": {
     "title": "Create special badge",

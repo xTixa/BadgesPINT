@@ -1685,7 +1685,12 @@
       "lessonsCount": "{{count}} aulas",
       "durationInfo": "{{minutes}} min · {{type}}"
     },
-    "descriptionTitle": "Descrição"
+    "descriptionTitle": "Descrição",
+    "softinsaIntegration": {
+      "title": "Competências Softinsa",
+      "text": "Esta competência insere-se no leque de service lines e áreas de especialização da Softinsa. Consulta mais informação institucional em softinsa.pt.",
+      "cta": "Visitar softinsa.pt"
+    }
   },
   "specialBadgeForm": {
     "title": "Criar badge especial",

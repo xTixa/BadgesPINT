@@ -19,7 +19,7 @@
 [X] 7. Histórico de badges
 [X] 8. Catálogo de badges
 [X] 9. Consultar requisitos
-[] 10. Aceitação RGPD
+[X] 10. Aceitação RGPD
 [] 11. Partilha no LinkedIn
 [X] 13. Sistema de pontos
 [X] 14. Badges especiais
@@ -35,7 +35,7 @@
 [X] 25. Página pública do badge
 [] 26. Verificação por link
 [] 27. Competências certificadas
-[] 28. Integração Softinsa
+[X] 28. Integração Softinsa
 
 ## Bónus
 
@@ -59,14 +59,14 @@
 [X] 11. Exportação consultores
 [X] 12. Exportação aprovações
 [X] 13. Exportação rejeições
-[] 14. Badge na assinatura
+[X] 14. Badge na assinatura
 [X] 15. Sistema de pontos
-[] 16. Badges especiais
-[] 17. Certificados PDF
-[] 18. Emails
+[X] 16. Badges especiais
+[X] 17. Certificados PDF
+[X] 18. Emails
 [x] 19. Notificações
 [X] 20. Badges prestes a expirar
-[] 21. Histórico da candidatura
+[X] 21. Histórico da candidatura
 
 ## Bónus
 
@@ -83,7 +83,7 @@
 [] 5. Catálogo
 [] 6. Consultar requisitos
 [] 8. Sistema de pontos
-[] 9. Badges especiais
+[X] 9. Badges especiais
 [] 10. Relatórios
 [] 11. Exportar pedidos
 [] 12. Exportar badges

@@ -40,6 +40,8 @@ const getPublicBadgeUrl = (badgeId) => {
   return `${baseUrl}/share/badges/${badgeId}`;
 };
 
+const SOFTINSA_URL = import.meta.env.VITE_SOFTINSA_URL || "https://www.softinsa.pt";
+
 export default function Requirements() {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -470,6 +472,20 @@ export default function Requirements() {
           <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.descriptionTitle")}</h2>
             <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{description}</p>
+          </section>
+
+          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.softinsaIntegration.title")}</h2>
+            <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{t("requirements.softinsaIntegration.text")}</p>
+            <a
+              href={SOFTINSA_URL}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+            >
+              <i className="bi bi-box-arrow-up-right"></i>
+              {t("requirements.softinsaIntegration.cta")}
+            </a>
           </section>
         </div>
 
