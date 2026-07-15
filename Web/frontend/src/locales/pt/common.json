@@ -1088,6 +1088,7 @@
         "status": "Estado",
         "workflow": "Workflow",
         "date": "Data",
+        "evidence": "Evidências",
         "actions": "Ações"
       },
       "unknownUser": "Desconhecido",
@@ -1099,7 +1100,15 @@
       "processHistoryTitle": "Histórico do processo",
       "consultantFallback": "Consultor",
       "badgeFallback": "Badge",
-      "close": "Fechar"
+      "close": "Fechar",
+      "evidence": {
+        "sectionTitle": "Evidências submetidas",
+        "empty": "Sem evidências submetidas para este pedido.",
+        "view": "Ver ficheiro",
+        "count_one": "{{count}} evidência",
+        "count_other": "{{count}} evidências",
+        "noNotes": "Sem observações."
+      }
     },
     "relatorios": {
       "title": "Relatórios e Exportações",

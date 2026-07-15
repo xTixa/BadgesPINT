@@ -2,6 +2,8 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import User from "../models/User.js";
 import Badge from "../models/Badge.js";
 import Area from "../models/Area.js";
+import RequirementEvidence from "../models/RequirementEvidence.js";
+import Requirement from "../models/Requirement.js";
 import database from "../config/database.js";
 import { QueryTypes, Op } from "sequelize";
 import {
@@ -228,7 +230,35 @@ export async function getAllPedidos(req, res) {
       order: [["created_at", "DESC"]]
     });
 
-    res.json(pedidos);
+    let evidencesByPedido = {};
+    if (pedidos.length) {
+      const evidences = await RequirementEvidence.findAll({
+        where: {
+          [Op.or]: pedidos.map((p) => ({
+            consultor_id: p.consultor_id,
+            badge_id: p.badge_id
+          }))
+        },
+        attributes: ["id", "requirement_id", "badge_id", "consultor_id", "status", "evidence_url", "notes", "created_at"],
+        include: [{ model: Requirement, as: "requirement", attributes: ["id", "title", "code"] }],
+        order: [["created_at", "DESC"]]
+      });
+
+      evidencesByPedido = evidences.reduce((acc, ev) => {
+        const key = `${ev.consultor_id}_${ev.badge_id}`;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(ev);
+        return acc;
+      }, {});
+    }
+
+    const pedidosComEvidencias = pedidos.map((p) => {
+      const json = p.toJSON();
+      json.evidences = evidencesByPedido[`${p.consultor_id}_${p.badge_id}`] || [];
+      return json;
+    });
+
+    res.json(pedidosComEvidencias);
   } catch (err) {
     console.error("Erro ao listar pedidos:", err);
     res.status(500).json({ message: "Erro ao listar pedidos de badges" });

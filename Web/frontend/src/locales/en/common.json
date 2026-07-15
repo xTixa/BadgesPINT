@@ -1088,6 +1088,7 @@
         "status": "Status",
         "workflow": "Workflow",
         "date": "Date",
+        "evidence": "Evidence",
         "actions": "Actions"
       },
       "unknownUser": "Unknown",
@@ -1099,7 +1100,15 @@
       "processHistoryTitle": "Process history",
       "consultantFallback": "Consultant",
       "badgeFallback": "Badge",
-      "close": "Close"
+      "close": "Close",
+      "evidence": {
+        "sectionTitle": "Submitted evidence",
+        "empty": "No evidence submitted for this request.",
+        "view": "View file",
+        "count_one": "{{count}} evidence file",
+        "count_other": "{{count}} evidence files",
+        "noNotes": "No notes."
+      }
     },
     "relatorios": {
       "title": "Reports and Exports",
