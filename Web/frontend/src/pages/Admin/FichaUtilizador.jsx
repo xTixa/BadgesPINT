@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 
 const roleKeys = {
   admin: "admin.fichaUtilizador.roles.admin",
@@ -190,26 +191,20 @@ export default function FichaUtilizador() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <button
-              type="button"
-              className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 hover:text-sky-900"
-              onClick={() => navigate("/admin/gestao-utilizadores")}
-            >
-              <i className="bi bi-arrow-left"></i>
-              {t("admin.fichaUtilizador.backToManagement")}
-            </button>
-            <h1 className="text-3xl font-bold text-slate-900">{t("admin.fichaUtilizador.title")}</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              {t("admin.fichaUtilizador.subtitle")}
-            </p>
-          </div>
-        </div>
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle title={t("admin.fichaUtilizador.title")} subtitle={t("admin.fichaUtilizador.subtitle")}>
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            onClick={() => navigate("/admin/gestao-utilizadores")}
+          >
+            <i className="bi bi-arrow-left"></i>
+            {t("admin.fichaUtilizador.backToManagement")}
+          </button>
+        </AdminPageTitle>
 
         {loading ? (
-          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-12 text-center text-sm text-slate-500 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-12 text-center text-sm text-slate-500">
             <span className="mr-2 inline-block h-5 w-5 animate-spin rounded-full border-2 border-sky-600 border-r-transparent align-middle"></span>
             {t("admin.fichaUtilizador.loading")}
           </div>
@@ -235,13 +230,13 @@ export default function FichaUtilizador() {
 
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
               <aside className="space-y-4">
-                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="rounded-2xl border border-slate-200 bg-white p-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-bold text-slate-700">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-700">
                       {getInitials(user.name)}
                     </div>
                     <div className="min-w-0">
-                      <h2 className="truncate text-xl font-bold text-slate-900">
+                      <h2 className="truncate text-xl font-semibold text-slate-900">
                         {user.name || t("admin.fichaUtilizador.noName")}
                       </h2>
                       <p className="truncate text-sm text-slate-500">{user.email || t("admin.common.notAvailable")}</p>
@@ -256,8 +251,8 @@ export default function FichaUtilizador() {
                   </div>
                 </section>
 
-                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <h3 className="mb-4 text-base font-bold text-slate-900">{t("admin.fichaUtilizador.summary")}</h3>
+                <section className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <h3 className="mb-4 text-base font-semibold text-slate-900">{t("admin.fichaUtilizador.summary")}</h3>
                   <dl className="space-y-3 text-sm">
                     <InfoRow label={t("admin.fichaUtilizador.areaLabel")} value={getAreaName(user.area_id)} />
                     <InfoRow label={t("admin.fichaUtilizador.pointsLabel")} value={Number(user.points_total || 0)} />
@@ -267,8 +262,8 @@ export default function FichaUtilizador() {
                 </section>
               </aside>
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="mb-4 text-xl font-bold text-slate-900">{t("admin.fichaUtilizador.editableData")}</h2>
+              <section className="rounded-2xl border border-slate-200 bg-white p-5">
+                <h2 className="mb-4 text-xl font-semibold text-slate-900">{t("admin.fichaUtilizador.editableData")}</h2>
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

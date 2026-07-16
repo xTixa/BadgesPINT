@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
+import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
+import { useClientPagination } from "../../hooks/useClientPagination";
 import { useSortableData } from "../../hooks/useSortableData";
 
 const STATUS_STYLE = {
@@ -51,10 +53,10 @@ function ProcessoDetail({ pedido, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6">
         <div className="mb-4 flex items-start justify-between gap-2">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900">
               {t("serviceLine.historico.processTitle")}
             </h3>
             <p className="text-sm text-slate-500">
@@ -141,7 +143,7 @@ export default function HistoricoSL() {
         const res = await api.get("/api/pedidos");
         if (mounted) setPedidos(res.data || []);
       } catch (err) {
-        console.error("Erro ao carregar histórico SL:", err);
+        console.error("Erro ao carregar histÃƒÂ³rico SL:", err);
         if (mounted) setError(t("serviceLine.historico.errors.loadFailed"));
       } finally {
         if (mounted) setLoading(false);
@@ -166,6 +168,15 @@ export default function HistoricoSL() {
   }, [pedidos, filtro, search]);
 
   const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtered);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: ordenadosPaginados,
+  } = useClientPagination(ordenados, 15, `${filtro}|${search}`);
 
   const totals = useMemo(() => ({
     obtidos: pedidos.filter((p) => p.status === "obtido").length,
@@ -209,7 +220,7 @@ export default function HistoricoSL() {
         <ServiceLineStatCard icon="bi-x-circle-fill" label={t("serviceLine.historico.stats.rejected")} value={totals.rejeitados} />
       </div>
 
-      <section className="mb-4 rounded-3xl bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+      <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-4">
         <div className="flex flex-wrap gap-2">
           {[
             { value: "todos", label: t("serviceLine.historico.filters.all") },
@@ -239,17 +250,18 @@ export default function HistoricoSL() {
       ) : error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : (
-        <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <h5 className="mb-3 text-base font-bold text-slate-900">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+          <h5 className="mb-3 text-base font-semibold text-slate-900">
             <i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>
             {t("serviceLine.historico.processesTitle", { count: filtered.length })}
           </h5>
           {filtered.length === 0 ? (
             <EmptyState message={t("serviceLine.historico.emptyFiltered")} icon="bi-inbox" />
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-100 text-slate-700">
+            <>
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("serviceLine.historico.table.consultant")} sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                     <SortableTh label={t("serviceLine.historico.table.badge")} sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -260,8 +272,8 @@ export default function HistoricoSL() {
                     <th className="px-3 py-2 text-right font-semibold">{t("serviceLine.historico.table.actions")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {ordenados.map((pedido) => (
+                <tbody>
+                  {ordenadosPaginados.map((pedido) => (
                     <tr key={pedido.id} className="hover:bg-slate-50">
                       <td className="px-3 py-2">
                         <div className="font-semibold text-slate-900">{pedido.user?.name}</div>
@@ -308,8 +320,17 @@ export default function HistoricoSL() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+                </table>
+              </div>
+              <AdminPagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                startItem={startItem}
+                endItem={endItem}
+                onPageChange={setPage}
+              />
+            </>
           )}
         </section>
       )}

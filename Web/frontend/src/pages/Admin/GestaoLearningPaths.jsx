@@ -4,7 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SortableTh from "../../components/ui/SortableTh";
+import AdminPagination from "../../components/ui/AdminPagination";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { useSortableData } from "../../hooks/useSortableData";
+import { useClientPagination } from "../../hooks/useClientPagination";
 
 export default function GestaoLearningPaths() {
   const { t } = useTranslation();
@@ -75,6 +78,15 @@ export default function GestaoLearningPaths() {
   }, [lista, busca]);
 
   const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtrados);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: ordenadosPaginados,
+  } = useClientPagination(ordenados, 15, busca);
 
   const remover = async (id) => {
     if (!window.confirm(t("admin.gestaoLearningPaths.confirmDelete"))) return;
@@ -90,26 +102,18 @@ export default function GestaoLearningPaths() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="mb-2 text-sm font-medium text-white/80">{t("admin.common.adminPanel")}</p>
-              <h1 className="text-3xl font-bold text-white">{t("admin.gestaoLearningPaths.title")}</h1>
-              <p className="mt-2 max-w-2xl text-white/85">
-                {t("admin.gestaoLearningPaths.subtitle")}
-              </p>
-            </div>
-
-            <Link
-              to="/admin/learning-paths/novo"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm transition hover:bg-[#EFF4FF]"
-            >
-              <i className="bi bi-plus-circle" /> {t("admin.gestaoLearningPaths.newLearningPath")}
-            </Link>
-          </div>
-        </section>
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle
+          title={t("admin.gestaoLearningPaths.title")}
+          subtitle={t("admin.gestaoLearningPaths.subtitle")}
+        >
+          <Link
+            to="/admin/learning-paths/novo"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#CFE0FB] bg-[#EAF2FF] px-4 py-2 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#DCEBFF]"
+          >
+            <i className="bi bi-plus-circle" /> {t("admin.gestaoLearningPaths.newLearningPath")}
+          </Link>
+        </AdminPageTitle>
 
         {error && (
           <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
@@ -117,7 +121,7 @@ export default function GestaoLearningPaths() {
           </div>
         )}
 
-        <section className="mb-4 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <section className="mb-4 rounded-3xl border border-[#0F62FE]/10 bg-white p-4">
           <div className="max-w-md">
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("admin.common.search")}</label>
             <div className="relative">
@@ -132,20 +136,20 @@ export default function GestaoLearningPaths() {
           </div>
         </section>
 
-        <div className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <div className="admin-table-shell">
           {loading ? (
             <p className="py-10 text-center text-sm text-slate-500">{t("admin.common.loading")}</p>
           ) : (
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <table className="admin-table">
+              <thead>
                 <tr>
                   <SortableTh label={t("admin.gestaoLearningPaths.columns.name")} sortKey="name" accessor={(l) => l.name} sortConfig={sortConfig} onSort={requestSort} />
                   <th className="px-4 py-3">{t("admin.gestaoLearningPaths.columns.description")}</th>
                   <th className="px-4 py-3 text-right">{t("admin.gestaoLearningPaths.columns.actions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {ordenados.map((l) => (
+              <tbody>
+                {ordenadosPaginados.map((l) => (
                   <>
                     <tr key={l.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3 font-semibold text-slate-800">
@@ -159,7 +163,7 @@ export default function GestaoLearningPaths() {
                         </button>
                         {l.name}
                       </td>
-                      <td className="px-4 py-3 text-slate-600">{l.description || "—"}</td>
+                      <td className="px-4 py-3 text-slate-600">{l.description || "Ã¢â‚¬â€"}</td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex flex-wrap justify-end gap-2">
                           <Link
@@ -185,7 +189,7 @@ export default function GestaoLearningPaths() {
                           ) : (
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
-                                <h3 className="text-sm font-bold text-slate-700">
+                                <h3 className="text-sm font-semibold text-slate-700">
                                   {t("admin.gestaoLearningPaths.serviceLines")}
                                 </h3>
                                 <button
@@ -278,6 +282,14 @@ export default function GestaoLearningPaths() {
               </tbody>
             </table>
           )}
+          <AdminPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            startItem={startItem}
+            endItem={endItem}
+            onPageChange={setPage}
+          />
         </div>
       </main>
     </div>

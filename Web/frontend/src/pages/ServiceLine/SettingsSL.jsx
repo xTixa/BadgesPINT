@@ -75,13 +75,13 @@ export default function ServiceLineSettingsPage() {
       subtitle={t("serviceLine.settings.subtitle")}
     >
       <div className="mb-6">
-        <h2 className="mb-3 text-lg font-bold text-slate-900">{t("serviceLine.settings.profile")}</h2>
+        <h2 className="mb-3 text-lg font-semibold text-slate-900">{t("serviceLine.settings.profile")}</h2>
         <ProfileEditor />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.notifications")}</h2>
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">{t("serviceLine.settings.notifications")}</h2>
 
           <div className="space-y-4">
             <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
@@ -128,7 +128,7 @@ export default function ServiceLineSettingsPage() {
         </section>
 
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.reports")}</h2>
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">{t("serviceLine.settings.reports")}</h2>
 
           <div className="space-y-4">
             <label className="block">
@@ -161,7 +161,7 @@ export default function ServiceLineSettingsPage() {
         </section>
 
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.interface")}</h2>
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">{t("serviceLine.settings.interface")}</h2>
 
           <div className="space-y-4">
             <label className="block">
@@ -191,7 +191,7 @@ export default function ServiceLineSettingsPage() {
         </section>
 
         <section className={slPanelClass}>
-          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("serviceLine.settings.metrics")}</h2>
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">{t("serviceLine.settings.metrics")}</h2>
 
           <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
             <span className="text-sm font-medium text-slate-700">

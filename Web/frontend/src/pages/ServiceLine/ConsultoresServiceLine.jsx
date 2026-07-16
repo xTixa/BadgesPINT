@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slActionClass } from "./ServiceLineLayout";
+import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
+import { useClientPagination } from "../../hooks/useClientPagination";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function ConsultoresServiceLine() {
@@ -44,6 +46,15 @@ export default function ConsultoresServiceLine() {
   );
 
   const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtrados);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: ordenadosPaginados,
+  } = useClientPagination(ordenados, 15, search);
 
   const mediaPontos = consultores.length ? Math.round(consultores.reduce((acc, c) => acc + Number(c.points_total || 0), 0) / consultores.length) : 0;
   const mediaBadges = consultores.length ? Math.round(consultores.reduce((acc, c) => acc + Number(c.badges_obtidos || 0), 0) / consultores.length) : 0;
@@ -88,14 +99,14 @@ export default function ConsultoresServiceLine() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:col-span-8">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-8">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <h5 className="m-0 text-base font-bold text-slate-900"><i className="bi bi-trophy mr-2 text-[#0F62FE]"></i>{t("serviceLine.consultores.rankingTitle")}</h5>
+                <h5 className="m-0 text-base font-semibold text-slate-900"><i className="bi bi-trophy mr-2 text-[#0F62FE]"></i>{t("serviceLine.consultores.rankingTitle")}</h5>
                 <input className="ui-input max-w-xs" placeholder={t("serviceLine.consultores.searchPlaceholder")} value={search} onChange={(e) => setSearch(e.target.value)} />
               </div>
               <div className="overflow-x-auto rounded-xl border border-slate-200">
-                <table className="min-w-full divide-y divide-slate-200 text-sm">
-                  <thead className="bg-slate-100 text-slate-700">
+                <table className="admin-table">
+                  <thead>
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">#</th>
                       <SortableTh label={t("serviceLine.consultores.table.consultant")} sortKey="name" accessor={(c) => c.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -106,10 +117,10 @@ export default function ConsultoresServiceLine() {
                       <th className="px-3 py-2 text-right font-semibold">{t("serviceLine.consultores.table.timeline")}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                    {ordenados.map((c) => (
+                  <tbody>
+                    {ordenadosPaginados.map((c) => (
                       <tr key={c.id}>
-                        <td className="px-3 py-2 font-bold text-[#0F62FE]">{c.ranking}</td>
+                        <td className="px-3 py-2 font-semibold text-[#0F62FE]">{c.ranking}</td>
                         <td className="px-3 py-2"><div className="font-semibold text-slate-900">{c.name}</div><div className="text-xs text-slate-500">{c.email}</div></td>
                         <td className="px-3 py-2">{c.area || "-"}</td>
                         <td className="px-3 py-2">{c.points_total || 0}</td>
@@ -121,10 +132,18 @@ export default function ConsultoresServiceLine() {
                   </tbody>
                 </table>
               </div>
+              <AdminPagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                startItem={startItem}
+                endItem={endItem}
+                onPageChange={setPage}
+              />
             </section>
 
-            <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:col-span-4">
-              <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>{t("serviceLine.consultores.timeline")}</h5>
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-4">
+              <h5 className="mb-3 text-base font-semibold text-slate-900"><i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>{t("serviceLine.consultores.timeline")}</h5>
               <div className="mb-2 text-sm font-semibold text-slate-900">{selected?.name || t("serviceLine.consultores.selectConsultant")}</div>
               <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
                 {(selected?.timeline || []).map((item) => (
@@ -132,7 +151,7 @@ export default function ConsultoresServiceLine() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="text-sm font-semibold text-slate-900">{item.badge}</div>
-                        <div className="text-xs text-slate-500">{item.status} · {item.data ? new Date(item.data).toLocaleDateString("pt-PT") : "-"}</div>
+                        <div className="text-xs text-slate-500">{item.status} Ã‚Â· {item.data ? new Date(item.data).toLocaleDateString("pt-PT") : "-"}</div>
                       </div>
                       {item.status === "obtido" && <button className={slActionClass} onClick={() => downloadCertificado(selected.id, item.badge_id)}>PDF</button>}
                     </div>

@@ -1,12 +1,11 @@
-﻿import Sidebar from "../../layout/Sidebar";
+import Sidebar from "../../layout/Sidebar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
-import { consumeGreetingKey } from "../../utils/greeting";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import AdminHero from "../../components/ui/AdminHero";
 import EmptyState from "../../components/ui/EmptyState";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
@@ -16,10 +15,6 @@ export default function DashboardAdmin() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isMobile } = useWindowSize();
-  const adminName = (() => {
-    try { return JSON.parse(localStorage.getItem("user"))?.name?.split(" ")[0] || ""; } catch { return ""; }
-  })();
-  const [greetingKey] = useState(() => consumeGreetingKey());
   const toDateInput = (date) => date.toISOString().slice(0, 10);
   const defaultEnd = new Date();
   const defaultStart = new Date(defaultEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -38,8 +33,12 @@ export default function DashboardAdmin() {
       totalUsers: 0,
       totalBadges: 0,
       totalLearningPaths: 0,
+      totalServiceLines: 0,
+      totalAreas: 0,
       badgesObtidosTotal: 0,
       totalBadgeApplications: 0,
+      pendingBadgeApplications: 0,
+      rejectedBadgeApplications: 0,
       badgeApprovalPercentage: 0,
     },
     badgesByMonth: [],
@@ -68,7 +67,7 @@ export default function DashboardAdmin() {
         setKpis(res.data);
 
       } catch (err) {
-        console.error("Erro a carregar estatísticas do admin:", err);
+        console.error("Erro a carregar estatÃ­sticas do admin:", err);
       } finally {
         setLoading(false);
       }
@@ -84,8 +83,8 @@ export default function DashboardAdmin() {
     datasets: [{
       label: t("admin.dashboard.charts.badgesObtained"),
       data: kpis.badgesByMonth.map((item) => item.count),
-      backgroundColor: "#04C4D9",
-      borderColor: "#16558C",
+      backgroundColor: "#BFDBFE",
+      borderColor: "#93C5FD",
       borderWidth: 1,
     }],
   } : null;
@@ -96,7 +95,7 @@ export default function DashboardAdmin() {
       label: t("admin.dashboard.charts.badgesObtainedPercent"),
       data: kpis.badgesByMonth.map((item) => item.completionRate || 0),
       borderColor: "#16558C",
-      backgroundColor: "rgba(90, 122, 154, 0.12)",
+      backgroundColor: "rgba(207, 224, 251, 0.45)",
       tension: 0.4,
       fill: true,
     }],
@@ -106,7 +105,7 @@ export default function DashboardAdmin() {
     labels: kpis.usersByRole.map((r) => r.role),
     datasets: [{
       data: kpis.usersByRole.map((r) => Number(r.count)),
-      backgroundColor: ['#04C4D9', '#16558C', '#04C4D9', '#16558C', '#04C4D9'],
+      backgroundColor: ['#BFDBFE', '#C7D2FE', '#BAE6FD', '#A7F3D0', '#FDE68A'],
       borderWidth: 0,
     }],
   } : null;
@@ -116,8 +115,8 @@ export default function DashboardAdmin() {
     datasets: [{
       label: t("admin.dashboard.charts.badgesByLevel"),
       data: kpis.badgesByLevel.map((l) => Number(l.count)),
-      backgroundColor: '#04C4D9',
-      borderColor: '#16558C',
+      backgroundColor: '#BFDBFE',
+      borderColor: '#93C5FD',
       borderWidth: 1,
     }],
   } : null;
@@ -127,8 +126,8 @@ export default function DashboardAdmin() {
     datasets: [{
       label: t("admin.dashboard.charts.badgesByLearningPath"),
       data: kpis.badgesByLearningPath.map((lp) => Number(lp.count)),
-      backgroundColor: '#16558C',
-      borderColor: '#16558C',
+      backgroundColor: '#CFE0FB',
+      borderColor: '#93C5FD',
       borderWidth: 1,
     }],
   } : null;
@@ -140,13 +139,13 @@ export default function DashboardAdmin() {
         kpis.summary.badgesObtidosTotal,
         Math.max(0, kpis.summary.totalBadgeApplications - kpis.summary.badgesObtidosTotal),
       ],
-      backgroundColor: ["#10b981", "#e2e8f0"],
+      backgroundColor: ["#A7F3D0", "#E2E8F0"],
       borderWidth: 0,
     }],
   } : null;
 
   const levelOrder = ["Junior", "Intermedio", "Senior", "Especialista", "Lider"];
-  const levelColors = ["#38bdf8", "#04C4D9", "#16558C", "#6366f1", "#7c3aed"];
+  const levelColors = ["#BFDBFE", "#BAE6FD", "#C7D2FE", "#A7F3D0", "#FDE68A"];
   const pathLevelRows = kpis.badgesByLearningPathAndLevel || [];
   const pathLabels = [...new Map(pathLevelRows.map((row) => [row.learning_path_id, row.learning_path_name])).values()];
   const learningPathLevelChartData = pathLabels.length ? {
@@ -208,17 +207,17 @@ export default function DashboardAdmin() {
   };
 
   const shortcuts = [
-    { icon: "bi-inbox", title: t("admin.dashboard.shortcuts.badgeRequests.title"), subtitle: t("admin.dashboard.shortcuts.badgeRequests.subtitle"), color: "#0dcaf0", route: "/admin/gestao-pedidos-badges" },
-    { icon: "bi-hourglass-split", title: t("admin.dashboard.shortcuts.teamSLA.title"), subtitle: t("admin.dashboard.shortcuts.teamSLA.subtitle"), color: "#f0ad4e", route: "/admin/gestao-sla" },
-    { icon: "bi-award-fill", title: t("admin.dashboard.shortcuts.badgeManagement.title"), subtitle: t("admin.dashboard.shortcuts.badgeManagement.subtitle"), color: "#04C4D9", route: "/admin/gestao-badges" },
-    { icon: "bi-diagram-3-fill", title: t("admin.dashboard.shortcuts.learningPaths.title"), subtitle: t("admin.dashboard.shortcuts.learningPaths.subtitle"), color: "#04C4D9", route: "/admin/gestao-learning-paths" },
-    { icon: "bi-people-fill", title: t("admin.dashboard.shortcuts.users.title"), subtitle: t("admin.dashboard.shortcuts.users.subtitle"), color: "#16558C", route: "/admin/gestao-utilizadores" },
-    { icon: "bi-file-earmark-arrow-down", title: t("admin.dashboard.shortcuts.exportData.title"), subtitle: t("admin.dashboard.shortcuts.exportData.subtitle"), color: "#04C4D9", route: "/admin/exportacao" },
-    { icon: "bi-megaphone-fill", title: t("admin.dashboard.shortcuts.announcements.title"), subtitle: t("admin.dashboard.shortcuts.announcements.subtitle"), color: "#16558C", route: "/admin/avisos" },
-    { icon: "bi-gear-fill", title: t("admin.dashboard.shortcuts.settings.title"), subtitle: t("admin.dashboard.shortcuts.settings.subtitle"), color: "#6f42c1", route: "/admin/configuracoes" }
+    { icon: "bi-inbox", title: t("admin.dashboard.shortcuts.badgeRequests.title"), subtitle: t("admin.dashboard.shortcuts.badgeRequests.subtitle"), color: "bg-[#EAF2FF] text-[#0F62FE]", route: "/admin/gestao-pedidos-badges" },
+    { icon: "bi-hourglass-split", title: t("admin.dashboard.shortcuts.teamSLA.title"), subtitle: t("admin.dashboard.shortcuts.teamSLA.subtitle"), color: "bg-amber-100 text-amber-600", route: "/admin/gestao-sla" },
+    { icon: "bi-award-fill", title: t("admin.dashboard.shortcuts.badgeManagement.title"), subtitle: t("admin.dashboard.shortcuts.badgeManagement.subtitle"), color: "bg-sky-100 text-sky-600", route: "/admin/gestao-badges" },
+    { icon: "bi-diagram-3-fill", title: t("admin.dashboard.shortcuts.learningPaths.title"), subtitle: t("admin.dashboard.shortcuts.learningPaths.subtitle"), color: "bg-cyan-100 text-cyan-600", route: "/admin/gestao-learning-paths" },
+    { icon: "bi-people-fill", title: t("admin.dashboard.shortcuts.users.title"), subtitle: t("admin.dashboard.shortcuts.users.subtitle"), color: "bg-indigo-100 text-indigo-600", route: "/admin/gestao-utilizadores" },
+    { icon: "bi-file-earmark-arrow-down", title: t("admin.dashboard.shortcuts.exportData.title"), subtitle: t("admin.dashboard.shortcuts.exportData.subtitle"), color: "bg-emerald-100 text-emerald-600", route: "/admin/exportacao" },
+    { icon: "bi-megaphone-fill", title: t("admin.dashboard.shortcuts.announcements.title"), subtitle: t("admin.dashboard.shortcuts.announcements.subtitle"), color: "bg-rose-100 text-rose-600", route: "/admin/avisos" },
+    { icon: "bi-gear-fill", title: t("admin.dashboard.shortcuts.settings.title"), subtitle: t("admin.dashboard.shortcuts.settings.subtitle"), color: "bg-slate-100 text-slate-600", route: "/admin/configuracoes" }
   ];
 
-  const reportCardClass = "group overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_12px_35px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-[0_18px_45px_rgba(15,98,254,0.12)] sm:p-6";
+  const reportCardClass = "group overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 transition duration-300 hover:-translate-y-0.5 hover:border-[#CFE0FB] sm:p-6";
 
   async function handleGenerateBadge() {
     setBadgeError("");
@@ -304,12 +303,9 @@ export default function DashboardAdmin() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main">
-        <div className="mx-auto max-w-[1400px]">
-          <AdminHero
-            title={`${t(greetingKey)}${adminName ? `, ${adminName}` : ""}`}
-            subtitle={t("admin.dashboard.subtitle")}
-          />
+      <main className="admin-main bg-[#F6F8FA]">
+        <div className="w-full">
+          <AdminPageTitle title="Painel de AdministraÃ§Ã£o" />
 
           {loading ? (
             <div className="py-10">
@@ -317,109 +313,129 @@ export default function DashboardAdmin() {
             </div>
           ) : (
             <>
-              <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
                 {[
                   {
-                    icon: "bi-award-fill",
-                    value: kpis.summary.totalBadges,
-                    label: t("admin.dashboard.stats.activeBadges"),
-                    color: "text-sky-600",
-                    accent: "from-sky-500 to-cyan-400",
-                  },
-                  {
-                    icon: "bi-people-fill",
+                    icon: "bi-people",
                     value: kpis.summary.totalUsers,
-                    label: t("admin.dashboard.stats.registeredUsers"),
-                    color: "text-slate-600",
-                    accent: "from-slate-600 to-slate-400",
+                    label: "Utilizadores",
                   },
                   {
-                    icon: "bi-diagram-3-fill",
+                    icon: "bi-award",
+                    value: kpis.summary.totalBadges,
+                    label: "Badges",
+                  },
+                  {
+                    icon: "bi-signpost-2",
                     value: kpis.summary.totalLearningPaths,
-                    label: t("admin.dashboard.stats.learningPaths"),
-                    color: "text-indigo-500",
-                    accent: "from-indigo-600 to-violet-400",
+                    label: "Learning Paths",
                   },
                   {
-                    icon: "bi-graph-up",
-                    value: kpis.summary.badgesObtidosTotal,
-                    label: t("admin.dashboard.stats.totalBadgesObtained"),
-                    color: "text-emerald-600",
-                    accent: "from-emerald-600 to-teal-400",
+                    icon: "bi-layers",
+                    value: kpis.summary.totalServiceLines || 0,
+                    label: "Service Lines",
                   },
                   {
-                    icon: "bi-percent",
-                    value: `${kpis.summary.badgeApprovalPercentage || 0}%`,
-                    label: "Percentagem de badges aprovados",
-                    color: "text-emerald-600",
-                    accent: "from-amber-500 to-orange-400",
+                    icon: "bi-diagram-3",
+                    value: kpis.summary.totalAreas || 0,
+                    label: "Ãreas",
+                  },
+                  {
+                    icon: "bi-file-earmark-text",
+                    value: kpis.summary.totalBadgeApplications,
+                    label: "Candidaturas",
                   },
                 ].map((card) => (
                   <div
                     key={card.label}
-                    className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 text-left shadow-[0_10px_30px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(15,23,42,0.12)] sm:p-6"
+                    className="rounded-2xl border border-sky-300 bg-[#EAF8FC] p-6 text-left"
                   >
-                    <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${card.accent}`}></div>
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-50 text-xl ${card.color}`}>
-                        <i className={`bi ${card.icon}`}></i>
-                      </span>
-                      <i className="bi bi-arrow-up-right text-sm text-slate-300"></i>
-                    </div>
-                    <h4 className="mb-1 text-3xl font-extrabold tracking-tight text-slate-900">{card.value}</h4>
-                    <p className="m-0 text-sm font-medium text-slate-500">{card.label}</p>
+                    <i className={`bi ${card.icon} mb-3 block text-xl text-[#16558C]`}></i>
+                    <h4 className="m-0 text-4xl font-semibold text-slate-950">{card.value}</h4>
+                    <p className="m-0 mt-1 text-sm font-medium text-slate-500">{card.label}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mb-6">
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-sky-100 bg-gradient-to-r from-slate-900 via-[#16558C] to-[#0F62FE] px-5 py-5 text-white shadow-[0_18px_45px_rgba(15,98,254,0.18)] sm:px-6">
-                  <span className="flex items-center gap-3 font-semibold">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15"><i className="bi bi-calendar3"></i></span>
-                      {t("admin.dashboard.badgesInPeriod", { start: rangeStart, end: rangeEnd })}
-                  </span>
-                  <span className="rounded-2xl bg-white/15 px-4 py-2 text-2xl font-extrabold">{kpis.badgesByRange?.count || 0}</span>
-                  <div className="flex items-center gap-2">
+              <section className="mb-6 rounded-2xl border border-slate-300 bg-white p-5">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <h2 className="m-0 flex items-center gap-2 text-lg font-semibold text-slate-950">
+                    <i className="bi bi-graph-up-arrow text-[#16558C]"></i>
+                    Candidaturas a Badges
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/admin/gestao-pedidos-badges")}
+                    className="text-sm font-semibold text-sky-600 hover:text-[#16558C]"
+                  >
+                    Ver todas
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                  {[
+                    { label: "Total", value: kpis.summary.totalBadgeApplications, tone: "bg-[#EAF8FC]" },
+                    { label: "Pendente", value: kpis.summary.pendingBadgeApplications || 0, tone: "bg-yellow-100/70" },
+                    { label: "Aprovada", value: kpis.summary.badgesObtidosTotal, tone: "bg-emerald-50" },
+                    { label: "Rejeitada", value: kpis.summary.rejectedBadgeApplications || 0, tone: "bg-rose-50" },
+                    { label: "Taxa de aprovaÃ§Ã£o", value: `${kpis.summary.badgeApprovalPercentage || 0}%`, tone: "bg-slate-100" },
+                  ].map((item) => (
+                    <div key={item.label} className={`rounded-xl border border-slate-200 px-4 py-4 text-center ${item.tone}`}>
+                      <div className="text-2xl font-semibold text-slate-950">{item.value}</div>
+                      <div className="mt-1 text-xs font-semibold uppercase text-slate-500">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <div className="mb-6 grid gap-5 xl:grid-cols-[1fr_0.8fr]">
+                <section className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <h2 className="m-0 text-lg font-semibold text-slate-950">{t("admin.dashboard.quickShortcuts")}</h2>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                    {shortcuts.map((shortcut, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => navigate(shortcut.route)}
+                        className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-[#CFE0FB] hover:bg-[#F8FBFF]"
+                      >
+                        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-base ${shortcut.color}`}>
+                          <i className={shortcut.icon}></i>
+                        </span>
+                        <span>
+                          <span className="block text-sm font-semibold text-slate-800">{shortcut.title}</span>
+                          <span className="block text-xs text-slate-500">{shortcut.subtitle}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <h2 className="m-0 mb-4 flex items-center gap-2 text-lg font-semibold text-slate-950">
+                    <i className="bi bi-calendar3 text-[#16558C]"></i>
+                    {t("admin.dashboard.badgesInPeriod", { start: rangeStart, end: rangeEnd })}
+                  </h2>
+                  <div className="mb-4 rounded-xl border border-[#CFE0FB] bg-[#EAF8FC] px-4 py-3 text-3xl font-semibold text-[#16558C]">
+                    {kpis.badgesByRange?.count || 0}
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                     <input
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="rounded-xl border border-white/20 bg-white/95 px-3 py-2 text-sm font-semibold text-slate-700 outline-none"
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                     />
-                    <span className="text-sm text-white/70">{t("admin.dashboard.until")}</span>
+                    <span className="text-center text-sm text-slate-400">{t("admin.dashboard.until")}</span>
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="rounded-xl border border-white/20 bg-white/95 px-3 py-2 text-sm font-semibold text-slate-700 outline-none"
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                     />
                   </div>
-                </div>
-              </div>
-
-              <div className="mb-8">
-                <h5 className="mb-4 text-lg font-semibold text-slate-800">{t("admin.dashboard.quickShortcuts")}</h5>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                  {shortcuts.map((shortcut, index) => (
-                    <div key={index}>
-                      <div
-                        onClick={() => navigate(shortcut.route)}
-                        className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                      >
-                        <div
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg text-white sm:h-12 sm:w-12 sm:text-xl"
-                          style={{ backgroundColor: shortcut.color }}
-                        >
-                          <i className={shortcut.icon}></i>
-                        </div>
-                        <div>
-                          <div className="text-sm font-semibold text-slate-800">{shortcut.title}</div>
-                          <div className="text-xs text-slate-500">{shortcut.subtitle}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                </section>
               </div>
 
               <div className="mb-8">
@@ -506,20 +522,20 @@ export default function DashboardAdmin() {
 
               </div>
 
-              <section className="rounded-[2rem] border border-slate-200/70 bg-gradient-to-br from-slate-50 via-white to-sky-50/70 p-4 shadow-inner sm:p-6">
+              <section className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6">
                 <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
                   <div>
-                    <span className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#0F62FE]/10 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[#0F62FE]">
+                    <span className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#EAF2FF] px-3 py-1 text-xs font-semibold uppercase text-[#0F62FE]">
                       <i className="bi bi-activity"></i> {t("admin.dashboard.reporting.eyebrow")}
                     </span>
-                    <h2 className="m-0 text-2xl font-extrabold tracking-tight text-slate-900">{t("admin.dashboard.reporting.title")}</h2>
+                    <h2 className="m-0 text-2xl font-semibold text-slate-900">{t("admin.dashboard.reporting.title")}</h2>
                     <p className="mt-1 text-sm text-slate-500">{t("admin.dashboard.reporting.subtitle")}</p>
                   </div>
-                  <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 shadow-sm">
+                  <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500">
                     <i className="bi bi-arrow-repeat mr-2 text-emerald-500"></i>{t("admin.dashboard.reporting.dataUpdated")}
                   </span>
                 </div>
-                <div className="mb-6 flex w-full gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/80 p-1.5 shadow-sm sm:w-fit">
+                <div className="mb-6 flex w-full gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-slate-50 p-1.5 sm:w-fit">
                   {[
                     { id: "approval", label: t("admin.dashboard.reporting.tabs.approval"), icon: "bi-percent" },
                     { id: "monthly", label: t("admin.dashboard.reporting.tabs.monthly"), icon: "bi-bar-chart-fill" },
@@ -533,9 +549,9 @@ export default function DashboardAdmin() {
                       key={tab.id}
                       type="button"
                       onClick={() => setReportTab(tab.id)}
-                      className={`inline-flex min-w-max items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
+                      className={`inline-flex min-w-max items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                         reportTab === tab.id
-                          ? "bg-[#0F62FE] text-white shadow-[0_8px_20px_rgba(15,98,254,0.25)]"
+                          ? "bg-[#EAF2FF] text-[#0F62FE]"
                           : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
                       }`}
                       aria-pressed={reportTab === tab.id}
@@ -651,4 +667,5 @@ export default function DashboardAdmin() {
     </div>
   );
 }
+
 

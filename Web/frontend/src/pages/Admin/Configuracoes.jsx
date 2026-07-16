@@ -1,7 +1,8 @@
-﻿import Sidebar from "../../layout/Sidebar";
+import Sidebar from "../../layout/Sidebar";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 
 export default function Configuracoes() {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ export default function Configuracoes() {
           rgpdText: res.data.rgpd_consent_text || "",
         });
       })
-      .catch((err) => console.error("Erro ao carregar definições da plataforma:", err))
+      .catch((err) => console.error("Erro ao carregar definiÃ§Ãµes da plataforma:", err))
       .finally(() => {
         if (active) setLoading(false);
       });
@@ -122,7 +123,7 @@ export default function Configuracoes() {
       });
       setFeedback(t("admin.configuracoes.success.saved"));
     } catch (err) {
-      console.error("Erro ao guardar definições da plataforma:", err);
+      console.error("Erro ao guardar definiÃ§Ãµes da plataforma:", err);
       setFeedback(t("admin.configuracoes.errors.saveFailed"));
     } finally {
       setSaving(false);
@@ -137,25 +138,15 @@ export default function Configuracoes() {
   ];
 
   const inputClass =
-    "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10";
+    "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:border-[#93C5FD] focus:outline-none focus:ring-4 focus:ring-[#CFE0FB]";
 
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main">
-        <div className="mx-auto max-w-7xl">
-          <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-            <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-
-            <div className="relative z-10">
-              <h1 className="text-3xl font-bold">{t("admin.configuracoes.title")}</h1>
-
-              <p className="mt-2 text-white/80">
-                {t("admin.configuracoes.subtitle")}
-              </p>
-            </div>
-          </div>
+      <main className="admin-main bg-[#F6F8FA]">
+        <div className="w-full">
+          <AdminPageTitle title={t("admin.configuracoes.title")} subtitle={t("admin.configuracoes.subtitle")} />
 
           {/* Tabs Navigation */}
           <div className="mb-8 flex flex-wrap gap-3">
@@ -163,11 +154,11 @@ export default function Configuracoes() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 rounded-2xl px-5 py-3 font-medium transition-all duration-300
+                className={`flex items-center gap-2 rounded-2xl border px-5 py-3 font-medium transition-all duration-300
         ${
           activeTab === tab.id
-            ? "bg-[#0F62FE] text-white shadow-lg"
-            : "bg-white text-slate-600 shadow-sm hover:bg-slate-50"
+            ? "border-[#CFE0FB] bg-[#EAF2FF] text-[#0F62FE]"
+            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
         }`}
               >
                 <i className={tab.icon}></i>
@@ -177,12 +168,12 @@ export default function Configuracoes() {
           </div>
 
           {/* Content Area */}
-          <div className="rounded-3xl bg-white p-8 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            {/* Conta e Segurança */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-8">
+            {/* Conta e SeguranÃ§a */}
             {activeTab === "security" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="mb-6 flex items-center gap-3 text-xl font-bold text-slate-800">
+                  <h3 className="mb-6 flex items-center gap-3 text-xl font-semibold text-slate-800">
                     <i className="bi bi-shield-lock text-[#0F62FE]"></i>
                     {t("admin.configuracoes.security.heading")}
                   </h3>
@@ -250,7 +241,7 @@ export default function Configuracoes() {
                     <button
                       onClick={handleChangePassword}
                       disabled={changingPassword}
-                      className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-md transition hover:scale-[1.02] disabled:opacity-60"
+                      className="rounded-2xl border border-[#0F62FE] bg-[#0F62FE] px-6 py-3 font-semibold text-white transition hover:bg-[#16558C] disabled:opacity-60"
                     >
                       <i className="bi bi-check-circle me-2"></i>
                       {changingPassword ? t("admin.configuracoes.security.changing") : t("admin.configuracoes.security.changeButton")}
@@ -259,16 +250,16 @@ export default function Configuracoes() {
                 </div>
               </div>
             )}
-            {/* Gamificação */}
+            {/* GamificaÃ§Ã£o */}
             {activeTab === "gamification" && (
               <div className="space-y-6">
-                <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
+                <h3 className="flex items-center gap-3 text-xl font-semibold text-slate-800">
                   <i className="bi bi-trophy text-[#0F62FE]"></i>
                   {t("admin.configuracoes.gamification.heading")}
                 </h3>
 
                 <div className="grid gap-6 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="rounded-2xl border border-slate-200 bg-[#F8FBFF] p-5">
                     <div className="mb-3 flex items-center gap-2">
                       <i className="bi bi-star-fill text-amber-500"></i>
 
@@ -290,7 +281,7 @@ export default function Configuracoes() {
                     />
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="rounded-2xl border border-slate-200 bg-[#F8FBFF] p-5">
                     <div className="mb-3 flex items-center gap-2">
                       <i className="bi bi-clock-history text-cyan-500"></i>
 
@@ -313,7 +304,7 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <div className="rounded-2xl border border-slate-200 bg-[#F8FBFF] p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
@@ -343,7 +334,7 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-[#0F62FE]/15 bg-[#0F62FE]/5 p-5">
+                <div className="rounded-2xl border border-[#CFE0FB] bg-[#EAF2FF] p-5">
                   <div className="flex items-start gap-3">
                     <i className="bi bi-info-circle-fill mt-1 text-[#0F62FE]"></i>
 
@@ -361,10 +352,10 @@ export default function Configuracoes() {
               </div>
             )}
 
-            {/* Notificações */}
+            {/* NotificaÃ§Ãµes */}
             {activeTab === "notifications" && (
               <div className="space-y-6">
-                <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
+                <h3 className="flex items-center gap-3 text-xl font-semibold text-slate-800">
                   <i className="bi bi-bell text-[#0F62FE]"></i>
                   {t("admin.configuracoes.notifications.heading")}
                 </h3>
@@ -394,13 +385,13 @@ export default function Configuracoes() {
                       key={notif.key}
                       className={`rounded-2xl border p-5 transition-all ${
                         notificationSettings[notif.key]
-                          ? "border-[#0F62FE]/30 bg-[#0F62FE]/5"
-                          : "border-slate-200 bg-slate-50"
+                          ? "border-[#CFE0FB] bg-[#EAF2FF]"
+                          : "border-slate-200 bg-[#F8FBFF]"
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white">
                             <i
                               className={`${notif.icon} text-lg text-[#0F62FE]`}
                             ></i>
@@ -451,7 +442,7 @@ export default function Configuracoes() {
                   ))}
                 </div>
 
-                <div className="rounded-2xl border border-[#0F62FE]/15 bg-[#0F62FE]/5 p-5">
+                <div className="rounded-2xl border border-[#CFE0FB] bg-[#EAF2FF] p-5">
                   <div className="flex items-start gap-3">
                     <i className="bi bi-envelope-paper-fill mt-1 text-[#0F62FE]"></i>
 
@@ -464,7 +455,7 @@ export default function Configuracoes() {
                         {t("admin.configuracoes.notifications.emailTemplatesDesc")}
                       </p>
 
-                      <button className="mt-4 rounded-xl border border-[#0F62FE] px-4 py-2 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE] hover:text-white">
+                      <button className="mt-4 rounded-xl border border-[#CFE0FB] bg-white px-4 py-2 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#F8FBFF]">
                         {t("admin.configuracoes.notifications.configureTemplates")}
                       </button>
                     </div>
@@ -475,7 +466,7 @@ export default function Configuracoes() {
             {/* RGPD */}
             {activeTab === "privacy" && (
               <div className="space-y-6">
-                <h3 className="flex items-center gap-3 text-xl font-bold text-slate-800">
+                <h3 className="flex items-center gap-3 text-xl font-semibold text-slate-800">
                   <i className="bi bi-file-lock text-[#0F62FE]"></i>
                   {t("admin.configuracoes.privacy.heading")}
                 </h3>
@@ -511,11 +502,11 @@ export default function Configuracoes() {
                       })
                     }
                     placeholder={t("admin.configuracoes.privacy.consentTextPlaceholder")}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 focus:border-[#0F62FE] focus:outline-none focus:ring-4 focus:ring-[#0F62FE]/10"
+                    className="w-full rounded-2xl border border-slate-200 bg-white p-4 focus:border-[#93C5FD] focus:outline-none focus:ring-4 focus:ring-[#CFE0FB]"
                   />
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <div className="rounded-2xl border border-slate-200 bg-[#F8FBFF] p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-semibold text-slate-800">
@@ -563,7 +554,7 @@ export default function Configuracoes() {
             <button
               onClick={handleSave}
               disabled={loading || saving}
-              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] disabled:opacity-60"
+              className="rounded-2xl border border-[#0F62FE] bg-[#0F62FE] px-8 py-4 font-semibold text-white transition hover:bg-[#16558C] disabled:opacity-60"
             >
               <i className="bi bi-check-circle me-2"></i>
               {saving ? t("admin.common.saving") : t("admin.configuracoes.saveChanges")}

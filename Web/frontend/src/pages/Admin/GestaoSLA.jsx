@@ -3,7 +3,10 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SortableTh from "../../components/ui/SortableTh";
+import AdminPagination from "../../components/ui/AdminPagination";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { useSortableData } from "../../hooks/useSortableData";
+import { useClientPagination } from "../../hooks/useClientPagination";
 
 export default function GestaoSLA() {
   const { t } = useTranslation();
@@ -58,7 +61,7 @@ export default function GestaoSLA() {
     fetchSLAs();
   }, [fetchSLAs]);
 
-  // ─── Trigger manual de verificação de alertas ────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Trigger manual de verificaÃƒÂ§ÃƒÂ£o de alertas Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   const handleVerificarAlertas = async () => {
     try {
@@ -75,20 +78,20 @@ export default function GestaoSLA() {
       setCheckResult(response.data);
       setLastCheckTime(new Date());
 
-      // Atualizar contagens overdue/pending após a verificação
+      // Atualizar contagens overdue/pending apÃƒÂ³s a verificaÃƒÂ§ÃƒÂ£o
       const refreshed = await api.get("/api/admin/slas", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSlas(refreshed.data);
     } catch (err) {
-      console.error("Erro ao disparar verificação SLA:", err);
+      console.error("Erro ao disparar verificaÃƒÂ§ÃƒÂ£o SLA:", err);
       setCheckError(err.response?.data?.message || t("admin.gestaoSLA.errors.checkFailed"));
     } finally {
       setCheckLoading(false);
     }
   };
 
-  // ─── CRUD ────────────────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ CRUD Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   const handleNovoSLA = () => {
     setEditingSLA(null);
@@ -159,7 +162,7 @@ export default function GestaoSLA() {
     }
   };
 
-  // ─── Helpers de UI ───────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Helpers de UI Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   const slasFiltrados = slas.filter(s => {
     if (filtro === "overdue") return s.overdue > 0;
@@ -168,40 +171,39 @@ export default function GestaoSLA() {
   });
 
   const { sortedItems: slasOrdenados, sortConfig, requestSort } = useSortableData(slasFiltrados);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: slasPaginados,
+  } = useClientPagination(slasOrdenados, 15, filtro);
 
   const teamTypeBadgeClass = (teamType) =>
     teamType === "talent_manager"
       ? "bg-cyan-100 text-cyan-700"
       : "bg-slate-100 text-slate-700";
 
-  // ─── Render ──────────────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Render Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
+      <main className="admin-main bg-[#F6F8FA]">
 
-        {/* Cabeçalho */}
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-          <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="mb-2 text-sm font-medium text-white/80">{t("admin.gestaoSLA.eyebrow")}</p>
-              <h1 className="text-3xl font-bold text-white">{t("admin.gestaoSLA.title")}</h1>
-              <p className="mt-2 max-w-2xl text-white/85">
-                {t("admin.gestaoSLA.subtitle")}
-              </p>
-            </div>
-            <button
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm transition hover:bg-[#EFF4FF]"
-              onClick={handleNovoSLA}
-            >
-              <i className="bi bi-plus-circle"></i>
-              {t("admin.gestaoSLA.newSLA")}
-            </button>
-          </div>
-        </section>
+        {/* CabeÃƒÂ§alho */}
+        <AdminPageTitle title={t("admin.gestaoSLA.title")} subtitle={t("admin.gestaoSLA.subtitle")}>
+          <button
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#CFE0FB] bg-[#EAF2FF] px-4 py-2 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#DCEBFF]"
+            onClick={handleNovoSLA}
+          >
+            <i className="bi bi-plus-circle"></i>
+            {t("admin.gestaoSLA.newSLA")}
+          </button>
+        </AdminPageTitle>
 
         {error && (
           <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
@@ -209,11 +211,11 @@ export default function GestaoSLA() {
           </div>
         )}
 
-        {/* Painel de disparo automático */}
-        <section className="mb-6 overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        {/* Painel de disparo automÃƒÂ¡tico */}
+        <section className="mb-6 overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="flex items-center gap-2 text-sm font-bold text-slate-700">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                 <i className="bi bi-lightning-charge-fill text-[#0F62FE]"></i>
                 {t("admin.gestaoSLA.autoCheck.title")}
               </h2>
@@ -233,7 +235,7 @@ export default function GestaoSLA() {
               type="button"
               onClick={handleVerificarAlertas}
               disabled={checkLoading}
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#0F62FE] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#16558C] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#0F62FE] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#16558C] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {checkLoading ? (
                 <>
@@ -259,15 +261,15 @@ export default function GestaoSLA() {
           {checkResult && (
             <div className="mt-4 grid grid-cols-1 gap-3 xs:grid-cols-3">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
-                <p className="text-xl font-bold text-[#0F62FE]">{checkResult.slas_checked}</p>
+                <p className="text-xl font-semibold text-[#0F62FE]">{checkResult.slas_checked}</p>
                 <p className="mt-0.5 text-xs text-slate-500">{t("admin.gestaoSLA.autoCheck.slasChecked")}</p>
               </div>
               <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-center">
-                <p className="text-xl font-bold text-rose-600">{checkResult.overdue_pedidos_checked}</p>
+                <p className="text-xl font-semibold text-rose-600">{checkResult.overdue_pedidos_checked}</p>
                 <p className="mt-0.5 text-xs text-slate-500">{t("admin.gestaoSLA.autoCheck.overduePedidosChecked")}</p>
               </div>
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-center">
-                <p className="text-xl font-bold text-amber-600">{checkResult.alerts_created_or_existing}</p>
+                <p className="text-xl font-semibold text-amber-600">{checkResult.alerts_created_or_existing}</p>
                 <p className="mt-0.5 text-xs text-slate-500">{t("admin.gestaoSLA.autoCheck.newAlerts")}</p>
               </div>
             </div>
@@ -275,7 +277,7 @@ export default function GestaoSLA() {
         </section>
 
         {/* Filtros */}
-        <section className="mb-6 flex flex-wrap gap-2 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <section className="mb-6 flex flex-wrap gap-2 rounded-3xl border border-[#0F62FE]/10 bg-white p-4">
           {[
             { value: "all",     label: t("admin.gestaoSLA.filters.all", { count: slas.length }),                                 tone: "text-slate-700" },
             { value: "overdue", label: t("admin.gestaoSLA.filters.overdue", { count: slas.filter(s => s.overdue > 0).length }), tone: "text-rose-700"  },
@@ -297,7 +299,7 @@ export default function GestaoSLA() {
         </section>
 
         {/* Tabela de SLAs */}
-        <div className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <div className="admin-table-shell">
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-500">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0F62FE]/20 border-t-[#0F62FE]"></div>
@@ -305,8 +307,8 @@ export default function GestaoSLA() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("admin.gestaoSLA.table.team")} sortKey="teamName" accessor={(s) => s.teamName} sortConfig={sortConfig} onSort={requestSort} />
                     <SortableTh label={t("admin.gestaoSLA.table.type")} sortKey="teamType" accessor={(s) => s.teamType} sortConfig={sortConfig} onSort={requestSort} />
@@ -318,8 +320,8 @@ export default function GestaoSLA() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {slasOrdenados.map((sla) => (
+                <tbody>
+                  {slasPaginados.map((sla) => (
                     <tr key={sla.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <p className="font-semibold text-slate-800">{sla.teamName}</p>
@@ -343,7 +345,7 @@ export default function GestaoSLA() {
                         <span className="font-semibold text-cyan-600">{sla.pending}</span>
                       </td>
 
-                      {/* Canais de notificação ativos */}
+                      {/* Canais de notificaÃƒÂ§ÃƒÂ£o ativos */}
                       <td className="px-4 py-3">
                         {sla.notification_enabled ? (
                           <div className="flex flex-wrap gap-1">
@@ -401,30 +403,38 @@ export default function GestaoSLA() {
               </table>
             </div>
           )}
+          <AdminPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            startItem={startItem}
+            endItem={endItem}
+            onPageChange={setPage}
+          />
         </div>
 
-        {/* Sumário de estatísticas */}
+        {/* SumÃƒÂ¡rio de estatÃƒÂ­sticas */}
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 shadow-sm">
-            <h6 className="mb-2 flex items-center gap-2 text-sm font-bold text-rose-700">
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+            <h6 className="mb-2 flex items-center gap-2 text-sm font-semibold text-rose-700">
               <i className="bi bi-exclamation-triangle-fill"></i>
               {t("admin.gestaoSLA.summary.overdueTitle")}
             </h6>
             <p className="text-sm text-slate-600">
-              <strong className="text-2xl font-bold text-rose-700">
+              <strong className="text-2xl font-semibold text-rose-700">
                 {slas.reduce((sum, s) => sum + (s.overdue || 0), 0)}
               </strong>
               <span className="ml-2">{t("admin.gestaoSLA.summary.overdueText")}</span>
             </p>
           </div>
 
-          <div className="rounded-2xl border border-[#0F62FE]/20 bg-[#0F62FE]/10 p-4 shadow-sm">
-            <h6 className="mb-2 flex items-center gap-2 text-sm font-bold text-[#0F62FE]">
+          <div className="rounded-2xl border border-[#0F62FE]/20 bg-[#0F62FE]/10 p-4">
+            <h6 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#0F62FE]">
               <i className="bi bi-hourglass-bottom"></i>
               {t("admin.gestaoSLA.summary.pendingTitle")}
             </h6>
             <p className="text-sm text-slate-600">
-              <strong className="text-2xl font-bold text-[#0F62FE]">
+              <strong className="text-2xl font-semibold text-[#0F62FE]">
                 {slas.reduce((sum, s) => sum + (s.pending || 0), 0)}
               </strong>
               <span className="ml-2">{t("admin.gestaoSLA.summary.pendingText")}</span>
@@ -433,12 +443,12 @@ export default function GestaoSLA() {
         </div>
       </main>
 
-      {/* Modal de criação / edição */}
+      {/* Modal de criaÃƒÂ§ÃƒÂ£o / ediÃƒÂ§ÃƒÂ£o */}
       {showModal && (
         <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4">
-          <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
+          <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white">
             <div className="flex items-center justify-between border-b border-[#0F62FE]/15 bg-[#EFF4FF] px-5 py-4">
-              <h5 className="text-lg font-bold text-[#0F62FE]">
+              <h5 className="text-lg font-semibold text-[#0F62FE]">
                 {editingSLA ? t("admin.gestaoSLA.modal.editTitle") : t("admin.gestaoSLA.modal.newTitle")}
               </h5>
               <button

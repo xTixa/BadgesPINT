@@ -107,7 +107,7 @@ export default function DashboardServiceLine() {
 
   if (loading) {
     return (
-      <ServiceLineLayout title={t("serviceLine.dashboard.title")} subtitle={t("serviceLine.dashboard.loadingSubtitle")}>
+      <ServiceLineLayout title={t("serviceLine.dashboard.title")} subtitle={t("serviceLine.dashboard.loadingSubtitle")} showHero>
         <EmptyState message={t("serviceLine.dashboard.loadingDashboard")} icon="bi-arrow-repeat" />
       </ServiceLineLayout>
     );
@@ -115,7 +115,7 @@ export default function DashboardServiceLine() {
 
   if (!sl) {
     return (
-      <ServiceLineLayout title={t("serviceLine.dashboard.title")} subtitle={t("serviceLine.dashboard.errorSubtitle")}>
+      <ServiceLineLayout title={t("serviceLine.dashboard.title")} subtitle={t("serviceLine.dashboard.errorSubtitle")} showHero>
         <EmptyState message={t("serviceLine.dashboard.errorMessage")} icon="bi-exclamation-triangle" />
       </ServiceLineLayout>
     );
@@ -126,6 +126,7 @@ export default function DashboardServiceLine() {
       title={`${t(greetingKey)}, ${sl.name?.split(" ")[0] || ""}`}
       subtitle={t("serviceLine.dashboard.subtitle")}
       userName={sl.name || "Service Line"}
+      showHero
       heroStats={[
         { label: t("serviceLine.dashboard.stats.consultants"), value: dados.totalConsultores },
         { label: t("serviceLine.dashboard.stats.awaitingSl"), value: dados.badgesPendentes },
@@ -140,7 +141,7 @@ export default function DashboardServiceLine() {
       </div>
 
       <section className={`${slPanelClass} mb-6`}>
-        <h5 className="mb-3 text-base font-bold text-slate-900">
+        <h5 className="mb-3 text-base font-semibold text-slate-900">
           <i className="bi bi-graph-up-arrow mr-2 text-[#0F62FE]"></i>
           {t("serviceLine.dashboard.globalProgress")}
         </h5>
@@ -157,7 +158,7 @@ export default function DashboardServiceLine() {
 
       <section className={slPanelClass}>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h5 className="m-0 text-base font-bold text-slate-900">
+          <h5 className="m-0 text-base font-semibold text-slate-900">
             <i className="bi bi-bar-chart-fill mr-2 text-[#0F62FE]"></i>
             {t("serviceLine.dashboard.badgeKpis")}
           </h5>
@@ -186,14 +187,14 @@ export default function DashboardServiceLine() {
           ].map((item) => (
             <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
               <div className="text-xs text-slate-500">{item.label}</div>
-              <div className="text-3xl font-bold text-slate-900">{item.value}</div>
+              <div className="text-3xl font-semibold text-slate-900">{item.value}</div>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h6 className="mb-3 text-base font-bold text-slate-800">
+          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
+            <h6 className="mb-3 text-base font-semibold text-slate-800">
               <i className="bi bi-calendar3 mr-2 text-[#0F62FE]"></i>
               {t("serviceLine.dashboard.charts.badgesByMonthTitle")}
             </h6>
@@ -208,8 +209,8 @@ export default function DashboardServiceLine() {
             </div>
           </div>
 
-          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h6 className="mb-3 text-base font-bold text-slate-800">
+          <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
+            <h6 className="mb-3 text-base font-semibold text-slate-800">
               <i className="bi bi-layers mr-2 text-[#0F62FE]"></i>
               {t("serviceLine.dashboard.charts.badgesByLevelTitle")}
             </h6>

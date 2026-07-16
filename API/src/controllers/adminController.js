@@ -64,8 +64,18 @@ export async function getAdminKpis(req, res) {
     const totalUsers = await User.count();
     const totalBadges = await Badge.count();
     const totalLearningPaths = await LearningPath.count();
+    const [{ count: totalServiceLines = 0 } = {}] = await database.query(
+      "SELECT COUNT(*)::int AS count FROM service_lines",
+      { type: QueryTypes.SELECT }
+    );
+    const [{ count: totalAreas = 0 } = {}] = await database.query(
+      "SELECT COUNT(*)::int AS count FROM areas",
+      { type: QueryTypes.SELECT }
+    );
     const badgesObtidosTotal = await ConsultorBadge.count({ where: { status: "obtido" } });
     const totalBadgeApplications = await ConsultorBadge.count();
+    const pendingBadgeApplications = await ConsultorBadge.count({ where: { status: "pendente" } });
+    const rejectedBadgeApplications = await ConsultorBadge.count({ where: { status: "rejeitado" } });
     const badgeApprovalPercentage = totalBadgeApplications > 0
       ? Math.round((badgesObtidosTotal / totalBadgeApplications) * 100)
       : 0;
@@ -146,8 +156,12 @@ export async function getAdminKpis(req, res) {
         totalUsers,
         totalBadges,
         totalLearningPaths,
+        totalServiceLines,
+        totalAreas,
         badgesObtidosTotal,
         totalBadgeApplications,
+        pendingBadgeApplications,
+        rejectedBadgeApplications,
         badgeApprovalPercentage,
       },
       usersByRole,

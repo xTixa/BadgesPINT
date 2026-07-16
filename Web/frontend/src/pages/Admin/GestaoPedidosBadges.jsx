@@ -4,7 +4,10 @@ import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import EmptyState from "../../components/ui/EmptyState";
 import SortableTh from "../../components/ui/SortableTh";
+import AdminPagination from "../../components/ui/AdminPagination";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { useSortableData } from "../../hooks/useSortableData";
+import { useClientPagination } from "../../hooks/useClientPagination";
 
 const roleLabelKeys = {
   admin: "admin.gestaoPedidosBadges.roles.admin",
@@ -25,6 +28,16 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
   return date.toLocaleDateString("pt-PT");
+}
+
+function getInitials(name = "") {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() || "U";
 }
 
 function statusMeta(status, t) {
@@ -172,6 +185,15 @@ export default function GestaoPedidosBadges() {
   );
 
   const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidosFiltrados);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: pedidosPaginados,
+  } = useClientPagination(pedidosOrdenados, 15, filtro);
 
   const filterOptions = [
     { value: "all", label: t("admin.gestaoPedidosBadges.filters.all"), count: stats.total, icon: "bi-inboxes" },
@@ -356,10 +378,10 @@ export default function GestaoPedidosBadges() {
   };
 
   const actionButtonClass =
-    "inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition";
-  const approveButtonClass = `${actionButtonClass} bg-emerald-600 text-white hover:bg-emerald-700`;
-  const rejectButtonClass = `${actionButtonClass} bg-rose-600 text-white hover:bg-rose-700`;
-  const returnButtonClass = `${actionButtonClass} bg-amber-500 text-white hover:bg-amber-600`;
+    "inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition";
+  const approveButtonClass = `${actionButtonClass} border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100`;
+  const rejectButtonClass = `${actionButtonClass} border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100`;
+  const returnButtonClass = `${actionButtonClass} border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100`;
 
   function renderActions(pedido) {
     if (currentRole === "admin" && pedido.status === "pending") {
@@ -430,7 +452,7 @@ export default function GestaoPedidosBadges() {
 
     if (pedido.status === "approved") {
       return (
-        <span className="inline-flex items-center gap-1 text-sm font-bold text-emerald-700">
+        <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700">
           <i className="bi bi-check2-all"></i> {t("admin.gestaoPedidosBadges.actions.processed")}
         </span>
       );
@@ -438,70 +460,41 @@ export default function GestaoPedidosBadges() {
 
     if (pedido.status === "rejected") {
       return (
-        <span className="inline-flex items-center gap-1 text-sm font-bold text-rose-700">
+        <span className="inline-flex items-center gap-1 text-sm font-medium text-rose-700">
           <i className="bi bi-x-lg"></i> {t("admin.gestaoPedidosBadges.status.rejected")}
         </span>
       );
     }
 
-    return <span className="text-sm font-semibold text-slate-400">{t("admin.gestaoPedidosBadges.actions.none")}</span>;
+    return <span className="text-sm font-medium text-slate-400">{t("admin.gestaoPedidosBadges.actions.none")}</span>;
   }
 
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: currentRole, name: roleName }} />
 
-      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="mb-2 text-sm font-medium text-white/80">
-                {t("admin.common.adminPanel")}
-              </p>
-              <h1 className="text-3xl font-bold text-white">
-                {t("admin.gestaoPedidosBadges.title")}
-              </h1>
-              <p className="mt-2 max-w-2xl text-white/85">
-                {t("admin.gestaoPedidosBadges.subtitle")}
-              </p>
-            </div>
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle
+          title={t("admin.gestaoPedidosBadges.title")}
+          subtitle={t("admin.gestaoPedidosBadges.subtitle")}
+        />
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-              {[
-                { label: t("admin.gestaoPedidosBadges.filters.all"), value: stats.total, icon: "bi-inboxes" },
-                {
-                  label: t("admin.gestaoPedidosBadges.filters.pending"),
-                  value: stats.pending,
-                  icon: "bi-hourglass-split",
-                },
-                {
-                  label: t("admin.gestaoPedidosBadges.filters.approved"),
-                  value: stats.approved,
-                  icon: "bi-check-circle",
-                },
-                {
-                  label: t("admin.gestaoPedidosBadges.filters.rejected"),
-                  value: stats.rejected,
-                  icon: "bi-x-circle",
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="min-w-[110px] rounded-2xl bg-white/10 p-4 backdrop-blur-sm"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <div className="text-2xl font-bold">{item.value}</div>
-                      <div className="text-xs text-white/80">{item.label}</div>
-                    </div>
-                    <i className={`bi ${item.icon} text-xl text-white/85`}></i>
-                  </div>
+        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {filterOptions.map((item) => (
+            <div
+              key={item.value}
+              className="rounded-2xl border border-[#CFE0FB] bg-white p-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-2xl font-semibold text-[#0F62FE]">{item.count}</div>
+                  <div className="text-xs text-slate-500">{item.label}</div>
                 </div>
-              ))}
+                <i className={`bi ${item.icon} text-xl text-[#0F62FE]`}></i>
+              </div>
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
 
         {error && (
           <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
@@ -510,17 +503,17 @@ export default function GestaoPedidosBadges() {
           </div>
         )}
 
-        <section className="mb-4 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <section className="mb-4 rounded-3xl border border-slate-200 bg-white p-4">
           <div className="flex flex-wrap items-center gap-2">
             {filterOptions.map((option) => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => setFiltro(option.value)}
-                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition ${
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                   filtro === option.value
-                    ? "border-[#0F62FE] bg-[#0F62FE] text-white shadow-sm"
-                    : "border-[#0F62FE]/15 bg-white text-slate-600 hover:bg-[#0F62FE]/10 hover:text-[#0F62FE]"
+                    ? "border-[#CFE0FB] bg-[#EAF2FF] text-[#0F62FE]"
+                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
                 <i className={`bi ${option.icon}`}></i>
@@ -528,7 +521,7 @@ export default function GestaoPedidosBadges() {
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs ${
                     filtro === option.value
-                      ? "bg-white/20 text-white"
+                      ? "bg-white text-[#0F62FE]"
                       : "bg-slate-100 text-slate-600"
                   }`}
                 >
@@ -539,7 +532,13 @@ export default function GestaoPedidosBadges() {
           </div>
         </section>
 
-        <section className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        {!loading && pedidosFiltrados.length > 0 && (
+          <p className="mb-3 text-sm text-slate-500">
+            {pedidosFiltrados.length} pedidos registados
+          </p>
+        )}
+
+        <section className="admin-table-shell">
           {loading ? (
             <div className="flex flex-col items-center justify-center px-6 py-16 text-slate-500">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#0F62FE]"></div>
@@ -553,8 +552,8 @@ export default function GestaoPedidosBadges() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-100">
-                <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">
+              <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("admin.gestaoPedidosBadges.columns.user")} sortKey="userName" accessor={(p) => p.userName} sortConfig={sortConfig} onSort={requestSort} />
                     <SortableTh label={t("admin.gestaoPedidosBadges.columns.badge")} sortKey="badgeName" accessor={(p) => p.badgeName} sortConfig={sortConfig} onSort={requestSort} />
@@ -562,58 +561,66 @@ export default function GestaoPedidosBadges() {
                     <SortableTh label={t("admin.gestaoPedidosBadges.columns.status")} sortKey="status" accessor={(p) => p.status} sortConfig={sortConfig} onSort={requestSort} />
                     <SortableTh label={t("admin.gestaoPedidosBadges.columns.workflow")} sortKey="workflowStatus" accessor={(p) => p.workflowStatus} sortConfig={sortConfig} onSort={requestSort} />
                     <SortableTh label={t("admin.gestaoPedidosBadges.columns.date")} sortKey="dataPedidoRaw" accessor={(p) => (p.dataPedidoRaw ? new Date(p.dataPedidoRaw).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
-                    <th className="px-4 py-3 text-left">{t("admin.common.actions")}</th>
+                    <th className="text-left">{t("admin.common.actions")}</th>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {pedidosOrdenados.map((pedido) => {
+                <tbody>
+                  {pedidosPaginados.map((pedido) => {
                     const status = statusMeta(pedido.status, t);
                     const workflow = workflowMeta(pedido.workflowStatus, t);
 
                     return (
-                      <tr key={pedido.id} className="transition hover:bg-slate-50">
-                        <td className="px-4 py-4">
-                          <div className="font-bold text-slate-900">
-                            {pedido.userName}
-                          </div>
-                          <div className="text-xs text-slate-500">
-                            {pedido.userEmail || t("admin.gestaoPedidosBadges.noEmail")}
+                      <tr key={pedido.id}>
+                        <td>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0EA5D8] text-xs font-medium text-white">
+                              {getInitials(pedido.userName)}
+                            </div>
+                            <div>
+                              <div className="font-medium text-slate-950">
+                                {pedido.userName}
+                              </div>
+                              <div className="text-xs text-slate-500">
+                                {pedido.userEmail || t("admin.gestaoPedidosBadges.noEmail")}
+                              </div>
+                            </div>
                           </div>
                         </td>
-                        <td className="px-4 py-4">
-                          <div className="font-semibold text-slate-900">
+                        <td>
+                          <div className="font-medium text-slate-950">
                             {pedido.badgeName}
                           </div>
-                          <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#0F62FE]/10 px-2 py-0.5 text-xs font-bold text-[#0F62FE]">
+                          <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#EAF2FF] px-2 py-0.5 text-xs font-medium text-[#0F62FE]">
                             <i className="bi bi-coin"></i>
                             {pedido.badgePoints} {t("admin.gestaoBadges.pts")}
                           </div>
                         </td>
-                        <td className="px-4 py-4">
-                          <span className="inline-flex rounded-full bg-sky-50 px-2.5 py-1 text-xs font-bold text-sky-700 ring-1 ring-inset ring-sky-200">
+                        <td>
+                          <span className="inline-flex rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200">
                             {pedido.badgeLevel || t("admin.common.notAvailable")}
                           </span>
                         </td>
-                        <td className="px-4 py-4">
+                        <td>
                           <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset ${status.className}`}
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${status.className}`}
                           >
-                            <i className={`bi ${status.icon}`}></i>
+                            <span className="h-1.5 w-1.5 rounded-full bg-current"></span>
                             {status.label}
                           </span>
                         </td>
-                        <td className="px-4 py-4">
+                        <td>
                           <span
-                            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset ${workflow.className}`}
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${workflow.className}`}
                           >
+                            <span className="h-1.5 w-1.5 rounded-full bg-current"></span>
                             {workflow.label}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-sm text-slate-600">
+                        <td className="text-sm text-slate-600">
                           {pedido.dataPedido}
                         </td>
-                        <td className="px-4 py-4">
+                        <td>
                           <div className="flex flex-wrap items-center gap-2">
                             {renderActions(pedido)}
                           </div>
@@ -625,6 +632,14 @@ export default function GestaoPedidosBadges() {
               </table>
             </div>
           )}
+          <AdminPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            startItem={startItem}
+            endItem={endItem}
+            onPageChange={setPage}
+          />
         </section>
       </main>
     </div>

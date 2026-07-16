@@ -92,19 +92,18 @@ export default function HistoricoBadges() {
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
 
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+        <section className="relative mb-8 overflow-hidden rounded-3xl border border-[#CFE0FB] bg-[#EAF2FF] p-8 text-slate-900">
           <div className="relative z-10">
-            <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
-            <h1 className="text-3xl font-bold">{t("consultor.historicoBadges.title")}</h1>
-            <p className="mt-2 text-white/80">
+            <p className="mb-2 text-sm font-medium text-slate-500">{t("consultor.common.consultantArea")}</p>
+            <h1 className="text-3xl font-bold text-slate-900">{t("consultor.historicoBadges.title")}</h1>
+            <p className="mt-2 text-slate-600">
               {t("consultor.historicoBadges.subtitle")}
             </p>
           </div>
         </section>
 
         <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
               <i className="bi bi-patch-check-fill text-xl text-emerald-600"></i>
             </div>
@@ -112,7 +111,7 @@ export default function HistoricoBadges() {
             <p className="text-slate-500">{t("consultor.historicoBadges.badgesObtained")}</p>
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100">
               <i className="bi bi-lightning-charge-fill text-xl text-amber-600"></i>
             </div>
@@ -120,7 +119,7 @@ export default function HistoricoBadges() {
             <p className="text-slate-500">{t("consultor.historicoBadges.inProgressOrValidation")}</p>
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100">
               <i className="bi bi-x-circle-fill text-xl text-rose-600"></i>
             </div>
@@ -136,7 +135,7 @@ export default function HistoricoBadges() {
             </div>
           </div>
         ) : badges.length === 0 ? (
-          <div className="rounded-3xl bg-white p-8 text-center shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-8 text-center shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <i className="bi bi-award text-4xl text-slate-300"></i>
             <p className="mt-3 text-slate-500">{t("consultor.historicoBadges.emptyText")}</p>
           </div>
@@ -151,7 +150,7 @@ export default function HistoricoBadges() {
               return (
                 <div
                   key={badge.id}
-                  className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]"
+                  className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex gap-4">

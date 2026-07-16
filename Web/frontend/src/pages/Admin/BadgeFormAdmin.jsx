@@ -1,8 +1,9 @@
-﻿import Sidebar from "../../layout/Sidebar";
+import Sidebar from "../../layout/Sidebar";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 
 function toDatetimeLocalValue(isoString) {
   if (!isoString) return "";
@@ -14,12 +15,12 @@ function toDatetimeLocalValue(isoString) {
 
 export default function BadgeFormAdmin() {
   const { t } = useTranslation();
-  const { id } = useParams(); // "novo" ou um id numérico
+  const { id } = useParams(); // "novo" ou um id numÃ©rico
   const navigate = useNavigate();
 
   const isNovo = id === "novo";
 
-  // Estado do formulário
+  // Estado do formulÃ¡rio
   const [form, setForm] = useState({
     description: "",
     area_id: "",
@@ -41,7 +42,7 @@ export default function BadgeFormAdmin() {
   const [imageUploading, setImageUploading] = useState(false);
   const [imageError, setImageError] = useState("");
 
-  // Simulação de carga de dados quando é edição
+  // SimulaÃ§Ã£o de carga de dados quando Ã© ediÃ§Ã£o
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -50,7 +51,7 @@ export default function BadgeFormAdmin() {
         const res = await api.get("/api/areas");
         setAreas(res.data || []);
       } catch (err) {
-        console.error("Erro ao carregar áreas:", err);
+        console.error("Erro ao carregar Ã¡reas:", err);
       }
     };
 
@@ -218,13 +219,10 @@ export default function BadgeFormAdmin() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main">
-        <h3 className="mb-4 text-xl font-bold text-slate-900 sm:text-2xl">
-          <i className="bi bi-award-fill mr-2 text-sky-600" />
-          {isNovo ? t("admin.badgeForm.createTitle") : t("admin.badgeForm.editTitle")}
-        </h3>
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle title={isNovo ? t("admin.badgeForm.createTitle") : t("admin.badgeForm.editTitle")} />
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4">
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.badgeNameLabel")}</label>

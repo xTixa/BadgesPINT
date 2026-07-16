@@ -4,9 +4,11 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import Sidebar from "../../layout/Sidebar";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import AdminHero from "../../components/ui/AdminHero";
 import SortableTh from "../../components/ui/SortableTh";
+import AdminPagination from "../../components/ui/AdminPagination";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { useSortableData } from "../../hooks/useSortableData";
+import { useClientPagination } from "../../hooks/useClientPagination";
 
 const roleKeys = {
   admin: "admin.fichaUtilizador.roles.admin",
@@ -317,16 +319,22 @@ export default function GestaoUtilizadores() {
   }
 
   const { sortedItems: usersOrdenados, sortConfig, requestSort } = useSortableData(filteredUsers);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: usersPaginados,
+  } = useClientPagination(usersOrdenados, 15, `${query}|${roleFilter}`);
 
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
-        <AdminHero
-          title={t("admin.gestaoUtilizadores.title")}
-          subtitle={t("admin.gestaoUtilizadores.subtitle")}
-        />
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle title={t("admin.gestaoUtilizadores.title")} subtitle={t("admin.gestaoUtilizadores.subtitle")} />
 
         <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {[
@@ -336,13 +344,13 @@ export default function GestaoUtilizadores() {
             { label: t("admin.gestaoUtilizadores.stats.serviceLineLeaders"), value: stats.serviceLineLeaders, icon: "bi-person-workspace", tone: "text-indigo-600" },
             { label: t("admin.gestaoUtilizadores.stats.admins"), value: stats.admins, icon: "bi-shield-lock", tone: "text-rose-600" },
           ].map((item) => (
-            <div key={item.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div key={item.label} className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {item.label}
                   </div>
-                  <div className={`mt-1 text-3xl font-bold ${item.tone}`}>
+                  <div className={`mt-1 text-3xl font-semibold ${item.tone}`}>
                     {item.value}
                   </div>
                 </div>
@@ -353,7 +361,7 @@ export default function GestaoUtilizadores() {
         </div>
 
         <div className="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-12">
               <div className="lg:col-span-6">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
@@ -404,8 +412,8 @@ export default function GestaoUtilizadores() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <h2 className="mb-3 text-base font-bold text-slate-900">
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+            <h2 className="mb-3 text-base font-semibold text-slate-900">
               {t("admin.gestaoUtilizadores.newUser")}
             </h2>
             <form className="space-y-3" onSubmit={handleCreateUser}>
@@ -512,10 +520,10 @@ export default function GestaoUtilizadores() {
           </div>
         )}
 
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <section className="admin-table-shell">
           <div className="flex flex-col gap-2 border-b border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 className="text-base font-semibold text-slate-900">
                 {t("admin.gestaoUtilizadores.usersTitle")}
               </h2>
               <p className="text-sm text-slate-500">
@@ -546,14 +554,14 @@ export default function GestaoUtilizadores() {
             </div>
           ) : isMobile ? (
             <div className="space-y-3 p-4">
-              {filteredUsers.map((user) => (
+              {usersPaginados.map((user) => (
                 <article key={user.id} className="rounded-xl border border-slate-200 p-3">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-700">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
                       {getInitials(user.name)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-sm font-bold text-slate-900">
+                      <h3 className="truncate text-sm font-semibold text-slate-900">
                         {user.name}
                       </h3>
                       <p className="truncate text-xs text-slate-500">{user.email}</p>
@@ -588,8 +596,8 @@ export default function GestaoUtilizadores() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("admin.gestaoUtilizadores.columns.user")} sortKey="name" accessor={(u) => u.name || ""} sortConfig={sortConfig} onSort={requestSort} />
                     <SortableTh label={t("admin.gestaoUtilizadores.columns.email")} sortKey="email" accessor={(u) => u.email || ""} sortConfig={sortConfig} onSort={requestSort} />
@@ -599,15 +607,15 @@ export default function GestaoUtilizadores() {
                     <th className="px-4 py-3 text-right">{t("admin.gestaoUtilizadores.columns.actions")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {usersOrdenados.map((user, index) => (
+                <tbody>
+                  {usersPaginados.map((user, index) => (
                     <tr
                       key={user.id}
                       className={index % 2 === 0 ? "bg-white" : "bg-slate-50/50"}
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700">
                             {getInitials(user.name)}
                           </div>
                           <div>
@@ -652,22 +660,30 @@ export default function GestaoUtilizadores() {
               </table>
             </div>
           )}
+          <AdminPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            startItem={startItem}
+            endItem={endItem}
+            onPageChange={setPage}
+          />
         </section>
 
         {selectedUser && (
           <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-slate-900/50 px-4 py-6">
-            <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+            <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-200 bg-white">
               <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-700">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
                     {getInitials(selectedUser.name)}
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-slate-900">
+                    <h2 className="text-lg font-semibold text-slate-900">
                       {profileMode === "preview" ? t("admin.gestaoUtilizadores.previewProfile") : t("admin.gestaoUtilizadores.fullProfile")}
                     </h2>
                     <p className="text-sm text-slate-500">
-                      {selectedUser.name || t("admin.gestaoUtilizadores.noName")} · {selectedUser.email || t("admin.common.notAvailable")}
+                      {selectedUser.name || t("admin.gestaoUtilizadores.noName")} Ã‚Â· {selectedUser.email || t("admin.common.notAvailable")}
                     </p>
                   </div>
                 </div>
@@ -742,7 +758,7 @@ export default function GestaoUtilizadores() {
                 {profileMode === "preview" ? (
                   <section className="space-y-4">
                     <div className="rounded-xl border border-slate-200 p-4">
-                      <h3 className="mb-4 text-base font-bold text-slate-900">
+                      <h3 className="mb-4 text-base font-semibold text-slate-900">
                         {t("admin.gestaoUtilizadores.summary")}
                       </h3>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

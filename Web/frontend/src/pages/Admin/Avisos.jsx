@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "../../layout/Sidebar";
 import api from "/src/api";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 
 const allowedRoles = ["admin", "service_line_leader", "talent_manager"];
 
@@ -169,16 +170,8 @@ export default function Avisos() {
     <div className="admin-shell">
       <Sidebar user={{ role: user.role, name: user.name || "Utilizador" }} />
 
-      <main className="admin-main">
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="relative z-10">
-            <p className="mb-2 text-sm font-semibold text-white/80">{t("admin.avisos.eyebrow")}</p>
-            <h1 className="text-3xl font-bold text-white">{t("admin.avisos.title")}</h1>
-            <p className="mt-2 max-w-3xl text-white/85">
-              {t("admin.avisos.subtitle")}
-            </p>
-          </div>
-        </section>
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle title={t("admin.avisos.title")} subtitle={t("admin.avisos.subtitle")} />
 
         <div className="mb-6 grid gap-4 md:grid-cols-4">
           {[
@@ -187,17 +180,17 @@ export default function Avisos() {
             { label: t("admin.avisos.stats.requests"), value: totals.pedidos, icon: "bi-inbox-fill", color: "text-indigo-600" },
             { label: t("admin.avisos.stats.warnings"), value: totals.avisos, icon: "bi-megaphone-fill", color: "text-amber-600" },
           ].map((stat) => (
-            <article key={stat.label} className="rounded-3xl bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <article key={stat.label} className="rounded-3xl border border-slate-200 bg-white p-5">
               <i className={`bi ${stat.icon} text-xl ${stat.color}`}></i>
               <p className="mb-0 mt-3 text-sm text-slate-500">{stat.label}</p>
-              <h3 className={`mt-1 text-3xl font-bold ${stat.color}`}>{stat.value}</h3>
+              <h3 className={`mt-1 text-3xl font-semibold ${stat.color}`}>{stat.value}</h3>
             </article>
           ))}
         </div>
 
-        <section className="mb-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <section className="mb-6 rounded-3xl border border-slate-200 bg-white p-6">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-slate-900">{form.id ? t("admin.avisos.editTitle") : t("admin.avisos.newTitle")}</h2>
+            <h2 className="text-xl font-semibold text-slate-900">{form.id ? t("admin.avisos.editTitle") : t("admin.avisos.newTitle")}</h2>
             {form.id && (
               <button type="button" className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" onClick={resetForm}>
                 {t("admin.avisos.cancelEdit")}
@@ -249,7 +242,7 @@ export default function Avisos() {
           </form>
         </section>
 
-        <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <section className="rounded-3xl border border-slate-200 bg-white p-6">
           <div className="mb-4 grid gap-3 md:grid-cols-12">
             <div className="md:col-span-8">
               <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.common.search")}</label>
@@ -288,18 +281,18 @@ export default function Avisos() {
                   <article key={aviso.id} className="rounded-2xl border border-slate-200 bg-white p-4">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0">
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold ${config.badge}`}>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${config.badge}`}>
                           <i className={`bi ${config.icon}`}></i>
                           {t(config.labelKey)}
                         </span>
-                        <span className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold ${aviso.ativo ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"}`}>
+                        <span className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${aviso.ativo ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"}`}>
                           <i className={`bi ${aviso.ativo ? "bi-check-circle-fill" : "bi-pause-circle-fill"}`}></i>
                           {aviso.ativo ? t("admin.avisos.status.active") : t("admin.avisos.status.inactive")}
                         </span>
-                        <h3 className="mt-2 text-base font-bold text-slate-900">{stripTitlePrefix(aviso.titulo)}</h3>
+                        <h3 className="mt-2 text-base font-semibold text-slate-900">{stripTitlePrefix(aviso.titulo)}</h3>
                         <p className="m-0 mt-1 text-sm text-slate-600">{aviso.mensagem}</p>
                         <p className="m-0 mt-2 text-xs text-slate-500">
-                          {new Date(aviso.createdAt).toLocaleString("pt-PT")} · {t("admin.avisos.recipients", { count: aviso.destinatarios })} · {t("admin.avisos.unread", { count: aviso.nao_lidos })}
+                          {new Date(aviso.createdAt).toLocaleString("pt-PT")} Ã‚Â· {t("admin.avisos.recipients", { count: aviso.destinatarios })} Ã‚Â· {t("admin.avisos.unread", { count: aviso.nao_lidos })}
                         </p>
                       </div>
                       <div className="flex shrink-0 gap-2">

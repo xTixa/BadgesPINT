@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
+import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
+import { useClientPagination } from "../../hooks/useClientPagination";
 import { useSortableData } from "../../hooks/useSortableData";
 
 const statusMap = {
@@ -53,12 +55,12 @@ function ProcessoModal({ pedido, onClose }) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"
+        className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-2">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">{t("serviceLine.pedidos.processTitle")}</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{t("serviceLine.pedidos.processTitle")}</h3>
             <p className="text-sm text-slate-500">
               {pedido.badge?.name || pedido.badge?.description || t("serviceLine.pedidos.badgeFallback", { id: pedido.badge_id })}
             </p>
@@ -174,6 +176,15 @@ export default function PedidosServiceLine() {
   }), [pedidos]);
 
   const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidos);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: pedidosPaginados,
+  } = useClientPagination(pedidosOrdenados, 15, filtro);
 
   const aprovar = async (id) => {
     const comment = window.prompt(t("serviceLine.pedidos.prompts.approveComment")) || "";
@@ -248,8 +259,8 @@ export default function PedidosServiceLine() {
         </div>
       </div>
 
-      <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-        <h5 className="mb-3 text-base font-bold text-slate-900">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6">
+        <h5 className="mb-3 text-base font-semibold text-slate-900">
           <i className="bi bi-inbox mr-2 text-[#0F62FE]"></i>
           {t("serviceLine.pedidos.listTitle")}
         </h5>
@@ -260,9 +271,10 @@ export default function PedidosServiceLine() {
         ) : pedidos.length === 0 ? (
           <EmptyState message={t("serviceLine.pedidos.empty")} icon="bi-inbox" />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-100 text-slate-700">
+          <>
+            <div className="overflow-x-auto rounded-xl border border-slate-200">
+              <table className="admin-table">
+              <thead>
                 <tr>
                   <SortableTh label={t("serviceLine.pedidos.table.consultant")} sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   <SortableTh label={t("serviceLine.pedidos.table.badge")} sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -272,8 +284,8 @@ export default function PedidosServiceLine() {
                   <th className="px-3 py-2 text-right font-semibold">{t("serviceLine.pedidos.table.actions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                {pedidosOrdenados.map((pedido) => (
+              <tbody>
+                {pedidosPaginados.map((pedido) => (
                   <tr key={pedido.id} className="hover:bg-slate-50">
                     <td className="px-3 py-2">
                       <div className="font-semibold text-slate-900">{pedido.user?.name}</div>
@@ -337,8 +349,17 @@ export default function PedidosServiceLine() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              startItem={startItem}
+              endItem={endItem}
+              onPageChange={setPage}
+            />
+          </>
         )}
       </section>
     </ServiceLineLayout>

@@ -114,7 +114,7 @@ export default function DashboardConsultor() {
   const badgesObtidos = useMemo(() => badges.filter((b) => b.status === "obtido").length, [badges]);
   const progresso = user?.progresso || (badges.length > 0 ? Math.round((badgesObtidos / badges.length) * 100) : 0);
 
-  const panelClass = "h-full rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]";
+  const panelClass = "h-full rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]";
   const btnSecondary = "rounded-lg border border-[#16558C]/35 px-3 py-1.5 text-xs font-semibold text-[#16558C] transition hover:bg-[#16558C]/10";
   const btnSecondaryLg = "rounded-lg border border-[#16558C]/35 px-3 py-2 text-xs font-semibold text-[#16558C] transition hover:bg-[#16558C]/10 sm:text-sm";
 
@@ -175,35 +175,33 @@ export default function DashboardConsultor() {
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
 
         {/* Hero */}
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-          <div className="absolute right-24 bottom-0 h-24 w-24 rounded-full bg-white/5"></div>
+        <div className="relative mb-8 overflow-hidden rounded-3xl border border-[#CFE0FB] bg-[#EAF2FF] p-8 text-slate-900">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.dashboard.personalDashboard")}</p>
-              <h1 className="mb-2 text-3xl font-bold">{t(greetingKey)}, {user.name.split(" ")[0]}</h1>
-              <p className="max-w-xl text-white/85">
+              <p className="mb-2 text-sm font-medium text-slate-500">{t("consultor.dashboard.personalDashboard")}</p>
+              <h1 className="mb-2 text-3xl font-bold text-slate-900">{t(greetingKey)}, {user.name.split(" ")[0]}</h1>
+              <p className="max-w-xl text-slate-600">
                 {t("consultor.dashboard.heroText")}
               </p>
               <Link
                 to="/consultor/gamification"
-                className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm"
+                className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#0F62FE] px-5 py-3 text-sm font-extrabold text-white shadow-sm"
               >
                 <i className="bi bi-stars"></i>{t("consultor.dashboard.viewGamification")}
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-4 xs:grid-cols-3">
-              <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold">{progresso}%</div>
-                <div className="text-xs text-white/80">{t("consultor.dashboard.progress")}</div>
+              <div className="rounded-2xl border border-[#CFE0FB] bg-white p-4">
+                <div className="text-2xl font-bold text-[#0F62FE]">{progresso}%</div>
+                <div className="text-xs text-slate-500">{t("consultor.dashboard.progress")}</div>
               </div>
-              <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold">{badgesObtidos}</div>
-                <div className="text-xs text-white/80">{t("consultor.dashboard.badges")}</div>
+              <div className="rounded-2xl border border-[#CFE0FB] bg-white p-4">
+                <div className="text-2xl font-bold text-[#0F62FE]">{badgesObtidos}</div>
+                <div className="text-xs text-slate-500">{t("consultor.dashboard.badges")}</div>
               </div>
-              <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold">{user.points_total || 0}</div>
-                <div className="text-xs text-white/80">{t("consultor.dashboard.points")}</div>
+              <div className="rounded-2xl border border-[#CFE0FB] bg-white p-4">
+                <div className="text-2xl font-bold text-[#0F62FE]">{user.points_total || 0}</div>
+                <div className="text-xs text-slate-500">{t("consultor.dashboard.points")}</div>
               </div>
             </div>
           </div>
@@ -218,8 +216,8 @@ export default function DashboardConsultor() {
             { icon: "bi-flag",             label: t("consultor.dashboard.kpi.lpsInProgress"),   valor: learningPaths.filter((lp) => lp.status === "em progresso").length },
             { icon: "bi-fire",             label: t("consultor.dashboard.kpi.badgesExpiring"),   valor: alertsExpiracao.length },
           ].map((card, idx) => (
-            <div key={idx} className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
+            <div key={idx} className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF2FF]">
                 <i className={`bi ${card.icon} text-xl text-[#0F62FE]`}></i>
               </div>
               <h3 className="text-3xl font-bold text-slate-900">{card.valor}</h3>

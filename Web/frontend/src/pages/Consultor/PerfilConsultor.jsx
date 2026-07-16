@@ -114,25 +114,24 @@ export default function PerfilConsultor() {
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
         {/* Hero */}
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
+        <section className="relative mb-8 overflow-hidden rounded-3xl border border-[#CFE0FB] bg-[#EAF2FF] p-8 text-slate-900">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
               <img
                 src={user.imagem}
                 alt={t("consultor.perfilConsultor.profilePhotoAlt")}
-                className="h-24 w-24 rounded-3xl border-4 border-white/20 object-cover"
+                className="h-24 w-24 rounded-3xl border-4 border-white object-cover"
                 onError={(e) => { e.target.src = PLACEHOLDER_IMG; }}
               />
               <div>
-                <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
-                <h1 className="text-3xl font-bold text-white">{user.nome}</h1>
-                <p className="mt-1 text-white/80">{user.cargo}</p>
-                <p className="mt-2 text-sm text-white/70">{user.email}</p>
+                <p className="mb-2 text-sm font-medium text-slate-500">{t("consultor.common.consultantArea")}</p>
+                <h1 className="text-3xl font-bold text-slate-900">{user.nome}</h1>
+                <p className="mt-1 text-slate-600">{user.cargo}</p>
+                <p className="mt-2 text-sm text-slate-500">{user.email}</p>
               </div>
             </div>
             <button
-              className="rounded-2xl bg-white px-5 py-3 font-semibold text-[#0F62FE] transition hover:scale-105"
+              className="rounded-2xl bg-[#0F62FE] px-5 py-3 font-semibold text-white transition hover:scale-105"
               onClick={() => (window.location.href = "/editar-perfil")}
             >
               <i className="bi bi-pencil-square mr-2"></i>
@@ -148,8 +147,8 @@ export default function PerfilConsultor() {
             { icon: "bi-award-fill",     label: t("consultor.perfilConsultor.stats.badgesObtained"),    valor: user.badges },
             { icon: "bi-graph-up-arrow", label: t("consultor.perfilConsultor.stats.globalProgress"),  valor: `${user.progresso}%` },
           ].map((card, idx) => (
-            <div key={idx} className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
+            <div key={idx} className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF2FF]">
                 <i className={`bi ${card.icon} text-xl text-[#0F62FE]`} />
               </div>
               <h3 className="text-3xl font-bold text-slate-900">{card.valor}</h3>
@@ -160,7 +159,7 @@ export default function PerfilConsultor() {
 
         <div className="mb-6 grid gap-6 lg:grid-cols-2">
           {/* Informações */}
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <h2 className="mb-4 text-lg font-bold text-slate-900">{t("consultor.perfilConsultor.information")}</h2>
             <div className="space-y-4">
               <div>
@@ -175,7 +174,7 @@ export default function PerfilConsultor() {
           </div>
 
           {/* Competências */}
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <h2 className="mb-4 text-lg font-bold text-slate-900">{t("consultor.perfilConsultor.provenSkills")}</h2>
             {competencias.length === 0 ? (
               <p className="text-sm text-slate-400">
@@ -186,7 +185,7 @@ export default function PerfilConsultor() {
                 {competencias.map((comp, i) => (
                   <span
                     key={i}
-                    className="rounded-full bg-[#0F62FE]/10 px-4 py-2 text-sm font-medium text-[#0F62FE]"
+                    className="rounded-full bg-[#EAF2FF] px-4 py-2 text-sm font-medium text-[#0F62FE]"
                   >
                     {comp}
                   </span>

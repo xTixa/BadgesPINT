@@ -1,8 +1,8 @@
-﻿import Sidebar from "../../layout/Sidebar";
+import Sidebar from "../../layout/Sidebar";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
-import AdminHero from "../../components/ui/AdminHero";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 
 export default function ExportacaoAdmin() {
   const { t } = useTranslation();
@@ -88,7 +88,7 @@ export default function ExportacaoAdmin() {
         ficheiro: `export-${scope}-${new Date().getTime()}.${format === "excel" ? "xlsx" : "pdf"}`,
       });
     } catch (err) {
-      console.error("Erro na exportação:", err);
+      console.error("Erro na exportaÃ¯Â¿Â½Ã¯Â¿Â½o:", err);
       let message = t("admin.exportacao.errors.exportFailed");
       const errData = err.response?.data;
       if (errData instanceof Blob) {
@@ -96,7 +96,7 @@ export default function ExportacaoAdmin() {
           const parsed = JSON.parse(await errData.text());
           message = parsed.message || message;
         } catch {
-          // resposta não é JSON, mantém a mensagem genérica
+          // resposta nÃ¯Â¿Â½o Ã¯Â¿Â½ JSON, mantÃ¯Â¿Â½m a mensagem genÃ¯Â¿Â½rica
         }
       } else if (errData?.message) {
         message = errData.message;
@@ -140,18 +140,18 @@ export default function ExportacaoAdmin() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main">
-        <div className="mx-auto max-w-[1400px]">
-          <AdminHero title={t("admin.exportacao.title")} subtitle={t("admin.exportacao.subtitle")} />
+      <main className="admin-main bg-[#F6F8FA]">
+        <div className="w-full">
+          <AdminPageTitle title={t("admin.exportacao.title")} subtitle={t("admin.exportacao.subtitle")} />
 
           <div className="grid gap-5 lg:grid-cols-12">
-            <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-7">
+            <section className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-span-7">
               <div className="mb-5 flex items-start gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0F62FE]/10 text-xl text-[#0F62FE]">
                   <i className="bi bi-database-check"></i>
                 </span>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">{t("admin.exportacao.dataToExport")}</h2>
+                  <h2 className="text-lg font-semibold text-slate-900">{t("admin.exportacao.dataToExport")}</h2>
                   <p className="mt-1 text-sm text-slate-500">Seleciona o conjunto de dados que pretendes descarregar.</p>
                 </div>
               </div>
@@ -167,15 +167,15 @@ export default function ExportacaoAdmin() {
                       aria-pressed={selected}
                       className={`group flex min-h-28 items-start gap-4 rounded-2xl border p-4 text-left transition ${
                         selected
-                          ? "border-[#0F62FE] bg-[#0F62FE]/5 shadow-[0_8px_24px_rgba(15,98,254,0.12)]"
-                          : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md"
+                          ? "border-[#CFE0FB] bg-[#EAF2FF]"
+                          : "border-slate-200 bg-white hover:-translate-y-0.5 hover:bg-[#F8FBFF]"
                       }`}
                     >
-                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${selected ? "bg-[#0F62FE] text-white" : "bg-slate-100 text-slate-500 group-hover:text-[#0F62FE]"}`}>
+                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${selected ? "bg-white text-[#0F62FE]" : "bg-slate-100 text-slate-500 group-hover:text-[#0F62FE]"}`}>
                         <i className={`bi ${card.icon}`}></i>
                       </span>
                       <span className="min-w-0">
-                        <span className="flex items-center gap-2 font-bold text-slate-900">
+                        <span className="flex items-center gap-2 font-semibold text-slate-900">
                           {card.title}
                           {selected && <i className="bi bi-check-circle-fill text-[#0F62FE]"></i>}
                         </span>
@@ -187,18 +187,18 @@ export default function ExportacaoAdmin() {
               </div>
             </section>
 
-            <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-5">
+            <section className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-span-5">
               <div className="mb-5 flex items-start gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-xl text-emerald-600">
                   <i className="bi bi-file-earmark-arrow-down"></i>
                 </span>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Configurar exportação</h2>
-                  <p className="mt-1 text-sm text-slate-500">Escolhe o formato e o período do relatório.</p>
+                  <h2 className="text-lg font-semibold text-slate-900">Configurar exportaÃƒÂ§ÃƒÂ£o</h2>
+                  <p className="mt-1 text-sm text-slate-500">Escolhe o formato e o periodo do relatorio.</p>
                 </div>
               </div>
 
-              <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">{t("admin.exportacao.formatHeading")}</label>
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("admin.exportacao.formatHeading")}</label>
               <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1.5">
                 {[
                   { value: "excel", label: "Excel", icon: "bi-file-earmark-excel", tone: "text-emerald-600" },
@@ -208,14 +208,14 @@ export default function ExportacaoAdmin() {
                     key={option.value}
                     type="button"
                     onClick={() => setFormat(option.value)}
-                    className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition ${format === option.value ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+                    className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${format === option.value ? "border-slate-200 bg-white text-slate-900" : "border-transparent text-slate-500 hover:text-slate-800"}`}
                   >
                     <i className={`bi ${option.icon} ${option.tone}`}></i>{option.label}
                   </button>
                 ))}
               </div>
 
-              <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">{t("admin.exportacao.periodHeading")}</label>
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("admin.exportacao.periodHeading")}</label>
               <select className="ui-input mb-5" value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
                 <option value="ultima-semana">{t("admin.exportacao.periods.lastWeek")}</option>
                 <option value="ultimo-mes">{t("admin.exportacao.periods.lastMonth")}</option>
@@ -223,7 +223,7 @@ export default function ExportacaoAdmin() {
                 <option value="ano-atual">{t("admin.exportacao.periods.currentYear")}</option>
               </select>
 
-              <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm">
+              <div className="mb-5 rounded-2xl border border-slate-200 bg-[#F8FBFF] p-4 text-sm">
                 <div className="flex justify-between gap-4 py-1"><span className="text-slate-500">Dados</span><strong className="text-right text-slate-800">{selectedScope?.title}</strong></div>
                 <div className="flex justify-between gap-4 py-1"><span className="text-slate-500">Formato</span><strong className="uppercase text-slate-800">{format}</strong></div>
               </div>

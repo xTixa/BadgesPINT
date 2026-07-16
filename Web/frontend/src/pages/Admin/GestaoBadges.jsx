@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import SortableTh from "../../components/ui/SortableTh";
+import AdminPagination from "../../components/ui/AdminPagination";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { useSortableData } from "../../hooks/useSortableData";
+import { useClientPagination } from "../../hooks/useClientPagination";
 
 export default function GestaoBadges() {
   const { t } = useTranslation();
@@ -25,7 +28,7 @@ export default function GestaoBadges() {
     image_url: ""
   });
 
-  // Estado do modal de retificação
+  // Estado do modal de retificaÃƒÂ§ÃƒÂ£o
   const [showConsultoresModal, setShowConsultoresModal] = useState(false);
   const [badgeSelecionado, setBadgeSelecionado] = useState(null);
   const [consultores, setConsultores] = useState([]);
@@ -43,7 +46,7 @@ export default function GestaoBadges() {
     "Lider": "bg-slate-200 text-slate-800"
   };
 
-  // Carregar badges e áreas
+  // Carregar badges e ÃƒÂ¡reas
   useEffect(() => {
     async function loadData() {
       try {
@@ -67,7 +70,7 @@ export default function GestaoBadges() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // Abrir modal de edição
+  // Abrir modal de ediÃƒÂ§ÃƒÂ£o
   const handleEditBadge = (badge) => {
     setBadgeEditando(badge);
     setFormData({
@@ -80,7 +83,7 @@ export default function GestaoBadges() {
     setShowEditModal(true);
   };
 
-  // Salvar edição do badge
+  // Salvar ediÃƒÂ§ÃƒÂ£o do badge
   const handleSaveEdit = async () => {
     try {
       const response = await api.put(
@@ -115,7 +118,7 @@ export default function GestaoBadges() {
     }
   };
 
-  // Abrir modal de retificação e carregar colaboradores do badge
+  // Abrir modal de retificaÃƒÂ§ÃƒÂ£o e carregar colaboradores do badge
   const handleAbrirRetificarCertificado = async (badge) => {
     setBadgeSelecionado(badge);
     setConsultores([]);
@@ -136,7 +139,7 @@ export default function GestaoBadges() {
     }
   };
 
-  // Retificar certificado de um colaborador específico
+  // Retificar certificado de um colaborador especÃƒÂ­fico
   const handleRetificarCertificado = async (consultorId) => {
     setRetificandoId(consultorId);
     try {
@@ -160,7 +163,7 @@ export default function GestaoBadges() {
           const text = await err.response.data.text();
           const json = JSON.parse(text);
           msg = json.error || json.message || msg;
-        } catch { /* mantém mensagem genérica */ }
+        } catch { /* mantÃƒÂ©m mensagem genÃƒÂ©rica */ }
       } else if (err.response?.data?.error) {
         msg = err.response.data.error;
       }
@@ -179,7 +182,7 @@ export default function GestaoBadges() {
   };
 
   const formatarData = (data) => {
-    if (!data) return "—";
+    if (!data) return "Ã¢â‚¬â€";
     return new Date(data).toLocaleDateString("pt-PT");
   };
 
@@ -192,41 +195,48 @@ export default function GestaoBadges() {
   });
 
   const { sortedItems: badgesOrdenados, sortConfig, requestSort } = useSortableData(badgesFiltrados);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: badgesPaginados,
+  } = useClientPagination(badgesOrdenados, 15, `${filtro}|${filtroArea}|${filtroNivel}`);
+  const {
+    page: consultoresPage,
+    setPage: setConsultoresPage,
+    totalPages: consultoresTotalPages,
+    totalItems: consultoresTotalItems,
+    startItem: consultoresStartItem,
+    endItem: consultoresEndItem,
+    paginatedItems: consultoresPaginados,
+  } = useClientPagination(consultores, 15, badgeSelecionado?.id || "");
 
   return (
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-          <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="mb-2 text-sm font-medium text-white/80">{t("admin.common.adminPanel")}</p>
-              <h1 className="text-3xl font-bold text-white">{t("admin.gestaoBadges.title")}</h1>
-              <p className="mt-2 max-w-2xl text-white/85">
-                {t("admin.gestaoBadges.subtitle")}
-              </p>
-            </div>
-
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle title={t("admin.gestaoBadges.title")} subtitle={t("admin.gestaoBadges.subtitle")}>
           <Link
             to="/admin/badges/novo"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-extrabold text-[#0F62FE] shadow-sm transition hover:bg-[#EFF4FF]"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#CFE0FB] bg-[#EAF2FF] px-4 py-2 text-sm font-semibold text-[#0F62FE] transition hover:bg-[#DCEBFF]"
           >
             <i className="bi bi-plus-circle"></i>
             {t("admin.gestaoBadges.createNew")}
           </Link>
-          </div>
-        </section>
+        </AdminPageTitle>
 
-        <section className="mb-6 grid grid-cols-1 gap-3 rounded-3xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)] md:grid-cols-3">
+        <section className="mb-6 grid grid-cols-1 gap-3 rounded-3xl border border-slate-200 bg-white p-4 md:grid-cols-3">
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("admin.common.search")}</label>
+            <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">{t("admin.common.search")}</label>
             <div className="relative">
               <i className="bi bi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input
                 type="text"
-                className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                 placeholder={t("admin.gestaoBadges.searchPlaceholder")}
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
@@ -235,9 +245,9 @@ export default function GestaoBadges() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("admin.badgeForm.areaLabel")}</label>
+            <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">{t("admin.badgeForm.areaLabel")}</label>
             <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
               value={filtroArea}
               onChange={(e) => setFiltroArea(e.target.value)}
             >
@@ -249,9 +259,9 @@ export default function GestaoBadges() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("admin.badgeForm.levelLabel")}</label>
+            <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">{t("admin.badgeForm.levelLabel")}</label>
             <select
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
               value={filtroNivel}
               onChange={(e) => setFiltroNivel(e.target.value)}
             >
@@ -271,10 +281,10 @@ export default function GestaoBadges() {
         ) : erro ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{erro}</div>
         ) : (
-          <div className="overflow-hidden rounded-3xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="admin-table-shell">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("admin.gestaoBadges.columns.name")} sortKey="description" accessor={(b) => b.description} sortConfig={sortConfig} onSort={requestSort} />
                     <SortableTh label={t("admin.badgeForm.levelLabel")} sortKey="level" accessor={(b) => niveisBadges.indexOf(b.level)} sortConfig={sortConfig} onSort={requestSort} />
@@ -285,16 +295,16 @@ export default function GestaoBadges() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {badgesOrdenados.map((b) => (
-                    <tr key={b.id} className="hover:bg-slate-50">
+                <tbody>
+                  {badgesPaginados.map((b) => (
+                    <tr key={b.id} className="hover:bg-[#F8FBFF]">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {b.image_url && (
                             <img
                               src={b.image_url}
                               alt={b.description}
-                              className="h-10 w-10 rounded-full object-cover"
+                              className="h-10 w-10 rounded-2xl object-cover"
                             />
                           )}
                           <div>
@@ -309,7 +319,7 @@ export default function GestaoBadges() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        {b.area?.name || "—"}
+                        {b.area?.name || "Ã¢â‚¬â€"}
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-semibold text-slate-800">{b.points}</span> {t("admin.gestaoBadges.pts")}
@@ -326,21 +336,21 @@ export default function GestaoBadges() {
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-[#0F62FE]/30 px-3 py-1.5 text-xs font-semibold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+                          className="inline-flex items-center gap-1 rounded-lg border border-[#CFE0FB] bg-[#EAF2FF] px-3 py-1.5 text-xs font-semibold text-[#0F62FE] transition hover:bg-[#DCEBFF]"
                           onClick={() => handleEditBadge(b)}
                         >
                           <i className="bi bi-pencil"></i>
                           {t("admin.common.edit")}
                         </button>
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
                           onClick={() => handleAbrirRetificarCertificado(b)}
                         >
                           <i className="bi bi-file-earmark-pdf"></i>
                           {t("admin.gestaoBadges.rectifyCertificate")}
                         </button>
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
                           onClick={() => handleDelete(b.id)}
                         >
                           <i className="bi bi-trash"></i>
@@ -361,16 +371,24 @@ export default function GestaoBadges() {
                 </tbody>
               </table>
             </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              startItem={startItem}
+              endItem={endItem}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </main>
 
-      {/* Modal de edição de badge */}
+      {/* Modal de ediÃƒÂ§ÃƒÂ£o de badge */}
       {showEditModal && badgeEditando && (
         <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4">
-          <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
-              <div className="flex items-center justify-between border-b border-[#0F62FE]/15 bg-[#EFF4FF] px-5 py-4">
-                <h5 className="text-lg font-bold text-[#0F62FE]">{t("admin.badgeForm.editTitle")}</h5>
+          <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white">
+              <div className="flex items-center justify-between border-b border-[#CFE0FB] bg-[#EAF2FF] px-5 py-4">
+                <h5 className="text-lg font-semibold text-[#0F62FE]">{t("admin.badgeForm.editTitle")}</h5>
                 <button
                   type="button"
                   className="rounded-md px-2 py-1 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
@@ -385,7 +403,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.nameLabel")}</label>
                   <input
                     type="text"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
@@ -394,7 +412,7 @@ export default function GestaoBadges() {
                 <div>
                   <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.levelLabel")}</label>
                   <select
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                     value={formData.level}
                     onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                   >
@@ -408,7 +426,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.pointsLabel")}</label>
                   <input
                     type="number"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                     value={formData.points}
                     onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) })}
                     min="0"
@@ -419,7 +437,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.gestaoBadges.modal.expiryDaysLabel")}</label>
                   <input
                     type="number"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                     value={formData.expiry_days || ""}
                     onChange={(e) => setFormData({ ...formData, expiry_days: e.target.value ? parseInt(e.target.value) : null })}
                     placeholder={t("admin.gestaoBadges.modal.expiryDaysPlaceholder")}
@@ -431,7 +449,7 @@ export default function GestaoBadges() {
                   <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.imageUrlLabel")}</label>
                   <input
                     type="text"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
                     value={formData.image_url || ""}
                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                     placeholder="https://..."
@@ -439,7 +457,7 @@ export default function GestaoBadges() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 border-t border-slate-200 bg-slate-50 px-5 py-4">
+              <div className="flex items-center justify-end gap-2 border-t border-slate-100 bg-[#F8FBFF] px-5 py-4">
                 <button
                   type="button"
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
@@ -460,22 +478,22 @@ export default function GestaoBadges() {
         </div>
       )}
 
-      {/* Modal de retificação de certificados — fluxo invertido */}
+      {/* Modal de retificaÃƒÂ§ÃƒÂ£o de certificados Ã¢â‚¬â€ fluxo invertido */}
       {showConsultoresModal && badgeSelecionado && (
         <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-slate-900/50 px-4">
-          <div className="w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-xl">
-            {/* Cabeçalho */}
+          <div className="w-full max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white">
+            {/* CabeÃƒÂ§alho */}
             <div className="flex items-center justify-between border-b border-emerald-100 bg-emerald-50 px-5 py-4">
               <div className="flex items-center gap-3">
                 {badgeSelecionado.image_url && (
                   <img
                     src={badgeSelecionado.image_url}
                     alt={badgeSelecionado.description}
-                    className="h-9 w-9 rounded-full object-cover"
+                    className="h-9 w-9 rounded-xl object-cover"
                   />
                 )}
                 <div>
-                  <h5 className="text-base font-bold text-emerald-800">{t("admin.gestaoBadges.rectifyCertificate")}</h5>
+                  <h5 className="text-base font-semibold text-emerald-800">{t("admin.gestaoBadges.rectifyCertificate")}</h5>
                   <p className="text-xs text-emerald-600">{badgeSelecionado.description}</p>
                 </div>
               </div>
@@ -505,9 +523,9 @@ export default function GestaoBadges() {
                   <p className="text-sm">{t("admin.gestaoBadges.modal.noConsultants")}</p>
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-xl border border-slate-200">
-                  <table className="min-w-full divide-y divide-slate-100 text-sm">
-                    <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <div className="overflow-hidden rounded-2xl border border-slate-200">
+                  <table className="admin-table">
+                    <thead>
                       <tr>
                         <th className="px-4 py-3">ID</th>
                         <th className="px-4 py-3">{t("admin.gestaoBadges.modal.nameLabel")}</th>
@@ -515,15 +533,15 @@ export default function GestaoBadges() {
                         <th className="px-4 py-3">{t("admin.common.actions")}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-700">
-                      {consultores.map((c) => (
-                        <tr key={c.consultorId} className="hover:bg-slate-50">
+                    <tbody>
+                      {consultoresPaginados.map((c) => (
+                        <tr key={c.consultorId} className="hover:bg-[#F8FBFF]">
                           <td className="px-4 py-3 text-xs font-mono text-slate-500">{c.consultorId}</td>
                           <td className="px-4 py-3 font-medium text-slate-800">{c.nome}</td>
                           <td className="px-4 py-3 text-slate-600">{formatarData(c.dataConclusao)}</td>
                           <td className="px-4 py-3">
                             <button
-                              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
                               onClick={() => handleRetificarCertificado(c.consultorId)}
                               disabled={retificandoId === c.consultorId}
                             >
@@ -544,13 +562,21 @@ export default function GestaoBadges() {
                       ))}
                     </tbody>
                   </table>
+                  <AdminPagination
+                    page={consultoresPage}
+                    totalPages={consultoresTotalPages}
+                    totalItems={consultoresTotalItems}
+                    startItem={consultoresStartItem}
+                    endItem={consultoresEndItem}
+                    onPageChange={setConsultoresPage}
+                  />
                 </div>
               )}
             </div>
 
-            {/* Rodapé */}
+            {/* RodapÃƒÂ© */}
             {!loadingConsultores && consultores.length > 0 && (
-              <div className="border-t border-slate-100 bg-slate-50 px-5 py-3">
+              <div className="border-t border-slate-100 bg-[#F8FBFF] px-5 py-3">
                 <p className="text-xs text-slate-500">
                   {t("admin.gestaoBadges.modal.collaboratorsWithBadge", { count: consultores.length })}
                 </p>

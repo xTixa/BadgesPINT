@@ -218,22 +218,20 @@ export default function EditarPerfil() {
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
         {/* HERO */}
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-
+        <section className="relative mb-8 overflow-hidden rounded-3xl border border-[#CFE0FB] bg-[#EAF2FF] p-8 text-slate-900">
           <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
-              <h1 className="text-3xl font-bold text-white">{t("consultor.editarPerfil.title")}</h1>
+              <p className="mb-2 text-sm font-medium text-slate-500">{t("consultor.common.consultantArea")}</p>
+              <h1 className="text-3xl font-bold text-slate-900">{t("consultor.editarPerfil.title")}</h1>
 
-              <p className="mt-2 text-white/80">
+              <p className="mt-2 text-slate-600">
                 {t("consultor.editarPerfil.subtitle")}
               </p>
             </div>
 
             <button
               onClick={() => navigate("/perfil")}
-              className="rounded-2xl bg-white px-5 py-3 font-semibold text-[#0F62FE] transition hover:scale-105"
+              className="rounded-2xl bg-[#0F62FE] px-5 py-3 font-semibold text-white transition hover:scale-105"
             >
               <i className="bi bi-arrow-left mr-2"></i>
               {t("consultor.editarPerfil.backToProfile")}
@@ -243,13 +241,13 @@ export default function EditarPerfil() {
 
         <div className="grid gap-6 xl:grid-cols-3">
           {/* PERFIL */}
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <div className="text-center">
               <div className="relative mx-auto mb-4 h-24 w-24">
                 <img
                   src={user.avatar_url || avatarPlaceholder}
                   alt={t("consultor.editarPerfil.profileAlt")}
-                  className="h-24 w-24 rounded-3xl border-4 border-[#0F62FE]/10 object-cover"
+                  className="h-24 w-24 rounded-3xl border-4 border-[#EAF2FF] object-cover"
                 />
 
                 <label
@@ -282,7 +280,7 @@ export default function EditarPerfil() {
 
               <p className="text-slate-500">{user.email}</p>
 
-              <div className="mt-6 rounded-2xl bg-[#0F62FE]/5 p-4">
+              <div className="mt-6 rounded-2xl bg-[#EAF2FF] p-4">
                 <p className="text-sm font-medium text-[#0F62FE]">
                   {t("consultor.editarPerfil.professionalProfile")}
                 </p>
@@ -292,7 +290,7 @@ export default function EditarPerfil() {
 
           {/* DADOS */}
           <div className="xl:col-span-2">
-            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
               <h2 className="mb-6 text-xl font-semibold">
                 {t("consultor.editarPerfil.personalInfo")}
               </h2>
@@ -363,7 +361,7 @@ export default function EditarPerfil() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-6 rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02]"
+                  className="mt-6 rounded-2xl bg-[#0F62FE] px-6 py-3 font-semibold text-white shadow-sm transition hover:scale-[1.02]"
                 >
                   {loading ? t("consultor.editarPerfil.saving") : t("consultor.editarPerfil.saveChanges")}
                 </button>
@@ -371,7 +369,7 @@ export default function EditarPerfil() {
             </div>
 
             {/* SEGURANÇA */}
-            <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-semibold">{t("consultor.editarPerfil.security")}</h2>
 
@@ -456,11 +454,11 @@ export default function EditarPerfil() {
         </div>
 
         {/* DICAS */}
-        <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
           <h2 className="mb-4 text-xl font-semibold">{t("consultor.editarPerfil.securityTips")}</h2>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl bg-[#0F62FE]/5 p-4">
+            <div className="rounded-2xl bg-[#EAF2FF] p-4">
               <i className="bi bi-envelope-check text-[#0F62FE]"></i>
               <p className="mt-2 text-sm">
                 {t("consultor.editarPerfil.tipValidEmail")}

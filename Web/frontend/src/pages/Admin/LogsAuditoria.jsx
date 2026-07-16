@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import SortableTh from "../../components/ui/SortableTh";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function LogsAuditoria() {
   const { t } = useTranslation();
-  const { isMobile, isTablet } = useWindowSize();
+  const { isMobile } = useWindowSize();
   const [logs, setLogs] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,11 @@ export default function LogsAuditoria() {
     pages: 0,
   });
 
-  const { sortedItems: logsOrdenados, sortConfig, requestSort } = useSortableData(logs);
+  const {
+    sortedItems: logsOrdenados,
+    sortConfig,
+    requestSort,
+  } = useSortableData(logs);
 
   const actionOptions = [
     { value: "CREATE", label: t("admin.logsAuditoria.actions.create") },
@@ -36,16 +41,37 @@ export default function LogsAuditoria() {
   const entityOptions = [
     { value: "User", label: t("admin.logsAuditoria.entities.user") },
     { value: "Badge", label: t("admin.logsAuditoria.entities.badge") },
-    { value: "LearningPath", label: t("admin.logsAuditoria.entities.learningPath") },
-    { value: "Requirement", label: t("admin.logsAuditoria.entities.requirement") },
-    { value: "ServiceLine", label: t("admin.logsAuditoria.entities.serviceLine") },
+    {
+      value: "LearningPath",
+      label: t("admin.logsAuditoria.entities.learningPath"),
+    },
+    {
+      value: "Requirement",
+      label: t("admin.logsAuditoria.entities.requirement"),
+    },
+    {
+      value: "ServiceLine",
+      label: t("admin.logsAuditoria.entities.serviceLine"),
+    },
     { value: "Area", label: t("admin.logsAuditoria.entities.area") },
   ];
 
   const statusOptions = [
-    { value: "success", label: t("admin.logsAuditoria.statuses.success"), color: "success" },
-    { value: "failure", label: t("admin.logsAuditoria.statuses.failure"), color: "danger" },
-    { value: "warning", label: t("admin.logsAuditoria.statuses.warning"), color: "warning" },
+    {
+      value: "success",
+      label: t("admin.logsAuditoria.statuses.success"),
+      color: "success",
+    },
+    {
+      value: "failure",
+      label: t("admin.logsAuditoria.statuses.failure"),
+      color: "danger",
+    },
+    {
+      value: "warning",
+      label: t("admin.logsAuditoria.statuses.warning"),
+      color: "warning",
+    },
   ];
 
   useEffect(() => {
@@ -94,7 +120,7 @@ export default function LogsAuditoria() {
       });
       setStats(res.data);
     } catch (error) {
-      console.error("Erro ao carregar estatísticas:", error);
+      console.error("Erro ao carregar estatÃƒÂ­sticas:", error);
     }
   };
 
@@ -124,7 +150,14 @@ export default function LogsAuditoria() {
   };
 
   const convertToCSV = (data) => {
-    const headers = ["Data", "Utilizador", "Ação", "Entidade", "Status", "IP"];
+    const headers = [
+      "Data",
+      "Utilizador",
+      "AÃƒÂ§ÃƒÂ£o",
+      "Entidade",
+      "Status",
+      "IP",
+    ];
     const rows = data.map((log) => [
       new Date(log.createdAt).toLocaleString("pt-PT"),
       log.user?.name || t("admin.logsAuditoria.unknownUser"),
@@ -176,9 +209,9 @@ export default function LogsAuditoria() {
 
   if (loading && logs.length === 0) {
     return (
-      <div className={`text-center ${isMobile ? "p-4" : "p-8"}`}>
+      <div className="flex items-center justify-center py-12">
         <div
-          className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500"
+          className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#0F62FE]"
           role="status"
         >
           <span className="sr-only">{t("admin.logsAuditoria.loading")}</span>
@@ -188,72 +221,25 @@ export default function LogsAuditoria() {
   }
 
   return (
-    <div className={`${isMobile ? "p-4" : isTablet ? "p-6" : "p-8"}`}>
-      <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-        <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-
-        <div className="relative z-10">
-          <h1 className="text-3xl font-bold">{t("admin.logsAuditoria.title")}</h1>
-
-          <p className="mt-2 text-white/80">
-            {t("admin.logsAuditoria.description")}
-          </p>
-        </div>
-      </div>
-
-      {stats && (
-        <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {t("admin.logsAuditoria.totalLogs")}
-            </div>
-            <div className="text-3xl font-bold text-slate-800">
-              {stats.totalLogs}
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {t("admin.logsAuditoria.totalSuccesses")}
-            </div>
-            <div className="text-3xl font-bold text-emerald-600">
-              {stats.logsByStatus?.find((s) => s.status === "success")?.count ||
-                0}
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {t("admin.logsAuditoria.totalFailures")}
-            </div>
-            <div className="text-3xl font-bold text-rose-600">
-              {stats.logsByStatus?.find((s) => s.status === "failure")?.count ||
-                0}
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] p-4 shadow-sm sm:p-6">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {t("admin.logsAuditoria.totalWarnings")}
-            </div>
-            <div className="text-3xl font-bold text-amber-500">
-              {stats.logsByStatus?.find((s) => s.status === "warning")?.count ||
-                0}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="mb-8 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] sm:p-6">
-        <h5 className="mb-4 text-lg font-semibold text-slate-800">{t("admin.logsAuditoria.filters")}</h5>
+    <div className="w-full">
+      <AdminPageTitle
+        title={t("admin.logsAuditoria.title")}
+        subtitle={t("admin.logsAuditoria.description")}
+      />
+      <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-6 sm:p-6">
+        <h5 className="mb-4 text-lg font-semibold text-slate-800">
+          {t("admin.logsAuditoria.filters")}
+        </h5>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm text-slate-500">{t("admin.logsAuditoria.actionLabel")}</label>
+            <label className="mb-2 block text-sm text-slate-500">
+              {t("admin.logsAuditoria.actionLabel")}
+            </label>
             <select
               name="action"
               value={filters.action}
               onChange={handleFilterChange}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
             >
               <option value="">{t("admin.logsAuditoria.allActions")}</option>
               {actionOptions.map((opt) => (
@@ -272,7 +258,7 @@ export default function LogsAuditoria() {
               name="entity"
               value={filters.entity}
               onChange={handleFilterChange}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
             >
               <option value="">{t("admin.logsAuditoria.allEntities")}</option>
               {entityOptions.map((opt) => (
@@ -284,12 +270,14 @@ export default function LogsAuditoria() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-500">{t("admin.logsAuditoria.statusLabel")}</label>
+            <label className="mb-2 block text-sm text-slate-500">
+              {t("admin.logsAuditoria.statusLabel")}
+            </label>
             <select
               name="status"
               value={filters.status}
               onChange={handleFilterChange}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-[#93C5FD] focus:ring-2 focus:ring-[#CFE0FB]"
             >
               <option value="">{t("admin.logsAuditoria.allStatuses")}</option>
               {statusOptions.map((opt) => (
@@ -301,7 +289,9 @@ export default function LogsAuditoria() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-500">{t("admin.logsAuditoria.actionsLabel")}</label>
+            <label className="mb-2 block text-sm text-slate-500">
+              {t("admin.logsAuditoria.actionsLabel")}
+            </label>
             <div className={`flex gap-2 ${isMobile ? "flex-col" : "flex-row"}`}>
               <button
                 onClick={handleClearFilters}
@@ -311,7 +301,8 @@ export default function LogsAuditoria() {
                   t("admin.logsAuditoria.clear")
                 ) : (
                   <>
-                    <i className="bi bi-arrow-clockwise"></i> {t("admin.logsAuditoria.clear")}
+                    <i className="bi bi-arrow-clockwise"></i>{" "}
+                    {t("admin.logsAuditoria.clear")}
                   </>
                 )}
               </button>
@@ -323,7 +314,8 @@ export default function LogsAuditoria() {
                   t("admin.logsAuditoria.csv")
                 ) : (
                   <>
-                    <i className="bi bi-download"></i> {t("admin.logsAuditoria.export")}
+                    <i className="bi bi-download"></i>{" "}
+                    {t("admin.logsAuditoria.export")}
                   </>
                 )}
               </button>
@@ -332,30 +324,61 @@ export default function LogsAuditoria() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+      <div className="admin-table-shell">
         {!isMobile ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-[#0F62FE]/5">
-                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <SortableTh label={t("admin.gestaoTickets.columns.date")} sortKey="createdAt" accessor={(l) => (l.createdAt ? new Date(l.createdAt).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label={t("admin.gestaoPedidosBadges.columns.user")} sortKey="user" accessor={(l) => l.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label={t("admin.logsAuditoria.actionColumn")} sortKey="action" accessor={(l) => l.action || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label={t("admin.logsAuditoria.entityLabel")} sortKey="entity" accessor={(l) => l.entity || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <SortableTh label={t("admin.logsAuditoria.statusLabel")} sortKey="status" accessor={(l) => l.status || ""} sortConfig={sortConfig} onSort={requestSort} />
-                  <th className="px-4 py-3">{t("admin.logsAuditoria.columns.description")}</th>
-                  <th className="px-4 py-3">{t("admin.logsAuditoria.columns.ip")}</th>
+            <table className="admin-table">
+              <thead>
+                <tr className="text-left text-xs font-semibold uppercase text-slate-500">
+                  <SortableTh
+                    label={t("admin.gestaoTickets.columns.date")}
+                    sortKey="createdAt"
+                    accessor={(l) =>
+                      l.createdAt ? new Date(l.createdAt).getTime() : 0
+                    }
+                    sortConfig={sortConfig}
+                    onSort={requestSort}
+                  />
+                  <SortableTh
+                    label={t("admin.gestaoPedidosBadges.columns.user")}
+                    sortKey="user"
+                    accessor={(l) => l.user?.name || ""}
+                    sortConfig={sortConfig}
+                    onSort={requestSort}
+                  />
+                  <SortableTh
+                    label={t("admin.logsAuditoria.actionColumn")}
+                    sortKey="action"
+                    accessor={(l) => l.action || ""}
+                    sortConfig={sortConfig}
+                    onSort={requestSort}
+                  />
+                  <SortableTh
+                    label={t("admin.logsAuditoria.entityLabel")}
+                    sortKey="entity"
+                    accessor={(l) => l.entity || ""}
+                    sortConfig={sortConfig}
+                    onSort={requestSort}
+                  />
+                  <SortableTh
+                    label={t("admin.logsAuditoria.statusLabel")}
+                    sortKey="status"
+                    accessor={(l) => l.status || ""}
+                    sortConfig={sortConfig}
+                    onSort={requestSort}
+                  />
+                  <th className="px-4 py-3">
+                    {t("admin.logsAuditoria.columns.description")}
+                  </th>
+                  <th className="px-4 py-3">
+                    {t("admin.logsAuditoria.columns.ip")}
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody>
                 {logsOrdenados.length > 0 ? (
                   logsOrdenados.map((log, index) => (
-                    <tr
-                      key={log.id}
-                      className={
-                        index % 2 === 0 ? "bg-white" : "bg-slate-50/50"
-                      }
-                    >
+                    <tr key={log.id} className="hover:bg-[#F8FBFF]">
                       <td className="px-4 py-3 text-sm text-slate-800">
                         {new Date(log.createdAt).toLocaleString("pt-PT")}
                       </td>
@@ -436,7 +459,7 @@ export default function LogsAuditoria() {
                         <button
                           className={`rounded-lg border px-3 py-1.5 text-sm transition ${
                             page === pageNum
-                              ? "border-[#0F62FE] bg-[#0F62FE] text-white"
+                              ? "border-[#CFE0FB] bg-[#EAF2FF] text-[#0F62FE]"
                               : "border-slate-300 text-slate-700 hover:bg-slate-100"
                           }`}
                           onClick={() => setPage(pageNum)}
@@ -469,7 +492,11 @@ export default function LogsAuditoria() {
               </ul>
             </nav>
             <p className="mt-4 text-center text-sm text-slate-500">
-              {t("admin.logsAuditoria.pageInfo", { page, pages: pagination.pages, total: pagination.total })}
+              {t("admin.logsAuditoria.pageInfo", {
+                page,
+                pages: pagination.pages,
+                total: pagination.total,
+              })}
             </p>
           </div>
         )}

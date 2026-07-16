@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Sidebar from "../../layout/Sidebar";
 import api from "/src/api";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 
 export default function ServiceLineFormAdmin() {
   const { t } = useTranslation();
@@ -74,19 +75,13 @@ export default function ServiceLineFormAdmin() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-          <div className="relative z-10">
-            <p className="mb-2 text-sm font-medium text-white/80">{t("admin.common.adminPanel")}</p>
-            <h1 className="text-3xl font-bold text-white">
-              {isNovo ? t("admin.serviceLineForm.createTitle") : t("admin.serviceLineForm.editTitle")}
-            </h1>
-            <p className="mt-2 max-w-2xl text-white/85">{t("admin.serviceLineForm.subtitle")}</p>
-          </div>
-        </section>
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle
+          title={isNovo ? t("admin.serviceLineForm.createTitle") : t("admin.serviceLineForm.editTitle")}
+          subtitle={t("admin.serviceLineForm.subtitle")}
+        />
 
-        <div className="rounded-3xl border border-[#0F62FE]/10 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <div className="rounded-3xl border border-[#0F62FE]/10 bg-white p-6">
           {loading ? (
             <p className="py-10 text-center text-sm text-slate-500">{t("admin.common.loading")}</p>
           ) : (
@@ -157,7 +152,7 @@ export default function ServiceLineFormAdmin() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-[#0F62FE] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0F52D4] disabled:opacity-60"
+                  className="rounded-xl bg-[#0F62FE] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0F52D4] disabled:opacity-60"
                 >
                   {saving ? t("admin.common.saving") : t("admin.common.save")}
                 </button>

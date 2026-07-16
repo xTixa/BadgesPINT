@@ -26,7 +26,7 @@ function TierCard({ tier }) {
   return (
     <article className={`rounded-2xl border-2 p-4 text-center ${style.bg}`}>
       <i className={`bi ${tier.icon} text-2xl ${style.text}`}></i>
-      <div className={`mt-2 text-2xl font-bold ${style.text}`}>{tier.count}</div>
+      <div className={`mt-2 text-2xl font-semibold ${style.text}`}>{tier.count}</div>
       <div className="text-xs font-semibold text-slate-600">{tier.name}</div>
       <div className="mt-1 text-xs text-slate-500">{t("serviceLine.gamificacao.pointsThreshold", { count: tier.threshold })}</div>
     </article>
@@ -83,7 +83,7 @@ export default function GamificacaoSL() {
         <div className="space-y-6">
           {/* Tiers */}
           <section className={slPanelClass}>
-            <h5 className="mb-4 text-base font-bold text-slate-900">
+            <h5 className="mb-4 text-base font-semibold text-slate-900">
               <i className="bi bi-layers-fill mr-2 text-[#0F62FE]"></i>
               {t("serviceLine.gamificacao.tiersTitle")}
             </h5>
@@ -97,7 +97,7 @@ export default function GamificacaoSL() {
 
           {/* Premium Badges */}
           <section className={slPanelClass}>
-            <h5 className="mb-4 text-base font-bold text-slate-900">
+            <h5 className="mb-4 text-base font-semibold text-slate-900">
               <i className="bi bi-gem mr-2 text-amber-500"></i>
               {t("serviceLine.gamificacao.premiumBadgesTitle")}
               <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
@@ -120,7 +120,7 @@ export default function GamificacaoSL() {
                       <i className="bi bi-trophy-fill text-lg text-amber-600"></i>
                     </div>
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-bold text-slate-900">
+                      <div className="truncate text-sm font-semibold text-slate-900">
                         {badge.name || badge.description || t("serviceLine.gamificacao.badgeFallback", { id: badge.id })}
                       </div>
                       <div className="text-xs text-slate-500">{badge.area?.name || "-"}</div>
@@ -144,7 +144,7 @@ export default function GamificacaoSL() {
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Ranking com tiers */}
             <section className={slPanelClass}>
-              <h5 className="mb-4 text-base font-bold text-slate-900">
+              <h5 className="mb-4 text-base font-semibold text-slate-900">
                 <i className="bi bi-trophy mr-2 text-[#0F62FE]"></i>
                 {t("serviceLine.gamificacao.rankingTitle")}
               </h5>
@@ -154,13 +154,13 @@ export default function GamificacaoSL() {
                   const style = TIER_STYLE[tier];
                   return (
                     <li key={c.id} className="flex items-center gap-3 px-3 py-3">
-                      <span className="w-5 text-center text-sm font-bold text-[#0F62FE]">{idx + 1}</span>
+                      <span className="w-5 text-center text-sm font-semibold text-[#0F62FE]">{idx + 1}</span>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-semibold text-slate-900">{c.name}</div>
                         <div className="text-xs text-slate-500">{c.area || "-"}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-bold text-slate-900">{t("serviceLine.gamificacao.pointsSuffix", { count: c.points_total })}</div>
+                        <div className="text-sm font-semibold text-slate-900">{t("serviceLine.gamificacao.pointsSuffix", { count: c.points_total })}</div>
                         <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${style.badge}`}>{tier}</span>
                       </div>
                       {Number(c.premium_obtidos) > 0 && (
@@ -181,7 +181,7 @@ export default function GamificacaoSL() {
             <div className="flex flex-col gap-4">
               {/* Fast Track */}
               <section className={slPanelClass}>
-                <h5 className="mb-3 text-base font-bold text-slate-900">
+                <h5 className="mb-3 text-base font-semibold text-slate-900">
                   <i className="bi bi-lightning-charge-fill mr-2 text-yellow-500"></i>
                   {t("serviceLine.gamificacao.fastTrackTitle")}
                   <span className="ml-2 text-xs font-normal text-slate-500">{t("serviceLine.gamificacao.fastTrackHint")}</span>
@@ -197,7 +197,7 @@ export default function GamificacaoSL() {
                           <div className="text-sm font-semibold text-slate-900">{item.name}</div>
                           <div className="text-xs text-slate-500">{item.mes}</div>
                         </div>
-                        <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-bold text-yellow-700">
+                        <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-700">
                           {t("serviceLine.gamificacao.badgesCount", { count: item.badges_no_mes })}
                         </span>
                       </li>
@@ -208,7 +208,7 @@ export default function GamificacaoSL() {
 
               {/* Area Master */}
               <section className={slPanelClass}>
-                <h5 className="mb-3 text-base font-bold text-slate-900">
+                <h5 className="mb-3 text-base font-semibold text-slate-900">
                   <i className="bi bi-star-fill mr-2 text-purple-500"></i>
                   {t("serviceLine.gamificacao.areaMasterTitle")}
                   <span className="ml-2 text-xs font-normal text-slate-500">{t("serviceLine.gamificacao.areaMasterHint")}</span>
@@ -224,7 +224,7 @@ export default function GamificacaoSL() {
                           <div className="text-sm font-semibold text-slate-900">{item.name}</div>
                           <div className="text-xs text-slate-500">{item.area}</div>
                         </div>
-                        <span className="rounded-full bg-purple-100 px-2 py-1 text-xs font-bold text-purple-700">
+                        <span className="rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-700">
                           {t("serviceLine.gamificacao.levelsCompleted", { count: item.niveis_completos })}
                         </span>
                       </li>

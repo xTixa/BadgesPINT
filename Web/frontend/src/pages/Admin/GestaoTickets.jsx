@@ -4,6 +4,7 @@ import api from "/src/api";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import Sidebar from "../../layout/Sidebar";
 import SortableTh from "../../components/ui/SortableTh";
+import AdminPageTitle from "../../components/ui/AdminPageTitle";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function GestaoTickets() {
@@ -84,7 +85,7 @@ export default function GestaoTickets() {
         porPrioridade: [{ prioridade: "critica", count: data.criticos || 0 }],
       });
     } catch (error) {
-      console.error("Erro ao carregar estatísticas:", error);
+      console.error("Erro ao carregar estatÃƒÂ­sticas:", error);
     }
   };
 
@@ -155,53 +156,43 @@ export default function GestaoTickets() {
     <div className="admin-shell">
       <Sidebar user={{ role: "admin", name: "Admin" }} />
 
-      <main className="admin-main px-4 py-4 sm:px-5 md:px-6">
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-
-          <div className="relative z-10">
-            <h1 className="text-3xl font-bold">{t("admin.gestaoTickets.title")}</h1>
-
-            <p className="mt-2 text-white/80">
-              {t("admin.gestaoTickets.subtitle")}
-            </p>
-          </div>
-        </div>
+      <main className="admin-main bg-[#F6F8FA]">
+        <AdminPageTitle title={t("admin.gestaoTickets.title")} subtitle={t("admin.gestaoTickets.subtitle")} />
 
         {stats && (
           <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t("admin.gestaoTickets.total")}
               </div>
-              <div className="mt-1 text-3xl font-bold text-slate-800">
+              <div className="mt-1 text-3xl font-semibold text-slate-800">
                 {stats.total}
               </div>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t("admin.gestaoTickets.open")}
               </div>
-              <div className="mt-1 text-3xl font-bold text-blue-600">
+              <div className="mt-1 text-3xl font-semibold text-blue-600">
                 {stats.porStatus?.abertos ?? stats.abertos ?? 0}
               </div>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t("admin.gestaoTickets.resolved")}
               </div>
-              <div className="mt-1 text-3xl font-bold text-emerald-600">
+              <div className="mt-1 text-3xl font-semibold text-emerald-600">
                 {stats.porStatus?.resolvidos ?? stats.resolvidos ?? 0}
               </div>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t("admin.gestaoTickets.critical")}
               </div>
-              <div className="mt-1 text-3xl font-bold text-rose-600">
+              <div className="mt-1 text-3xl font-semibold text-rose-600">
                 {stats.porPrioridade?.find((p) => p.prioridade === "critica")
                   ?.count ??
                   stats.criticos ??
@@ -211,7 +202,7 @@ export default function GestaoTickets() {
           </div>
         )}
 
-        <div className="mb-8 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
           <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
             <div className="md:col-span-5">
               <select
@@ -264,13 +255,13 @@ export default function GestaoTickets() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="admin-table-shell">
           {loading ? (
             <p className="py-10 text-center text-sm text-slate-500">{t("admin.gestaoTickets.loading")}</p>
           ) : !isMobile ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("admin.gestaoTickets.columns.title")} sortKey="titulo" accessor={(row) => row.titulo} sortConfig={sortConfig} onSort={requestSort} />
                     <SortableTh label={t("admin.gestaoTickets.columns.user")} sortKey="utilizador" accessor={(row) => row.utilizador?.name || ""} sortConfig={sortConfig} onSort={requestSort} />
@@ -280,7 +271,7 @@ export default function GestaoTickets() {
                     <th className="px-4 py-3">{t("admin.gestaoTickets.actions")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tbody>
                   {ticketsOrdenados.map((ticket, idx) => (
                     <tr
                       key={ticket.id}
@@ -389,10 +380,10 @@ export default function GestaoTickets() {
             onClick={() => setTicketSelecionado(null)}
           >
             <div
-              className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 sm:p-8"
+              className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 sm:p-8"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="mb-6 text-2xl font-bold text-slate-800">
+              <h3 className="mb-6 text-2xl font-semibold text-slate-800">
                 {ticketSelecionado.titulo}
               </h3>
 

@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
+import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
+import { useClientPagination } from "../../hooks/useClientPagination";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function RelatoriosServiceLine() {
@@ -53,7 +55,7 @@ export default function RelatoriosServiceLine() {
         setRows(relRes.data?.rows || []);
         setHistorico(histRes.data || []);
       } catch (err) {
-        console.error("Erro ao carregar relatórios SL:", err);
+        console.error("Erro ao carregar relatÃƒÂ³rios SL:", err);
         if (mounted) setError(t("serviceLine.relatorios.errors.loadFailed"));
       } finally {
         if (mounted) setLoading(false);
@@ -73,6 +75,15 @@ export default function RelatoriosServiceLine() {
   }), [rows]);
 
   const { sortedItems: rowsOrdenados, sortConfig, requestSort } = useSortableData(rows);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: rowsPaginados,
+  } = useClientPagination(rowsOrdenados, 15, JSON.stringify(filtros));
 
   const exportar = async (formato) => {
     try {
@@ -102,11 +113,11 @@ export default function RelatoriosServiceLine() {
         { label: t("serviceLine.relatorios.stats.rejected"), value: totals.rejeitados },
       ]}
     >
-      <section className="mb-4 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-        <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-funnel-fill mr-2 text-[#0F62FE]"></i>{t("serviceLine.relatorios.filtersTitle")}</h5>
+      <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-6">
+        <h5 className="mb-3 text-base font-semibold text-slate-900"><i className="bi bi-funnel-fill mr-2 text-[#0F62FE]"></i>{t("serviceLine.relatorios.filtersTitle")}</h5>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
           {isTransactionScope && <input type="date" aria-label="De" name="startDate" value={draftFilters.startDate} max={draftFilters.endDate || undefined} onChange={handleFilter} className="ui-input md:col-span-2" />}
-          {isTransactionScope && <input type="date" aria-label="Até" name="endDate" value={draftFilters.endDate} min={draftFilters.startDate || undefined} onChange={handleFilter} className="ui-input md:col-span-2" />}
+          {isTransactionScope && <input type="date" aria-label="AtÃƒÂ©" name="endDate" value={draftFilters.endDate} min={draftFilters.startDate || undefined} onChange={handleFilter} className="ui-input md:col-span-2" />}
           {showConsultant && <input name="consultor" value={draftFilters.consultor} onChange={handleFilter} className="ui-input md:col-span-3" placeholder={t("serviceLine.relatorios.consultantPlaceholder")} />}
           {showBadge && <input name="badge" value={draftFilters.badge} onChange={handleFilter} className="ui-input md:col-span-3" placeholder={t("serviceLine.relatorios.badgePlaceholder")} />}
           <select name="scope" value={draftFilters.scope} onChange={changeScope} className="ui-input md:col-span-2">
@@ -125,11 +136,11 @@ export default function RelatoriosServiceLine() {
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:col-span-8">
-            <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-list-check mr-2 text-[#0F62FE]"></i>{t("serviceLine.relatorios.resultsTitle")}</h5>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-8">
+            <h5 className="mb-3 text-base font-semibold text-slate-900"><i className="bi bi-list-check mr-2 text-[#0F62FE]"></i>{t("serviceLine.relatorios.resultsTitle")}</h5>
             <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-100 text-slate-700">
+              <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("serviceLine.relatorios.table.type")} sortKey="tipo" accessor={(r) => r.tipo || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                     <SortableTh label={t("serviceLine.relatorios.table.consultant")} sortKey="consultor" accessor={(r) => r.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -138,8 +149,8 @@ export default function RelatoriosServiceLine() {
                     <SortableTh label={t("serviceLine.relatorios.table.date")} sortKey="data" accessor={(r) => (r.data ? new Date(r.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {rowsOrdenados.map((row) => (
+                <tbody>
+                  {rowsPaginados.map((row) => (
                     <tr key={`${row.tipo}-${row.id}`}>
                       <td className="px-3 py-2">{row.tipo}</td>
                       <td className="px-3 py-2">{row.consultor}</td>
@@ -152,15 +163,23 @@ export default function RelatoriosServiceLine() {
                 </tbody>
               </table>
             </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              startItem={startItem}
+              endItem={endItem}
+              onPageChange={setPage}
+            />
           </section>
 
-          <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:col-span-4">
-            <h5 className="mb-3 text-base font-bold text-slate-900"><i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>{t("serviceLine.relatorios.historyTitle")}</h5>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-4">
+            <h5 className="mb-3 text-base font-semibold text-slate-900"><i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>{t("serviceLine.relatorios.historyTitle")}</h5>
             <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
               {historico.slice(0, 8).map((item) => (
                 <li key={item.id} className="px-3 py-3">
                   <div className="text-sm font-semibold text-slate-900">{item.consultor}</div>
-                  <div className="text-xs text-slate-500">{item.badge} · {item.requisito} · {item.estado}</div>
+                  <div className="text-xs text-slate-500">{item.badge} Ã‚Â· {item.requisito} Ã‚Â· {item.estado}</div>
                 </li>
               ))}
               {!historico.length && <li className="px-3 py-3 text-sm text-slate-500">{t("serviceLine.relatorios.noHistory")}</li>}

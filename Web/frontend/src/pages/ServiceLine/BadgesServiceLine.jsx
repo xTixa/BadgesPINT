@@ -4,7 +4,9 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import ServiceLineLayout, { ServiceLineStatCard, slActionClass } from "./ServiceLineLayout";
+import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
+import { useClientPagination } from "../../hooks/useClientPagination";
 import { useSortableData } from "../../hooks/useSortableData";
 
 export default function BadgesServiceLine() {
@@ -24,7 +26,7 @@ export default function BadgesServiceLine() {
         const res = await api.get("/api/sl/catalogo");
         if (mounted) setBadges(res.data || []);
       } catch (err) {
-        console.error("Erro ao carregar catálogo SL:", err);
+        console.error("Erro ao carregar catÃƒÂ¡logo SL:", err);
         if (mounted) setError(t("serviceLine.badges.errors.loadFailed"));
       } finally {
         if (mounted) setLoading(false);
@@ -43,6 +45,15 @@ export default function BadgesServiceLine() {
   }), [badges, search, level]);
 
   const { sortedItems: ordenados, sortConfig, requestSort } = useSortableData(filtered);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: ordenadosPaginados,
+  } = useClientPagination(ordenados, 15, `${search}|${level}`);
   const totalPoints = badges.reduce((acc, badge) => acc + Number(badge.points || 0), 0);
   const premiumCount = badges.filter((badge) => Number(badge.points || 0) >= 200 || badge.level === "Especialista" || badge.level === "Lider").length;
 
@@ -67,7 +78,7 @@ export default function BadgesServiceLine() {
             <ServiceLineStatCard icon="bi-layers-fill" label={t("serviceLine.badges.stats.levels")} value={levels.length} />
           </div>
 
-          <section className="mb-4 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-6">
             <div className="grid gap-3 md:grid-cols-[1fr_220px]">
               <input className="ui-input" placeholder={t("serviceLine.badges.searchPlaceholder")} value={search} onChange={(e) => setSearch(e.target.value)} />
               <select className="ui-input" value={level} onChange={(e) => setLevel(e.target.value)}>
@@ -77,10 +88,10 @@ export default function BadgesServiceLine() {
             </div>
           </section>
 
-          <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <section className="rounded-2xl border border-slate-200 bg-white p-6">
             <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-100 text-slate-700">
+              <table className="admin-table">
+                <thead>
                   <tr>
                     <SortableTh label={t("serviceLine.badges.table.badge")} sortKey="name" accessor={(b) => b.name || b.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                     <SortableTh label={t("serviceLine.badges.table.level")} sortKey="level" accessor={(b) => b.level || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -91,8 +102,8 @@ export default function BadgesServiceLine() {
                     <th className="px-3 py-2 text-right font-semibold">{t("serviceLine.badges.table.actions")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {ordenados.map((badge) => {
+                <tbody>
+                  {ordenadosPaginados.map((badge) => {
                     const isPremium = Number(badge.points || 0) >= 200 || badge.level === "Especialista" || badge.level === "Lider";
                     return (
                       <tr key={badge.id}>
@@ -128,6 +139,14 @@ export default function BadgesServiceLine() {
                 </tbody>
               </table>
             </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              startItem={startItem}
+              endItem={endItem}
+              onPageChange={setPage}
+            />
           </section>
         </>
       )}
