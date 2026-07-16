@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../shared/app_theme.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 
@@ -54,8 +55,9 @@ class RankingPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF111827),
-        borderRadius: BorderRadius.circular(18),
+        color: AppColors.pastelPeach,
+        borderRadius: BorderRadius.circular(AppRadius.header),
+        border: Border.all(color: AppColors.pastelPeachBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,12 +69,12 @@ class RankingPage extends StatelessWidget {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppRadius.control),
                 ),
                 child: const Icon(
                   Icons.emoji_events_rounded,
-                  color: Colors.white,
+                  color: Color(0xFFC2760F),
                   size: 26,
                 ),
               ),
@@ -86,7 +88,7 @@ class RankingPage extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
+                            color: AppColors.textDark,
                             fontWeight: FontWeight.w900,
                           ),
                     ),
@@ -96,7 +98,7 @@ class RankingPage extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.76),
+                        color: AppColors.textDark.withValues(alpha: 0.65),
                         height: 1.25,
                       ),
                     ),
@@ -110,15 +112,15 @@ class RankingPage extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppRadius.control),
+              border: Border.all(color: AppColors.pastelPeachBorder),
             ),
             child: Row(
               children: <Widget>[
                 const Icon(
                   Icons.person_rounded,
-                  color: Colors.white,
+                  color: Color(0xFFC2760F),
                   size: 18,
                 ),
                 const SizedBox(width: 8),
@@ -128,7 +130,7 @@ class RankingPage extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textDark,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -137,7 +139,7 @@ class RankingPage extends StatelessWidget {
                 Text(
                   '#${controller.rankingPosition}',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFFC2760F),
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -159,9 +161,9 @@ class RankingPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 18, 12, 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         color: Colors.white,
-        border: Border.all(color: scheme.outlineVariant),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Column(
         children: <Widget>[
@@ -258,9 +260,9 @@ class RankingPage extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: scheme.outlineVariant),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           color: Colors.white,
+          boxShadow: AppColors.cardShadow,
         ),
         child: Center(
           child: Text(
@@ -286,9 +288,9 @@ class RankingPage extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(color: scheme.outlineVariant),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             color: Colors.white,
+            boxShadow: AppColors.cardShadow,
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(
@@ -310,7 +312,7 @@ class RankingPage extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isMe
-                        ? const Color(0xFF0F62FE).withValues(alpha: 0.08)
+                        ? AppColors.pastelBlue.withValues(alpha: 0.6)
                         : null,
                     border: isLast
                         ? null
@@ -331,7 +333,7 @@ class RankingPage extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             color: item.position <= 3
-                                ? const Color(0xFF0F62FE)
+                                ? AppColors.primary
                                 : scheme.onSurfaceVariant,
                           ),
                         ),
@@ -379,13 +381,13 @@ class RankingPage extends StatelessWidget {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEFF4FF),
-                          borderRadius: BorderRadius.circular(999),
+                          color: AppColors.pastelBlue,
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
                         ),
                         child: Text(
                           '${item.points} pts',
                           style: const TextStyle(
-                            color: Color(0xFF0F62FE),
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w900,
                             fontSize: 12,
                           ),
@@ -411,12 +413,12 @@ class RankingPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Column(
         children: <Widget>[
-          Icon(icon, color: const Color(0xFF0F62FE)),
+          Icon(icon, color: AppColors.primary),
           const SizedBox(height: 8),
           Text(
             value,
@@ -439,8 +441,8 @@ class RankingPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F62FE),
-        borderRadius: BorderRadius.circular(999),
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: const Text(
         'TU',

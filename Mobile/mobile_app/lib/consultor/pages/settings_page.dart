@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../shared/app_theme.dart';
 import '../consultor_controller.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -10,19 +11,20 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Definições'), centerTitle: false),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         children: <Widget>[
-          _buildHeader(context, scheme),
+          _buildHeader(context),
           const SizedBox(height: 20),
           _SettingsMenuCard(
             icon: Icons.person_outline,
             title: 'Perfil e objetivos',
             subtitle: 'Nome, área principal, metas pessoais e password.',
+            background: AppColors.pastelBlue,
+            border: AppColors.pastelBlueBorder,
+            iconColor: AppColors.primary,
             onTap: () => context.push('/settings/profile'),
           ),
           const SizedBox(height: 12),
@@ -30,6 +32,9 @@ class SettingsPage extends StatelessWidget {
             icon: Icons.notifications_outlined,
             title: 'Notificações',
             subtitle: 'Emails, alertas de expiração e lembretes.',
+            background: AppColors.pastelPeach,
+            border: AppColors.pastelPeachBorder,
+            iconColor: const Color(0xFFC2760F),
             onTap: () => context.push('/settings/notifications'),
           ),
           const SizedBox(height: 12),
@@ -38,6 +43,9 @@ class SettingsPage extends StatelessWidget {
             title: 'Privacidade',
             subtitle:
                 'Galeria pública, LinkedIn, assinatura de email e RGPD.',
+            background: AppColors.pastelLilac,
+            border: AppColors.pastelLilacBorder,
+            iconColor: const Color(0xFF7C4FD1),
             onTap: () => context.push('/settings/privacy'),
           ),
           const SizedBox(height: 12),
@@ -45,6 +53,9 @@ class SettingsPage extends StatelessWidget {
             icon: Icons.help_outline_rounded,
             title: 'Ajuda e recursos',
             subtitle: 'Galeria pública, Learning Paths e perguntas frequentes.',
+            background: AppColors.pastelMint,
+            border: AppColors.pastelMintBorder,
+            iconColor: const Color(0xFF1D9A6C),
             onTap: () => context.push('/settings/help'),
           ),
         ],
@@ -52,28 +63,20 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, ColorScheme scheme) {
+  Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F62FE), Color(0xFF4589FF)],
-        ),
+        color: AppColors.pastelBlue,
+        borderRadius: BorderRadius.circular(AppRadius.header),
+        border: Border.all(color: AppColors.pastelBlueBorder),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 28,
             backgroundColor: Colors.white,
-            child: Text(
-              "",
-              style: TextStyle(
-                color: scheme.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
+            child: Icon(Icons.settings_rounded, color: AppColors.primary),
           ),
           const SizedBox(width: 14),
           const Expanded(
@@ -83,7 +86,7 @@ class SettingsPage extends StatelessWidget {
                 Text(
                   "Definições",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textDark,
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
                   ),
@@ -91,12 +94,11 @@ class SettingsPage extends StatelessWidget {
                 SizedBox(height: 2),
                 Text(
                   "Conta, notificações e privacidade",
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                  style: TextStyle(color: Color(0x991E293B), fontSize: 12),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.settings, color: Colors.white),
         ],
       ),
     );
@@ -108,22 +110,34 @@ class _SettingsMenuCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.background,
+    required this.border,
+    required this.iconColor,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final Color background;
+  final Color border;
+  final Color iconColor;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Card(
+    return Material(
+      color: background,
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         onTap: onTap,
-        child: Padding(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            border: Border.all(color: border),
+          ),
           padding: const EdgeInsets.all(16),
           child: Row(
             children: <Widget>[
@@ -131,10 +145,10 @@ class _SettingsMenuCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: scheme.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppRadius.control),
                 ),
-                child: Icon(icon, color: scheme.primary),
+                child: Icon(icon, color: iconColor),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -146,6 +160,7 @@ class _SettingsMenuCard extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
+                        color: AppColors.textDark,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -153,7 +168,7 @@ class _SettingsMenuCard extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         fontSize: 12,
-                        color: scheme.onSurfaceVariant,
+                        color: AppColors.textDark.withValues(alpha: 0.65),
                         height: 1.3,
                       ),
                     ),
@@ -161,7 +176,7 @@ class _SettingsMenuCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+              Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
             ],
           ),
         ),

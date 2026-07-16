@@ -55,8 +55,9 @@ class TimelinePage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(18),
+        color: AppColors.pastelPeach,
+        borderRadius: BorderRadius.circular(AppRadius.header),
+        border: Border.all(color: AppColors.pastelPeachBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +65,7 @@ class TimelinePage extends StatelessWidget {
           const Text(
             'Objetivo atual',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.textDark,
               fontSize: 18,
               fontWeight: FontWeight.w900,
             ),
@@ -72,17 +73,19 @@ class TimelinePage extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             goalText.isEmpty ? 'Define um objetivo nas definicoes.' : goalText,
-            style: const TextStyle(color: Colors.white, fontSize: 15),
+            style: const TextStyle(color: AppColors.textDark, fontSize: 15),
           ),
           if ((deadline ?? '').isNotEmpty) ...[
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.event_rounded, color: Colors.white, size: 18),
+                const Icon(Icons.event_rounded, color: Color(0xFFC2760F), size: 18),
                 const SizedBox(width: 8),
                 Text(
                   'Ate $deadline',
-                  style: const TextStyle(color: Colors.white70),
+                  style: TextStyle(
+                    color: AppColors.textDark.withValues(alpha: 0.7),
+                  ),
                 ),
               ],
             ),

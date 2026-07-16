@@ -36,21 +36,24 @@ class GamificationPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(20),
+                    color: AppColors.pastelLilac,
+                    borderRadius: BorderRadius.circular(AppRadius.header),
+                    border: Border.all(color: AppColors.pastelLilacBorder),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Nivel atual',
-                        style: TextStyle(color: Colors.white70),
+                        style: TextStyle(
+                          color: AppColors.textDark.withValues(alpha: 0.65),
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         level?.name ?? 'Rookie',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textDark,
                           fontSize: 30,
                           fontWeight: FontWeight.w900,
                         ),
@@ -59,12 +62,15 @@ class GamificationPage extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: LinearProgressIndicator(
-                              value: (level?.progress ?? 0) / 100,
-                              minHeight: 9,
-                              backgroundColor: Colors.white24,
-                              valueColor: const AlwaysStoppedAnimation(
-                                AppColors.accent,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
+                              child: LinearProgressIndicator(
+                                value: (level?.progress ?? 0) / 100,
+                                minHeight: 9,
+                                backgroundColor: Colors.white,
+                                valueColor: const AlwaysStoppedAnimation(
+                                  Color(0xFF7C4FD1),
+                                ),
                               ),
                             ),
                           ),
@@ -72,7 +78,7 @@ class GamificationPage extends StatelessWidget {
                           Text(
                             '${level?.progress ?? 0}%',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textDark,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -83,7 +89,9 @@ class GamificationPage extends StatelessWidget {
                         (level?.pointsToNext ?? 0) == 0
                             ? 'Nivel maximo atingido'
                             : '${level?.pointsToNext} pontos para o proximo nivel',
-                        style: const TextStyle(color: Colors.white70),
+                        style: TextStyle(
+                          color: AppColors.textDark.withValues(alpha: 0.65),
+                        ),
                       ),
                     ],
                   ),

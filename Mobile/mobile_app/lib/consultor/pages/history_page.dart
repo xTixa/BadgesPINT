@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/app_theme.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
+import '../widgets/app_header.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({required this.controller, super.key});
@@ -13,46 +15,11 @@ class HistoryPage extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 90),
       children: <Widget>[
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: const LinearGradient(
-              colors: <Color>[Color(0xFF0F62FE), Color(0xFF4589FF)],
-            ),
-          ),
-          child: Row(
-            children: <Widget>[
-              const Icon(Icons.history, color: Colors.white),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      'Historico de Badges',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      'Acompanha a tua evolucao',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                onPressed: controller.refreshRealtimeData,
-                icon: const Icon(Icons.refresh, color: Colors.white),
-              ),
-            ],
-          ),
+        AppHeader(
+          title: 'Historico de Badges',
+          subtitle: 'Acompanha a tua evolucao',
+          icon: Icons.history,
+          onActionPressed: controller.refreshRealtimeData,
         ),
         const SizedBox(height: 12),
         Row(
@@ -150,11 +117,13 @@ class HistoryPage extends StatelessWidget {
             CircleAvatar(
               backgroundColor:
                   badge.isObtained
-                      ? Colors.green.shade100
-                      : Colors.orange.shade100,
+                      ? AppColors.pastelMint
+                      : AppColors.pastelPeach,
               child: Icon(
                 badge.isObtained ? Icons.check : Icons.pending,
-                color: badge.isObtained ? Colors.green : Colors.orange,
+                color: badge.isObtained
+                    ? const Color(0xFF1D9A6C)
+                    : const Color(0xFFC2760F),
               ),
             ),
             const SizedBox(width: 12),
@@ -215,8 +184,13 @@ class HistoryPage extends StatelessWidget {
               label: Text(badge.isObtained ? 'Concluido' : 'Em progresso'),
               backgroundColor:
                   badge.isObtained
-                      ? Colors.green.shade100
-                      : Colors.orange.shade100,
+                      ? AppColors.pastelMint
+                      : AppColors.pastelPeach,
+              side: BorderSide(
+                color: badge.isObtained
+                    ? AppColors.pastelMintBorder
+                    : AppColors.pastelPeachBorder,
+              ),
             ),
           ],
         ),
@@ -229,11 +203,12 @@ class HistoryPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Column(
         children: <Widget>[
-          Icon(icon, color: const Color(0xFF0F62FE)),
+          Icon(icon, color: AppColors.primary),
           const SizedBox(height: 8),
           Text(
             value,

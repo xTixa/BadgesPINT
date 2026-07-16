@@ -7,6 +7,7 @@ import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import '../widgets/badge_medal.dart';
 import '../../shared/app_config.dart';
+import '../../shared/app_theme.dart';
 
 class BadgeDetailPage extends StatefulWidget {
   const BadgeDetailPage({
@@ -263,11 +264,8 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0F62FE), Color(0xFF16558C), Color(0xFF00AEEF)],
-        ),
+        color: AppColors.pastelBlue,
+        border: Border(bottom: BorderSide(color: AppColors.pastelBlueBorder)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,7 +273,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(AppRadius.card),
               child: Container(
                 color: Colors.white,
                 child: _badgeImage(
@@ -296,7 +294,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                 Text(
                   badge.name,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textDark,
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
                     height: 1.1,
@@ -310,7 +308,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.78),
+                    color: AppColors.textDark.withValues(alpha: 0.68),
                     height: 1.35,
                   ),
                 ),
@@ -350,8 +348,6 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
             width: double.infinity,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F62FE),
-                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontSize: 16),
               ),
@@ -639,18 +635,19 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: AppColors.pastelBlueBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: Colors.white),
+          Icon(icon, size: 16, color: AppColors.primary),
           const SizedBox(width: 6),
           Text(
             text,
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.textDark,
               fontSize: 12,
               fontWeight: FontWeight.w800,
             ),

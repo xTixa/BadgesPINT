@@ -189,8 +189,9 @@ class _HomePageState extends State<HomePage> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(20),
+        color: AppColors.pastelBlue,
+        borderRadius: BorderRadius.circular(AppRadius.header),
+        border: Border.all(color: AppColors.pastelBlueBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +200,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Icon(
                 Icons.workspace_premium_rounded,
-                color: Colors.white,
+                color: AppColors.primary,
                 size: 24,
               ),
               SizedBox(width: 10),
@@ -209,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textDark,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
@@ -218,9 +219,12 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Pesquisa, filtra e escolhe o proximo badge para evoluir.',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+            style: TextStyle(
+              color: AppColors.textDark.withValues(alpha: 0.65),
+              fontSize: 14,
+            ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -243,7 +247,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.star_rounded, color: Colors.white, size: 18),
+              const Icon(Icons.star_rounded, color: AppColors.primary, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -251,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textDark,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -495,9 +499,9 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.control),
+        border: Border.all(color: AppColors.pastelBlueBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,7 +511,7 @@ class _HomePageState extends State<HomePage> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.primary,
               fontSize: 20,
               fontWeight: FontWeight.w900,
             ),
@@ -517,7 +521,10 @@ class _HomePageState extends State<HomePage> {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
+            style: TextStyle(
+              color: AppColors.textDark.withValues(alpha: 0.6),
+              fontSize: 12,
+            ),
           ),
         ],
       ),

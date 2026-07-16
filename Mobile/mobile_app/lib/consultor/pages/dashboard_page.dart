@@ -159,13 +159,13 @@ class _DashboardPageState extends State<DashboardPage>
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFBEB),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFFDE68A)),
+          color: AppColors.pastelPeach,
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          border: Border.all(color: AppColors.pastelPeachBorder),
         ),
         child: Row(
           children: [
-            const Icon(Icons.flag, color: Color(0xFFD97706)),
+            const Icon(Icons.flag, color: Color(0xFFC2760F)),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -196,10 +196,10 @@ class _DashboardPageState extends State<DashboardPage>
         hasAlerts
             ? Icons.notification_important_rounded
             : Icons.event_available_rounded;
-    final background = hasAlerts ? const Color(0xFFFFFBEB) : Colors.white;
+    final background = hasAlerts ? AppColors.pastelPeach : Colors.white;
     final borderColor =
-        hasAlerts ? const Color(0xFFFDE68A) : AppColors.borderLight;
-    final accent = hasAlerts ? const Color(0xFFD97706) : AppColors.primary;
+        hasAlerts ? AppColors.pastelPeachBorder : AppColors.borderLight;
+    final accent = hasAlerts ? const Color(0xFFC2760F) : AppColors.primary;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -207,15 +207,9 @@ class _DashboardPageState extends State<DashboardPage>
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: background,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(color: borderColor),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          boxShadow: AppColors.cardShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,7 +221,7 @@ class _DashboardPageState extends State<DashboardPage>
                   height: 42,
                   decoration: BoxDecoration(
                     color: accent.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.control),
                   ),
                   child: Icon(icon, color: accent),
                 ),
@@ -510,77 +504,98 @@ class _DashboardPageState extends State<DashboardPage>
       padding: const EdgeInsets.all(16),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(20),
+          color: AppColors.pastelBlue,
+          borderRadius: BorderRadius.circular(AppRadius.header),
+          border: Border.all(color: AppColors.pastelBlueBorder),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${_greeting ?? _timeGreeting()}, ${firstName?.isEmpty == false ? firstName : 'Consultor'}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+        clipBehavior: Clip.antiAlias,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(width: 4, color: AppColors.primary),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${_greeting ?? _timeGreeting()}, ${firstName?.isEmpty == false ? firstName : 'Consultor'}',
+                        style: const TextStyle(
+                          color: AppColors.textDark,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
 
-            const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-            Text(
-              '$obtained de $total badges obtidos - ${widget.controller.totalPoints} pontos',
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
+                      Text(
+                        '$obtained de $total badges obtidos - ${widget.controller.totalPoints} pontos',
+                        style: TextStyle(
+                          color: AppColors.textDark.withValues(alpha: 0.65),
+                          fontSize: 14,
+                        ),
+                      ),
 
-            const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.white24,
-              valueColor: const AlwaysStoppedAnimation(AppColors.accent),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(
-                  obtained >= 3 ? Icons.celebration : Icons.flag_outlined,
-                  color: Colors.white,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    milestoneText,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          minHeight: 8,
+                          backgroundColor: Colors.white,
+                          valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(
+                            obtained >= 3 ? Icons.celebration : Icons.flag_outlined,
+                            color: AppColors.primary,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              milestoneText,
+                              style: const TextStyle(
+                                color: AppColors.textDark,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: const BorderSide(color: AppColors.primary),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PedidosPage(controller: widget.controller),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.assignment_outlined),
+                        label: Text(
+                          '${widget.controller.pedidosStatus.length} pedidos em curso',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                side: const BorderSide(color: Colors.white70),
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => PedidosPage(controller: widget.controller),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.assignment_outlined),
-              label: Text(
-                '${widget.controller.pedidosStatus.length} pedidos em curso',
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1100,13 +1115,12 @@ class _DashboardPageState extends State<DashboardPage>
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? scheme.primary
-                  : scheme.surfaceContainerHighest.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(999),
+          color: isSelected ? AppColors.pastelBlue : Colors.white,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
           border: Border.all(
-            color: isSelected ? scheme.primary : scheme.outlineVariant,
+            color: isSelected
+                ? AppColors.pastelBlueBorder
+                : scheme.outlineVariant,
           ),
         ),
         child: Text(
@@ -1114,7 +1128,7 @@ class _DashboardPageState extends State<DashboardPage>
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: isSelected ? Colors.white : scheme.onSurfaceVariant,
+            color: isSelected ? AppColors.primary : scheme.onSurfaceVariant,
           ),
         ),
       ),
@@ -1341,7 +1355,7 @@ class _DashboardPageState extends State<DashboardPage>
                 if (badge.isObtained)
                   Icon(
                     Icons.check_circle_rounded,
-                    color: Colors.green.shade600,
+                    color: const Color(0xFF1D9A6C),
                     size: 20,
                   )
                 else
@@ -1404,7 +1418,7 @@ class _DashboardPageState extends State<DashboardPage>
                     if (badge.isObtained)
                       Icon(
                         Icons.check_circle_rounded,
-                        color: Colors.green.shade600,
+                        color: const Color(0xFF1D9A6C),
                         size: 20,
                       ),
                   ],
@@ -1470,9 +1484,9 @@ class _DashboardPageState extends State<DashboardPage>
   Map<String, dynamic> _getBadgeCardColor(BadgeItem badge) {
     if (badge.isObtained) {
       return {
-        'background': const Color(0xFFEAF6FF),
-        'icon': AppColors.accent,
-        'iconBackground': AppColors.accent,
+        'background': AppColors.pastelMint,
+        'icon': const Color(0xFF1D9A6C),
+        'iconBackground': const Color(0xFF1D9A6C),
       };
     }
 

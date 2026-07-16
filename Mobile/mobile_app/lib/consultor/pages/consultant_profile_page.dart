@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../shared/app_theme.dart';
 import '../consultor_controller.dart';
 import '../consultor_models.dart';
 import '../widgets/badge_medal.dart';
@@ -90,8 +91,8 @@ class _ProfileBanner extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: AppColors.cardShadow,
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -100,8 +101,10 @@ class _ProfileBanner extends StatelessWidget {
           Container(
             height: 92,
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: <Color>[Color(0xFF0F62FE), Color(0xFF8A3FFC)],
+              color: AppColors.pastelBlue,
+              border: Border(
+                left: BorderSide(color: AppColors.primary, width: 4),
+                bottom: BorderSide(color: AppColors.pastelBlueBorder),
               ),
             ),
           ),
