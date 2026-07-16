@@ -123,6 +123,10 @@ export default function Home() {
     [badges],
   );
 
+  const topCategory = categories[0];
+  const topBadge = featuredBadges[0];
+  const primaryPath = learningPaths[0];
+
   const handleSearch = (event) => {
     event.preventDefault();
     const params = new URLSearchParams();
@@ -131,71 +135,91 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#F2F2F2]">
-      <section className="relative -mx-4 -mt-8 overflow-hidden bg-slate-950 px-6 py-16 text-white sm:px-8 lg:px-12">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,174,239,0.35),transparent_35%),linear-gradient(135deg,rgba(15,98,254,0.95),rgba(15,23,42,0.96)_58%,rgba(0,174,239,0.82))]"></div>
+    <div className="bg-[#F6FAFF]">
+      <section className="relative -mx-4 -mt-8 overflow-hidden border-b border-[#D7E9FF] bg-[#EAF6FF] px-6 pb-10 pt-14 text-slate-950 sm:px-8 lg:px-12 lg:pb-14">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.86),rgba(234,246,255,0.92)_48%,rgba(207,235,255,0.9))]"></div>
+        <div className="absolute right-0 top-0 h-full w-1/2 bg-[linear-gradient(135deg,transparent,rgba(15,98,254,0.08))]"></div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div className="relative mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
           <div>
-            <p className="mb-4 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-[#BFEFFF]">
+            <p className="mb-4 inline-flex rounded-full border border-[#B8DFFF] bg-white/70 px-4 py-2 text-sm font-medium text-[#0B5CAB] shadow-sm">
               {t("home.eyebrow")}
             </p>
-            <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl">
+            <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
               {t("home.title")}
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white">
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-700">
               {t("home.subtitle")}
             </p>
 
             <form
               onSubmit={handleSearch}
-              className="mt-8 flex max-w-2xl flex-col gap-3 rounded-2xl bg-white p-2 shadow-2xl sm:flex-row"
+              className="mt-8 flex max-w-3xl flex-col gap-3 rounded-2xl border border-[#C7E3FF] bg-white p-2 shadow-[0_18px_45px_rgba(15,98,254,0.12)] sm:flex-row"
             >
               <label className="relative flex-1">
                 <span className="sr-only">{t("home.searchAriaLabel")}</span>
-                <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-[#4F8FCF]"></i>
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder={t("home.searchPlaceholder")}
-                  className="h-12 w-full rounded-xl border-0 bg-slate-50 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none ring-1 ring-slate-200 transition focus:ring-2 focus:ring-[#0F62FE]"
+                  className="h-12 w-full rounded-xl border-0 bg-[#F7FBFF] pl-11 pr-4 text-sm font-medium text-slate-900 outline-none ring-1 ring-[#D8EAFB] transition focus:bg-white focus:ring-2 focus:ring-[#2D8CFF]"
                 />
               </label>
               <button
                 type="submit"
-                className="h-12 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-6 text-sm font-bold text-white shadow-md transition hover:shadow-lg"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0B55DD] hover:shadow-md"
               >
+                <i className="bi bi-arrow-right-circle"></i>
                 {t("home.searchButton")}
               </button>
             </form>
 
-            <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 xs:grid-cols-3">
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-extrabold">{badges.length}</p>
-                <p className="mt-1 text-xs font-medium text-white">{t("home.stats.badges")}</p>
-              </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-extrabold">
-                  {learningPaths.length}
-                </p>
-                <p className="mt-1 text-xs font-medium text-white">
-                  {t("home.stats.paths")}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-extrabold">{categories.length}</p>
-                <p className="mt-1 text-xs font-medium text-white">{t("home.stats.areas")}</p>
-              </div>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                to="/badges"
+                className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#0F62FE] px-5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0B55DD]"
+              >
+                <i className="bi bi-award-fill"></i>
+                {t("home.sections.featuredBadges.viewCatalog")}
+              </Link>
+              <Link
+                to="/learning-paths"
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#B8DFFF] bg-white/70 px-5 text-sm font-medium text-[#0B5CAB] transition hover:bg-white"
+              >
+                <i className="bi bi-diagram-3"></i>
+                {t("home.sections.guidedPaths.viewPaths")}
+              </Link>
+              <Link
+                to="/areas"
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#B8DFFF] bg-white/70 px-5 text-sm font-medium text-[#0B5CAB] transition hover:bg-white"
+              >
+                <i className="bi bi-grid-1x2-fill"></i>
+                {t("home.sections.exploreByArea.viewAll")}
+              </Link>
+            </div>
+
+            <div className="mt-8 grid max-w-3xl grid-cols-3 overflow-hidden rounded-2xl border border-[#C7E3FF] bg-white/80 shadow-sm">
+              {[
+                [badges.length, t("home.stats.badges")],
+                [learningPaths.length, t("home.stats.paths")],
+                [categories.length, t("home.stats.areas")],
+              ].map(([value, label]) => (
+                <div key={label} className="border-r border-[#DCEEFF] p-4 last:border-r-0">
+                  <p className="text-2xl font-semibold text-[#0B5CAB]">{value}</p>
+                  <p className="mt-1 text-xs font-semibold text-slate-500">{label}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <aside className="rounded-3xl border border-white/15 bg-white/10 p-5 shadow-2xl backdrop-blur">
-            <div className="mb-4 flex items-center justify-between">
+          <aside className="rounded-2xl border border-[#C7E3FF] bg-white/90 p-5 text-slate-950 shadow-[0_18px_45px_rgba(15,98,254,0.10)] backdrop-blur">
+            <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-[#BFEFFF]">
+                <p className="text-sm font-semibold uppercase tracking-wide text-[#0F62FE]">
                   {t("home.journeyCard.eyebrow")}
                 </p>
-                <h2 className="text-2xl font-bold">
+                <h2 className="mt-1 text-2xl font-semibold">
                   {user
                     ? t("home.journeyCard.greeting", {
                         name: user.name?.split(" ")[0] || t("home.journeyCard.defaultName"),
@@ -203,36 +227,50 @@ export default function Home() {
                     : t("home.journeyCard.start")}
                 </h2>
               </div>
-              <i className="bi bi-mortarboard text-3xl text-[#BFEFFF]"></i>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EAF6FF] text-[#0F62FE]">
+                <i className="bi bi-compass text-2xl"></i>
+              </span>
             </div>
 
             <div className="space-y-3">
               {[
-                [
-                  t("home.journeyCard.steps.chooseArea.title"),
-                  t("home.journeyCard.steps.chooseArea.text"),
-                ],
-                [
-                  t("home.journeyCard.steps.apply.title"),
-                  t("home.journeyCard.steps.apply.text"),
-                ],
-                [
-                  t("home.journeyCard.steps.submitEvidence.title"),
-                  t("home.journeyCard.steps.submitEvidence.text"),
-                ],
-              ].map(([title, text], index) => (
-                <div
-                  key={title}
-                  className="flex gap-3 rounded-2xl bg-white p-4 text-slate-900"
+                {
+                  icon: "bi-grid-1x2-fill",
+                  title: t("home.journeyCard.steps.chooseArea.title"),
+                  text: topCategory
+                    ? `${topCategory.name} · ${topCategory.count} ${t("home.sections.exploreByArea.badgesAvailable")}`
+                    : t("home.journeyCard.steps.chooseArea.text"),
+                  to: topCategory ? `/badges?q=${encodeURIComponent(topCategory.name)}` : "/areas",
+                },
+                {
+                  icon: "bi-diagram-3-fill",
+                  title: t("home.sections.guidedPaths.title"),
+                  text: primaryPath?.name || t("home.journeyCard.steps.apply.text"),
+                  to: primaryPath ? `/learning-paths/${primaryPath.id}/service-lines` : "/learning-paths",
+                },
+                {
+                  icon: "bi-award-fill",
+                  title: t("home.sections.featuredBadges.title"),
+                  text: topBadge
+                    ? `${getBadgeName(topBadge)} · ${getBadgePoints(topBadge)} ${t("home.sections.starterBadges.points")}`
+                    : t("home.journeyCard.steps.submitEvidence.text"),
+                  to: topBadge ? `/badges/${topBadge.id}` : "/badges",
+                },
+              ].map((item) => (
+                <Link
+                  key={item.title}
+                  to={item.to}
+                  className="group flex items-center gap-3 rounded-xl border border-[#DCEEFF] bg-[#F7FBFF] p-4 transition hover:border-[#8FCBFF] hover:bg-white hover:shadow-sm"
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0F62FE]/10 text-sm font-bold text-[#0F62FE]">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <p className="font-bold">{title}</p>
-                    <p className="text-sm text-slate-500">{text}</p>
-                  </div>
-                </div>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#0F62FE] shadow-sm">
+                    <i className={`bi ${item.icon}`}></i>
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold text-slate-950">{item.title}</span>
+                    <span className="mt-0.5 block truncate text-sm font-medium text-slate-500">{item.text}</span>
+                  </span>
+                  <i className="bi bi-arrow-right text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#0F62FE]"></i>
+                </Link>
               ))}
             </div>
           </aside>
@@ -249,14 +287,14 @@ export default function Home() {
         <section>
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-bold uppercase tracking-wide text-[#0F62FE]">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#0F62FE]">
                 {t("home.sections.exploreByArea.eyebrow")}
               </p>
-              <h2 className="text-3xl font-extrabold text-slate-950">
+              <h2 className="text-3xl font-semibold text-slate-950">
                 {t("home.sections.exploreByArea.title")}
               </h2>
             </div>
-            <Link to="/areas" className="font-bold text-[#0F62FE]">
+            <Link to="/areas" className="font-medium text-[#0F62FE]">
               {t("home.sections.exploreByArea.viewAll")}
             </Link>
           </div>
@@ -267,12 +305,12 @@ export default function Home() {
                 <Link
                   key={category?.name || index}
                   to={`/badges?q=${encodeURIComponent(category?.name || "")}`}
-                  className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#0F62FE]/40 hover:shadow-lg"
+                  className="group rounded-2xl border border-[#DCEEFF] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#8FCBFF] hover:shadow-[0_14px_35px_rgba(15,98,254,0.10)]"
                 >
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10 text-[#0F62FE]">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF6FF] text-[#0F62FE]">
                     <i className="bi bi-grid-1x2-fill text-xl"></i>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-950">
+                  <h3 className="text-lg font-semibold text-slate-950">
                     {category?.name || t("home.sections.exploreByArea.loadingLabel")}
                   </h3>
                   <p className="mt-1 text-sm text-slate-500">
@@ -287,20 +325,20 @@ export default function Home() {
         <section>
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-bold uppercase tracking-wide text-[#0F62FE]">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#0F62FE]">
                 {t("home.sections.guidedPaths.eyebrow")}
               </p>
-              <h2 className="text-3xl font-extrabold text-slate-950">
+              <h2 className="text-3xl font-semibold text-slate-950">
                 {t("home.sections.guidedPaths.title")}
               </h2>
             </div>
-            <Link to="/learning-paths" className="font-bold text-[#0F62FE]">
+            <Link to="/learning-paths" className="font-medium text-[#0F62FE]">
               {t("home.sections.guidedPaths.viewPaths")}
             </Link>
           </div>
 
           {loading ? (
-            <div className="rounded-2xl bg-white p-8 text-center text-slate-500">
+            <div className="rounded-2xl border border-[#DCEEFF] bg-white p-8 text-center text-slate-500 shadow-sm">
               {t("home.sections.guidedPaths.loading")}
             </div>
           ) : (
@@ -315,20 +353,20 @@ export default function Home() {
         <section>
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-bold uppercase tracking-wide text-[#0F62FE]">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#0F62FE]">
                 {t("home.sections.featuredBadges.eyebrow")}
               </p>
-              <h2 className="text-3xl font-extrabold text-slate-950">
+              <h2 className="text-3xl font-semibold text-slate-950">
                 {t("home.sections.featuredBadges.title")}
               </h2>
             </div>
-            <Link to="/badges" className="font-bold text-[#0F62FE]">
+            <Link to="/badges" className="font-medium text-[#0F62FE]">
               {t("home.sections.featuredBadges.viewCatalog")}
             </Link>
           </div>
 
           {loading ? (
-            <div className="rounded-2xl bg-white p-8 text-center text-slate-500">
+            <div className="rounded-2xl border border-[#DCEEFF] bg-white p-8 text-center text-slate-500 shadow-sm">
               {t("home.sections.featuredBadges.loading")}
             </div>
           ) : (
@@ -341,16 +379,16 @@ export default function Home() {
         </section>
 
         {starterBadges.length > 0 && (
-          <section className="rounded-3xl bg-slate-950 p-6 text-white md:p-8">
+          <section className="rounded-2xl border border-[#C7E3FF] bg-white p-6 text-slate-950 shadow-[0_14px_35px_rgba(15,98,254,0.08)] md:p-8">
             <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
               <div>
-                <p className="text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
+                <p className="text-sm font-semibold uppercase tracking-wide text-[#0F62FE]">
                   {t("home.sections.starterBadges.eyebrow")}
                 </p>
-                <h2 className="mt-2 text-3xl font-extrabold">
+                <h2 className="mt-2 text-3xl font-semibold">
                   {t("home.sections.starterBadges.title")}
                 </h2>
-                <p className="mt-3 text-white/70">
+                <p className="mt-3 text-slate-600">
                   {t("home.sections.starterBadges.text")}
                 </p>
               </div>
@@ -359,12 +397,12 @@ export default function Home() {
                   <Link
                     key={badge.id}
                     to={`/badges/${badge.id}`}
-                    className="rounded-2xl bg-white p-4 text-slate-950 transition hover:-translate-y-1"
+                    className="rounded-xl border border-[#DCEEFF] bg-[#F7FBFF] p-4 text-slate-950 transition hover:-translate-y-1 hover:border-[#8FCBFF] hover:bg-white"
                   >
                     <p className="text-sm font-semibold text-[#0F62FE]">
                       {getBadgeArea(badge)}
                     </p>
-                    <h3 className="mt-1 font-bold">{getBadgeName(badge)}</h3>
+                    <h3 className="mt-1 font-semibold">{getBadgeName(badge)}</h3>
                     <p className="mt-2 text-sm text-slate-500">
                       {getBadgePoints(badge)} {t("home.sections.starterBadges.points")}
                     </p>

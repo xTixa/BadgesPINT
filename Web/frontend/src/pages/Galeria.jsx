@@ -15,12 +15,17 @@ const LEVEL_COLOR = {
   Lider:        "bg-rose-100 text-rose-700",
 };
 
+function isAuthenticated() {
+  return Boolean(localStorage.getItem("token") && localStorage.getItem("user"));
+}
+
 export default function Galeria() {
   const { t } = useTranslation();
   const [consultores, setConsultores] = useState([]);
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState("");
   const [selectedArea, setSelectedArea] = useState("todas");
+  const containerClass = isAuthenticated() ? "" : "mx-auto max-w-7xl";
 
   useEffect(() => {
     let mounted = true;
@@ -49,41 +54,35 @@ export default function Galeria() {
 
   return (
     <PublicGalleryShell>
-    <div className="min-h-screen bg-transparent">
+    <div className={containerClass}>
       {/* Hero */}
-      <section className="pb-8">
-        <div className="w-full">
-          <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-            <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/85 hover:text-white">
-              <i className="bi bi-arrow-left"></i>{t("galeria.backToHome")}
-            </Link>
-            <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-end">
-              <div>
-                <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
-                  {t("galeria.eyebrow")}
-                </p>
-                <h1 className="max-w-2xl text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-                  {t("galeria.title")}
-                </h1>
-                <p className="mt-4 max-w-xl text-lg text-white/85">
-                  {t("galeria.subtitle")}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/15 bg-white/15 p-4 backdrop-blur">
-                <input
-                  type="search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t("galeria.searchPlaceholder")}
-                  className="h-12 w-full rounded-xl border-0 bg-white px-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
-                />
-              </div>
-            </div>
+      <section className="mb-6 rounded-3xl border border-[#CFE0FB] bg-[#EAF2FF] p-6 md:p-8">
+        <Link to="/" className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-[#0F62FE] hover:text-[#16558C]">
+          <i className="bi bi-arrow-left"></i>{t("galeria.backToHome")}
+        </Link>
+        <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-end">
+          <div>
+            <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#0F62FE]">
+              {t("galeria.eyebrow")}
+            </p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-950">
+              {t("galeria.title")}
+            </h1>
+            <p className="mt-2 max-w-xl text-slate-600">
+              {t("galeria.subtitle")}
+            </p>
           </div>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("galeria.searchPlaceholder")}
+            className="h-12 w-full rounded-xl border-0 bg-white px-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-[#0F62FE]"
+          />
         </div>
       </section>
 
-      <main className="w-full pb-12">
+      <main className="pb-12">
         {/* Stats + filtro área */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex gap-4">

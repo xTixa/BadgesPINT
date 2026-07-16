@@ -252,13 +252,13 @@ export default function Badges() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2]">
+    <div className="min-h-screen bg-[#F6FAFF]">
       <section className="px-0 pb-4">
         <div className="mx-auto w-full max-w-[1600px]">
-          <div className="overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-6 text-white shadow-[0_12px_40px_rgba(15,98,254,0.18)] lg:p-7">
+          <div className="overflow-hidden rounded-2xl border border-[#C7E3FF] bg-[#EAF6FF] p-6 text-slate-950 shadow-[0_18px_45px_rgba(15,98,254,0.10)] lg:p-7">
             <Link
               to={id ? "/areas" : "/"}
-              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#0B5CAB] transition hover:text-[#0F62FE]"
             >
               <i className="bi bi-arrow-left"></i>
               {id ? t("badges.backToAreas") : t("badges.backToHome")}
@@ -266,27 +266,27 @@ export default function Badges() {
 
             <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
               <div>
-                <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
+                <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-[#0F62FE]">
                   {t("badges.eyebrow")}
                 </p>
-                <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                <h1 className="max-w-5xl text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
                   {areaName ? t("badges.titleForArea", { area: areaName }) : t("badges.titleDefault")}
                 </h1>
-                <p className="mt-3 max-w-3xl text-base text-white/85">
+                <p className="mt-3 max-w-3xl text-base leading-relaxed text-slate-700">
                   {t("badges.subtitle")}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-white/15 bg-white/15 p-3 backdrop-blur">
+              <div className="rounded-2xl border border-[#C7E3FF] bg-white/80 p-3 shadow-sm">
                 <label className="relative block">
                   <span className="sr-only">{t("badges.searchAriaLabel")}</span>
-                  <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                  <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-[#4F8FCF]"></i>
                   <input
                     type="search"
                     value={search}
                     onChange={(event) => updateSearch(event.target.value)}
                     placeholder={t("badges.searchPlaceholder")}
-                    className="h-11 w-full rounded-xl border-0 bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none ring-1 ring-white/30 focus:ring-2 focus:ring-[#00AEEF]"
+                    className="h-11 w-full rounded-xl border-0 bg-[#F7FBFF] pl-11 pr-4 text-sm font-medium text-slate-900 outline-none ring-1 ring-[#D8EAFB] focus:bg-white focus:ring-2 focus:ring-[#2D8CFF]"
                   />
                 </label>
               </div>
@@ -328,22 +328,22 @@ export default function Badges() {
             [t("badges.stats.areas"), areas.length],
             [t("badges.stats.points"), totalPoints],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div key={label} className="rounded-2xl border border-[#DCEEFF] bg-white p-4 shadow-sm">
               <p className="text-sm font-semibold text-slate-500">{label}</p>
-              <p className="mt-1 text-2xl font-extrabold text-slate-950">{value}</p>
+              <p className="mt-1 text-2xl font-semibold text-[#0B5CAB]">{value}</p>
             </div>
           ))}
         </section>
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="h-fit rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)] lg:sticky lg:top-24">
+          <aside className="h-fit rounded-2xl border border-[#DCEEFF] bg-white p-4 shadow-sm lg:sticky lg:top-24">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-slate-950">{t("badges.filters.title")}</h2>
+              <h2 className="text-lg font-semibold text-slate-950">{t("badges.filters.title")}</h2>
               <button
                 type="button"
                 onClick={clearFilters}
                 disabled={!hasFilters}
-                className="text-sm font-bold text-[#0F62FE] disabled:text-slate-300"
+                className="text-sm font-medium text-[#0F62FE] disabled:text-slate-300"
               >
                 {t("badges.filters.clear")}
               </button>
@@ -351,11 +351,11 @@ export default function Badges() {
 
             <div className="space-y-4">
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">{t("badges.filters.area")}</span>
+                <span className="mb-2 block text-sm font-medium text-slate-700">{t("badges.filters.area")}</span>
                 <select
                   value={selectedArea}
                   onChange={(event) => setSelectedArea(event.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                  className="h-11 w-full rounded-xl border border-[#D8EAFB] bg-[#F7FBFF] px-3 text-sm font-medium text-slate-700 outline-none focus:border-[#2D8CFF] focus:ring-2 focus:ring-[#2D8CFF]/20"
                 >
                   <option value="todas">{t("badges.filters.allAreas")}</option>
                   {areas.map((area) => (
@@ -367,11 +367,11 @@ export default function Badges() {
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">{t("badges.filters.level")}</span>
+                <span className="mb-2 block text-sm font-medium text-slate-700">{t("badges.filters.level")}</span>
                 <select
                   value={selectedLevel}
                   onChange={(event) => setSelectedLevel(event.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                  className="h-11 w-full rounded-xl border border-[#D8EAFB] bg-[#F7FBFF] px-3 text-sm font-medium text-slate-700 outline-none focus:border-[#2D8CFF] focus:ring-2 focus:ring-[#2D8CFF]/20"
                 >
                   <option value="todos">{t("badges.filters.allLevels")}</option>
                   {levels.map((level) => (
@@ -383,11 +383,11 @@ export default function Badges() {
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-slate-700">{t("badges.filters.sort")}</span>
+                <span className="mb-2 block text-sm font-medium text-slate-700">{t("badges.filters.sort")}</span>
                 <select
                   value={sortBy}
                   onChange={(event) => setSortBy(event.target.value)}
-                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-[#0F62FE] focus:ring-2 focus:ring-[#0F62FE]/20"
+                  className="h-11 w-full rounded-xl border border-[#D8EAFB] bg-[#F7FBFF] px-3 text-sm font-medium text-slate-700 outline-none focus:border-[#2D8CFF] focus:ring-2 focus:ring-[#2D8CFF]/20"
                 >
                   <option value="recommended">{t("badges.filters.sortRecommended")}</option>
                   <option value="points">{t("badges.filters.sortPoints")}</option>
@@ -404,7 +404,7 @@ export default function Badges() {
                     onChange={(e) => setPremiumOnly(e.target.checked)}
                     className="h-4 w-4 rounded accent-amber-500"
                   />
-                  <span className="text-sm font-bold text-amber-700">
+                  <span className="text-sm font-medium text-amber-700">
                     <i className="bi bi-star-fill mr-1 text-amber-500"></i>{t("badges.filters.premiumOnly")}
                   </span>
                 </label>
@@ -415,7 +415,7 @@ export default function Badges() {
           <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-950">
+                <h2 className="text-xl font-semibold text-slate-950">
                   {t("badges.results.found", { count: filteredBadges.length })}
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
@@ -425,7 +425,7 @@ export default function Badges() {
             </div>
 
             {loading ? (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+              <div className="rounded-2xl border border-[#DCEEFF] bg-white px-6 py-16 text-center shadow-sm">
                 <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
                 <p className="text-lg font-semibold text-slate-600">{t("badges.results.loading")}</p>
               </div>
@@ -454,9 +454,9 @@ export default function Badges() {
                 })}
               </div>
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+              <div className="rounded-2xl border border-[#DCEEFF] bg-white px-6 py-16 text-center shadow-sm">
                 <i className="bi bi-search mb-4 block text-6xl text-slate-300"></i>
-                <h2 className="text-xl font-extrabold text-slate-950">{t("badges.results.emptyTitle")}</h2>
+                <h2 className="text-xl font-semibold text-slate-950">{t("badges.results.emptyTitle")}</h2>
                 <p className="mx-auto mt-2 max-w-xl text-slate-500">
                   {t("badges.results.emptyText")}
                 </p>

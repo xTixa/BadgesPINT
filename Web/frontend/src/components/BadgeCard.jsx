@@ -36,13 +36,13 @@ export default function BadgeCard({
   const isSpecialClosed = isSpecial && new Date(badge.special_deadline) < new Date();
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-200 hover:-translate-y-1 hover:border-[#0F62FE]/30 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#DCEEFF] bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#8FCBFF] hover:shadow-[0_14px_35px_rgba(15,98,254,0.10)]">
       <Link to={detailUrl} className="block">
         <div className="relative aspect-[16/9] overflow-hidden">
           <div className="h-full w-full transition duration-300 group-hover:scale-105">
             <BadgeMedal imageUrl={imageUrl} name={name} level={level} className="h-full w-full" rounded="rounded-none" />
           </div>
-          <div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#0F62FE] shadow-sm ring-1 ring-[#0F62FE]/10">
+          <div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-medium text-[#0F62FE] shadow-sm ring-1 ring-[#DCEEFF]">
             {level}
           </div>
           {badge?.is_premium && (
@@ -52,15 +52,15 @@ export default function BadgeCard({
           )}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-4 pb-4 pt-10">
             {isSpecial && (
-              <div className={`mb-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${isSpecialClosed ? "bg-slate-600 text-white" : "bg-amber-400 text-amber-950"}`}>
+              <div className={`mb-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${isSpecialClosed ? "bg-slate-600 text-white" : "bg-amber-400 text-amber-950"}`}>
                 <i className="bi bi-hourglass-split text-[10px]"></i>
                 {isSpecialClosed ? t("components.badgeCard.specialClosed") : t("requirements.card.specialBadge")}
               </div>
             )}
-            <p className="text-xs font-bold uppercase tracking-wide text-white/90">
+            <p className="text-xs font-medium uppercase tracking-wide text-white/90">
               {areaName}
             </p>
-            <h3 className="mt-1 line-clamp-2 text-xl font-extrabold leading-tight text-white">
+            <h3 className="mt-1 line-clamp-2 text-xl font-semibold leading-tight text-white">
               {name}
             </h3>
           </div>
@@ -73,16 +73,16 @@ export default function BadgeCard({
         </p>
 
         <div className="mt-5 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-xl bg-slate-50 px-2 py-3">
-            <p className="text-sm font-extrabold text-slate-950">{points}</p>
+          <div className="rounded-xl bg-[#F7FBFF] px-2 py-3">
+            <p className="text-sm font-semibold text-[#0B5CAB]">{points}</p>
             <p className="text-[11px] font-semibold text-slate-500">{t("components.badgeCard.points")}</p>
           </div>
-          <div className="rounded-xl bg-slate-50 px-2 py-3">
-            <p className="text-sm font-extrabold text-slate-950">{requirementsCount}</p>
+          <div className="rounded-xl bg-[#F7FBFF] px-2 py-3">
+            <p className="text-sm font-semibold text-[#0B5CAB]">{requirementsCount}</p>
             <p className="text-[11px] font-semibold text-slate-500">{t("components.badgeCard.requirements")}</p>
           </div>
-          <div className="rounded-xl bg-slate-50 px-2 py-3">
-            <p className="text-sm font-extrabold text-slate-950">100%</p>
+          <div className="rounded-xl bg-[#F7FBFF] px-2 py-3">
+            <p className="text-sm font-semibold text-[#0B5CAB]">100%</p>
             <p className="text-[11px] font-semibold text-slate-500">{t("components.badgeCard.validated")}</p>
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function BadgeCard({
         <div className="mt-5 flex flex-col gap-2">
           <Link
             to={detailUrl}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/20 px-4 py-3 text-sm font-bold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#B8DFFF] px-4 py-3 text-sm font-medium text-[#0B5CAB] transition hover:bg-[#EAF6FF]"
           >
             <i className="bi bi-list-check"></i>
             {t("components.badgeCard.viewDetails")}
@@ -102,7 +102,7 @@ export default function BadgeCard({
                 type="button"
                 onClick={() => onApply?.(badge)}
                 disabled={applying || applied}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0B55DD] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <i className="bi bi-send"></i>
                 {applied
@@ -114,7 +114,7 @@ export default function BadgeCard({
             ) : (
               <Link
                 to={detailUrl}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:shadow-md"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0B55DD] hover:shadow-md"
               >
                 <i className="bi bi-arrow-right"></i>
                 {t("components.badgeCard.exploreBadge")}

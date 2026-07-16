@@ -225,27 +225,27 @@ export default function Requirements() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2]">
-      <section className="w-full bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] px-6 py-5 text-white lg:px-10">
+    <div className="min-h-screen bg-[#F6FAFF]">
+      <section className="w-full border-b border-[#D7E9FF] bg-[#EAF6FF] px-6 py-5 text-slate-950 lg:px-10">
         <div className="mx-auto grid max-w-[1600px] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="max-w-5xl">
-            <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-bold text-[#BFEFFF]">
-              <Link to="/" className="hover:text-white">{t("requirements.breadcrumbs.home")}</Link>
-              <span className="text-white/40">/</span>
-              <Link to="/badges" className="hover:text-white">{t("requirements.breadcrumbs.badges")}</Link>
-              <span className="text-white/40">/</span>
-              <span className="text-white/80">{areaName}</span>
+            <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-[#0B5CAB]">
+              <Link to="/" className="hover:text-[#0F62FE]">{t("requirements.breadcrumbs.home")}</Link>
+              <span className="text-slate-300">/</span>
+              <Link to="/badges" className="hover:text-[#0F62FE]">{t("requirements.breadcrumbs.badges")}</Link>
+              <span className="text-slate-300">/</span>
+              <span className="text-slate-600">{areaName}</span>
             </nav>
 
             <div className="mb-3 flex flex-wrap gap-2">
-              <span className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-[#0F62FE]">
+              <span className="rounded-full border border-[#B8DFFF] bg-white px-3 py-1 text-xs font-medium text-[#0F62FE]">
                 {level}
               </span>
-              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
+              <span className="rounded-full border border-[#C7E3FF] bg-white/70 px-3 py-1 text-xs font-medium text-[#0B5CAB]">
                 {areaName}
               </span>
               {isSpecial && (
-                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-extrabold ${isSpecialClosed ? "bg-slate-900/60 text-white" : "bg-amber-400 text-amber-950"}`}>
+                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${isSpecialClosed ? "bg-slate-600 text-white" : "bg-amber-100 text-amber-800 ring-1 ring-amber-200"}`}>
                   <i className="bi bi-hourglass-split"></i>
                   {isSpecialClosed
                     ? t("requirements.card.specialClosedLabel")
@@ -254,15 +254,15 @@ export default function Requirements() {
               )}
             </div>
 
-            <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white md:text-4xl">
+            <h1 className="text-3xl font-semibold leading-tight tracking-tight text-slate-950 md:text-4xl">
               {badge ? badgeName : t("requirements.badgeDetailFallback")}
             </h1>
-            <p className="mt-3 max-w-4xl text-base leading-7 text-[#EAF6FF]">
+            <p className="mt-3 max-w-4xl text-base leading-7 text-slate-700">
               {description}
             </p>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#EAF6FF]">
-              <span className="font-bold text-[#BFEFFF]">
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-600">
+              <span className="font-medium text-[#0B5CAB]">
                 <i className="bi bi-star-fill mr-1"></i>
                 {t("requirements.verifiedBadge")}
               </span>
@@ -273,13 +273,13 @@ export default function Requirements() {
           </div>
 
           <aside className="hidden -mb-[26rem] lg:block">
-            <div className="overflow-hidden rounded-2xl border border-white/40 bg-white text-slate-950 shadow-[0_20px_50px_rgba(15,98,254,0.25)]">
+            <div className="overflow-hidden rounded-2xl border border-[#C7E3FF] bg-white text-slate-950 shadow-[0_18px_45px_rgba(15,98,254,0.12)]">
               <div className="aspect-square w-full">
                 <BadgeMedal imageUrl={imageUrl} name={badgeName} level={level} className="h-full w-full" rounded="rounded-none" />
               </div>
               <div className="p-4">
                 <div className="mb-3">
-                  <p className="text-2xl font-extrabold">{t("requirements.pointsCount", { count: points })}</p>
+                  <p className="text-2xl font-semibold text-[#0B5CAB]">{t("requirements.pointsCount", { count: points })}</p>
                   <p className="text-sm font-semibold text-slate-500">{t("requirements.onEarnBadge")}</p>
                 </div>
 
@@ -288,7 +288,7 @@ export default function Requirements() {
                     type="button"
                     onClick={handleApply}
                     disabled={applying || applied || isSpecialClosed}
-                    className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-semibold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {applied
                       ? application?.status === "obtido"
@@ -304,14 +304,14 @@ export default function Requirements() {
                   <button
                     type="button"
                     disabled
-                    className="mb-3 flex h-10 w-full cursor-not-allowed items-center justify-center rounded-xl bg-slate-300 px-4 text-sm font-extrabold text-slate-600"
+                    className="mb-3 flex h-10 w-full cursor-not-allowed items-center justify-center rounded-xl bg-slate-300 px-4 text-sm font-semibold text-slate-600"
                   >
                     {t("requirements.card.specialClosedLabel")}
                   </button>
                 ) : (
                   <Link
                     to="/login"
-                    className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD]"
+                    className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-semibold text-white transition hover:bg-[#0B55DD]"
                   >
                     {t("requirements.card.loginToApply")}
                   </Link>
@@ -320,20 +320,20 @@ export default function Requirements() {
                 <button
                   type="button"
                   onClick={handleShareLinkedIn}
-                  className="mb-3 flex h-10 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+                  className="mb-3 flex h-10 w-full items-center justify-center rounded-xl border border-[#B8DFFF] px-4 text-sm font-medium text-[#0B5CAB] transition hover:bg-[#EAF6FF]"
                 >
                   {t("requirements.card.shareLinkedIn")}
                 </button>
 
                 <Link
                   to="/badges"
-                  className="flex h-10 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+                  className="flex h-10 w-full items-center justify-center rounded-xl border border-[#B8DFFF] px-4 text-sm font-medium text-[#0B5CAB] transition hover:bg-[#EAF6FF]"
                 >
                   {t("requirements.card.viewOtherBadges")}
                 </Link>
 
                 <div className="mt-4 space-y-2 text-sm">
-                  <p className="font-extrabold">{t("requirements.card.includesTitle")}</p>
+                  <p className="font-semibold">{t("requirements.card.includesTitle")}</p>
                   <p><i className="bi bi-list-check mr-2"></i>{t("requirements.card.validationRequirements", { count: reqs.length })}</p>
                   <p><i className="bi bi-upload mr-2"></i>{t("requirements.card.evidenceSubmission")}</p>
                   <p><i className="bi bi-shield-check mr-2"></i>{t("requirements.card.reviewByOwner")}</p>
@@ -359,8 +359,8 @@ export default function Requirements() {
             </div>
           )}
 
-          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.learningOutcomes.title")}</h2>
+          <section className="rounded-2xl border border-[#DCEEFF] bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-950">{t("requirements.learningOutcomes.title")}</h2>
             <div className="mt-4 grid gap-x-8 gap-y-3 md:grid-cols-2 xl:grid-cols-4">
               {learningOutcomes.map((outcome) => (
                 <div key={outcome} className="flex gap-3 text-sm leading-relaxed text-slate-700">
@@ -373,29 +373,29 @@ export default function Requirements() {
 
           <section>
             <div className="mb-4">
-                <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.content.title")}</h2>
+                <h2 className="text-xl font-semibold text-slate-950">{t("requirements.content.title")}</h2>
               <p className="mt-1 text-sm text-slate-600">
                 {t("requirements.content.subtitle", { count: reqs.length })}
               </p>
             </div>
 
             {loading ? (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
+              <div className="rounded-2xl border border-[#DCEEFF] bg-white px-6 py-14 text-center shadow-sm">
                 <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
                 <p className="font-semibold text-slate-600">{t("requirements.content.loading")}</p>
               </div>
             ) : reqs.length > 0 ? (
-              <div className="overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+              <div className="overflow-hidden rounded-2xl border border-[#DCEEFF] bg-white shadow-sm">
                 {reqs.map((requirement, index) => (
                   <details
                     key={requirement.id || index}
-                    className="group border-b border-slate-200 bg-white last:border-b-0"
+                    className="group border-b border-[#E5F2FF] bg-white last:border-b-0"
                     open={index === 0}
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-3.5">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F7FBFF] px-5 py-3.5">
                       <div className="flex min-w-0 items-center gap-3">
                         <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
-                        <span className="font-extrabold text-slate-950">
+                        <span className="font-semibold text-slate-950">
                           {t("requirements.content.requirementLabel", { index: index + 1, code: requirement.code || t("requirements.content.defaultEvidence") })}
                         </span>
                       </div>
@@ -408,10 +408,10 @@ export default function Requirements() {
                         {requirement.description || requirement.descricao}
                       </p>
                       <div className="mt-4 flex flex-wrap gap-2">
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                        <span className="rounded-full bg-[#F0F7FF] px-3 py-1 text-xs font-medium text-slate-600">
                           {t("requirements.content.practicalEvidence")}
                         </span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                        <span className="rounded-full bg-[#F0F7FF] px-3 py-1 text-xs font-medium text-slate-600">
                           {t("requirements.content.manualValidation")}
                         </span>
                       </div>
@@ -420,9 +420,9 @@ export default function Requirements() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
+              <div className="rounded-2xl border border-[#DCEEFF] bg-white px-6 py-14 text-center shadow-sm">
                 <i className="bi bi-clipboard2-x mb-4 block text-5xl text-slate-300"></i>
-                <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.content.emptyTitle")}</h2>
+                <h2 className="text-xl font-semibold text-slate-950">{t("requirements.content.emptyTitle")}</h2>
                 <p className="mt-2 text-slate-500">
                   {t("requirements.content.emptyText")}
                 </p>
@@ -433,22 +433,22 @@ export default function Requirements() {
           {sections.length > 0 && (
             <section>
               <div className="mb-4">
-                <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.curriculum.title")}</h2>
+                <h2 className="text-xl font-semibold text-slate-950">{t("requirements.curriculum.title")}</h2>
                 <p className="mt-1 text-sm text-slate-600">
                   {t("requirements.curriculum.subtitle")}
                 </p>
               </div>
-              <div className="overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+              <div className="overflow-hidden rounded-2xl border border-[#DCEEFF] bg-white shadow-sm">
                 {sections.map((section, index) => (
                   <details
                     key={section.id || index}
-                    className="group border-b border-slate-200 bg-white last:border-b-0"
+                    className="group border-b border-[#E5F2FF] bg-white last:border-b-0"
                     open={index === 0}
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F8FBFF] px-5 py-3.5">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-[#F7FBFF] px-5 py-3.5">
                       <div className="flex min-w-0 items-center gap-3">
                         <i className="bi bi-chevron-down text-sm transition group-open:rotate-180"></i>
-                        <span className="font-extrabold text-slate-950">{section.title}</span>
+                        <span className="font-semibold text-slate-950">{section.title}</span>
                       </div>
                       <span className="text-sm font-semibold text-slate-500">
                         {t("requirements.curriculum.lessonsCount", { count: (section.lessons || []).length })}
@@ -459,7 +459,7 @@ export default function Requirements() {
                         <div key={lesson.id} className="flex items-start gap-3 px-5 py-3.5">
                           <i className="bi bi-play-circle text-lg text-[#0F62FE]"></i>
                           <div>
-                            <p className="font-bold text-slate-900">{lesson.title}</p>
+                            <p className="font-semibold text-slate-900">{lesson.title}</p>
                             {lesson.description && (
                               <p className="mt-1 text-sm text-slate-600">{lesson.description}</p>
                             )}
@@ -476,19 +476,19 @@ export default function Requirements() {
             </section>
           )}
 
-          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.descriptionTitle")}</h2>
+          <section className="rounded-2xl border border-[#DCEEFF] bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-950">{t("requirements.descriptionTitle")}</h2>
             <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{description}</p>
           </section>
 
-          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.softinsaIntegration.title")}</h2>
+          <section className="rounded-2xl border border-[#DCEEFF] bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-950">{t("requirements.softinsaIntegration.title")}</h2>
             <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{t("requirements.softinsaIntegration.text")}</p>
             <a
               href={SOFTINSA_URL}
               target="_blank"
               rel="noreferrer noopener"
-              className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+              className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[#B8DFFF] px-4 text-sm font-medium text-[#0B5CAB] transition hover:bg-[#EAF6FF]"
             >
               <i className="bi bi-box-arrow-up-right"></i>
               {t("requirements.softinsaIntegration.cta")}
@@ -497,15 +497,15 @@ export default function Requirements() {
         </div>
 
         <aside className="lg:hidden">
-          <div className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <p className="text-2xl font-extrabold text-slate-950">{t("requirements.pointsCount", { count: points })}</p>
+          <div className="rounded-2xl border border-[#DCEEFF] bg-white p-5 shadow-sm">
+            <p className="text-2xl font-semibold text-[#0B5CAB]">{t("requirements.pointsCount", { count: points })}</p>
             <p className="text-sm font-semibold text-slate-500">{t("requirements.onEarnBadge")}</p>
             {user?.role === "consultant" ? (
               <button
                 type="button"
                 onClick={handleApply}
                 disabled={applying || applied}
-                className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {applied
                   ? application?.status === "obtido"
@@ -518,7 +518,7 @@ export default function Requirements() {
             ) : (
               <Link
                 to="/login"
-                className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white"
+                className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-semibold text-white"
               >
                 {t("requirements.card.loginToApply")}
               </Link>
@@ -526,7 +526,7 @@ export default function Requirements() {
             <button
               type="button"
               onClick={handleShareLinkedIn}
-              className="mt-3 flex h-12 w-full items-center justify-center rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+              className="mt-3 flex h-12 w-full items-center justify-center rounded-xl border border-[#B8DFFF] px-4 text-sm font-medium text-[#0B5CAB] transition hover:bg-[#EAF6FF]"
             >
               {t("requirements.card.shareLinkedIn")}
             </button>
