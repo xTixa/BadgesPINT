@@ -51,10 +51,10 @@ export default function Certificados() {
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
         <div className="space-y-6">
-          <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-            <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
-            <h1 className="text-3xl font-bold text-white">{t("consultor.certificados.title")}</h1>
-            <p className="mt-2 max-w-2xl text-white/80">{t("consultor.certificados.subtitle")}</p>
+          <section className="relative overflow-hidden rounded-3xl border border-[#C3EBD8] bg-[#E6F7EF] p-8 text-slate-900">
+            <p className="mb-2 text-sm font-medium text-slate-500">{t("consultor.common.consultantArea")}</p>
+            <h1 className="text-3xl font-bold text-slate-900">{t("consultor.certificados.title")}</h1>
+            <p className="mt-2 max-w-2xl text-slate-600">{t("consultor.certificados.subtitle")}</p>
           </section>
 
           {!loading && !publicProfileEnabled && (
@@ -83,7 +83,7 @@ export default function Certificados() {
               {certificates.map((cert) => {
                 const shareUrl = `${getShareBaseUrl()}/share/certificates/${cert.certificate_code}`;
                 return (
-                  <div key={cert.id} className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+                  <div key={cert.id} className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
                         <h2 className="text-lg font-bold text-slate-900">{cert.badge_name}</h2>

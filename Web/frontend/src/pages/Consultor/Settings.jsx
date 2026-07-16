@@ -1,4 +1,4 @@
-﻿import Sidebar from "../../layout/Sidebar";
+import Sidebar from "../../layout/Sidebar";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -89,14 +89,12 @@ export default function ConsultorSettingsPage() {
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
         <div className="space-y-6">
           {/* HERO */}
-          <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-            <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-
+          <section className="relative mb-8 overflow-hidden rounded-3xl border border-[#CFE0FB] bg-[#EAF2FF] p-8 text-slate-900">
             <div className="relative z-10">
-              <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
-              <h1 className="text-3xl font-bold text-white">{t("consultor.settings.title")}</h1>
+              <p className="mb-2 text-sm font-medium text-slate-500">{t("consultor.common.consultantArea")}</p>
+              <h1 className="text-3xl font-bold text-slate-900">{t("consultor.settings.title")}</h1>
 
-              <p className="mt-2 text-white/80">
+              <p className="mt-2 text-slate-600">
                 {t("consultor.settings.subtitle")}
               </p>
             </div>
@@ -104,7 +102,7 @@ export default function ConsultorSettingsPage() {
 
           {/* OBJETIVOS */}
           <div>
-            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+            <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]">
               <h2 className="mb-4 text-xl font-semibold">
                 {t("consultor.settings.goalsAndLearning")}
               </h2>
@@ -158,7 +156,7 @@ export default function ConsultorSettingsPage() {
 
           {/* NOTIFICAÇÕES + PRIVACIDADE */}
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+            <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]">
               <h2 className="mb-4 text-xl font-semibold">{t("consultor.settings.notifications")}</h2>
 
               <div className="space-y-3">
@@ -184,7 +182,7 @@ export default function ConsultorSettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+            <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]">
               <h2 className="mb-4 text-xl font-semibold">
                 {t("consultor.settings.privacyAndSharing")}
               </h2>
@@ -237,7 +235,7 @@ export default function ConsultorSettingsPage() {
           </div>
 
           {/* INTEGRAÇÕES */}
-          <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
+          <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]">
             <h2 className="mb-4 text-xl font-semibold">{t("consultor.settings.integrations")}</h2>
 
             <div className="space-y-3">
@@ -273,7 +271,7 @@ export default function ConsultorSettingsPage() {
 
           {/* BOTÃO */}
           <div className="sticky bottom-4 mt-6 flex justify-end">
-            <button className=" rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-8 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] ">
+            <button className=" rounded-2xl bg-[#0F62FE] px-8 py-3 font-semibold text-white shadow-sm transition hover:scale-[1.02] ">
               {t("consultor.settings.saveChanges")}
             </button>
           </div>

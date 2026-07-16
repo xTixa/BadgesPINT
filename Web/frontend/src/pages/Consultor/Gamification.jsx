@@ -107,8 +107,8 @@ export default function Gamification() {
                   {loading ? "..." : data.level?.name}
                 </h2>
               </div>
-              <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[#0F62FE]/10">
-                <i className="bi bi-lightning-charge-fill text-3xl text-[#0F62FE]"></i>
+              <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[#F1EBFB]">
+                <i className="bi bi-lightning-charge-fill text-3xl text-[#7C4FD1]"></i>
               </div>
             </div>
             <div className="mt-6">
@@ -118,7 +118,7 @@ export default function Gamification() {
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#0F62FE] to-[#00AEEF]"
+                  className="h-full rounded-full bg-[#7C4FD1]"
                   style={{ width: `${data.level?.progress || 0}%` }}
                 />
               </div>

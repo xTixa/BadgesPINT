@@ -5,7 +5,9 @@ import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { TalentStatCard } from "./TalentManagerLayout";
+import AdminPagination from "/src/components/ui/AdminPagination";
 import SortableTh from "/src/components/ui/SortableTh";
+import { useClientPagination } from "/src/hooks/useClientPagination";
 import { useSortableData } from "/src/hooks/useSortableData";
 
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString("pt-PT") : "-");
@@ -64,6 +66,24 @@ export default function Equipa() {
 
   const { sortedItems: consultoresOrdenados, sortConfig, requestSort } = useSortableData(filtrados);
   const { sortedItems: catalogoOrdenado, sortConfig: catalogoSortConfig, requestSort: requestCatalogoSort } = useSortableData(catalogo);
+  const {
+    page: consultoresPage,
+    setPage: setConsultoresPage,
+    totalPages: consultoresTotalPages,
+    totalItems: consultoresTotalItems,
+    startItem: consultoresStartItem,
+    endItem: consultoresEndItem,
+    paginatedItems: consultoresPaginados,
+  } = useClientPagination(consultoresOrdenados, 15, filtroNome);
+  const {
+    page: catalogoPage,
+    setPage: setCatalogoPage,
+    totalPages: catalogoTotalPages,
+    totalItems: catalogoTotalItems,
+    startItem: catalogoStartItem,
+    endItem: catalogoEndItem,
+    paginatedItems: catalogoPaginado,
+  } = useClientPagination(catalogoOrdenado, 15);
 
   const mediaPontos = consultores.length
     ? Math.round(consultores.reduce((acc, c) => acc + Number(c.points_total || 0), 0) / consultores.length)
@@ -123,11 +143,6 @@ export default function Equipa() {
     <TalentManagerLayout
       title={t("talentManager.equipa.title")}
       subtitle={t("talentManager.equipa.subtitle")}
-      heroStats={[
-        { label: t("talentManager.equipa.stats.consultants"), value: consultores.length },
-        { label: t("talentManager.equipa.stats.averagePoints"), value: mediaPontos },
-        { label: t("talentManager.equipa.stats.progress"), value: `${mediaProgresso}%` },
-      ]}
     >
         {loading ? (
           <EmptyState message={t("talentManager.equipa.loading")} icon="bi-hourglass-split" />
@@ -161,8 +176,8 @@ export default function Equipa() {
                   </div>
 
                   <div className="overflow-x-auto rounded-xl border border-slate-200">
-                    <table className="min-w-full divide-y divide-slate-200 text-sm">
-                      <thead className="bg-slate-100 text-slate-700">
+                    <table className="admin-table">
+                      <thead>
                         <tr>
                           <SortableTh label={t("talentManager.equipa.table.consultant")} sortKey="name" accessor={(c) => c.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                           <SortableTh label={t("talentManager.equipa.table.email")} sortKey="email" accessor={(c) => c.email || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -174,8 +189,8 @@ export default function Equipa() {
                           <th className="px-3 py-2 text-right font-semibold">{t("talentManager.equipa.table.timeline")}</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                        {consultoresOrdenados.map((c) => (
+                      <tbody>
+                        {consultoresPaginados.map((c) => (
                           <tr key={c.id}>
                             <td className="px-3 py-2 font-semibold text-slate-900">{c.name}</td>
                             <td className="px-3 py-2 text-slate-500">{c.email}</td>
@@ -208,6 +223,14 @@ export default function Equipa() {
                       </tbody>
                     </table>
                   </div>
+                  <AdminPagination
+                    page={consultoresPage}
+                    totalPages={consultoresTotalPages}
+                    totalItems={consultoresTotalItems}
+                    startItem={consultoresStartItem}
+                    endItem={consultoresEndItem}
+                    onPageChange={setConsultoresPage}
+                  />
                 </SectionCard>
               </div>
 
@@ -279,8 +302,8 @@ export default function Equipa() {
 
             <SectionCard title={t("talentManager.equipa.catalogSection.title")} icon="bi-patch-check-fill">
               <div className="overflow-x-auto rounded-xl border border-slate-200">
-                <table className="min-w-full divide-y divide-slate-200 text-sm">
-                  <thead className="bg-slate-100 text-slate-700">
+                <table className="admin-table">
+                  <thead>
                     <tr>
                       <SortableTh label={t("talentManager.equipa.table.badge")} sortKey="name" accessor={(b) => b.name || b.description || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
                       <SortableTh label={t("talentManager.equipa.table.level")} sortKey="level" accessor={(b) => b.level || ""} sortConfig={catalogoSortConfig} onSort={requestCatalogoSort} className="text-left font-semibold" />
@@ -289,8 +312,8 @@ export default function Equipa() {
                       <th className="px-3 py-2 text-left font-semibold">{t("talentManager.equipa.table.requirements")}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                    {catalogoOrdenado.map((badge) => (
+                  <tbody>
+                    {catalogoPaginado.map((badge) => (
                       <tr key={badge.id}>
                         <td className="px-3 py-2">
                           <div className="font-semibold text-slate-900">{badge.name || badge.description || t("talentManager.equipa.badgeFallback", { id: badge.id })}</div>
@@ -319,6 +342,14 @@ export default function Equipa() {
                   </tbody>
                 </table>
               </div>
+              <AdminPagination
+                page={catalogoPage}
+                totalPages={catalogoTotalPages}
+                totalItems={catalogoTotalItems}
+                startItem={catalogoStartItem}
+                endItem={catalogoEndItem}
+                onPageChange={setCatalogoPage}
+              />
             </SectionCard>
           </>
         )}

@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
+import AdminPagination from "/src/components/ui/AdminPagination";
 import EmptyState from "/src/components/ui/EmptyState";
+import { useClientPagination } from "/src/hooks/useClientPagination";
 import TalentManagerLayout from "./TalentManagerLayout";
 
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString("pt-PT") : "-");
@@ -86,6 +88,15 @@ export default function ExpiracoesBadgesTM() {
 
     return result;
   }, [expiracoes, janela, filtroNome, sortKey, sortAsc]);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: filteredPaginado,
+  } = useClientPagination(filtered, 15, `${janela}|${filtroNome}`);
 
   const toggleSort = (key) => {
     if (sortKey === key) setSortAsc((v) => !v);
@@ -112,7 +123,7 @@ export default function ExpiracoesBadgesTM() {
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : (
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3 rounded-3xl bg-white p-4 shadow-sm">
+          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
             <div className="flex flex-wrap gap-2">
               {JANELAS.map((j) => (
                 <button
@@ -120,7 +131,7 @@ export default function ExpiracoesBadgesTM() {
                   onClick={() => setJanela(j.value)}
                   className={`rounded-xl px-3 py-1.5 text-sm font-semibold transition ${
                     janela === j.value
-                      ? "bg-[#0F62FE] text-white shadow-sm"
+                      ? "bg-[#0F62FE] text-white"
                       : "border border-slate-200 text-slate-600 hover:bg-slate-50"
                   }`}
                 >
@@ -149,10 +160,10 @@ export default function ExpiracoesBadgesTM() {
             </div>
           )}
 
-          <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
-            <table className="min-w-full text-sm">
-              <thead className="border-b border-slate-100">
-                <tr className="text-left text-slate-500">
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <table className="admin-table">
+              <thead>
+                <tr>
                   <th className="px-5 py-3 font-semibold">
                     <SortButton sortKey="badge" activeKey={sortKey} asc={sortAsc} onSort={toggleSort}>
                       {t("talentManager.expiracoes.table.badge")}
@@ -180,8 +191,8 @@ export default function ExpiracoesBadgesTM() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
-                {filtered.map((b, idx) => (
+              <tbody>
+                {filteredPaginado.map((b, idx) => (
                   <tr
                     key={`${b.consultorId}-${b.badge}-${idx}`}
                     className="transition hover:bg-slate-50"
@@ -223,6 +234,14 @@ export default function ExpiracoesBadgesTM() {
               </Link>
             </div>
           </div>
+          <AdminPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            startItem={startItem}
+            endItem={endItem}
+            onPageChange={setPage}
+          />
         </div>
       )}
     </TalentManagerLayout>

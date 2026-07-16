@@ -4,7 +4,9 @@ import api from "/src/api";
 import SectionCard from "/src/components/ui/SectionCard";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { tmActionClass, tmPrimaryActionClass } from "./TalentManagerLayout";
+import AdminPagination from "/src/components/ui/AdminPagination";
 import SortableTh from "/src/components/ui/SortableTh";
+import { useClientPagination } from "/src/hooks/useClientPagination";
 import { useSortableData } from "/src/hooks/useSortableData";
 
 const getScopeOptions = (t) => [
@@ -73,6 +75,15 @@ export default function RelatoriosTalent() {
   }), [resultados]);
 
   const { sortedItems: resultadosOrdenados, sortConfig, requestSort } = useSortableData(resultados);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: resultadosPaginados,
+  } = useClientPagination(resultadosOrdenados, 15, JSON.stringify(filtros));
 
   const gerar = async (formato) => {
     try {
@@ -160,9 +171,10 @@ export default function RelatoriosTalent() {
           ) : error ? (
             <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-100 text-slate-700">
+            <>
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="admin-table">
+                  <thead>
                   <tr>
                     <SortableTh label={t("talentManager.relatorios.table.type")} sortKey="tipo" accessor={(r) => r.tipo || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                     <SortableTh label={t("talentManager.relatorios.table.consultant")} sortKey="consultor" accessor={(r) => r.consultor || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -172,8 +184,8 @@ export default function RelatoriosTalent() {
                     <SortableTh label={t("talentManager.relatorios.table.date")} sortKey="data" accessor={(r) => (r.data ? new Date(r.data).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                  {resultadosOrdenados.map((r) => (
+                  <tbody>
+                  {resultadosPaginados.map((r) => (
                     <tr key={`${r.tipo}-${r.id}`}>
                       <td className="px-3 py-2">{r.tipo}</td>
                       <td className="px-3 py-2">{r.consultor}</td>
@@ -191,8 +203,17 @@ export default function RelatoriosTalent() {
                     </tr>
                   )}
                 </tbody>
-              </table>
-            </div>
+                </table>
+              </div>
+              <AdminPagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                startItem={startItem}
+                endItem={endItem}
+                onPageChange={setPage}
+              />
+            </>
           )}
         </SectionCard>
     </TalentManagerLayout>

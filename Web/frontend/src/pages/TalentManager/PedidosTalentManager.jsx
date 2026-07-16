@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
 import TalentManagerLayout, { tmActionClass, tmPrimaryActionClass } from "./TalentManagerLayout";
+import AdminPagination from "/src/components/ui/AdminPagination";
 import SortableTh from "/src/components/ui/SortableTh";
+import { useClientPagination } from "/src/hooks/useClientPagination";
 import { useSortableData } from "/src/hooks/useSortableData";
 
 const formatDateTime = (value, t) => (value ? new Date(value).toLocaleString("pt-PT") : t("talentManager.pedidos.noDate"));
@@ -55,6 +57,15 @@ export default function PedidosTalentManager() {
   );
 
   const { sortedItems: pedidosOrdenados, sortConfig, requestSort } = useSortableData(pedidos);
+  const {
+    page,
+    setPage,
+    totalPages,
+    totalItems,
+    startItem,
+    endItem,
+    paginatedItems: pedidosPaginados,
+  } = useClientPagination(pedidosOrdenados, 15, filtro);
 
   const validar = async (id) => {
     const comment = window.prompt(t("talentManager.pedidos.prompts.validateComment")) || "";
@@ -139,7 +150,7 @@ export default function PedidosTalentManager() {
         ))}
       </div>
 
-      <section className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6">
         <h5 className="mb-3 text-base font-bold text-slate-900">
           <i className="bi bi-inbox mr-2 text-[#0F62FE]"></i>{t("talentManager.pedidos.listTitle")}
         </h5>
@@ -151,9 +162,10 @@ export default function PedidosTalentManager() {
         ) : pedidos.length === 0 ? (
           <EmptyState message={t("talentManager.pedidos.empty")} icon="bi-inbox" />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-100 text-slate-700">
+          <>
+            <div className="overflow-x-auto rounded-xl border border-slate-200">
+              <table className="admin-table">
+                <thead>
                 <tr>
                   <SortableTh label={t("talentManager.pedidos.table.consultant")} sortKey="user" accessor={(p) => p.user?.name || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   <SortableTh label={t("talentManager.pedidos.table.badge")} sortKey="badge" accessor={(p) => p.badge?.name || p.badge?.description || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
@@ -165,8 +177,8 @@ export default function PedidosTalentManager() {
                   <th className="px-3 py-2 text-right font-semibold">{t("talentManager.pedidos.table.actions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                {pedidosOrdenados.map((pedido) => {
+                <tbody>
+                {pedidosPaginados.map((pedido) => {
                   const status = statusMap[pedido.status] || statusMap.pendente;
                   return (
                     <tr key={pedido.id}>
@@ -211,13 +223,22 @@ export default function PedidosTalentManager() {
                   );
                 })}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              startItem={startItem}
+              endItem={endItem}
+              onPageChange={setPage}
+            />
+          </>
         )}
       </section>
 
       {selectedPedido && (
-        <section className="mt-4 rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-6">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <h5 className="mb-1 text-base font-bold text-slate-900">

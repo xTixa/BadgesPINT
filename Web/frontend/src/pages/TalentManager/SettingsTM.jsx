@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ProfileEditor from "../../components/ProfileEditor";
 import api from "/src/api";
+import TalentManagerLayout from "./TalentManagerLayout";
 
 const DEFAULT_SETTINGS = {
   serviceLine: "",
@@ -76,23 +77,18 @@ export default function TalentManagerSettingsPage() {
   };
 
   return (
-    <div className="admin-shell">
-      <Sidebar user={{ role: "talent_manager", name: t("talentManager.layout.defaultUserName") }} />
-
-      <main className="admin-main">
-        <div className="mb-4 rounded-2xl bg-[#16558C] p-4 text-white shadow-sm">
-          <h3 className="mb-1 text-xl font-bold sm:text-2xl">{t("talentManager.settings.title")}</h3>
-          <p className="m-0 text-sm text-white/80 sm:text-base">{t("talentManager.settings.subtitle")}</p>
-        </div>
-
+    <TalentManagerLayout
+      title={t("talentManager.settings.title")}
+      subtitle={t("talentManager.settings.subtitle")}
+    >
         <div className="mb-6">
-          <h3 className="mb-3 text-lg font-bold text-slate-900">{t("talentManager.settings.profile")}</h3>
+          <h3 className="mb-3 text-lg font-semibold text-slate-900">{t("talentManager.settings.profile")}</h3>
           <ProfileEditor />
         </div>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.scope.title")}</h5>
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 lg:col-span-6">
+            <h5 className="mb-3 text-base font-semibold text-slate-900">{t("talentManager.settings.scope.title")}</h5>
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.scope.serviceLine")}</label>
@@ -125,8 +121,8 @@ export default function TalentManagerSettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.notifications.title")}</h5>
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 lg:col-span-6">
+            <h5 className="mb-3 text-base font-semibold text-slate-900">{t("talentManager.settings.notifications.title")}</h5>
             <div className="space-y-3 text-sm text-slate-700">
               <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyNew} onChange={(e) => handleChange("notifyNew", e.target.checked)} /> {t("talentManager.settings.notifications.newApplications")}</label>
               <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifySla} onChange={(e) => handleChange("notifySla", e.target.checked)} /> {t("talentManager.settings.notifications.slaExceeded")}</label>
@@ -151,8 +147,8 @@ export default function TalentManagerSettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.reports.title")}</h5>
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 lg:col-span-6">
+            <h5 className="mb-3 text-base font-semibold text-slate-900">{t("talentManager.settings.reports.title")}</h5>
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.reports.defaultExportFormat")}</label>
@@ -172,8 +168,8 @@ export default function TalentManagerSettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-6">
-            <h5 className="mb-3 text-base font-bold text-slate-900">{t("talentManager.settings.gamification.title")}</h5>
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 lg:col-span-6">
+            <h5 className="mb-3 text-base font-semibold text-slate-900">{t("talentManager.settings.gamification.title")}</h5>
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.gamification.sortRankingBy")}</label>
@@ -215,8 +211,7 @@ export default function TalentManagerSettingsPage() {
           </button>
           {feedback && <span className="text-sm text-slate-600">{feedback}</span>}
         </div>
-      </main>
-    </div>
+    </TalentManagerLayout>
   );
 }
 

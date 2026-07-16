@@ -112,6 +112,7 @@ export default function DashboardTalentManager() {
         { label: t("talentManager.dashboard.stats.pending"), value: stats.evidenciasPendentes },
         { label: t("talentManager.dashboard.stats.progress"), value: `${stats.progressoMedio}%` },
       ]}
+      showHero
     >
       {naoLidas > 0 && (
         <Link

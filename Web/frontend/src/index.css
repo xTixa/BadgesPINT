@@ -111,11 +111,10 @@ textarea:focus-visible,
 
 	.ui-card {
 		@apply rounded-2xl border border-slate-200 bg-white p-4;
-		box-shadow: var(--shadow-soft);
 	}
 
 	.ui-card-title {
-		@apply mb-3 text-base font-bold text-slate-900;
+		@apply mb-3 text-base font-semibold text-slate-900;
 	}
 
 	.ui-stat-label {

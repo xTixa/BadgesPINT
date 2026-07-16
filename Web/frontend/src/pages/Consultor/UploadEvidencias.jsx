@@ -149,22 +149,20 @@ export default function UploadEvidencias() {
       <Sidebar user={{ role: "consultant", name: "Consultant" }} />
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
-        <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-          <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-
+        <section className="relative mb-8 overflow-hidden rounded-3xl border border-[#CFE0FB] bg-[#EAF2FF] p-8 text-slate-900">
           <div className="relative z-10">
-            <p className="mb-2 text-sm font-medium text-white/80">{t("consultor.common.consultantArea")}</p>
-            <h1 className="text-3xl font-bold text-white">{t("consultor.uploadEvidencias.title")}</h1>
+            <p className="mb-2 text-sm font-medium text-slate-500">{t("consultor.common.consultantArea")}</p>
+            <h1 className="text-3xl font-bold text-slate-900">{t("consultor.uploadEvidencias.title")}</h1>
 
-            <p className="mt-2 text-white/80">
+            <p className="mt-2 text-slate-600">
               {t("consultor.uploadEvidencias.subtitle")}
             </p>
           </div>
         </section>
 
         <div className="mb-6 grid gap-4 md:grid-cols-3">
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0F62FE]/10">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF2FF]">
               <i className="bi bi-award-fill text-xl text-[#0F62FE]"></i>
             </div>
 
@@ -173,7 +171,7 @@ export default function UploadEvidencias() {
             <p className="text-slate-500">{t("consultor.uploadEvidencias.availableBadges")}</p>
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100">
               <i className="bi bi-list-check text-xl text-amber-600"></i>
             </div>
@@ -183,7 +181,7 @@ export default function UploadEvidencias() {
             <p className="text-slate-500">{t("consultor.uploadEvidencias.requirements")}</p>
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+          <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
               <i className="bi bi-cloud-upload-fill text-xl text-emerald-600"></i>
             </div>
@@ -194,7 +192,7 @@ export default function UploadEvidencias() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+        <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)]">
           <p className="mb-3 text-sm text-slate-500 sm:text-base">
             {t("consultor.uploadEvidencias.selectBadgeHelper")}
           </p>
@@ -219,7 +217,7 @@ export default function UploadEvidencias() {
 
           <div className="mb-3 flex justify-end">
             <button
-              className="rounded-2xl bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] px-5 py-3 font-semibold text-white shadow-md"
+              className="rounded-2xl bg-[#0F62FE] px-5 py-3 font-semibold text-white shadow-sm"
               onClick={handleSubmitPedido}
               disabled={!selectedBadgeId}
             >
