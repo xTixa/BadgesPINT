@@ -12,6 +12,7 @@ import {
   sendBadgeApprovedEmail,
   sendBadgeRejectedEmail,
   sendBadgeReturnedEmail,
+  sendTMValidationEmail,
   sendSLValidationEmail,
 } from "../services/mailService.js";
 import { createNotification } from "../services/notificationService.js";
@@ -106,6 +107,40 @@ export async function notifySLLeadersOfPendingApproval(pedido) {
     }
   } catch (notifyErr) {
     console.error("Falha ao notificar SL leaders:", notifyErr.message);
+  }
+}
+
+export async function notifyTMsOfPendingReview(pedido) {
+  try {
+    const badge = await Badge.findByPk(pedido.badge_id, { attributes: ["id", "description", "area_id"] });
+    const consultor = await User.findByPk(pedido.consultor_id, { attributes: ["id", "name"] });
+    const badgeName = badge?.description || `Badge #${pedido.badge_id}`;
+    const consultorName = consultor?.name || "consultor";
+
+    if (badge?.area_id) {
+      const tms = await database.query(
+        `SELECT u.id, u.name, u.email FROM "Users" u
+         WHERE u.role = 'talent_manager' AND (u.area_id = :areaId OR u.area_id IS NULL)`,
+        { replacements: { areaId: badge.area_id }, type: QueryTypes.SELECT }
+      );
+      for (const tm of tms) {
+        await createNotification({
+          titulo: "Pedido aguarda validação",
+          mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua validação.`,
+          utilizador_id: tm.id,
+          teamsNotify: true,
+          teamsBadgeId: pedido.badge_id,
+          email: tm.email
+            ? {
+                to: tm.email,
+                send: () => sendTMValidationEmail({ to: tm.email, name: tm.name, badgeName, consultorName }),
+              }
+            : null,
+        });
+      }
+    }
+  } catch (notifyErr) {
+    console.error("Falha ao notificar Talent Managers:", notifyErr.message);
   }
 }
 
@@ -559,6 +594,7 @@ export async function submeterPedido(req, res) {
     await pedido.save();
 
     await notifyBadgeApplication(pedido);
+    await notifyTMsOfPendingReview(pedido);
 
     return res.json(pedido);
   } catch (err) {

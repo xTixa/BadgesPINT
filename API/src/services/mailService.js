@@ -299,6 +299,31 @@ export async function sendSLValidationEmail({ to, name, badgeName, consultorName
   });
 }
 
+export async function sendTMValidationEmail({ to, name, badgeName, consultorName }) {
+  const displayName = name || "Talent Manager";
+  const consultor = consultorName || "um consultor";
+
+  return sendMail({
+    templateKey: "tm_validation",
+    variables: { name: displayName, badge_name: badgeName, consultant_name: consultor },
+    to,
+    subject: "Pedido de badge aguarda a tua validação - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O pedido de badge "${badgeName}" submetido por ${consultor} aguarda a tua validação.`,
+      "Acede à plataforma para validar ou devolver o pedido.",
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O pedido de badge <strong>${badgeName}</strong> submetido por <strong>${consultor}</strong> aguarda a tua validação.</p>
+      <p>Acede à plataforma para validar ou devolver o pedido.</p>
+    `,
+  });
+}
+
 export async function sendBadgeApprovedEmail({ to, name, badgeName, dashboardUrl = getDashboardUrl("/consultor/historico") }) {
   const displayName = name || "consultor";
 

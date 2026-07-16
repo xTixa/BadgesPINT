@@ -138,6 +138,7 @@ export default function Sidebar({ user }) {
               <li key={to} className="mb-1">
                 <NavLink
                   to={to}
+                  end
                   className={navItemClass}
                   title={collapsed && !isMobile ? label : undefined}
                   onClick={() => {
@@ -167,6 +168,7 @@ export default function Sidebar({ user }) {
                 <li key={to} className="mb-1">
                   <NavLink
                     to={to}
+                    end
                     className={navItemClass}
                     title={collapsed && !isMobile ? label : undefined}
                     onClick={() => {

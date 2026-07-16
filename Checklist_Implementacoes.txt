@@ -20,7 +20,7 @@
 [X] 8. Catálogo de badges
 [X] 9. Consultar requisitos
 [X] 10. Aceitação RGPD
-[] 11. Partilha no LinkedIn
+[X] 11. Partilha no LinkedIn
 [X] 13. Sistema de pontos
 [X] 14. Badges especiais
 [X] 15. Métricas de progresso
@@ -30,16 +30,16 @@
 [X] 19. Email de candidatura
 [X] 20. Notificações
 [X] 21. Alertas de expiração
-[] 22. Lembretes
+[X] 22. Lembretes
 [X] 24. Galeria pública
 [X] 25. Página pública do badge
-[] 26. Verificação por link
-[] 27. Competências certificadas
+[X] 26. Verificação por link
+[X] 27. Competências certificadas
 [X] 28. Integração Softinsa
 
 ## Bónus
 
-[] 12. Badge na assinatura do email
+[X] 12. Badge na assinatura do email
 [] 23. Template de email
 
 ---
@@ -70,25 +70,25 @@
 
 ## Bónus
 
-[] Timeline profissional (ComparacaoConsultores.jsx)
+[X] Timeline profissional (ComparacaoConsultores.jsx)
 
 ---
 
 # 👨‍💼 Service Line
 
-[] 1. Consultar badges
-[] 2. Dashboard
-[] 3. Estado dos pedidos
-[] 4. Histórico
-[] 5. Catálogo
-[] 6. Consultar requisitos
-[] 8. Sistema de pontos
+[X] 1. Consultar badges
+[X] 2. Dashboard
+[X] 3. Estado dos pedidos
+[X] 4. Histórico
+[X] 5. Catálogo
+[X] 6. Consultar requisitos
+[X] 8. Sistema de pontos
 [X] 9. Badges especiais
-[] 10. Relatórios
-[] 11. Exportar pedidos
-[] 12. Exportar badges
-[] 13. Exportar consultores
-[] 14. Exportar aprovações
+[X] 10. Relatórios
+[X] 11. Exportar pedidos
+[X] 12. Exportar badges
+[X] 13. Exportar consultores
+[X] 14. Exportar aprovações
 [] 15. Certificados PDF
 [] 16. Emails
 [] 17. Notificações
