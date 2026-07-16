@@ -89,16 +89,16 @@
 [X] 12. Exportar badges
 [X] 13. Exportar consultores
 [X] 14. Exportar aprovações
-[] 15. Certificados PDF
-[] 16. Emails
-[] 17. Notificações
-[] 18. Ranking
-[] 19. Histórico
+[X] 15. Certificados PDF
+[X] 16. Emails
+[X] 17. Notificações
+[X] 18. Ranking
+[X] 19. Histórico
 
 ## Bónus
 
-[] Comparação entre consultores
-[] Badge na assinatura
+[X] Comparação entre consultores
+[X] Badge na assinatura
 
 ---
 
