@@ -91,6 +91,15 @@ export function getDashboardUrl(path = "/consultor") {
   return `${getFrontendUrl()}${path}`;
 }
 
+export function getApiBaseUrl() {
+  return (
+    process.env.API_BASE_URL ||
+    process.env.PUBLIC_API_URL ||
+    process.env.PUBLIC_SITE_URL ||
+    `http://localhost:${process.env.PORT || 4000}`
+  ).replace(/\/$/, "");
+}
+
 function renderTemplate(value, variables = {}) {
   return String(value || "").replace(/{{\s*([a-z0-9_]+)\s*}}/gi, (_, key) =>
     escapeHtml(variables[key] ?? "")
@@ -151,29 +160,91 @@ export async function sendPasswordResetEmail({ to, name, token }) {
 export async function sendTemporaryPasswordEmail({ to, name, temporaryPassword }) {
   const loginUrl = `${getFrontendUrl()}/login`;
   const displayName = name || "utilizador";
+  const safeName = escapeHtml(displayName);
+  const safeEmail = escapeHtml(to);
+  const safePassword = escapeHtml(temporaryPassword);
+  const safeLoginUrl = escapeHtml(loginUrl);
 
   return sendMail({
     templateKey: "temporary_password",
     variables: { name: displayName, email: to, temporary_password: temporaryPassword, login_url: loginUrl },
     to,
-    subject: "Acesso a plataforma de Badges Softinsa",
+    subject: "Acesso à plataforma de Badges Softinsa",
     text: [
-      `Ola ${displayName},`,
+      `Olá ${displayName},`,
       "",
       "A tua conta na plataforma de Badges Softinsa foi criada.",
       `Email: ${to}`,
-      `Password temporaria: ${temporaryPassword}`,
+      `Password temporária: ${temporaryPassword}`,
       `Login: ${loginUrl}`,
       "",
-      "No primeiro login vais ser encaminhado para definir uma nova password.",
+      "No primeiro acesso vais ser encaminhado para definir uma nova password.",
+    ].join("\n"),
+    html: `
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.08);">
+              <tr>
+                <td style="background-color:#0F62FE;background-image:linear-gradient(135deg,#0F62FE,#00AEEF);padding:28px 32px;">
+                  <p style="margin:0;font-size:20px;font-weight:800;color:#ffffff;">Badges Softinsa</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px;">
+                  <p style="margin:0 0 16px;font-size:16px;color:#0f172a;">Olá <strong>${safeName}</strong>,</p>
+                  <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#334155;">A tua conta na plataforma de Badges Softinsa foi criada. Usa as credenciais abaixo para acederes pela primeira vez.</p>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F8FBFF;border:1px solid #BFEFFF;border-radius:12px;margin:0 0 24px;">
+                    <tr>
+                      <td style="padding:16px 20px;">
+                        <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#16558C;">Email</p>
+                        <p style="margin:0 0 14px;font-size:14px;color:#0f172a;">${safeEmail}</p>
+                        <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#16558C;">Password temporária</p>
+                        <p style="margin:0;font-size:18px;font-family:'Courier New',Courier,monospace;font-weight:700;letter-spacing:.03em;color:#0f172a;">${safePassword}</p>
+                      </td>
+                    </tr>
+                  </table>
+                  <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+                    <tr>
+                      <td style="border-radius:10px;background-color:#0F62FE;">
+                        <a href="${safeLoginUrl}" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:10px;">Entrar na plataforma</a>
+                      </td>
+                    </tr>
+                  </table>
+                  <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;">No primeiro acesso vais ser encaminhado para definir uma nova password.</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+                  <p style="margin:0;font-size:11px;color:#94a3b8;">Este é um email automático da plataforma de Badges Softinsa. Se não reconheces esta conta, ignora esta mensagem.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    `,
+  });
+}
+
+export async function sendBadgeApplicationStartedEmail({ to, name, badgeName }) {
+  const displayName = name || "consultor";
+
+  return sendMail({
+    templateKey: "badge_application_started",
+    variables: { name: displayName, badge_name: badgeName },
+    to,
+    subject: "Candidatura recebida - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `Obrigado por te candidatares ao badge ${badgeName}.`,
+      "Agora podes reunir e submeter as evidencias dos requisitos para validacao.",
     ].join("\n"),
     html: `
       <p>Ola ${displayName},</p>
-      <p>A tua conta na plataforma de Badges Softinsa foi criada.</p>
-      <p><strong>Email:</strong> ${to}</p>
-      <p><strong>Password temporaria:</strong> ${temporaryPassword}</p>
-      <p><a href="${loginUrl}">Entrar na plataforma</a></p>
-      <p>No primeiro login vais ser encaminhado para definir uma nova password.</p>
+      <p>Obrigado por te candidatares ao badge <strong>${badgeName}</strong>.</p>
+      <p>Agora podes reunir e submeter as evidencias dos requisitos para validacao.</p>
     `,
   });
 }
@@ -224,6 +295,31 @@ export async function sendSLValidationEmail({ to, name, badgeName, consultorName
       <p>Ola ${displayName},</p>
       <p>O pedido de badge <strong>${badgeName}</strong> submetido por <strong>${consultor}</strong> foi validado pelo Talent Manager e aguarda a tua aprovação final.</p>
       <p>Acede à plataforma para aprovar ou rejeitar o pedido.</p>
+    `,
+  });
+}
+
+export async function sendTMValidationEmail({ to, name, badgeName, consultorName }) {
+  const displayName = name || "Talent Manager";
+  const consultor = consultorName || "um consultor";
+
+  return sendMail({
+    templateKey: "tm_validation",
+    variables: { name: displayName, badge_name: badgeName, consultant_name: consultor },
+    to,
+    subject: "Pedido de badge aguarda a tua validação - Badges Softinsa",
+    text: [
+      `Ola ${displayName},`,
+      "",
+      `O pedido de badge "${badgeName}" submetido por ${consultor} aguarda a tua validação.`,
+      "Acede à plataforma para validar ou devolver o pedido.",
+      "",
+      "Plataforma Badges Softinsa",
+    ].join("\n"),
+    html: `
+      <p>Ola ${displayName},</p>
+      <p>O pedido de badge <strong>${badgeName}</strong> submetido por <strong>${consultor}</strong> aguarda a tua validação.</p>
+      <p>Acede à plataforma para validar ou devolver o pedido.</p>
     `,
   });
 }
@@ -360,7 +456,14 @@ export function getEmailSignature({ user, badges = [] } = {}) {
             ? `<img src="${escapeHtml(imageUrl)}" width="28" height="28" alt="${badgeName}" style="display:inline-block;width:28px;height:28px;margin-right:6px;vertical-align:middle;object-fit:contain;" />${badgeName}`
             : badgeName;
           const level = escapeHtml(badge?.level || badge?.nivel || "");
-          return `<span style="display:inline-block;margin:0 6px 6px 0;padding:5px 8px;border:1px solid #BFEFFF;border-radius:999px;background:#F8FBFF;color:#16558C;font-size:11px;font-weight:700;">${name}${level ? ` · ${level}` : ""}</span>`;
+          const pillStyle = "display:inline-block;margin:0 6px 6px 0;padding:5px 8px;border:1px solid #BFEFFF;border-radius:999px;background:#F8FBFF;color:#16558C;font-size:11px;font-weight:700;";
+          const content = `${name}${level ? ` · ${level}` : ""}`;
+          const badgePageUrl = badge?.certificate_code
+            ? `${getApiBaseUrl()}/share/certificates/${badge.certificate_code}`
+            : badge?.id ? getDashboardUrl(`/badges/${badge.id}`) : "";
+          return badgePageUrl
+            ? `<a href="${escapeHtml(badgePageUrl)}" target="_blank" rel="noreferrer noopener" style="${pillStyle}text-decoration:none;">${content}</a>`
+            : `<span style="${pillStyle}">${content}</span>`;
         })
         .join("")
     : '<span style="font-size:12px;color:#64748b;">Sem badges publicados na assinatura.</span>';

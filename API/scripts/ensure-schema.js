@@ -15,6 +15,11 @@ async function main() {
   `);
 
   await database.query(`
+    ALTER TABLE badges
+    ADD COLUMN IF NOT EXISTS special_deadline TIMESTAMP WITH TIME ZONE
+  `);
+
+  await database.query(`
     ALTER TABLE "Notifications"
     ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT true
   `);

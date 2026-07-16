@@ -27,6 +27,14 @@ function ensureCertificateCode(consultorBadge) {
   return consultorBadge.certificate_code;
 }
 
+// pdfkit só sabe desenhar JPEG e PNG; verificamos os magic bytes antes de usar a imagem no PDF.
+function isJpegOrPng(buffer) {
+  if (!buffer || buffer.length < 8) return false;
+  const isPng = buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47;
+  const isJpeg = buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+  return isPng || isJpeg;
+}
+
 function normalizeDateOnly(value) {
   if (!value) return null;
   const raw = String(value).trim();
@@ -592,9 +600,15 @@ export async function generateConsultorBadgeCertificate(req, res) {
     }
 
     const badgeName = badge.name || badge.title || badge.description || `Badge #${badge.id}`;
-    const certificateCode = ensureCertificateCode(consultorBadge);
+
+    if (!badgeName) {
+      return res.status(400).json({ error: "Badge sem nome/descrição" });
+    }
+
+    ensureCertificateCode(consultorBadge);
     await consultorBadge.save();
-    const verificationUrl = `${publicBaseUrl(req)}/api/public/certificates/${certificateCode}`;
+
+    const verificationUrl = `${publicBaseUrl(req)}/api/public/certificates/${consultorBadge.certificate_code}`;
     const awardedAt = consultorBadge.data_atribuicao
       ? new Date(consultorBadge.data_atribuicao)
       : new Date();
@@ -602,15 +616,31 @@ export async function generateConsultorBadgeCertificate(req, res) {
     let badgeImageBuffer = null;
     if (badge.image_url) {
       try {
-        const imgRes = await fetch(badge.image_url);
-        if (imgRes.ok) badgeImageBuffer = Buffer.from(await imgRes.arrayBuffer());
-      } catch { /* continua sem imagem */ }
+        const imgRes = await fetch(badge.image_url, { timeout: 5000 });
+        if (imgRes.ok) {
+          const buffer = Buffer.from(await imgRes.arrayBuffer());
+          // pdfkit só suporta JPEG e PNG; outros formatos (ex.: WEBP) fazem doc.image() rebentar.
+          if (isJpegOrPng(buffer)) {
+            badgeImageBuffer = buffer;
+          } else {
+            console.warn(`Aviso: imagem do badge ${badge.id} não é JPEG/PNG, a ignorar no certificado.`);
+          }
+        }
+      } catch (imgErr) {
+        console.warn("Aviso: Não foi possível carregar imagem do badge:", imgErr.message);
+      }
     }
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="certificado-badge-${badge.id}.pdf"`);
 
     const doc = new PDFDocument({ size: "A4", margin: 0 });
+    doc.on("error", (err) => {
+      console.error("Erro no PDFDocument:", err.message, err.stack);
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Erro ao gerar PDF", details: err.message });
+      }
+    });
     doc.pipe(res);
 
     renderCertificatePdf(doc, {
@@ -618,15 +648,15 @@ export async function generateConsultorBadgeCertificate(req, res) {
       badge,
       badgeName,
       awardedAt,
-      certificateCode,
+      certificateCode: consultorBadge.certificate_code,
       verificationUrl,
       badgeImageBuffer,
     });
 
     doc.end();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro ao gerar certificado" });
+    console.error("Erro ao gerar certificado:", err.message, err.stack);
+    res.status(500).json({ error: "Erro ao gerar certificado", details: err.message });
   }
 }
 

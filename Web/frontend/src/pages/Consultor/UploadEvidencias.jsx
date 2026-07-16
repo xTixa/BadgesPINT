@@ -109,19 +109,31 @@ export default function UploadEvidencias() {
     if (!selectedBadgeId) return alert(t("consultor.uploadEvidencias.selectBadgeFirst"));
     const token = localStorage.getItem("token");
     if (!token) return alert(t("consultor.uploadEvidencias.noTokenLoginAgain"));
+    const headers = { Authorization: `Bearer ${token}` };
 
     try {
       setPedidoStatus("");
-      const { data: pedido } = await api.post(
-        "/api/admin/pedidos",
-        { badge_id: Number(selectedBadgeId) },
-        { headers: { Authorization: `Bearer ${token}` } },
+
+      // O consultor pode já ter um pedido criado (ex.: via "Candidatar-me" no
+      // catálogo de badges). Reutiliza-lo em vez de tentar criar outro, que
+      // falharia com 400 "Já existe um pedido ativo" e nunca chegaria a submeter.
+      const { data: pedidosExistentes } = await api.get("/api/pedidos", { headers });
+      let pedido = (pedidosExistentes || []).find(
+        (p) => Number(p.badge_id) === Number(selectedBadgeId),
       );
-      await api.post(
-        `/api/admin/pedidos/${pedido.id}/submeter`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+
+      if (!pedido) {
+        const { data: criado } = await api.post(
+          "/api/admin/pedidos",
+          { badge_id: Number(selectedBadgeId) },
+          { headers },
+        );
+        pedido = criado;
+      }
+
+      if (pedido.workflow_status === "open") {
+        await api.post(`/api/admin/pedidos/${pedido.id}/submeter`, {}, { headers });
+      }
 
       setPedidoStatus(t("consultor.uploadEvidencias.requestSubmitted"));
     } catch (err) {

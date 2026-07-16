@@ -1,18 +1,30 @@
 import { QueryTypes } from "sequelize";
+import crypto from "crypto";
 import database from "../config/database.js";
 import User from "../models/User.js";
 import { getEmailSignature } from "../services/mailService.js";
 
 async function loadObtainedBadges(userId) {
-  return database.query(
-    `SELECT b.id, COALESCE(b.description, 'Badge #' || b.id) AS name,
-            b.level, b.image_url, cb.data_atribuicao
+  const rows = await database.query(
+    `SELECT cb.id AS consultor_badge_id, b.id, COALESCE(b.description, 'Badge #' || b.id) AS name,
+            b.level, b.image_url, cb.data_atribuicao, cb.certificate_code
      FROM consultor_badges cb
      JOIN badges b ON b.id = cb.badge_id
      WHERE cb.consultor_id = :userId AND cb.status = 'obtido'
      ORDER BY cb.data_atribuicao DESC NULLS LAST, b.id DESC`,
     { replacements: { userId }, type: QueryTypes.SELECT },
   );
+
+  for (const row of rows) {
+    if (row.certificate_code) continue;
+    row.certificate_code = crypto.randomBytes(18).toString("base64url");
+    await database.query(
+      `UPDATE consultor_badges SET certificate_code = :code WHERE id = :id`,
+      { replacements: { code: row.certificate_code, id: row.consultor_badge_id } },
+    );
+  }
+
+  return rows;
 }
 
 function selectedBadges(user, available, explicitIds) {

@@ -64,11 +64,10 @@ export async function exportToExcel(req, res) {
         { header: 'Pontos', key: 'points', width: 10 },
         { header: 'Área', key: 'area', width: 15 },
         { header: 'Expira (dias)', key: 'expiry_days', width: 12 },
-        { header: 'Data Criação', key: 'createdAt', width: 15 },
       ];
 
       const badges = await Badge.findAll({
-        attributes: ['id', 'description', 'level', 'points', 'expiry_days', 'createdAt'],
+        attributes: ['id', 'description', 'level', 'points', 'expiry_days'],
         include: [{ association: 'area', attributes: ['name'] }],
         order: [['id', 'ASC']]
       });
@@ -81,8 +80,7 @@ export async function exportToExcel(req, res) {
           level: b.level,
           points: b.points,
           area: b.area ? b.area.name : 'N/A',
-          expiry_days: b.expiry_days || 'Sem expiração',
-          createdAt: new Date(b.createdAt).toLocaleDateString('pt-PT')
+          expiry_days: b.expiry_days || 'Sem expiração'
         });
       });
 
@@ -97,11 +95,10 @@ export async function exportToExcel(req, res) {
         { header: 'ID', key: 'id', width: 8 },
         { header: 'Nome', key: 'name', width: 25 },
         { header: 'Descrição', key: 'description', width: 35 },
-        { header: 'Data Criação', key: 'createdAt', width: 15 },
       ];
 
       const lps = await LearningPath.findAll({
-        attributes: ['id', 'name', 'description', 'createdAt'],
+        attributes: ['id', 'name', 'description'],
         order: [['id', 'ASC']]
       });
 
@@ -109,8 +106,7 @@ export async function exportToExcel(req, res) {
         lpSheet.addRow({
           id: lp.id,
           name: lp.name,
-          description: lp.description,
-          createdAt: new Date(lp.createdAt).toLocaleDateString('pt-PT')
+          description: lp.description
         });
       });
 

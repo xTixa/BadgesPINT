@@ -50,6 +50,11 @@ export default function HistoricoBadges() {
         {},
         { responseType: "blob" }
       );
+
+      if (!response.data || response.data.size === 0) {
+        throw new Error("Resposta vazia do servidor");
+      }
+
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -60,8 +65,18 @@ export default function HistoricoBadges() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Erro ao gerar certificado:", err);
-      alert(t("consultor.historicoBadges.certificateError"));
+      let serverData = err.response?.data;
+      // Com responseType: "blob", uma resposta de erro em JSON chega como Blob, não como objeto.
+      if (serverData instanceof Blob) {
+        try {
+          serverData = JSON.parse(await serverData.text());
+        } catch {
+          serverData = null;
+        }
+      }
+      console.error("Erro ao gerar certificado:", serverData || err.message);
+      const errorMsg = serverData?.details || serverData?.error || err.message || t("consultor.historicoBadges.certificateError");
+      alert(`${t("consultor.historicoBadges.certificateError")}\n\nDetalhes: ${errorMsg}`);
     } finally {
       setDownloading(null);
     }

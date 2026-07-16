@@ -30,6 +30,7 @@ import HistoricoBadges from "./pages/Consultor/HistoricoBadges";
 import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
 import ConsultorSettingsPage from "./pages/Consultor/Settings";
 import EmailSignature from "./pages/Consultor/EmailSignature";
+import Certificados from "./pages/Consultor/Certificados";
 
 // Talent Manager
 import DashboardTalentManager from "./pages/TalentManager/DashboardTalentManager";
@@ -40,6 +41,7 @@ import RelatoriosTalent from "./pages/TalentManager/RelatoriosTalent";
 import TalentManagerSettingsPage from "./pages/TalentManager/SettingsTM";
 import PedidosTalentManager from "./pages/TalentManager/PedidosTalentManager";
 import CatalogoBadgesTM from "./pages/TalentManager/CatalogoBadgesTM";
+import BadgeEspecialTM from "./pages/TalentManager/BadgeEspecialTM";
 import ComparacaoConsultores from "./pages/TalentManager/ComparacaoConsultores";
 import ExpiracoesBadgesTM from "./pages/TalentManager/ExpiracoesBadgesTM";
 import EmailSignatureTM from "./pages/TalentManager/EmailSignatureTM";
@@ -50,6 +52,7 @@ import ServiceLineSettingsPage from "./pages/ServiceLine/SettingsSL";
 import PedidosServiceLine from "./pages/ServiceLine/PedidosServiceLine";
 import ConsultoresServiceLine from "./pages/ServiceLine/ConsultoresServiceLine";
 import BadgesServiceLine from "./pages/ServiceLine/BadgesServiceLine";
+import BadgeEspecialSL from "./pages/ServiceLine/BadgeEspecialSL";
 import RelatoriosServiceLine from "./pages/ServiceLine/RelatoriosServiceLine";
 import HistoricoSL from "./pages/ServiceLine/HistoricoSL";
 import GamificacaoSL from "./pages/ServiceLine/GamificacaoSL";
@@ -138,11 +141,13 @@ function AppContent() {
           <Route path="/consultor/upload" element={<ProtectedRoute role="consultant"><UploadEvidencias /></ProtectedRoute>} />
           <Route path="/consultor/settings" element={<ProtectedRoute role="consultant"><ConsultorSettingsPage /></ProtectedRoute>} />
           <Route path="/consultor/assinatura-email" element={<ProtectedRoute role="consultant"><EmailSignature /></ProtectedRoute>} />
+          <Route path="/consultor/certificados" element={<ProtectedRoute role="consultant"><Certificados /></ProtectedRoute>} />
 
           {/* Talent Manager */}
           <Route path="/tm/dashboard" element={<ProtectedRoute role="talent_manager"><DashboardTalentManager /></ProtectedRoute>} />
           <Route path="/tm/pedidos" element={<ProtectedRoute role="talent_manager"><PedidosTalentManager /></ProtectedRoute>} />
           <Route path="/tm/catalogo" element={<ProtectedRoute role="talent_manager"><CatalogoBadgesTM /></ProtectedRoute>} />
+          <Route path="/tm/badges/especial" element={<ProtectedRoute role="talent_manager"><BadgeEspecialTM /></ProtectedRoute>} />
           <Route path="/tm/equipa" element={<ProtectedRoute role="talent_manager"><Equipa /></ProtectedRoute>} />
           <Route path="/tm/comparacao" element={<ProtectedRoute role="talent_manager"><ComparacaoConsultores /></ProtectedRoute>} />
           <Route path="/tm/expiracoes" element={<ProtectedRoute role="talent_manager"><ExpiracoesBadgesTM /></ProtectedRoute>} />
@@ -159,6 +164,7 @@ function AppContent() {
           <Route path="/sl/consultores" element={<ProtectedRoute role="service_line_leader"><ConsultoresServiceLine /></ProtectedRoute>} />
           <Route path="/sl/comparacao" element={<ProtectedRoute role="service_line_leader"><ComparacaoConsultoresSL /></ProtectedRoute>} />
           <Route path="/sl/badges" element={<ProtectedRoute role="service_line_leader"><BadgesServiceLine /></ProtectedRoute>} />
+          <Route path="/sl/badges/especial" element={<ProtectedRoute role="service_line_leader"><BadgeEspecialSL /></ProtectedRoute>} />
           <Route path="/sl/historico" element={<ProtectedRoute role="service_line_leader"><HistoricoSL /></ProtectedRoute>} />
           <Route path="/sl/gamificacao" element={<ProtectedRoute role="service_line_leader"><GamificacaoSL /></ProtectedRoute>} />
           <Route path="/sl/estatisticas" element={<ProtectedRoute role="service_line_leader"><RelatoriosServiceLine /></ProtectedRoute>} />

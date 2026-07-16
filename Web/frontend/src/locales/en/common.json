@@ -675,6 +675,23 @@
       "downloadHtml": "Download HTML",
       "afterCopyHint": "After copying, open your email client's signature settings and paste directly into the editor."
     },
+    "certificados": {
+      "title": "Certificates",
+      "subtitle": "Every badge you earn gets a unique, public verification link that proves you're the one who holds it.",
+      "loading": "Loading certificates...",
+      "loadError": "Could not load your certificates.",
+      "empty": "You haven't earned any badges yet.",
+      "publicProfileWarning": "The Public Badge Gallery is disabled. While it's disabled, these links won't work for whoever receives them.",
+      "goToSettings": "Enable in Settings",
+      "defaultArea": "Skill",
+      "pointsLabel": "{{count}} points",
+      "verifiedLabel": "Verified",
+      "verificationLinkLabel": "Unique verification link",
+      "copy": "Copy link",
+      "copied": "Copied!",
+      "copyPrompt": "Copy the verification link:",
+      "open": "Open"
+    },
     "gamification": {
       "loadError": "Could not load gamification.",
       "maxLevelReached": "Maximum level reached",
@@ -765,9 +782,14 @@
       "title": "Settings",
       "subtitle": "Customize your experience, notifications and badge sharing.",
       "goalsAndLearning": "Goals and Learning",
-      "badgesGoal": "Badge Goal",
-      "badgesGoalPlaceholder": "E.g.: 10",
+      "badgesGoal": "Professional goal",
+      "badgesGoalPlaceholder": "E.g.: Earn the Cloud Architect badge",
       "deadline": "Deadline",
+      "deadlineHint": "You'll get an email and notification reminder when this date is 7 days away.",
+      "saveGoal": "Save goal",
+      "savingGoal": "Saving...",
+      "goalSaved": "Goal saved successfully.",
+      "goalSaveError": "Could not save the goal.",
       "recommendNextBadges": "Recommend next badges",
       "notifications": "Notifications",
       "confirmationEmail": "Confirmation email",
@@ -776,7 +798,10 @@
       "goalReminders": "Goal reminders",
       "privacyAndSharing": "Privacy and Sharing",
       "gdprConsentActive": "GDPR consent active",
+      "gdprConsentMissing": "GDPR consent not yet accepted",
       "publicGallery": "Public Badge Gallery",
+      "publicGalleryHint": "Required for your certificate verification links and LinkedIn shares to work for the people who receive them.",
+      "privacySaveError": "Could not save this preference.",
       "shareOnLinkedIn": "Share on LinkedIn",
       "emailSignature": "Email Signature",
       "integrations": "Integrations",
@@ -1088,6 +1113,7 @@
         "status": "Status",
         "workflow": "Workflow",
         "date": "Date",
+        "evidence": "Evidence",
         "actions": "Actions"
       },
       "unknownUser": "Unknown",
@@ -1099,7 +1125,15 @@
       "processHistoryTitle": "Process history",
       "consultantFallback": "Consultant",
       "badgeFallback": "Badge",
-      "close": "Close"
+      "close": "Close",
+      "evidence": {
+        "sectionTitle": "Submitted evidence",
+        "empty": "No evidence submitted for this request.",
+        "view": "View file",
+        "count_one": "{{count}} evidence file",
+        "count_other": "{{count}} evidence files",
+        "noNotes": "No notes."
+      }
     },
     "relatorios": {
       "title": "Reports and Exports",
@@ -1280,7 +1314,7 @@
         "items": {
           "admin": "Admin: admin@example.com | Password123",
           "talentManager": "Talent Manager: natalia.neves@yopmail.com| qwerty",
-          "serviceLineLeader": "Service Line Leader: monica@yopmail.com | qwerty123",
+          "serviceLineLeader": "Service Line Leader: carlos.fernandes@yopmail.com | qwerty123",
           "consultant": "Consultant: guilherme@yopmail.com| Password123"
         }
       },
@@ -1615,7 +1649,8 @@
       "loadFailed": "Could not load the details of this badge.",
       "loginRequired": "Log in as a consultant to apply for this badge.",
       "onlyConsultants": "Only consultants can apply for badges.",
-      "applyFailed": "Could not create the application."
+      "applyFailed": "Could not create the application.",
+      "specialClosed": "The deadline for this special badge has already passed. Applications are no longer possible."
     },
     "success": {
       "applied": "Application created and sent for validation."
@@ -1643,6 +1678,9 @@
       "applying": "Creating application...",
       "applyNow": "Apply now",
       "loginToApply": "Log in to apply",
+      "specialBadge": "Special badge",
+      "specialEndsOn": "Ends {{date}}",
+      "specialClosedLabel": "Closed",
       "shareLinkedIn": "Share on LinkedIn",
       "viewOtherBadges": "View other badges",
       "includesTitle": "This badge includes:",
@@ -1672,7 +1710,23 @@
       "lessonsCount": "{{count}} lessons",
       "durationInfo": "{{minutes}} min · {{type}}"
     },
-    "descriptionTitle": "Description"
+    "descriptionTitle": "Description",
+    "softinsaIntegration": {
+      "title": "Softinsa Skills",
+      "text": "This skill is part of Softinsa's service lines and areas of expertise. Find out more institutional information at softinsa.pt.",
+      "cta": "Visit softinsa.pt"
+    }
+  },
+  "specialBadgeForm": {
+    "title": "Create special badge",
+    "subtitle": "Time-limited badge: only consultants who submit their request before the deadline get it. After that it closes automatically and can no longer be requested.",
+    "deadlineLabel": "Special deadline",
+    "deadlineHint": "Required. From this date and time onward the badge closes.",
+    "deadlineRequired": "Set a future deadline for the special badge.",
+    "successMessage": "Special badge created successfully.",
+    "saveFailed": "Error creating special badge.",
+    "createButton": "Create special badge",
+    "creating": "Creating..."
   },
   "layout": {
     "sidebar": {
@@ -1688,6 +1742,7 @@
           "title": "Consultant",
           "dashboard": "Dashboard",
           "meusBadges": "My Badges",
+          "certificados": "Certificates",
           "gamification": "Gamification",
           "uploadEvidencias": "Upload Evidence",
           "ranking": "Ranking",
@@ -1702,6 +1757,7 @@
           "dashboard": "Dashboard",
           "pedidosBadges": "Badge Requests",
           "catalogoBadges": "Badge Catalog",
+          "badgeEspecial": "Special Badge",
           "equipa": "Team",
           "expiracoesBadges": "Badge Expirations",
           "compararConsultores": "Compare Consultants",
@@ -1717,6 +1773,7 @@
           "title": "Service Line",
           "dashboard": "Dashboard",
           "pedidosBadges": "Badge Requests",
+          "badgeEspecial": "Special Badge",
           "consultores": "Consultants",
           "compararConsultores": "Compare Consultants",
           "catalogoBadges": "Badge Catalog",
@@ -1756,7 +1813,8 @@
       "activeApplication": "Application active",
       "applying": "Applying...",
       "apply": "Apply",
-      "exploreBadge": "Explore badge"
+      "exploreBadge": "Explore badge",
+      "specialClosed": "Closed"
     },
     "badgeCelebration": {
       "congrats": "CONGRATULATIONS!",
@@ -1937,6 +1995,10 @@
     },
     "badgeForm": {
       "addRequirement": "Add requirement",
+      "addSkill": "Add skill",
+      "certifiedSkills": "Certified skills",
+      "certifiedSkillsHint": "Shown on the badge's public page, under \"What you'll learn\". Specific to this badge only.",
+      "skillPlaceholder": "E.g.: Configure CI/CD pipelines with Outsystems",
       "areaLabel": "Area",
       "badgeNameLabel": "Badge name",
       "createTitle": "Create Badge",
@@ -1959,6 +2021,8 @@
       "requirementDescriptionLabel": "Description / Evidence",
       "requirementTitleLabel": "Title",
       "selectArea": "Select an area",
+      "specialDeadlineLabel": "Special deadline (optional)",
+      "specialDeadlineHint": "Leave blank for a regular badge. Set a date to make this a time-limited special badge — once the deadline passes, it can no longer be applied for.",
       "uploadHint": "PNG/JPG/WebP up to 3 MB. The URL is stored in the field above.",
       "uploadImageLabel": "Upload badge image",
       "uploadingImage": "Uploading image..."

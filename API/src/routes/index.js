@@ -12,6 +12,7 @@ import consultorRoutes from "./consultorRoutes.js";
 import tmRoutes from "./talentManagerRoutes.js";
 import slRoutes from "./sLRoutes.js";
 import adminBadgeRoutes from "./adminBadgeRoutes.js";
+import specialBadgeRoutes from "./specialBadgeRoutes.js";
 import adminRequirementRoutes from "./adminRequirementRoutes.js";
 import auditLogRoutes from "./auditLogRoutes.js";
 import ticketRoutes from "./ticketRoutes.js";
@@ -46,6 +47,7 @@ router.use("/api/admin/slas", slaRoutes);
 router.use("/api/admin", adminRoutes);
 
 router.use("/api/pedidos", pedidosRoutes);
+router.use("/api/special-badges", specialBadgeRoutes);
 router.use("/api/audit-logs", auditLogRoutes);
 router.use("/api/tickets", ticketRoutes);
 router.use("/api/notifications", notificationRoutes);

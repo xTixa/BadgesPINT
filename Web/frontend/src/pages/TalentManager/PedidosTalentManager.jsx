@@ -79,6 +79,12 @@ export default function PedidosTalentManager() {
     }
   };
 
+  const evidenceStatusClass = (status) => {
+    if (status === "aprovado") return "bg-emerald-100 text-emerald-700";
+    if (status === "rejeitado") return "bg-rose-100 text-rose-700";
+    return "bg-amber-100 text-amber-700";
+  };
+
   const getPedidoHistory = (pedido) => [
     {
       label: t("talentManager.pedidos.history.created"),
@@ -155,6 +161,7 @@ export default function PedidosTalentManager() {
                   <SortableTh label={t("talentManager.pedidos.table.status")} sortKey="status" accessor={(p) => p.status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   <SortableTh label={t("talentManager.pedidos.table.workflow")} sortKey="workflow_status" accessor={(p) => p.workflow_status || ""} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
                   <SortableTh label={t("talentManager.pedidos.table.date")} sortKey="created_at" accessor={(p) => (p.created_at ? new Date(p.created_at).getTime() : 0)} sortConfig={sortConfig} onSort={requestSort} className="text-left font-semibold" />
+                  <th className="px-3 py-2 text-left font-semibold">{t("talentManager.pedidos.table.evidence")}</th>
                   <th className="px-3 py-2 text-right font-semibold">{t("talentManager.pedidos.table.actions")}</th>
                 </tr>
               </thead>
@@ -174,6 +181,17 @@ export default function PedidosTalentManager() {
                       </td>
                       <td className="px-3 py-2">{pedido.workflow_status || "open"}</td>
                       <td className="px-3 py-2">{pedido.created_at ? new Date(pedido.created_at).toLocaleDateString("pt-PT") : "-"}</td>
+                      <td className="px-3 py-2">
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 font-semibold text-sky-700 underline decoration-dotted disabled:cursor-default disabled:text-slate-400 disabled:no-underline"
+                          onClick={() => setSelectedPedido(pedido)}
+                          disabled={!pedido.evidences?.length}
+                        >
+                          <i className="bi bi-paperclip"></i>
+                          {t("talentManager.pedidos.evidence.count", { count: pedido.evidences?.length || 0 })}
+                        </button>
+                      </td>
                       <td className="px-3 py-2 text-right">
                         {pedido.workflow_status === "submitted" && (
                           <>
@@ -226,6 +244,32 @@ export default function PedidosTalentManager() {
                 <p className="m-0 mt-2 text-sm text-slate-700">{step.detail}</p>
               </div>
             ))}
+          </div>
+
+          <div className="mt-5">
+            <h6 className="mb-3 text-sm font-bold text-slate-900">
+              <i className="bi bi-paperclip mr-2 text-[#0F62FE]"></i>
+              {t("talentManager.pedidos.evidence.sectionTitle")}
+            </h6>
+            {selectedPedido.evidences?.length ? (
+              <div className="grid gap-3 md:grid-cols-2">
+                {selectedPedido.evidences.map((ev) => (
+                  <div key={ev.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <span className="text-sm font-bold text-slate-900">{ev.requirement?.title || ev.requirement?.code || t("talentManager.pedidos.badgeFallback")}</span>
+                      <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-semibold ${evidenceStatusClass(ev.status)}`}>{ev.status}</span>
+                    </div>
+                    <p className="m-0 text-xs text-slate-500">{formatDateTime(ev.created_at, t)}</p>
+                    <p className="m-0 mt-2 text-sm text-slate-700">{ev.notes || t("talentManager.pedidos.evidence.noNotes")}</p>
+                    <a href={ev.evidence_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 font-semibold text-sky-700 underline">
+                      <i className="bi bi-box-arrow-up-right"></i>{t("talentManager.pedidos.evidence.view")}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="m-0 text-sm text-slate-500">{t("talentManager.pedidos.evidence.empty")}</p>
+            )}
           </div>
         </section>
       )}

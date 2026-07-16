@@ -2,13 +2,17 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import User from "../models/User.js";
 import Badge from "../models/Badge.js";
 import Area from "../models/Area.js";
+import RequirementEvidence from "../models/RequirementEvidence.js";
+import Requirement from "../models/Requirement.js";
 import database from "../config/database.js";
 import { QueryTypes, Op } from "sequelize";
 import {
+  sendBadgeApplicationStartedEmail,
   sendBadgeApplicationEmail,
   sendBadgeApprovedEmail,
   sendBadgeRejectedEmail,
   sendBadgeReturnedEmail,
+  sendTMValidationEmail,
   sendSLValidationEmail,
 } from "../services/mailService.js";
 import { createNotification } from "../services/notificationService.js";
@@ -106,6 +110,68 @@ export async function notifySLLeadersOfPendingApproval(pedido) {
   }
 }
 
+export async function notifyTMsOfPendingReview(pedido) {
+  try {
+    const badge = await Badge.findByPk(pedido.badge_id, { attributes: ["id", "description", "area_id"] });
+    const consultor = await User.findByPk(pedido.consultor_id, { attributes: ["id", "name"] });
+    const badgeName = badge?.description || `Badge #${pedido.badge_id}`;
+    const consultorName = consultor?.name || "consultor";
+
+    if (badge?.area_id) {
+      const tms = await database.query(
+        `SELECT u.id, u.name, u.email FROM "Users" u
+         WHERE u.role = 'talent_manager' AND (u.area_id = :areaId OR u.area_id IS NULL)`,
+        { replacements: { areaId: badge.area_id }, type: QueryTypes.SELECT }
+      );
+      for (const tm of tms) {
+        await createNotification({
+          titulo: "Pedido aguarda validação",
+          mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua validação.`,
+          utilizador_id: tm.id,
+          teamsNotify: true,
+          teamsBadgeId: pedido.badge_id,
+          email: tm.email
+            ? {
+                to: tm.email,
+                send: () => sendTMValidationEmail({ to: tm.email, name: tm.name, badgeName, consultorName }),
+              }
+            : null,
+        });
+      }
+    }
+  } catch (notifyErr) {
+    console.error("Falha ao notificar Talent Managers:", notifyErr.message);
+  }
+}
+
+async function notifyBadgeApplicationStarted(pedido) {
+  const badge = await Badge.findByPk(pedido.badge_id, {
+    attributes: ["id", "description"],
+  });
+  const consultor = await User.findByPk(pedido.consultor_id, {
+    attributes: ["id", "name", "email"],
+  });
+  const badgeName = badge?.description || `#${pedido.badge_id}`;
+
+  await createNotification({
+    titulo: "Candidatura iniciada",
+    mensagem: `Candidataste-te ao badge ${badgeName}.`,
+    utilizador_id: pedido.consultor_id,
+  });
+
+  if (consultor?.email) {
+    try {
+      await sendBadgeApplicationStartedEmail({
+        to: consultor.email,
+        name: consultor.name,
+        badgeName,
+      });
+    } catch (error) {
+      console.error("Notificacao criada, mas email de candidatura falhou:", error.message);
+    }
+  }
+}
+
 async function notifyBadgeApplication(pedido) {
   const badge = await Badge.findByPk(pedido.badge_id, {
     attributes: ["id", "description"],
@@ -117,7 +183,7 @@ async function notifyBadgeApplication(pedido) {
 
   await createNotification({
     titulo: "Candidatura submetida",
-    mensagem: `Candidataste-te ao badge ${badgeName}.`,
+    mensagem: `Submeteste as evidências do badge ${badgeName} para validação.`,
     utilizador_id: pedido.consultor_id,
   });
 
@@ -129,7 +195,7 @@ async function notifyBadgeApplication(pedido) {
         badgeName,
       });
     } catch (error) {
-      console.error("Notificacao criada, mas email de candidatura falhou:", error.message);
+      console.error("Notificacao criada, mas email de submissao falhou:", error.message);
     }
   }
 }
@@ -178,6 +244,7 @@ export async function getAllPedidos(req, res) {
         "sl_validated_at",
         "sl_comment",
         "rejection_reason",
+        "certificate_code",
         "created_at"
       ],
       where,
@@ -199,7 +266,35 @@ export async function getAllPedidos(req, res) {
       order: [["created_at", "DESC"]]
     });
 
-    res.json(pedidos);
+    let evidencesByPedido = {};
+    if (pedidos.length) {
+      const evidences = await RequirementEvidence.findAll({
+        where: {
+          [Op.or]: pedidos.map((p) => ({
+            consultor_id: p.consultor_id,
+            badge_id: p.badge_id
+          }))
+        },
+        attributes: ["id", "requirement_id", "badge_id", "consultor_id", "status", "evidence_url", "notes", "created_at"],
+        include: [{ model: Requirement, as: "requirement", attributes: ["id", "title", "code"] }],
+        order: [["created_at", "DESC"]]
+      });
+
+      evidencesByPedido = evidences.reduce((acc, ev) => {
+        const key = `${ev.consultor_id}_${ev.badge_id}`;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(ev);
+        return acc;
+      }, {});
+    }
+
+    const pedidosComEvidencias = pedidos.map((p) => {
+      const json = p.toJSON();
+      json.evidences = evidencesByPedido[`${p.consultor_id}_${p.badge_id}`] || [];
+      return json;
+    });
+
+    res.json(pedidosComEvidencias);
   } catch (err) {
     console.error("Erro ao listar pedidos:", err);
     res.status(500).json({ message: "Erro ao listar pedidos de badges" });
@@ -402,11 +497,15 @@ export async function criarPedido(req, res) {
     }
 
     const badge = await Badge.findByPk(badgeId, {
-      attributes: ["id"]
+      attributes: ["id", "special_deadline"]
     });
 
     if (!badge) {
       return res.status(404).json({ message: "Badge não encontrado" });
+    }
+
+    if (badge.special_deadline && new Date(badge.special_deadline) < new Date()) {
+      return res.status(400).json({ message: "O prazo para este badge especial já terminou" });
     }
 
     // Verificar se já existe pedido pendente/obtido para este badge
@@ -427,6 +526,8 @@ export async function criarPedido(req, res) {
       status: "pendente",
       workflow_status: "open",
     });
+
+    await notifyBadgeApplicationStarted(pedido);
 
     res.status(201).json(pedido);
 
@@ -493,6 +594,7 @@ export async function submeterPedido(req, res) {
     await pedido.save();
 
     await notifyBadgeApplication(pedido);
+    await notifyTMsOfPendingReview(pedido);
 
     return res.json(pedido);
   } catch (err) {

@@ -4,6 +4,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 
+function toDatetimeLocalValue(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 export default function BadgeFormAdmin() {
   const { t } = useTranslation();
   const { id } = useParams(); // "novo" ou um id numérico
@@ -18,12 +26,15 @@ export default function BadgeFormAdmin() {
     level: "Junior",
     points: 100,
     expiry_days: "",
-    image_url: ""
+    image_url: "",
+    special_deadline: ""
   });
 
   const [requirements, setRequirements] = useState([
     { title: "", code: "A1", description: "", image_url: "" }
   ]);
+
+  const [learningOutcomes, setLearningOutcomes] = useState([""]);
 
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -57,7 +68,8 @@ export default function BadgeFormAdmin() {
           level: badge.level || "Junior",
           points: badge.points || 0,
           expiry_days: badge.expiry_days || "",
-          image_url: badge.image_url || ""
+          image_url: badge.image_url || "",
+          special_deadline: toDatetimeLocalValue(badge.special_deadline)
         });
 
         const reqs = (badge.requirements || []).map((r, idx) => ({
@@ -67,6 +79,9 @@ export default function BadgeFormAdmin() {
           image_url: r.image_url || ""
         }));
         setRequirements(reqs.length ? reqs : [{ title: "", code: "A1", description: "", image_url: "" }]);
+
+        const outcomes = Array.isArray(badge.learning_outcomes) ? badge.learning_outcomes.filter(Boolean) : [];
+        setLearningOutcomes(outcomes.length ? outcomes : [""]);
       } catch (err) {
         console.error("Erro ao carregar badge:", err);
       }
@@ -96,6 +111,8 @@ export default function BadgeFormAdmin() {
       area_id: Number(form.area_id),
       points: Number(form.points),
       expiry_days: form.expiry_days ? Number(form.expiry_days) : null,
+      special_deadline: form.special_deadline ? new Date(form.special_deadline).toISOString() : null,
+      learning_outcomes: learningOutcomes.map((o) => o.trim()).filter(Boolean),
       requirements
     };
 
@@ -183,6 +200,18 @@ export default function BadgeFormAdmin() {
 
   const removeRequirement = (index) => {
     setRequirements((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateLearningOutcome = (index, value) => {
+    setLearningOutcomes((prev) => prev.map((o, i) => (i === index ? value : o)));
+  };
+
+  const addLearningOutcome = () => {
+    setLearningOutcomes((prev) => [...prev, ""]);
+  };
+
+  const removeLearningOutcome = (index) => {
+    setLearningOutcomes((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -280,6 +309,18 @@ export default function BadgeFormAdmin() {
               </div>
             </div>
 
+            <div className="mb-3">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">{t("admin.badgeForm.specialDeadlineLabel")}</label>
+              <input
+                type="datetime-local"
+                className="w-full max-w-xs rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+                name="special_deadline"
+                value={form.special_deadline}
+                onChange={handleChange}
+              />
+              <p className="mt-1 text-xs text-slate-500">{t("admin.badgeForm.specialDeadlineHint")}</p>
+            </div>
+
             <div className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-[96px_minmax(0,1fr)]">
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white">
@@ -373,6 +414,41 @@ export default function BadgeFormAdmin() {
                           {t("admin.common.remove")}
                         </button>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 border-t border-slate-200 pt-4">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <div>
+                  <h6 className="m-0 text-sm font-semibold text-slate-900 sm:text-base">{t("admin.badgeForm.certifiedSkills")}</h6>
+                  <p className="mt-1 text-xs text-slate-500">{t("admin.badgeForm.certifiedSkillsHint")}</p>
+                </div>
+                <button type="button" className="rounded-lg border border-sky-600 px-3 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50" onClick={addLearningOutcome}>
+                  <i className="bi bi-plus-circle mr-1"></i>
+                  {t("admin.badgeForm.addSkill")}
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {learningOutcomes.map((outcome, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+                      value={outcome}
+                      onChange={(e) => updateLearningOutcome(idx, e.target.value)}
+                      placeholder={t("admin.badgeForm.skillPlaceholder")}
+                    />
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-lg border border-rose-500 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                      onClick={() => removeLearningOutcome(idx)}
+                      disabled={learningOutcomes.length === 1}
+                    >
+                      {t("admin.common.remove")}
+                    </button>
                   </div>
                 ))}
               </div>

@@ -6,6 +6,7 @@ export function getSidebarMenus(t) {
       items: [
         { to: "/dashboard", label: t("layout.sidebar.menus.consultant.dashboard"), icon: "bi-speedometer2" },
         { to: "/consultor/historico", label: t("layout.sidebar.menus.consultant.meusBadges"), icon: "bi-award-fill" },
+        { to: "/consultor/certificados", label: t("layout.sidebar.menus.consultant.certificados"), icon: "bi-patch-check-fill" },
         { to: "/consultor/gamification", label: t("layout.sidebar.menus.consultant.gamification"), icon: "bi-stars" },
         { to: "/consultor/upload", label: t("layout.sidebar.menus.consultant.uploadEvidencias"), icon: "bi-cloud-upload-fill" },
         { to: "/consultor/ranking", label: t("layout.sidebar.menus.consultant.ranking"), icon: "bi-trophy-fill" },
@@ -26,6 +27,7 @@ export function getSidebarMenus(t) {
         { to: "/tm/dashboard", label: t("layout.sidebar.menus.talentManager.dashboard"), icon: "bi-speedometer2" },
         { to: "/tm/pedidos", label: t("layout.sidebar.menus.talentManager.pedidosBadges"), icon: "bi-inbox" },
         { to: "/tm/catalogo", label: t("layout.sidebar.menus.talentManager.catalogoBadges"), icon: "bi-award-fill" },
+        { to: "/tm/badges/especial", label: t("layout.sidebar.menus.talentManager.badgeEspecial"), icon: "bi-hourglass-split" },
         { to: "/tm/equipa", label: t("layout.sidebar.menus.talentManager.equipa"), icon: "bi-person-lines-fill" },
         { to: "/tm/expiracoes", label: t("layout.sidebar.menus.talentManager.expiracoesBadges"), icon: "bi-calendar2-x-fill" },
         { to: "/tm/comparacao", label: t("layout.sidebar.menus.talentManager.compararConsultores"), icon: "bi-bar-chart-steps" },
@@ -50,6 +52,7 @@ export function getSidebarMenus(t) {
         { to: "/sl/consultores", label: t("layout.sidebar.menus.serviceLine.consultores"), icon: "bi-person-badge-fill" },
         { to: "/sl/comparacao", label: t("layout.sidebar.menus.serviceLine.compararConsultores"), icon: "bi-bar-chart-steps" },
         { to: "/sl/badges", label: t("layout.sidebar.menus.serviceLine.catalogoBadges"), icon: "bi-award-fill" },
+        { to: "/sl/badges/especial", label: t("layout.sidebar.menus.serviceLine.badgeEspecial"), icon: "bi-hourglass-split" },
         { to: "/sl/historico", label: t("layout.sidebar.menus.serviceLine.historico"), icon: "bi-clock-history" },
         { to: "/sl/gamificacao", label: t("layout.sidebar.menus.serviceLine.gamificacao"), icon: "bi-stars" },
         { to: "/sl/estatisticas", label: t("layout.sidebar.menus.serviceLine.relatorios"), icon: "bi-bar-chart-line" },

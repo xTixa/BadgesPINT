@@ -40,6 +40,13 @@ const getPublicBadgeUrl = (badgeId) => {
   return `${baseUrl}/share/badges/${badgeId}`;
 };
 
+const getPublicCertificateUrl = (certificateCode) => {
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
+  return `${baseUrl}/share/certificates/${certificateCode}`;
+};
+
+const SOFTINSA_URL = import.meta.env.VITE_SOFTINSA_URL || "https://www.softinsa.pt";
+
 export default function Requirements() {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -157,7 +164,11 @@ export default function Requirements() {
   const level = getBadgeLevel(badge, t);
   const points = getBadgePoints(badge);
   const description = getBadgeDescription(badge, t);
-  const publicBadgeUrl = getPublicBadgeUrl(id);
+  const isSpecial = Boolean(badge?.special_deadline);
+  const isSpecialClosed = isSpecial && new Date(badge.special_deadline) < new Date();
+  const publicBadgeUrl = application?.certificate_code
+    ? getPublicCertificateUrl(application.certificate_code)
+    : getPublicBadgeUrl(id);
   const handleShareLinkedIn = () =>
     openLinkedInAddCertification({
       name: `${badgeName} (${level})`,
@@ -184,6 +195,11 @@ export default function Requirements() {
 
     if (user.role !== "consultant") {
       setError(t("requirements.errors.onlyConsultants"));
+      return;
+    }
+
+    if (isSpecialClosed) {
+      setError(t("requirements.errors.specialClosed"));
       return;
     }
 
@@ -228,6 +244,14 @@ export default function Requirements() {
               <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
                 {areaName}
               </span>
+              {isSpecial && (
+                <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-extrabold ${isSpecialClosed ? "bg-slate-900/60 text-white" : "bg-amber-400 text-amber-950"}`}>
+                  <i className="bi bi-hourglass-split"></i>
+                  {isSpecialClosed
+                    ? t("requirements.card.specialClosedLabel")
+                    : t("requirements.card.specialEndsOn", { date: new Date(badge.special_deadline).toLocaleString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) })}
+                </span>
+              )}
             </div>
 
             <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white md:text-4xl">
@@ -263,16 +287,26 @@ export default function Requirements() {
                   <button
                     type="button"
                     onClick={handleApply}
-                    disabled={applying || applied}
+                    disabled={applying || applied || isSpecialClosed}
                     className="mb-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#0F62FE] px-4 text-sm font-extrabold text-white transition hover:bg-[#0B55DD] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {applied
                       ? application?.status === "obtido"
                         ? t("requirements.card.obtained")
                         : t("requirements.card.activeApplication")
-                      : applying
-                        ? t("requirements.card.applying")
-                        : t("requirements.card.applyNow")}
+                      : isSpecialClosed
+                        ? t("requirements.card.specialClosedLabel")
+                        : applying
+                          ? t("requirements.card.applying")
+                          : t("requirements.card.applyNow")}
+                  </button>
+                ) : isSpecialClosed ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="mb-3 flex h-10 w-full cursor-not-allowed items-center justify-center rounded-xl bg-slate-300 px-4 text-sm font-extrabold text-slate-600"
+                  >
+                    {t("requirements.card.specialClosedLabel")}
                   </button>
                 ) : (
                   <Link
@@ -445,6 +479,20 @@ export default function Requirements() {
           <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
             <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.descriptionTitle")}</h2>
             <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{description}</p>
+          </section>
+
+          <section className="rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <h2 className="text-xl font-extrabold text-slate-950">{t("requirements.softinsaIntegration.title")}</h2>
+            <p className="mt-3 max-w-5xl leading-relaxed text-slate-700">{t("requirements.softinsaIntegration.text")}</p>
+            <a
+              href={SOFTINSA_URL}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[#0F62FE]/25 px-4 text-sm font-extrabold text-[#0F62FE] transition hover:bg-[#0F62FE]/10"
+            >
+              <i className="bi bi-box-arrow-up-right"></i>
+              {t("requirements.softinsaIntegration.cta")}
+            </a>
           </section>
         </div>
 

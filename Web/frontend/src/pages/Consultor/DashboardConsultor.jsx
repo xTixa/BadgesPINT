@@ -144,9 +144,12 @@ export default function DashboardConsultor() {
     const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
     const badgeName = latestObtainedBadge.name || latestObtainedBadge.subtitle || t("consultor.dashboard.thisBadge");
     const level = latestObtainedBadge.level ? ` (${latestObtainedBadge.level})` : "";
+    const certUrl = latestObtainedBadge.certificate_code
+      ? `${apiBaseUrl}/share/certificates/${latestObtainedBadge.certificate_code}`
+      : `${apiBaseUrl}/share/badges/${latestObtainedBadge.id}`;
     openLinkedInAddCertification({
       name: `${badgeName}${level}`,
-      certUrl: `${apiBaseUrl}/share/badges/${latestObtainedBadge.id}`,
+      certUrl,
       issueDate: latestObtainedBadge.data_atribuicao,
       certId: latestObtainedBadge.certificate_code,
     });

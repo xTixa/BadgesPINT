@@ -32,6 +32,8 @@ export default function BadgeCard({
   const detailUrl = `/badges/${badge?.id}`;
   const requirementsCount =
     badge?.requirements_count || badge?.requirementsCount || badge?.requisitos_count || 5;
+  const isSpecial = Boolean(badge?.special_deadline);
+  const isSpecialClosed = isSpecial && new Date(badge.special_deadline) < new Date();
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#0F62FE]/10 bg-white shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition-all duration-200 hover:-translate-y-1 hover:border-[#0F62FE]/30 hover:shadow-[0_12px_40px_rgba(15,98,254,0.12)]">
@@ -49,6 +51,12 @@ export default function BadgeCard({
             </div>
           )}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-4 pb-4 pt-10">
+            {isSpecial && (
+              <div className={`mb-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${isSpecialClosed ? "bg-slate-600 text-white" : "bg-amber-400 text-amber-950"}`}>
+                <i className="bi bi-hourglass-split text-[10px]"></i>
+                {isSpecialClosed ? t("components.badgeCard.specialClosed") : t("requirements.card.specialBadge")}
+              </div>
+            )}
             <p className="text-xs font-bold uppercase tracking-wide text-white/90">
               {areaName}
             </p>
