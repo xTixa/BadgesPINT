@@ -30,6 +30,7 @@ import HistoricoBadges from "./pages/Consultor/HistoricoBadges";
 import UploadEvidencias from "./pages/Consultor/UploadEvidencias";
 import ConsultorSettingsPage from "./pages/Consultor/Settings";
 import EmailSignature from "./pages/Consultor/EmailSignature";
+import Certificados from "./pages/Consultor/Certificados";
 
 // Talent Manager
 import DashboardTalentManager from "./pages/TalentManager/DashboardTalentManager";
@@ -140,6 +141,7 @@ function AppContent() {
           <Route path="/consultor/upload" element={<ProtectedRoute role="consultant"><UploadEvidencias /></ProtectedRoute>} />
           <Route path="/consultor/settings" element={<ProtectedRoute role="consultant"><ConsultorSettingsPage /></ProtectedRoute>} />
           <Route path="/consultor/assinatura-email" element={<ProtectedRoute role="consultant"><EmailSignature /></ProtectedRoute>} />
+          <Route path="/consultor/certificados" element={<ProtectedRoute role="consultant"><Certificados /></ProtectedRoute>} />
 
           {/* Talent Manager */}
           <Route path="/tm/dashboard" element={<ProtectedRoute role="talent_manager"><DashboardTalentManager /></ProtectedRoute>} />

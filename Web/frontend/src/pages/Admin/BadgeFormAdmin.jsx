@@ -34,6 +34,8 @@ export default function BadgeFormAdmin() {
     { title: "", code: "A1", description: "", image_url: "" }
   ]);
 
+  const [learningOutcomes, setLearningOutcomes] = useState([""]);
+
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
@@ -77,6 +79,9 @@ export default function BadgeFormAdmin() {
           image_url: r.image_url || ""
         }));
         setRequirements(reqs.length ? reqs : [{ title: "", code: "A1", description: "", image_url: "" }]);
+
+        const outcomes = Array.isArray(badge.learning_outcomes) ? badge.learning_outcomes.filter(Boolean) : [];
+        setLearningOutcomes(outcomes.length ? outcomes : [""]);
       } catch (err) {
         console.error("Erro ao carregar badge:", err);
       }
@@ -107,6 +112,7 @@ export default function BadgeFormAdmin() {
       points: Number(form.points),
       expiry_days: form.expiry_days ? Number(form.expiry_days) : null,
       special_deadline: form.special_deadline ? new Date(form.special_deadline).toISOString() : null,
+      learning_outcomes: learningOutcomes.map((o) => o.trim()).filter(Boolean),
       requirements
     };
 
@@ -194,6 +200,18 @@ export default function BadgeFormAdmin() {
 
   const removeRequirement = (index) => {
     setRequirements((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateLearningOutcome = (index, value) => {
+    setLearningOutcomes((prev) => prev.map((o, i) => (i === index ? value : o)));
+  };
+
+  const addLearningOutcome = () => {
+    setLearningOutcomes((prev) => [...prev, ""]);
+  };
+
+  const removeLearningOutcome = (index) => {
+    setLearningOutcomes((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -396,6 +414,41 @@ export default function BadgeFormAdmin() {
                           {t("admin.common.remove")}
                         </button>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 border-t border-slate-200 pt-4">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <div>
+                  <h6 className="m-0 text-sm font-semibold text-slate-900 sm:text-base">{t("admin.badgeForm.certifiedSkills")}</h6>
+                  <p className="mt-1 text-xs text-slate-500">{t("admin.badgeForm.certifiedSkillsHint")}</p>
+                </div>
+                <button type="button" className="rounded-lg border border-sky-600 px-3 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50" onClick={addLearningOutcome}>
+                  <i className="bi bi-plus-circle mr-1"></i>
+                  {t("admin.badgeForm.addSkill")}
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {learningOutcomes.map((outcome, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+                      value={outcome}
+                      onChange={(e) => updateLearningOutcome(idx, e.target.value)}
+                      placeholder={t("admin.badgeForm.skillPlaceholder")}
+                    />
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-lg border border-rose-500 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50"
+                      onClick={() => removeLearningOutcome(idx)}
+                      disabled={learningOutcomes.length === 1}
+                    >
+                      {t("admin.common.remove")}
+                    </button>
                   </div>
                 ))}
               </div>

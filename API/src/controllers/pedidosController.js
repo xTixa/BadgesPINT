@@ -209,6 +209,7 @@ export async function getAllPedidos(req, res) {
         "sl_validated_at",
         "sl_comment",
         "rejection_reason",
+        "certificate_code",
         "created_at"
       ],
       where,

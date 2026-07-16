@@ -91,6 +91,15 @@ export function getDashboardUrl(path = "/consultor") {
   return `${getFrontendUrl()}${path}`;
 }
 
+export function getApiBaseUrl() {
+  return (
+    process.env.API_BASE_URL ||
+    process.env.PUBLIC_API_URL ||
+    process.env.PUBLIC_SITE_URL ||
+    `http://localhost:${process.env.PORT || 4000}`
+  ).replace(/\/$/, "");
+}
+
 function renderTemplate(value, variables = {}) {
   return String(value || "").replace(/{{\s*([a-z0-9_]+)\s*}}/gi, (_, key) =>
     escapeHtml(variables[key] ?? "")
@@ -424,7 +433,9 @@ export function getEmailSignature({ user, badges = [] } = {}) {
           const level = escapeHtml(badge?.level || badge?.nivel || "");
           const pillStyle = "display:inline-block;margin:0 6px 6px 0;padding:5px 8px;border:1px solid #BFEFFF;border-radius:999px;background:#F8FBFF;color:#16558C;font-size:11px;font-weight:700;";
           const content = `${name}${level ? ` · ${level}` : ""}`;
-          const badgePageUrl = badge?.id ? getDashboardUrl(`/badges/${badge.id}`) : "";
+          const badgePageUrl = badge?.certificate_code
+            ? `${getApiBaseUrl()}/share/certificates/${badge.certificate_code}`
+            : badge?.id ? getDashboardUrl(`/badges/${badge.id}`) : "";
           return badgePageUrl
             ? `<a href="${escapeHtml(badgePageUrl)}" target="_blank" rel="noreferrer noopener" style="${pillStyle}text-decoration:none;">${content}</a>`
             : `<span style="${pillStyle}">${content}</span>`;

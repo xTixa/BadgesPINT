@@ -40,6 +40,11 @@ const getPublicBadgeUrl = (badgeId) => {
   return `${baseUrl}/share/badges/${badgeId}`;
 };
 
+const getPublicCertificateUrl = (certificateCode) => {
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:4000").replace(/\/$/, "");
+  return `${baseUrl}/share/certificates/${certificateCode}`;
+};
+
 const SOFTINSA_URL = import.meta.env.VITE_SOFTINSA_URL || "https://www.softinsa.pt";
 
 export default function Requirements() {
@@ -161,7 +166,9 @@ export default function Requirements() {
   const description = getBadgeDescription(badge, t);
   const isSpecial = Boolean(badge?.special_deadline);
   const isSpecialClosed = isSpecial && new Date(badge.special_deadline) < new Date();
-  const publicBadgeUrl = getPublicBadgeUrl(id);
+  const publicBadgeUrl = application?.certificate_code
+    ? getPublicCertificateUrl(application.certificate_code)
+    : getPublicBadgeUrl(id);
   const handleShareLinkedIn = () =>
     openLinkedInAddCertification({
       name: `${badgeName} (${level})`,

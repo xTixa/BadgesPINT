@@ -6,6 +6,7 @@ export function getSidebarMenus(t) {
       items: [
         { to: "/dashboard", label: t("layout.sidebar.menus.consultant.dashboard"), icon: "bi-speedometer2" },
         { to: "/consultor/historico", label: t("layout.sidebar.menus.consultant.meusBadges"), icon: "bi-award-fill" },
+        { to: "/consultor/certificados", label: t("layout.sidebar.menus.consultant.certificados"), icon: "bi-patch-check-fill" },
         { to: "/consultor/gamification", label: t("layout.sidebar.menus.consultant.gamification"), icon: "bi-stars" },
         { to: "/consultor/upload", label: t("layout.sidebar.menus.consultant.uploadEvidencias"), icon: "bi-cloud-upload-fill" },
         { to: "/consultor/ranking", label: t("layout.sidebar.menus.consultant.ranking"), icon: "bi-trophy-fill" },
