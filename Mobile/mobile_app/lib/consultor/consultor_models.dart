@@ -74,6 +74,46 @@ class LearningPathProgressItem {
   }
 }
 
+class LearningPathItem {
+  LearningPathItem({
+    required this.id,
+    required this.name,
+    this.description,
+  });
+
+  final int id;
+  final String name;
+  final String? description;
+
+  factory LearningPathItem.fromJson(Map<String, dynamic> json) {
+    return LearningPathItem(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? 'Learning Path').toString(),
+      description: json['description']?.toString(),
+    );
+  }
+}
+
+class ServiceLineItem {
+  ServiceLineItem({
+    required this.id,
+    required this.name,
+    this.description,
+  });
+
+  final int id;
+  final String name;
+  final String? description;
+
+  factory ServiceLineItem.fromJson(Map<String, dynamic> json) {
+    return ServiceLineItem(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? 'Service Line').toString(),
+      description: json['description']?.toString(),
+    );
+  }
+}
+
 class CertificateItem {
   CertificateItem({
     required this.id,
@@ -694,6 +734,58 @@ class GamificationData {
                   .map(GamificationAchievement.fromJson)
                   .toList()
               : <GamificationAchievement>[],
+    );
+  }
+}
+
+class EmailSignatureBadgeOption {
+  EmailSignatureBadgeOption({
+    required this.id,
+    required this.name,
+    this.level,
+    this.imageUrl,
+  });
+
+  final int id;
+  final String name;
+  final String? level;
+  final String? imageUrl;
+
+  factory EmailSignatureBadgeOption.fromJson(Map<String, dynamic> json) {
+    return EmailSignatureBadgeOption(
+      id: _readInt(json['id']) ?? 0,
+      name: (json['name'] ?? 'Badge').toString(),
+      level: json['level']?.toString(),
+      imageUrl: json['image_url']?.toString(),
+    );
+  }
+}
+
+class EmailSignatureData {
+  EmailSignatureData({
+    required this.enabled,
+    required this.selectedBadgeIds,
+    required this.availableBadges,
+    this.plainText,
+  });
+
+  final bool enabled;
+  final List<int> selectedBadgeIds;
+  final List<EmailSignatureBadgeOption> availableBadges;
+  final String? plainText;
+
+  factory EmailSignatureData.fromJson(Map<String, dynamic> json) {
+    return EmailSignatureData(
+      enabled: json['enabled'] == true,
+      selectedBadgeIds: (json['selected_badge_ids'] as List<dynamic>? ?? [])
+          .map((value) => _readInt(value) ?? 0)
+          .where((id) => id != 0)
+          .toList(),
+      availableBadges: (json['available_badges'] as List<dynamic>? ?? [])
+          .whereType<Map<String, dynamic>>()
+          .map(EmailSignatureBadgeOption.fromJson)
+          .toList(),
+      plainText: json['plain_text']?.toString(),
     );
   }
 }

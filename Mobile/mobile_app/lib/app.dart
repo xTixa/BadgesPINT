@@ -24,6 +24,15 @@ import 'consultor/pages/gallery_page.dart';
 import 'consultor/pages/notifications_page.dart';
 import 'consultor/pages/settings_page.dart';
 import 'consultor/pages/timeline_page.dart';
+import 'consultor/pages/email_signature_page.dart';
+import 'consultor/pages/faq_page.dart';
+import 'consultor/pages/learning_paths_page.dart';
+import 'consultor/pages/learning_path_service_lines_page.dart';
+import 'consultor/pages/rgpd_terms_page.dart';
+import 'consultor/pages/settings/profile_settings_page.dart';
+import 'consultor/pages/settings/notifications_settings_page.dart';
+import 'consultor/pages/settings/privacy_settings_page.dart';
+import 'consultor/pages/settings/help_settings_page.dart';
 
 enum AuthStage { login, register, firstLogin, authenticated }
 
@@ -90,8 +99,10 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
             location.startsWith('/consultants') ||
             location == '/gallery' ||
             location == '/notifications' ||
-            location == '/settings' ||
+            location.startsWith('/settings') ||
             location == '/timeline' ||
+            location == '/email-signature' ||
+            location.startsWith('/learning-paths') ||
             location == '/boot') {
           return '/login';
         }
@@ -265,6 +276,36 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
           },
         ),
         GoRoute(
+          path: '/settings/profile',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return ProfileSettingsPage(controller: ctrl);
+          },
+        ),
+        GoRoute(
+          path: '/settings/notifications',
+          builder: (BuildContext context, GoRouterState state) =>
+              const NotificationsSettingsPage(),
+        ),
+        GoRoute(
+          path: '/settings/privacy',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return PrivacySettingsPage(controller: ctrl);
+          },
+        ),
+        GoRoute(
+          path: '/settings/help',
+          builder: (BuildContext context, GoRouterState state) =>
+              const HelpSettingsPage(),
+        ),
+        GoRoute(
           path: '/timeline',
           builder: (BuildContext context, GoRouterState state) {
             final ctrl = _controller;
@@ -272,6 +313,49 @@ class _BadgesPintAppState extends State<BadgesPintApp> {
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             }
             return TimelinePage(controller: ctrl);
+          },
+        ),
+        GoRoute(
+          path: '/faq',
+          builder: (BuildContext context, GoRouterState state) => const FaqPage(),
+        ),
+        GoRoute(
+          path: '/rgpd-terms',
+          builder: (BuildContext context, GoRouterState state) => const RgpdTermsPage(),
+        ),
+        GoRoute(
+          path: '/email-signature',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return EmailSignaturePage(controller: ctrl);
+          },
+        ),
+        GoRoute(
+          path: '/learning-paths',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            if (ctrl == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return LearningPathsPage(controller: ctrl);
+          },
+        ),
+        GoRoute(
+          path: '/learning-paths/:id/service-lines',
+          builder: (BuildContext context, GoRouterState state) {
+            final ctrl = _controller;
+            final id = int.tryParse(state.pathParameters['id'] ?? '');
+            if (ctrl == null || id == null) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return LearningPathServiceLinesPage(
+              controller: ctrl,
+              learningPathId: id,
+              learningPathName: state.extra as String?,
+            );
           },
         ),
       ],

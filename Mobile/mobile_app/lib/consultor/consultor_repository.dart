@@ -875,6 +875,99 @@ class ConsultorRepository {
     return 'Erro de autenticacao.';
   }
 
+  Future<List<LearningPathItem>> getLearningPaths() async {
+    try {
+      final payload = await _apiClient.get('/learning-paths');
+      if (payload is List) {
+        return payload
+            .whereType<Map<String, dynamic>>()
+            .map(LearningPathItem.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      return <LearningPathItem>[];
+    }
+
+    return <LearningPathItem>[];
+  }
+
+  Future<List<ServiceLineItem>> getServiceLinesByLearningPath(int id) async {
+    try {
+      final payload = await _apiClient.get('/learning-paths/$id/service-lines');
+      if (payload is List) {
+        return payload
+            .whereType<Map<String, dynamic>>()
+            .map(ServiceLineItem.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      return <ServiceLineItem>[];
+    }
+
+    return <ServiceLineItem>[];
+  }
+
+  Future<EmailSignatureData?> getEmailSignature() async {
+    if ((_token ?? '').isEmpty) return null;
+
+    try {
+      final payload = await _apiClient.get(
+        '/api/consultor/email-signature',
+        token: _token,
+      );
+      if (payload is Map<String, dynamic>) {
+        return EmailSignatureData.fromJson(payload);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
+  Future<EmailSignatureData?> previewEmailSignature(
+    List<int> badgeIds,
+  ) async {
+    if ((_token ?? '').isEmpty) return null;
+
+    try {
+      final payload = await _apiClient.post(
+        '/api/consultor/email-signature/preview',
+        token: _token,
+        body: <String, dynamic>{'badge_ids': badgeIds},
+      );
+      if (payload is Map<String, dynamic>) {
+        return EmailSignatureData.fromJson(payload);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
+  Future<EmailSignatureData?> updateEmailSignature({
+    required bool enabled,
+    required List<int> badgeIds,
+  }) async {
+    if ((_token ?? '').isEmpty) return null;
+
+    try {
+      final payload = await _apiClient.put(
+        '/api/consultor/email-signature',
+        token: _token,
+        body: <String, dynamic>{'enabled': enabled, 'badge_ids': badgeIds},
+      );
+      if (payload is Map<String, dynamic>) {
+        return EmailSignatureData.fromJson(payload);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
   String _normalizeForMatch(String value) {
     return value
         .toLowerCase()

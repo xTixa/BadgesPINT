@@ -119,7 +119,7 @@ class _GalleryPageState extends State<GalleryPage> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
-                    childAspectRatio: 0.78,
+                    childAspectRatio: 0.66,
                   ),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) => _GalleryCard(entry: filtered[index]),
@@ -160,12 +160,13 @@ class _GalleryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.borderLight),
         ),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CircleAvatar(
-              radius: 30,
+              radius: 26,
               backgroundColor: AppColors.primary.withValues(alpha: 0.12),
               backgroundImage: (entry.avatarUrl ?? '').isNotEmpty
                   ? NetworkImage(entry.avatarUrl!)
@@ -180,13 +181,13 @@ class _GalleryCard extends StatelessWidget {
                     )
                   : null,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
               entry.name,
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
             ),
             if ((entry.areaName ?? '').isNotEmpty)
               Padding(
@@ -199,7 +200,7 @@ class _GalleryCard extends StatelessWidget {
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                 ),
               ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -207,7 +208,7 @@ class _GalleryCard extends StatelessWidget {
                 _stat('${entry.pointsTotal}', 'Pontos'),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             if (entry.topBadges.isNotEmpty)
               Wrap(
                 spacing: 4,
@@ -225,6 +226,8 @@ class _GalleryCard extends StatelessWidget {
                         ),
                         child: Text(
                           badge.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,

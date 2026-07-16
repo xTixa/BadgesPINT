@@ -237,7 +237,11 @@
       "Bash(timeout 8 node src/server.js)",
       "Bash(echo \"started with pid $!\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/api/auth/me)",
-      "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"naoexiste@test.com\",\"password\":\"x\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")"
+      "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"naoexiste@test.com\",\"password\":\"x\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(xargs grep -liE \"upload|comprovativo|evidence|attachment|multipart\")",
+      "Bash(git -C \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\" log --oneline --all --grep=\"email signature\" -i --max-count=5)",
+      "Bash(git -C \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\" show --stat c424fe5)",
+      "Bash(git -C \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\" show c424fe5 -- Mobile/mobile_app/lib/consultor/pages/dashboard_page.dart)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",
