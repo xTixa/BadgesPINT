@@ -1,4 +1,20 @@
 {
+  "notificationPreferences": {
+    "loading": "A carregar preferências...",
+    "loadError": "Não foi possível carregar as preferências de notificação.",
+    "saveError": "Não foi possível guardar esta preferência.",
+    "channels": {
+      "inApp": "Na app",
+      "email": "Email",
+      "push": "Push"
+    },
+    "categories": {
+      "badges": "Badges",
+      "avisos": "Avisos",
+      "sla": "Alertas de SLA",
+      "tickets": "Tickets"
+    }
+  },
   "navbar": {
     "links": {
       "learningPaths": "Percursos",

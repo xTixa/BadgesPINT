@@ -4,6 +4,44 @@ import FcmToken from "../models/FcmToken.js";
 import database from "../config/database.js";
 import { Op, QueryTypes } from "sequelize";
 import { createNotifications } from "../services/notificationService.js";
+import { resolvePreferences } from "../services/notificationPreferences.js";
+
+// Obter preferencias de notificacao do utilizador autenticado
+export const obterPreferenciasNotificacao = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.userId, { attributes: ["id", "notification_preferences"] });
+    if (!user) return res.status(404).json({ success: false, message: "Utilizador nao encontrado" });
+
+    res.json({ success: true, data: resolvePreferences(user.notification_preferences) });
+  } catch (error) {
+    console.error("Erro ao obter preferencias de notificacao:", error);
+    res.status(500).json({ success: false, message: "Erro ao obter preferencias de notificacao" });
+  }
+};
+
+// Atualizar preferencias de notificacao do utilizador autenticado
+export const atualizarPreferenciasNotificacao = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.userId);
+    if (!user) return res.status(404).json({ success: false, message: "Utilizador nao encontrado" });
+
+    const current = resolvePreferences(user.notification_preferences);
+    const incoming = req.body && typeof req.body === "object" ? req.body : {};
+    const merged = resolvePreferences(
+      Object.keys(current).reduce((acc, categoria) => {
+        acc[categoria] = { ...current[categoria], ...(incoming[categoria] || {}) };
+        return acc;
+      }, {})
+    );
+    user.notification_preferences = merged;
+    await user.save();
+
+    res.json({ success: true, data: merged });
+  } catch (error) {
+    console.error("Erro ao guardar preferencias de notificacao:", error);
+    res.status(500).json({ success: false, message: "Erro ao guardar preferencias de notificacao" });
+  }
+};
 
 // Obter notificações do utilizador
 export const obterNotificacoes = async (req, res) => {
@@ -278,7 +316,7 @@ export const enviarBroadcast = async (req, res) => {
       lido: false,
     }));
 
-    await createNotifications(notifications);
+    await createNotifications(notifications, { categoria: "avisos" });
 
     res.json({
       success: true,

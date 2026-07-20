@@ -89,6 +89,7 @@ database
       database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS anonymized_at TIMESTAMP'),
       database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS tm_preferences JSONB'),
       database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS sl_preferences JSONB'),
+      database.query('ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS notification_preferences JSONB'),
       database.query('ALTER TABLE consultor_badges ADD COLUMN IF NOT EXISTS certificate_code VARCHAR(64) UNIQUE'),
       database.query('ALTER TABLE consultor_badges ADD COLUMN IF NOT EXISTS rejection_reason TEXT'),
       database.query('ALTER TABLE badges ADD COLUMN IF NOT EXISTS subtitle TEXT'),

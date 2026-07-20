@@ -37,6 +37,7 @@ const User = database.define(
     last_login: { type: DataTypes.DATE, allowNull: true },
     tm_preferences: { type: DataTypes.JSONB, allowNull: true },
     sl_preferences: { type: DataTypes.JSONB, allowNull: true },
+    notification_preferences: { type: DataTypes.JSONB, allowNull: true },
   },
   {
     tableName: "Users",

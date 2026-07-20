@@ -1,7 +1,9 @@
+import User from "../models/User.js";
 import Notification from "../models/Notification.js";
 import { sendPushToUser } from "./firebaseService.js";
 import { sendTeamsWebhook, sendTeamsWebhookToUrls } from "./teamsWebhookService.js";
 import { getTeamWebhooksForBadge } from "./teamWebhookLookup.js";
+import { categoriaFromTipo, getChannelsForCategory } from "./notificationPreferences.js";
 
 export async function sendPushNotification({ utilizador_id, titulo, mensagem, tipo = "geral", data = {} }) {
   return sendPushToUser(utilizador_id, {
@@ -13,11 +15,17 @@ export async function sendPushNotification({ utilizador_id, titulo, mensagem, ti
   });
 }
 
+export async function getEffectiveChannels(utilizador_id, categoria) {
+  const user = await User.findByPk(utilizador_id, { attributes: ["notification_preferences"] });
+  return getChannelsForCategory(user?.notification_preferences, categoria);
+}
+
 export async function createNotification({
   utilizador_id,
   titulo,
   mensagem,
   tipo = "geral",
+  categoria = null,
   ticket_id = null,
   transaction = null,
   push = true,
@@ -25,6 +33,9 @@ export async function createNotification({
   teamsNotify = false,
   teamsBadgeId = null,
 }) {
+  const resolvedCategoria = categoria || categoriaFromTipo(tipo);
+  const channels = await getEffectiveChannels(utilizador_id, resolvedCategoria);
+
   const notification = await Notification.create(
     {
       tipo,
@@ -33,14 +44,15 @@ export async function createNotification({
       utilizador_id,
       ticket_id,
       lido: false,
+      ativo: channels.inApp,
     },
     {
       ...(transaction ? { transaction } : {}),
-      skipPush: !push,
+      skipPush: !push || !channels.push,
     }
   );
 
-  if (email?.send && email?.to) {
+  if (channels.email && email?.send && email?.to) {
     email
       .send()
       .catch((error) =>
@@ -70,6 +82,7 @@ export async function createUniqueNotification({
   titulo,
   mensagem,
   tipo = "geral",
+  categoria = null,
   ticket_id = null,
   email = null,
   push = true,
@@ -95,6 +108,7 @@ export async function createUniqueNotification({
     titulo,
     mensagem,
     tipo,
+    categoria,
     ticket_id,
     email,
     push,
@@ -105,8 +119,20 @@ export async function createUniqueNotification({
   return notification;
 }
 
-export async function createNotifications(items, { push = true, transaction = null } = {}) {
+export async function createNotifications(items, { push = true, transaction = null, categoria = null } = {}) {
   if (!items.length) return [];
+
+  const channelsByUser = new Map();
+  await Promise.all(
+    [...new Set(items.map((item) => item.utilizador_id))].map(async (utilizador_id) => {
+      const resolvedCategoria = categoria || categoriaFromTipo(items.find((i) => i.utilizador_id === utilizador_id)?.tipo);
+      channelsByUser.set(utilizador_id, await getEffectiveChannels(utilizador_id, resolvedCategoria));
+    })
+  );
+
+  const pushEligibleUserIds = new Set(
+    [...channelsByUser.entries()].filter(([, channels]) => channels.push).map(([id]) => id)
+  );
 
   return Notification.bulkCreate(
     items.map((item) => ({
@@ -116,10 +142,12 @@ export async function createNotifications(items, { push = true, transaction = nu
       utilizador_id: item.utilizador_id,
       ticket_id: item.ticket_id || null,
       lido: false,
+      ativo: channelsByUser.get(item.utilizador_id)?.inApp !== false,
     })),
     {
       ...(transaction ? { transaction } : {}),
       skipPush: !push,
+      pushEligibleUserIds,
     }
   );
 }

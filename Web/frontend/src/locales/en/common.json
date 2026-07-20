@@ -1,4 +1,20 @@
 {
+  "notificationPreferences": {
+    "loading": "Loading preferences...",
+    "loadError": "Could not load notification preferences.",
+    "saveError": "Could not save this preference.",
+    "channels": {
+      "inApp": "In-app",
+      "email": "Email",
+      "push": "Push"
+    },
+    "categories": {
+      "badges": "Badges",
+      "avisos": "Announcements",
+      "sla": "SLA alerts",
+      "tickets": "Tickets"
+    }
+  },
   "navbar": {
     "links": {
       "learningPaths": "Learning Paths",

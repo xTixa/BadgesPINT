@@ -8,6 +8,8 @@ router.use(authMiddleware);
 
 router.get("/", notificationController.obterNotificacoes);
 router.get("/unread/count", notificationController.obterContagemNaoLidas);
+router.get("/preferences", notificationController.obterPreferenciasNotificacao);
+router.put("/preferences", notificationController.atualizarPreferenciasNotificacao);
 router.get(
   "/announcements",
   rolesMiddleware(["admin", "service_line_leader", "talent_manager"]),

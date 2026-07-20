@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
+import NotificationPreferences from "../../components/NotificationPreferences";
 
 const toDateInputValue = (value) => (value ? String(value).slice(0, 10) : "");
 
@@ -159,27 +160,7 @@ export default function ConsultorSettingsPage() {
             <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]">
               <h2 className="mb-4 text-xl font-semibold">{t("consultor.settings.notifications")}</h2>
 
-              <div className="space-y-3">
-                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
-                  <span>{t("consultor.settings.confirmationEmail")}</span>
-                  <input type="checkbox" className="accent-[#0F62FE]" />
-                </label>
-
-                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
-                  <span>{t("consultor.settings.approvalRejection")}</span>
-                  <input type="checkbox" className="accent-[#0F62FE]" />
-                </label>
-
-                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
-                  <span>{t("consultor.settings.expirationAlerts")}</span>
-                  <input type="checkbox" className="accent-[#0F62FE]" />
-                </label>
-
-                <label className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
-                  <span>{t("consultor.settings.goalReminders")}</span>
-                  <input type="checkbox" className="accent-[#0F62FE]" />
-                </label>
-              </div>
+              <NotificationPreferences />
             </div>
 
             <div className="rounded-3xl bg-white p-6 shadow-[0_4px_16px_rgba(15,98,254,0.05)] transition-all duration-300 hover:shadow-[0_6px_20px_rgba(15,98,254,0.08)]">

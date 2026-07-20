@@ -79,9 +79,16 @@ Notification.afterCreate(async (notification, options) => {
 Notification.afterBulkCreate(async (notifications, options) => {
   if (options?.skipPush) return;
 
+  const eligibleIds = options?.pushEligibleUserIds;
+  const targetIds = eligibleIds
+    ? notifications.map((n) => n.utilizador_id).filter((id) => eligibleIds.has(id))
+    : notifications.map((n) => n.utilizador_id);
+
+  if (targetIds.length === 0) return;
+
   try {
     await sendPushToUsers(
-      notifications.map((notification) => notification.utilizador_id),
+      targetIds,
       {
         id: notifications[0]?.id ?? "",
         tipo: notifications[0]?.tipo ?? "geral",

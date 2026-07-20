@@ -244,7 +244,18 @@
       "Bash(git -C \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\" show c424fe5 -- Mobile/mobile_app/lib/consultor/pages/dashboard_page.dart)",
       "Bash(python -c \"print\\(36+25+19+14+12+8+5+5+3+1+1+1\\)\")",
       "Bash(node -e \"require\\('dotenv'\\).config\\(\\); console.log\\('HF_API_TOKEN:', process.env.HF_API_TOKEN\\)\")",
-      "Bash(tasklist //FI \"IMAGENAME eq node.exe\" //V)"
+      "Bash(tasklist //FI \"IMAGENAME eq node.exe\" //V)",
+      "Bash(node --check src/services/notificationPreferences.js)",
+      "Bash(node --check src/models/User.js)",
+      "Bash(timeout 20 node src/server.js)",
+      "Bash(curl -sv http://localhost:3000/api/notifications/preferences)",
+      "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"guilherme@yopmail.com\",\"password\":\"Password123\"}')",
+      "Bash(curl -s http://localhost:3000/api/notifications/preferences -H 'Authorization: Bearer __TRACKED_VAR__')",
+      "Bash(curl -s -X PUT http://localhost:3000/api/notifications/preferences -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Content-Type: application/json' -d '{\"badges\":{\"email\":false}}')",
+      "Bash(curl -s -X PUT http://localhost:3000/api/notifications/preferences -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Content-Type: application/json' -d '{\"badges\":{\"inApp\":false,\"push\":false,\"email\":true}}')",
+      "Bash(curl -s -X PUT http://localhost:3000/api/notifications/preferences -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Content-Type: application/json' -d '{\"badges\":{\"inApp\":true,\"push\":true,\"email\":true}}')",
+      "Bash(tasklist //FI \"IMAGENAME eq node.exe\" //FO CSV)",
+      "Bash(taskkill //F //PID 17376)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",
