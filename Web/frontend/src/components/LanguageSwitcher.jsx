@@ -1,9 +1,9 @@
 import { useLanguage } from "../context/LanguageContext";
 
 const LANGUAGES = [
-  { code: "pt", label: "PT" },
-  { code: "en", label: "EN" },
-  { code: "es", label: "ES" },
+  { code: "pt", label: "PT", flag: "🇵🇹", name: "Português" },
+  { code: "en", label: "EN", flag: "🇬🇧", name: "English" },
+  { code: "es", label: "ES", flag: "🇪🇸", name: "Español" },
 ];
 
 export default function LanguageSwitcher({ className = "" }) {
@@ -15,19 +15,21 @@ export default function LanguageSwitcher({ className = "" }) {
       role="group"
       aria-label="Idioma / Language"
     >
-      {LANGUAGES.map(({ code, label }) => (
+      {LANGUAGES.map(({ code, flag, name }) => (
         <button
           key={code}
           type="button"
           onClick={() => setLanguage(code)}
           aria-pressed={language === code}
-          className={`rounded-lg px-2.5 py-1.5 transition ${
+          aria-label={name}
+          title={name}
+          className={`rounded-lg px-2.5 py-1.5 text-base leading-none transition ${
             language === code
-              ? "bg-[#0F62FE] text-white"
-              : "text-slate-600 hover:bg-[#0F62FE]/10 hover:text-[#0F62FE]"
+              ? "bg-[#0F62FE]/10 ring-2 ring-[#0F62FE]"
+              : "opacity-60 hover:opacity-100"
           }`}
         >
-          {label}
+          <span aria-hidden="true">{flag}</span>
         </button>
       ))}
     </div>
