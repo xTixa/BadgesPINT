@@ -19,6 +19,7 @@ const BRANCHES = [
   { key: "tickets", icon: "bi-headset", categories: [{ key: "tickets", icon: "bi-headset" }] },
 ];
 const CHANNELS = ["inApp", "email", "push"];
+const DEFAULT_CHANNELS = { inApp: true, email: true, push: true };
 
 function ChannelHeader({ t }) {
   return (
@@ -34,6 +35,7 @@ function ChannelHeader({ t }) {
 }
 
 function CategoryRow({ t, categoria, icon, preferences, saving, onToggle, compact = false }) {
+  const channels = preferences[categoria] || DEFAULT_CHANNELS;
   return (
     <div
       className={`rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-slate-50/60 p-4 transition-shadow hover:shadow-sm ${compact ? "sm:pl-3" : ""}`}
@@ -55,7 +57,7 @@ function CategoryRow({ t, categoria, icon, preferences, saving, onToggle, compac
                 {t(`notificationPreferences.channels.${canal}`)}
               </span>
               <ToggleSwitch
-                checked={preferences[categoria][canal]}
+                checked={channels[canal]}
                 disabled={saving}
                 onChange={(value) => onToggle(categoria, canal, value)}
                 label={`${t(`notificationPreferences.categories.${categoria}`)} - ${t(`notificationPreferences.channels.${canal}`)}`}
