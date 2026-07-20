@@ -296,11 +296,22 @@
       "Bash(sleep 2 && cat /tmp/verify2_api.log)",
       "Bash(curl -s -X POST http://localhost:3000/api/pedidos -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6ImNvbnN1bHRhbnQiLCJlbWFpbCI6Imd1aWxoZXJtZUB5b3BtYWlsLmNvbSIsImlhdCI6MTc4NDU0OTMzMSwiZXhwIjoxNzg0NTUyOTMxfQ.ana-P4QgxnYHKkdyqJYlnvDo76vlko6nO2TM5im9KLw' -H 'Content-Type: application/json' -d '{\"badge_id\":15}')",
       "Bash(curl -s -X POST http://localhost:3000/api/pedidos/96/submeter -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6ImNvbnN1bHRhbnQiLCJlbWFpbCI6Imd1aWxoZXJtZUB5b3BtYWlsLmNvbSIsImlhdCI6MTc4NDU0OTMzMSwiZXhwIjoxNzg0NTUyOTMxfQ.ana-P4QgxnYHKkdyqJYlnvDo76vlko6nO2TM5im9KLw' -i)",
-      "Bash(taskkill //F //PID 29508)"
+      "Bash(taskkill //F //PID 29508)",
+      "Bash(node -e \"console.log\\(require\\('fs'\\).statSync\\('logo.png'\\).size\\)\")",
+      "Bash(python3 -c \"from PIL import Image; im = Image.open\\('e:/IPV/E.I/2Ano2Sem/PINT2526/BadgesPINT/Web/frontend/logo.png'\\); print\\(im.size\\)\")",
+      "Bash(node -e \"require\\('sharp'\\); console.log\\('sharp available'\\)\")",
+      "Bash(mkdir -p /tmp/imgtool)",
+      "Read(//c/Users/patri/AppData/Local/Temp/imgtool/**)",
+      "Bash(cp \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\\\\favicon-32.png\" \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\public\\\\favicon-32.png\")",
+      "Bash(cp \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\\\\favicon-16.png\" \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\public\\\\favicon-16.png\")",
+      "Bash(cp \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\\\\favicon-180.png\" \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\public\\\\apple-touch-icon.png\")",
+      "Bash(cp \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\\\\ti-icon-512.png\" \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\public\\\\favicon-512.png\")",
+      "Bash(rm -rf \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",
-      "\\tmp"
+      "\\tmp",
+      "C:\\Users\\patri\\AppData\\Local\\Temp\\imgtool"
     ]
   }
 }
