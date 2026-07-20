@@ -255,7 +255,13 @@
       "Bash(curl -s -X PUT http://localhost:3000/api/notifications/preferences -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Content-Type: application/json' -d '{\"badges\":{\"inApp\":false,\"push\":false,\"email\":true}}')",
       "Bash(curl -s -X PUT http://localhost:3000/api/notifications/preferences -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Content-Type: application/json' -d '{\"badges\":{\"inApp\":true,\"push\":true,\"email\":true}}')",
       "Bash(tasklist //FI \"IMAGENAME eq node.exe\" //FO CSV)",
-      "Bash(taskkill //F //PID 17376)"
+      "Bash(taskkill //F //PID 17376)",
+      "Bash(npx vite *)",
+      "Bash(cat /tmp/api2.log 2>&1 | tail -20)",
+      "Bash(curl -s -o /dev/null -w \"http:%{http_code}\\\\n\" http://localhost:3000/api/badges)",
+      "Bash(taskkill //F //PID 25376)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:5173)",
+      "Bash(curl -s -o /dev/null -w \"vite:%{http_code}\\\\n\" http://127.0.0.1:5174)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

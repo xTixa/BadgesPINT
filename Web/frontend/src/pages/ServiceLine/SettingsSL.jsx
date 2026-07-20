@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ServiceLineLayout, { slPanelClass, slPrimaryActionClass } from "./ServiceLineLayout";
 import ProfileEditor from "../../components/ProfileEditor";
+import NotificationPreferences from "../../components/NotificationPreferences";
+import ToggleSwitch from "../../components/ui/ToggleSwitch";
 import api from "/src/api";
 
 const DEFAULT_SETTINGS = {
-  notifyValidacao: true,
-  notifySla: true,
   exportFormat: "excel",
   topN: 10,
   language: "pt",
@@ -80,33 +80,11 @@ export default function ServiceLineSettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <section className={slPanelClass}>
+        <section className={`${slPanelClass} xl:col-span-2`}>
           <h2 className="mb-4 text-lg font-semibold text-slate-900">{t("serviceLine.settings.notifications")}</h2>
 
           <div className="space-y-4">
-            <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
-              <span className="text-sm font-medium text-slate-700">
-                {t("serviceLine.settings.notifyValidacao")}
-              </span>
-              <input
-                type="checkbox"
-                checked={settings.notifyValidacao}
-                onChange={(e) => handleChange("notifyValidacao", e.target.checked)}
-                className="h-4 w-4"
-              />
-            </label>
-
-            <label className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-3">
-              <span className="text-sm font-medium text-slate-700">
-                {t("serviceLine.settings.notifySla")}
-              </span>
-              <input
-                type="checkbox"
-                checked={settings.notifySla}
-                onChange={(e) => handleChange("notifySla", e.target.checked)}
-                className="h-4 w-4"
-              />
-            </label>
+            <NotificationPreferences />
 
             <div className="rounded-2xl border border-slate-200 px-4 py-3">
               <label className="mb-1 block text-sm font-medium text-slate-700">
@@ -197,11 +175,10 @@ export default function ServiceLineSettingsPage() {
             <span className="text-sm font-medium text-slate-700">
               {t("serviceLine.settings.compareConsultants")}
             </span>
-            <input
-              type="checkbox"
+            <ToggleSwitch
               checked={settings.compararConsultores}
-              onChange={(e) => handleChange("compararConsultores", e.target.checked)}
-              className="h-4 w-4"
+              onChange={(value) => handleChange("compararConsultores", value)}
+              label={t("serviceLine.settings.compareConsultants")}
             />
           </label>
 

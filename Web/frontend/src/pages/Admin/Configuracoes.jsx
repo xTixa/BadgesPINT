@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import AdminPageTitle from "../../components/ui/AdminPageTitle";
+import NotificationPreferences from "../../components/NotificationPreferences";
 
 export default function Configuracoes() {
   const { t } = useTranslation();
@@ -440,6 +441,17 @@ export default function Configuracoes() {
                       )}
                     </div>
                   ))}
+                </div>
+
+                <div className="border-t border-slate-100 pt-6">
+                  <h4 className="mb-1 flex items-center gap-2 font-semibold text-slate-800">
+                    <i className="bi bi-person-badge-fill text-[#0F62FE]"></i>
+                    {t("admin.configuracoes.notifications.personalPreferencesTitle")}
+                  </h4>
+                  <p className="mb-4 text-sm text-slate-500">
+                    {t("admin.configuracoes.notifications.personalPreferencesDesc")}
+                  </p>
+                  <NotificationPreferences />
                 </div>
 
                 <div className="rounded-2xl border border-[#CFE0FB] bg-[#EAF2FF] p-5">

@@ -2,15 +2,14 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ProfileEditor from "../../components/ProfileEditor";
+import NotificationPreferences from "../../components/NotificationPreferences";
+import ToggleSwitch from "../../components/ui/ToggleSwitch";
 import api from "/src/api";
 import TalentManagerLayout from "./TalentManagerLayout";
 
 const DEFAULT_SETTINGS = {
   serviceLine: "",
   areas: [],
-  notifyNew: true,
-  notifySla: true,
-  notifyStatus: true,
   exportFormat: "excel",
   period: "month",
   rankingBy: "points",
@@ -121,13 +120,9 @@ export default function TalentManagerSettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 lg:col-span-6">
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 lg:col-span-12">
             <h5 className="mb-3 text-base font-semibold text-slate-900">{t("talentManager.settings.notifications.title")}</h5>
-            <div className="space-y-3 text-sm text-slate-700">
-              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyNew} onChange={(e) => handleChange("notifyNew", e.target.checked)} /> {t("talentManager.settings.notifications.newApplications")}</label>
-              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifySla} onChange={(e) => handleChange("notifySla", e.target.checked)} /> {t("talentManager.settings.notifications.slaExceeded")}</label>
-              <label className="flex items-center gap-2"><input type="checkbox" checked={settings.notifyStatus} onChange={(e) => handleChange("notifyStatus", e.target.checked)} /> {t("talentManager.settings.notifications.statusUpdates")}</label>
-            </div>
+            <NotificationPreferences />
 
             <div className="mt-3 rounded-xl border border-slate-200 p-3">
               <label className="mb-1 block text-sm font-medium text-slate-700">
@@ -178,7 +173,10 @@ export default function TalentManagerSettingsPage() {
                   <option value="badges">{t("talentManager.settings.gamification.badgeCount")}</option>
                 </select>
               </div>
-              <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={settings.showTimeline} onChange={(e) => handleChange("showTimeline", e.target.checked)} /> {t("talentManager.settings.gamification.showTimeline")}</label>
+              <label className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700">
+                {t("talentManager.settings.gamification.showTimeline")}
+                <ToggleSwitch checked={settings.showTimeline} onChange={(value) => handleChange("showTimeline", value)} label={t("talentManager.settings.gamification.showTimeline")} />
+              </label>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.gamification.language")}</label>

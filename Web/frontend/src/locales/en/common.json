@@ -808,6 +808,7 @@
       "goalSaveError": "Could not save the goal.",
       "recommendNextBadges": "Recommend next badges",
       "notifications": "Notifications",
+      "notificationsHint": "Choose how you want to be notified for each type of event.",
       "confirmationEmail": "Confirmation email",
       "approvalRejection": "Approval / Rejection",
       "expirationAlerts": "Expiration alerts",
@@ -2058,6 +2059,8 @@
         },
         "emailTemplatesDesc": "Customize the automated messages sent by the platform.",
         "emailTemplatesTitle": "Email Templates",
+        "personalPreferencesTitle": "My notification preferences",
+        "personalPreferencesDesc": "Choose how you want to be notified personally for each type of event, independently of the platform-wide settings above.",
         "heading": "Notifications and Integrations",
         "push": {
           "desc": "Alerts on mobile devices",

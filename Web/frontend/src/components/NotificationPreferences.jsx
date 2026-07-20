@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
+import ToggleSwitch from "./ui/ToggleSwitch";
 
-const CATEGORIES = ["badges", "avisos", "sla", "tickets"];
+const CATEGORIES = [
+  { key: "badges", icon: "bi-award-fill" },
+  { key: "avisos", icon: "bi-megaphone-fill" },
+  { key: "sla", icon: "bi-stopwatch-fill" },
+  { key: "tickets", icon: "bi-headset" },
+];
 const CHANNELS = ["inApp", "email", "push"];
 
 export default function NotificationPreferences() {
@@ -30,12 +36,12 @@ export default function NotificationPreferences() {
     };
   }, [t]);
 
-  const toggle = async (categoria, canal) => {
+  const toggle = async (categoria, canal, value) => {
     if (!preferences) return;
     const previous = preferences;
     const next = {
       ...preferences,
-      [categoria]: { ...preferences[categoria], [canal]: !preferences[categoria][canal] },
+      [categoria]: { ...preferences[categoria], [canal]: value },
     };
     setPreferences(next);
     setError("");
@@ -63,42 +69,50 @@ export default function NotificationPreferences() {
       {error && (
         <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>
       )}
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[420px] border-separate border-spacing-y-2 text-sm">
-          <thead>
-            <tr className="text-left text-xs font-medium uppercase text-slate-500">
-              <th className="px-2"></th>
-              {CHANNELS.map((canal) => (
-                <th key={canal} className="px-2 text-center">
-                  {t(`notificationPreferences.channels.${canal}`)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {CATEGORIES.map((categoria) => (
-              <tr key={categoria} className="rounded-2xl border border-slate-100 bg-white">
-                <td className="rounded-l-2xl border-y border-l border-slate-100 px-3 py-3 font-medium text-slate-700">
+
+      <div className="mb-3 hidden grid-cols-[1fr_repeat(3,5rem)] gap-2 px-4 text-xs font-semibold uppercase tracking-wide text-slate-400 sm:grid">
+        <span></span>
+        {CHANNELS.map((canal) => (
+          <span key={canal} className="text-center">
+            {t(`notificationPreferences.channels.${canal}`)}
+          </span>
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        {CATEGORIES.map(({ key: categoria, icon }) => (
+          <div
+            key={categoria}
+            className="rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-slate-50/60 p-4 transition-shadow hover:shadow-sm"
+          >
+            <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[1fr_repeat(3,5rem)] sm:items-center sm:gap-2">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF2FF] text-[#0F62FE]">
+                  <i className={`bi ${icon}`}></i>
+                </div>
+                <span className="font-medium text-slate-700">
                   {t(`notificationPreferences.categories.${categoria}`)}
-                </td>
-                {CHANNELS.map((canal, idx) => (
-                  <td
-                    key={canal}
-                    className={`border-y border-slate-100 px-2 py-3 text-center ${idx === CHANNELS.length - 1 ? "rounded-r-2xl border-r" : ""}`}
-                  >
-                    <input
-                      type="checkbox"
-                      className="h-5 w-5 accent-[#0F62FE]"
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 sm:contents">
+                {CHANNELS.map((canal) => (
+                  <div key={canal} className="flex flex-col items-center gap-1">
+                    <span className="text-[11px] font-medium text-slate-400 sm:hidden">
+                      {t(`notificationPreferences.channels.${canal}`)}
+                    </span>
+                    <ToggleSwitch
                       checked={preferences[categoria][canal]}
                       disabled={saving}
-                      onChange={() => toggle(categoria, canal)}
+                      onChange={(value) => toggle(categoria, canal, value)}
+                      label={`${t(`notificationPreferences.categories.${categoria}`)} - ${t(`notificationPreferences.channels.${canal}`)}`}
                     />
-                  </td>
+                  </div>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -808,6 +808,7 @@
       "goalSaveError": "Não foi possível guardar o objetivo.",
       "recommendNextBadges": "Recomendar próximos badges",
       "notifications": "Notificações",
+      "notificationsHint": "Escolhe como queres ser avisado para cada tipo de evento.",
       "confirmationEmail": "Email de confirmação",
       "approvalRejection": "Aprovação / Rejeição",
       "expirationAlerts": "Alertas de expiração",
@@ -2058,6 +2059,8 @@
         },
         "emailTemplatesDesc": "Personaliza as mensagens automáticas enviadas pela plataforma.",
         "emailTemplatesTitle": "Templates de Email",
+        "personalPreferencesTitle": "As minhas preferências de notificação",
+        "personalPreferencesDesc": "Escolhe como queres ser avisado pessoalmente para cada tipo de evento, independentemente das definições globais da plataforma acima.",
         "heading": "Notificações e Integrações",
         "push": {
           "desc": "Alertas em dispositivos móveis",
