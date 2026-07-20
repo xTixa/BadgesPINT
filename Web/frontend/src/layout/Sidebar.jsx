@@ -60,8 +60,8 @@ export default function Sidebar({ user }) {
       collapsed && !isMobile ? "justify-center" : "gap-3"
     } ${
       isActive
-        ? "bg-gradient-to-r from-[#0F62FE] to-[#00AEEF] text-white"
-        : "text-slate-700 hover:bg-[#0F62FE]/10 hover:text-[#0F62FE]"
+        ? "bg-[#EAF2FF] text-[#0F62FE] ring-1 ring-[#CFE0FB]"
+        : "text-slate-600 hover:bg-slate-100 hover:text-[#0F62FE]"
     }`;
 
   return (
@@ -89,7 +89,7 @@ export default function Sidebar({ user }) {
         className={`fixed top-[72px] bottom-0 left-0 z-[900] flex flex-col overflow-x-hidden overflow-y-auto border-r border-slate-200 bg-white transition-all duration-300 ${asideWidth} ${asidePosition}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#0F62FE]/15 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
           <div
             className={`flex items-center ${collapsed && !isMobile ? "justify-center" : "gap-3"}`}
           >
@@ -98,7 +98,7 @@ export default function Sidebar({ user }) {
                 <span className="block text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">
                   {t("layout.sidebar.panel")}
                 </span>
-                <span className="text-sm font-semibold text-[#0F62FE]">
+                <span className="text-sm font-semibold text-slate-800">
                   {menu.title}
                 </span>
               </div>
@@ -111,7 +111,7 @@ export default function Sidebar({ user }) {
               if (isMobile) setMobileOpen(false);
               else setCollapsed(!collapsed);
             }}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#0F62FE] bg-[#0F62FE] text-white transition hover:bg-[#00AEEF]"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:border-[#CFE0FB] hover:bg-[#EAF2FF] hover:text-[#0F62FE]"
             aria-label={
               collapsed ? t("layout.sidebar.expandMenu") : t("layout.sidebar.collapseMenu")
             }
@@ -157,7 +157,7 @@ export default function Sidebar({ user }) {
 
         {/* Footer items */}
         {menu.footer.length > 0 && (
-          <div className="border-t border-[#0F62FE]/15 p-2">
+          <div className="border-t border-slate-200 p-2">
             {(!collapsed || isMobile) && (
               <p className="px-2 pb-1 text-[0.6rem] uppercase tracking-[0.14em] text-slate-500">
                 {t("layout.sidebar.system")}
