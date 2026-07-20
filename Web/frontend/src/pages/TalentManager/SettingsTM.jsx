@@ -6,6 +6,7 @@ import NotificationPreferences from "../../components/NotificationPreferences";
 import ToggleSwitch from "../../components/ui/ToggleSwitch";
 import api from "/src/api";
 import TalentManagerLayout from "./TalentManagerLayout";
+import { useLanguage } from "../../context/LanguageContext";
 
 const DEFAULT_SETTINGS = {
   serviceLine: "",
@@ -21,6 +22,7 @@ const DEFAULT_SETTINGS = {
 
 export default function TalentManagerSettingsPage() {
   const { t } = useTranslation();
+  const { language, setLanguage } = useLanguage();
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -50,6 +52,11 @@ export default function TalentManagerSettingsPage() {
 
   const handleChange = (key, value) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleLanguageChange = (value) => {
+    handleChange("language", value);
+    setLanguage(value);
   };
 
   const handleSave = async () => {
@@ -180,7 +187,7 @@ export default function TalentManagerSettingsPage() {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">{t("talentManager.settings.gamification.language")}</label>
-                  <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={settings.language} onChange={(e) => handleChange("language", e.target.value)}>
+                  <select className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none" value={language} onChange={(e) => handleLanguageChange(e.target.value)}>
                     <option value="pt">{t("talentManager.settings.gamification.langPt")}</option>
                     <option value="en">{t("talentManager.settings.gamification.langEn")}</option>
                     <option value="es">{t("talentManager.settings.gamification.langEs")}</option>

@@ -594,6 +594,27 @@ export async function submeterPedido(req, res) {
       return res.status(400).json({ message: "Pedido já submetido" });
     }
 
+    const requirements = await Requirement.findAll({
+      where: { badge_id: pedido.badge_id },
+      attributes: ["id"],
+    });
+
+    if (requirements.length > 0) {
+      const evidences = await RequirementEvidence.findAll({
+        where: { consultor_id: consultorId, badge_id: pedido.badge_id },
+        attributes: ["requirement_id"],
+      });
+      const requirementIdsWithEvidence = new Set(evidences.map((e) => e.requirement_id));
+      const missing = requirements.filter((r) => !requirementIdsWithEvidence.has(r.id));
+
+      if (missing.length > 0) {
+        return res.status(400).json({
+          message: "Submete evidência para todos os requisitos antes de submeter a candidatura.",
+          missingRequirementIds: missing.map((r) => r.id),
+        });
+      }
+    }
+
     pedido.workflow_status = "submitted";
     pedido.submitted_at = new Date();
     await pedido.save();

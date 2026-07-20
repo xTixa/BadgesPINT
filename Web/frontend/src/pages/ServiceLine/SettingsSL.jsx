@@ -5,6 +5,7 @@ import ProfileEditor from "../../components/ProfileEditor";
 import NotificationPreferences from "../../components/NotificationPreferences";
 import ToggleSwitch from "../../components/ui/ToggleSwitch";
 import api from "/src/api";
+import { useLanguage } from "../../context/LanguageContext";
 
 const DEFAULT_SETTINGS = {
   exportFormat: "excel",
@@ -17,6 +18,7 @@ const DEFAULT_SETTINGS = {
 
 export default function ServiceLineSettingsPage() {
   const { t } = useTranslation();
+  const { language, setLanguage } = useLanguage();
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -44,6 +46,11 @@ export default function ServiceLineSettingsPage() {
 
   const handleChange = (key, value) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleLanguageChange = (value) => {
+    handleChange("language", value);
+    setLanguage(value);
   };
 
   const handleSave = async () => {
@@ -145,12 +152,13 @@ export default function ServiceLineSettingsPage() {
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-slate-700">{t("serviceLine.settings.language")}</span>
               <select
-                value={settings.language}
-                onChange={(e) => handleChange("language", e.target.value)}
+                value={language}
+                onChange={(e) => handleLanguageChange(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
               >
                 <option value="pt">{t("serviceLine.settings.portuguese")}</option>
                 <option value="en">{t("serviceLine.settings.english")}</option>
+                <option value="es">{t("serviceLine.settings.spanish")}</option>
               </select>
             </label>
 

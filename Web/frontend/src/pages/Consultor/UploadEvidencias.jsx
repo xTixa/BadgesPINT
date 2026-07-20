@@ -32,6 +32,9 @@ export default function UploadEvidencias() {
     return map;
   }, [evidences]);
 
+  const allRequirementsCovered =
+    requirements.length > 0 && requirements.every((r) => evidenceByRequirement.has(r.id));
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -107,6 +110,7 @@ export default function UploadEvidencias() {
 
   const handleSubmitPedido = async () => {
     if (!selectedBadgeId) return alert(t("consultor.uploadEvidencias.selectBadgeFirst"));
+    if (!allRequirementsCovered) return alert(t("consultor.uploadEvidencias.missingEvidence"));
     const token = localStorage.getItem("token");
     if (!token) return alert(t("consultor.uploadEvidencias.noTokenLoginAgain"));
     const headers = { Authorization: `Bearer ${token}` };
@@ -215,11 +219,17 @@ export default function UploadEvidencias() {
             </select>
           </div>
 
+          {selectedBadgeId && !loading && requirements.length > 0 && !allRequirementsCovered && (
+            <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              {t("consultor.uploadEvidencias.missingEvidenceHint")}
+            </div>
+          )}
+
           <div className="mb-3 flex justify-end">
             <button
-              className="rounded-2xl bg-[#0F62FE] px-5 py-3 font-semibold text-white shadow-sm"
+              className="rounded-2xl bg-[#0F62FE] px-5 py-3 font-semibold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
               onClick={handleSubmitPedido}
-              disabled={!selectedBadgeId}
+              disabled={!selectedBadgeId || !allRequirementsCovered}
             >
               {t("consultor.uploadEvidencias.submitApplication")}
             </button>
