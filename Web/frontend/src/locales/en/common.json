@@ -8,8 +8,17 @@
       "email": "Email",
       "push": "Push"
     },
-    "categories": {
+    "branches": {
       "badges": "Badges",
+      "avisos": "Announcements",
+      "sla": "SLA alerts",
+      "tickets": "Tickets"
+    },
+    "categories": {
+      "badges_candidatura": "Application (started/submitted)",
+      "badges_evidencia": "Evidence approved/rejected",
+      "badges_resultado": "Request outcome (approved/rejected)",
+      "badges_pendente": "Request awaiting your action",
       "avisos": "Announcements",
       "sla": "SLA alerts",
       "tickets": "Tickets"

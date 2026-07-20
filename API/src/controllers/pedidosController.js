@@ -54,6 +54,7 @@ async function notifyConsultorPedido({ pedido, titulo, mensagem, emailFactory, t
   return createNotification({
     titulo,
     mensagem,
+    categoria: "badges_resultado",
     utilizador_id: pedido.consultor_id,
     transaction,
     teamsNotify,
@@ -93,6 +94,7 @@ export async function notifySLLeadersOfPendingApproval(pedido) {
         await createNotification({
           titulo: "Pedido aguarda aprovação",
           mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua aprovação.`,
+          categoria: "badges_pendente",
           utilizador_id: leader.id,
           teamsNotify: true,
           teamsBadgeId: pedido.badge_id,
@@ -127,6 +129,7 @@ export async function notifyTMsOfPendingReview(pedido) {
         await createNotification({
           titulo: "Pedido aguarda validação",
           mensagem: `O pedido de badge "${badgeName}" de ${consultorName} aguarda a tua validação.`,
+          categoria: "badges_pendente",
           utilizador_id: tm.id,
           teamsNotify: true,
           teamsBadgeId: pedido.badge_id,
@@ -156,6 +159,7 @@ async function notifyBadgeApplicationStarted(pedido) {
   await createNotification({
     titulo: "Candidatura iniciada",
     mensagem: `Candidataste-te ao badge ${badgeName}.`,
+    categoria: "badges_candidatura",
     utilizador_id: pedido.consultor_id,
   });
 
@@ -184,6 +188,7 @@ async function notifyBadgeApplication(pedido) {
   await createNotification({
     titulo: "Candidatura submetida",
     mensagem: `Submeteste as evidências do badge ${badgeName} para validação.`,
+    categoria: "badges_candidatura",
     utilizador_id: pedido.consultor_id,
   });
 
@@ -632,6 +637,7 @@ export async function tmValidarPedido(req, res) {
     await createNotification({
       titulo: "Pedido em validação",
       mensagem: "O teu pedido foi validado pelo Talent Manager e segue para validação final.",
+      categoria: "badges_resultado",
       utilizador_id: pedido.consultor_id,
     });
 

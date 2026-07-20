@@ -312,6 +312,7 @@ export async function approveEvidence(req, res) {
       await createNotification({
         titulo: "Evidência aprovada",
         mensagem: `O requisito ${reqItem?.code || ""} ${reqItem?.title ? `(${reqItem.title})` : ""} foi aprovado${badge ? ` no badge ${badge.name || badge.description}` : ""}.`,
+        categoria: "badges_evidencia",
         utilizador_id: evidence.consultor_id,
       });
     } catch (err) {
@@ -356,6 +357,7 @@ export async function rejectEvidence(req, res) {
       await createNotification({
         titulo: "Evidência rejeitada",
         mensagem: `O requisito ${reqItem?.code || ""} ${reqItem?.title ? `(${reqItem.title})` : ""} foi rejeitado${badge ? ` no badge ${badge.name || badge.description}` : ""}.`,
+        categoria: "badges_evidencia",
         utilizador_id: evidence.consultor_id,
       });
     } catch (err) {
