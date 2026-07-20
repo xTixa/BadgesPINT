@@ -75,38 +75,39 @@ export default function FAQ() {
 
       <main className="admin-main bg-gradient-to-b from-[#F8FBFF] to-[#EEF6FF]">
         <div className="w-full">
-          <section className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-8 text-white shadow-[0_12px_40px_rgba(15,98,254,0.20)]">
-            <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10"></div>
-            <div className="relative z-10 text-left">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15">
-                <i className="bi bi-question-circle-fill text-2xl text-white"></i>
+          <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#0F62FE]/10 text-[#0F62FE]">
+                  <i className="bi bi-question-circle-fill text-xl"></i>
+                </div>
+                <div>
+                  <p className="mb-1 text-sm font-semibold text-[#0F62FE]">
+                    {t("faq.eyebrow")}
+                  </p>
+                  <h1 className="text-2xl font-bold text-slate-900">
+                    {t("faq.title")}
+                  </h1>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                    {t("faq.subtitle")}
+                  </p>
+                </div>
               </div>
-              <p className="mb-2 text-sm font-medium text-white/80">
-                {t("faq.eyebrow")}
-              </p>
-              <h1 className="text-3xl font-bold text-white">
-                {t("faq.title")}
-              </h1>
-              <p className="mt-2 text-white/85">
-                {t("faq.subtitle")}
-              </p>
+
+              <div className="relative w-full lg:max-w-sm">
+                <i className="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input
+                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm focus:border-[#0F62FE] focus:outline-none focus:ring-2 focus:ring-[#0F62FE]/20"
+                  placeholder={t("faq.searchPlaceholder")}
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
+              </div>
             </div>
           </section>
 
-          <div className="mb-8">
-            <div className="relative">
-              <i className="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input
-                className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm focus:border-[#0F62FE] focus:outline-none focus:ring-2 focus:ring-[#0F62FE]/20"
-                placeholder={t("faq.searchPlaceholder")}
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-            </div>
-          </div>
-
           {filtered.length === 0 ? (
-            <div className="py-12 text-center text-sm text-slate-400">
+            <div className="rounded-2xl border border-slate-200 bg-white py-12 text-center text-sm text-slate-400 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
               <i className="bi bi-inbox mb-3 block text-3xl"></i>
               {t("faq.noResults", { search })}
             </div>
@@ -115,7 +116,7 @@ export default function FAQ() {
               {filtered.map((category) => (
                 <section
                   key={category.category}
-                  className="rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)]"
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,98,254,0.08)]"
                 >
                   <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500">
                     <i className={`bi ${category.icon} ${category.color}`}></i>
