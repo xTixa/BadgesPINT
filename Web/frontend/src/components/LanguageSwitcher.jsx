@@ -1,9 +1,10 @@
 import { useLanguage } from "../context/LanguageContext";
+import FlagIcon from "./ui/FlagIcon";
 
 const LANGUAGES = [
-  { code: "pt", label: "PT", flag: "🇵🇹", name: "Português" },
-  { code: "en", label: "EN", flag: "🇬🇧", name: "English" },
-  { code: "es", label: "ES", flag: "🇪🇸", name: "Español" },
+  { code: "pt", name: "Português" },
+  { code: "en", name: "English" },
+  { code: "es", name: "Español" },
 ];
 
 export default function LanguageSwitcher({ className = "" }) {
@@ -15,7 +16,7 @@ export default function LanguageSwitcher({ className = "" }) {
       role="group"
       aria-label="Idioma / Language"
     >
-      {LANGUAGES.map(({ code, flag, name }) => (
+      {LANGUAGES.map(({ code, name }) => (
         <button
           key={code}
           type="button"
@@ -23,13 +24,13 @@ export default function LanguageSwitcher({ className = "" }) {
           aria-pressed={language === code}
           aria-label={name}
           title={name}
-          className={`rounded-lg px-2.5 py-1.5 text-base leading-none transition ${
+          className={`flex items-center justify-center rounded-lg p-1.5 transition ${
             language === code
               ? "bg-[#0F62FE]/10 ring-2 ring-[#0F62FE]"
               : "opacity-60 hover:opacity-100"
           }`}
         >
-          <span aria-hidden="true">{flag}</span>
+          <FlagIcon code={code} />
         </button>
       ))}
     </div>
