@@ -100,16 +100,6 @@ export default function Login() {
       description={t("auth.login.description")}
       asideTitle={t("auth.login.asideTitle")}
       asideText={t("auth.login.asideText")}
-      asideNote={{
-        label: t("auth.login.asideNote.label"),
-        text: t("auth.login.asideNote.text"),
-        items: [
-          t("auth.login.asideNote.items.admin"),
-          t("auth.login.asideNote.items.talentManager"),
-          t("auth.login.asideNote.items.serviceLineLeader"),
-          t("auth.login.asideNote.items.consultant"),
-        ],
-      }}
     >
       <form onSubmit={handleLogin} autoComplete="on" noValidate>
         {error && <p className="auth-message auth-message-error">{error}</p>}

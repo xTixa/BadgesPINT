@@ -242,7 +242,9 @@
       "Bash(git -C \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\" log --oneline --all --grep=\"email signature\" -i --max-count=5)",
       "Bash(git -C \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\" show --stat c424fe5)",
       "Bash(git -C \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\" show c424fe5 -- Mobile/mobile_app/lib/consultor/pages/dashboard_page.dart)",
-      "Bash(python -c \"print\\(36+25+19+14+12+8+5+5+3+1+1+1\\)\")"
+      "Bash(python -c \"print\\(36+25+19+14+12+8+5+5+3+1+1+1\\)\")",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); console.log\\('HF_API_TOKEN:', process.env.HF_API_TOKEN\\)\")",
+      "Bash(tasklist //FI \"IMAGENAME eq node.exe\" //V)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

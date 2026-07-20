@@ -456,7 +456,7 @@ export default function BadgeFormAdmin() {
               <button
                 type="button"
                 className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                onClick={() => navigate("/admin/badges")}
+                onClick={() => navigate("/admin/gestao-badges")}
               >
                 {t("admin.common.cancel")}
               </button>

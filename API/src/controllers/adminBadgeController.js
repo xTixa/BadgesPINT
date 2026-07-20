@@ -272,12 +272,13 @@ export async function adminDeleteBadge(req, res) {
   }
 }
 
-// GERAR IMAGEM DE BADGE (Hugging Face Inference API)
+// GERAR IMAGEM DE BADGE (Hugging Face Inference Providers - endpoint compatível com OpenAI)
 export async function adminGenerateBadgeImage(req, res) {
   try {
     const { prompt, size } = req.body;
     const token = process.env.HF_API_TOKEN;
-    const model = process.env.HF_MODEL_ID || "stabilityai/sdxl-turbo";
+    const model = process.env.HF_MODEL_ID || "stabilityai/stable-diffusion-xl-base-1.0";
+    const provider = process.env.HF_PROVIDER || "together";
 
     if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({ error: "Prompt é obrigatório" });
@@ -287,48 +288,36 @@ export async function adminGenerateBadgeImage(req, res) {
       return res.status(500).json({ error: "HF_API_TOKEN não definido" });
     }
 
-    let width;
-    let height;
-    if (typeof size === "string" && size.includes("x")) {
-      const [w, h] = size.split("x").map((v) => Number(v));
-      if (Number.isFinite(w) && Number.isFinite(h)) {
-        width = w;
-        height = h;
-      }
-    }
-
-    const response = await fetch(`https://router.huggingface.co/hf-inference/models/${model}`, {
+    const response = await fetch(`https://router.huggingface.co/${provider}/v1/images/generations`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          ...(width && height ? { width, height } : {})
-        },
-        options: { wait_for_model: true }
+        model,
+        prompt,
+        response_format: "b64_json",
+        ...(typeof size === "string" && size.includes("x") ? { size } : {})
       })
     });
 
     if (!response.ok) {
       const ct = response.headers.get("content-type") || "";
-      if (ct.includes("application/json")) {
-        const details = await response.json();
-        console.error("Hugging Face error:", response.status, details);
-        return res.status(response.status).json({ error: "Erro do Hugging Face", details });
-      }
-      const details = await response.text();
+      const details = ct.includes("application/json") ? await response.json() : await response.text();
       console.error("Hugging Face error:", response.status, details);
       return res.status(response.status).json({ error: "Erro do Hugging Face", details });
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
+    const body = await response.json();
+    const b64 = body?.data?.[0]?.b64_json;
+    if (!b64) {
+      console.error("Hugging Face: resposta sem b64_json", body);
+      return res.status(502).json({ error: "Resposta inesperada do Hugging Face" });
+    }
 
     return res.json({
-      image: `data:image/png;base64,${base64}`,
+      image: `data:image/png;base64,${b64}`,
       model
     });
   } catch (err) {

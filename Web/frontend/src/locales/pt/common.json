@@ -1308,16 +1308,6 @@
       "description": "Insere os teus dados para entrar na plataforma.",
       "asideTitle": "Bem-vindo ao portal de badges",
       "asideText": "Acompanha a tua evolução, consulta conquistas e gere pedidos numa experiência mais limpa e direta.",
-      "asideNote": {
-        "label": "Credenciais de teste",
-        "text": "Usa uma destas contas para validar a plataforma:",
-        "items": {
-          "admin": "Admin: admin@example.com | Password123",
-          "talentManager": "Talent Manager: natalia.neves@yopmail.com | qwerty",
-          "serviceLineLeader": "Service Line Leader: carlos.fernandes@yopmail.com | qwerty123",
-          "consultant": "Consultant: guilherme@yopmail.com | Password123"
-        }
-      },
       "emailLabel": "Email",
       "emailPlaceholder": "exemplo@dominio.com",
       "passwordLabel": "Password",
