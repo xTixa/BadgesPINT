@@ -264,7 +264,10 @@
       "Bash(curl -s -o /dev/null -w \"vite:%{http_code}\\\\n\" http://127.0.0.1:5174)",
       "Bash(sleep 2 && cat /tmp/api4.log)",
       "Bash(taskkill //F //PID 26416)",
-      "Bash(taskkill //F //PID 24132)"
+      "Bash(taskkill //F //PID 24132)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('es/common.json','utf8'\\)\\); console.log\\('valid'\\)\")",
+      "Bash(node \"/c/Users/patri/AppData/Local/Temp/claude/e--IPV-E-I-2Ano2Sem-PINT2526-BadgesPINT/0557cb33-d6d7-488c-8228-24c229fdda03/scratchpad/keycheck.js\" \"/e/IPV/E.I/2Ano2Sem/PINT2526/BadgesPINT/Web/frontend/src/locales/pt/common.json\" \"/e/IPV/E.I/2Ano2Sem/PINT2526/BadgesPINT/Web/frontend/src/locales/es/common.json\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('es/common.json','utf8'\\)\\); console.log\\('valid JSON'\\)\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

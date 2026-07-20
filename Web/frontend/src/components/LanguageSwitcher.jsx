@@ -3,6 +3,7 @@ import { useLanguage } from "../context/LanguageContext";
 const LANGUAGES = [
   { code: "pt", label: "PT" },
   { code: "en", label: "EN" },
+  { code: "es", label: "ES" },
 ];
 
 export default function LanguageSwitcher({ className = "" }) {
