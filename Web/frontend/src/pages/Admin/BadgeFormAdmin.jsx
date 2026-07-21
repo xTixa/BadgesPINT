@@ -1,5 +1,5 @@
 import Sidebar from "../../layout/Sidebar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
@@ -37,7 +37,7 @@ export default function BadgeFormAdmin() {
 
   const [learningOutcomes, setLearningOutcomes] = useState([""]);
 
-  const [areas, setAreas] = useState([]);
+  const [allAreas, setAllAreas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageError, setImageError] = useState("");
@@ -49,7 +49,7 @@ export default function BadgeFormAdmin() {
     const loadAreas = async () => {
       try {
         const res = await api.get("/api/areas");
-        setAreas(res.data || []);
+        setAllAreas(res.data || []);
       } catch (err) {
         console.error("Erro ao carregar Ã¡reas:", err);
       }
@@ -92,6 +92,27 @@ export default function BadgeFormAdmin() {
     loadBadge();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNovo, id]);
+
+  const areas = useMemo(() => {
+    const hasSubareas = new Set(
+      allAreas.filter((a) => a.parent_id != null).map((a) => a.parent_id)
+    );
+    const parentById = new Map(allAreas.map((a) => [a.id, a]));
+    const labelFor = (area) => {
+      const parent = parentById.get(area.parent_id);
+      return parent ? `${parent.name} > ${area.name}` : area.name;
+    };
+
+    const leaves = allAreas.filter((a) => !hasSubareas.has(a.id));
+
+    const currentAreaId = form.area_id ? Number(form.area_id) : null;
+    if (currentAreaId && !leaves.some((a) => a.id === currentAreaId)) {
+      const current = parentById.get(currentAreaId);
+      if (current) leaves.push(current);
+    }
+
+    return leaves.map((a) => ({ id: a.id, label: labelFor(a) }));
+  }, [allAreas, form.area_id]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -248,7 +269,7 @@ export default function BadgeFormAdmin() {
                 >
                   <option value="">{t("admin.badgeForm.selectArea")}</option>
                   {areas.map((a) => (
-                    <option key={a.id} value={a.id}>{a.name}</option>
+                    <option key={a.id} value={a.id}>{a.label}</option>
                   ))}
                 </select>
               </div>

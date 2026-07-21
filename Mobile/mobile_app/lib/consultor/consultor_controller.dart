@@ -388,15 +388,22 @@ class ConsultorController extends ChangeNotifier {
     return _repository.uploadEvidenceFile(fileName: fileName, bytes: bytes);
   }
 
-  Future<ActionResult> submitPedido() async {
+  Future<ActionResult> applyToPedido() async {
     final badgeId = selectedBadgeId;
     if (badgeId == null) {
       return ActionResult(
         success: false,
-        message: 'Seleciona um badge antes de submeter o pedido.',
+        message: 'Seleciona um badge antes de te candidatares.',
       );
     }
-    final result = await _repository.submitPedido(badgeId);
+    final result = await _repository.applyToPedido(badgeId);
+    await refreshRealtimeData();
+    await refreshSyncState();
+    return result;
+  }
+
+  Future<ActionResult> submitPedido(int pedidoId) async {
+    final result = await _repository.submitPedido(pedidoId);
     await refreshRealtimeData();
     await refreshSyncState();
     return result;

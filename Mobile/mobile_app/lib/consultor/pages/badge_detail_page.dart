@@ -46,6 +46,21 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     return pedido.first.workflowStatus;
   }
 
+  int? _pedidoId() {
+    final pedido = widget.controller.pedidosStatus.where(
+      (p) => p.badgeId == widget.badge.id,
+    );
+    return pedido.isEmpty ? null : pedido.first.id;
+  }
+
+  bool _allRequirementsCovered(ConsultorController controller) {
+    final requisitos = controller.requirements;
+    if (requisitos.isEmpty) return false;
+    return requisitos.every(
+      (r) => controller.latestEvidenceForRequirement(r.id) != null,
+    );
+  }
+
   String get _publicBadgeUrl =>
       '${AppConfig.apiBaseUrl.replaceAll(RegExp(r'\/$'), '')}/share/badges/${widget.badge.id}';
 
@@ -333,6 +348,93 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     );
   }
 
+  Future<void> _handleApply(BuildContext context, ConsultorController controller) async {
+    final result = await controller.applyToPedido();
+
+    if (result.success) {
+      await controller.selectBadge(widget.badge.id);
+      if (mounted) setState(() {});
+    }
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            result.message ??
+                (result.success ? 'Candidatura registada' : 'Erro ao candidatar'),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleSubmit(BuildContext context, ConsultorController controller, int pedidoId) async {
+    final result = await controller.submitPedido(pedidoId);
+
+    if (result.success) {
+      await controller.selectBadge(widget.badge.id);
+      if (mounted) setState(() {});
+    }
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            result.message ??
+                (result.success ? 'Pedido submetido com sucesso' : 'Erro ao submeter pedido'),
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _primaryActionButton(
+    BuildContext context,
+    ConsultorController controller,
+    String estado,
+  ) {
+    if (estado == 'Nao Candidatado') {
+      return ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+        onPressed: () => _handleApply(context, controller),
+        icon: const Icon(Icons.workspace_premium),
+        label: const Text('Candidatar-me'),
+      );
+    }
+
+    if (estado == 'open') {
+      final pedidoId = _pedidoId();
+      final canSubmit = pedidoId != null && _allRequirementsCovered(controller);
+      return ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+        onPressed:
+            canSubmit ? () => _handleSubmit(context, controller, pedidoId) : null,
+        icon: const Icon(Icons.send_rounded),
+        label: Text(
+          canSubmit
+              ? 'Submeter candidatura'
+              : 'Faz upload de todas as evidências',
+        ),
+      );
+    }
+
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        textStyle: const TextStyle(fontSize: 16),
+      ),
+      onPressed: null,
+      icon: const Icon(Icons.workspace_premium),
+      label: const Text('Em Progresso'),
+    );
+  }
+
   Widget _bottomActions(
     BuildContext context,
     ConsultorController controller,
@@ -346,40 +448,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
         children: [
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(fontSize: 16),
-              ),
-              onPressed:
-                  estado != 'Nao Candidatado'
-                      ? null
-                      : () async {
-                        final result = await controller.submitPedido();
-
-                        if (result.success) {
-                          await controller.selectBadge(widget.badge.id);
-                          if (mounted) setState(() {});
-                        }
-
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                result.message ??
-                                    (result.success
-                                        ? 'Pedido submetido com sucesso'
-                                        : 'Erro ao submeter pedido'),
-                              ),
-                            ),
-                          );
-                        }
-                      },
-              icon: const Icon(Icons.workspace_premium),
-              label: Text(
-                estado == 'Nao Candidatado' ? 'Candidatar-me' : 'Em Progresso',
-              ),
-            ),
+            child: _primaryActionButton(context, controller, estado),
           ),
           const SizedBox(height: 12),
           Row(
@@ -415,13 +484,14 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => UploadPage(controller: controller),
                     ),
                   );
+                  if (mounted) setState(() {});
                 },
                 icon: const Icon(Icons.upload_file),
                 label: const Text('Fazer Upload'),

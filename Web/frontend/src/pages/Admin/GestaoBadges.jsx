@@ -1,5 +1,5 @@
 import Sidebar from "../../layout/Sidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
@@ -186,6 +186,16 @@ export default function GestaoBadges() {
     return new Date(data).toLocaleDateString("pt-PT");
   };
 
+  const areaLabelById = useMemo(() => {
+    const byId = new Map(areas.map((a) => [a.id, a]));
+    const labels = new Map();
+    for (const a of areas) {
+      const parent = a.parent_id != null ? byId.get(a.parent_id) : null;
+      labels.set(a.id, parent ? `${parent.name} > ${a.name}` : a.name);
+    }
+    return labels;
+  }, [areas]);
+
   // Filtrar badges
   const badgesFiltrados = badges.filter(b => {
     const matchFiltro = b.description.toLowerCase().includes(filtro.toLowerCase());
@@ -253,7 +263,7 @@ export default function GestaoBadges() {
             >
               <option value="">{t("admin.gestaoBadges.allAreas")}</option>
               {areas.map(a => (
-                <option key={a.id} value={a.id}>{a.name}</option>
+                <option key={a.id} value={a.id}>{areaLabelById.get(a.id) || a.name}</option>
               ))}
             </select>
           </div>
@@ -319,7 +329,7 @@ export default function GestaoBadges() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        {b.area?.name || "Ã¢â‚¬â€"}
+                        {(b.area_id != null ? areaLabelById.get(b.area_id) : null) || b.area?.name || "—"}
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-semibold text-slate-800">{b.points}</span> {t("admin.gestaoBadges.pts")}

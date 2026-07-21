@@ -137,6 +137,15 @@ async function persistNewBadge(req, badgeData, requirements, sections, auditActi
   return created;
 }
 
+async function assertLeafArea(areaId, res) {
+  const subareasCount = await Area.count({ where: { parent_id: areaId } });
+  if (subareasCount > 0) {
+    res.status(400).json({ error: "Não é possível associar um badge a uma área que tem subáreas. Escolhe uma subárea específica." });
+    return false;
+  }
+  return true;
+}
+
 function handleBadgeCreationError(err, res) {
   console.error(err);
   if (err.name === "SequelizeUniqueConstraintError") {
@@ -152,6 +161,7 @@ function handleBadgeCreationError(err, res) {
 export async function adminCreateBadge(req, res) {
   try {
     const { requirements, sections, ...badgeData } = req.body;
+    if (badgeData.area_id && !(await assertLeafArea(badgeData.area_id, res))) return;
     const created = await persistNewBadge(req, badgeData, requirements, sections, "CRIAR_BADGE");
     res.status(201).json(created);
   } catch (err) {
@@ -171,6 +181,8 @@ export async function createSpecialBadge(req, res) {
       return res.status(400).json({ error: "Prazo especial é obrigatório e tem de ser uma data futura" });
     }
 
+    if (badgeData.area_id && !(await assertLeafArea(badgeData.area_id, res))) return;
+
     const created = await persistNewBadge(req, badgeData, requirements, sections, "CRIAR_BADGE_ESPECIAL");
     res.status(201).json(created);
   } catch (err) {
@@ -186,6 +198,8 @@ export async function adminUpdateBadge(req, res) {
     if (!badge) {
       return res.status(404).json({ message: "Badge não encontrado" });
     }
+
+    if (badgeData.area_id !== undefined && !(await assertLeafArea(badgeData.area_id, res))) return;
 
     const oldValues = badge.toJSON();
     await badge.update(badgeData);
@@ -232,14 +246,7 @@ export async function adminUpdateBadge(req, res) {
 
     res.json(updated);
   } catch (err) {
-    console.error(err);
-    if (err.name === "SequelizeUniqueConstraintError") {
-      if (err.fields?.area_id !== undefined && err.fields?.level !== undefined) {
-        return res.status(409).json({ error: "Já existe um badge com este nível nesta área. Escolhe outro nível ou edita o badge existente." });
-      }
-      return res.status(409).json({ error: "Já existe um badge com esses dados." });
-    }
-    res.status(500).json({ error: "Erro ao atualizar badge" });
+    handleBadgeCreationError(err, res);
   }
 }
 

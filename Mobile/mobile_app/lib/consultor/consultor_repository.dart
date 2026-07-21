@@ -769,21 +769,24 @@ class ConsultorRepository {
     }
   }
 
-  Future<ActionResult> submitPedido(int badgeId) async {
+  // Cria o pedido de badge (Estado: Open) sem o submeter para validacao.
+  // O consultor tem de anexar evidencia para todos os requisitos antes de
+  // poder chamar submitPedido().
+  Future<ActionResult> applyToPedido(int badgeId) async {
     if ((_token ?? '').isEmpty) {
       return ActionResult(success: false, message: 'Sessao invalida.');
     }
 
     if (!_isOnline) {
       await _pendingMutationDao.enqueue(
-        mutationKey: 'submit_pedido_$badgeId',
+        mutationKey: 'apply_pedido_$badgeId',
         endpoint: '/api/pedidos',
         method: 'POST',
         body: <String, dynamic>{'badge_id': badgeId},
       );
       return ActionResult(
         success: true,
-        message: 'Pedido guardado offline. Sera submetido quando houver ligacao.',
+        message: 'Candidatura guardada offline. Sera enviada quando houver ligacao.',
       );
     }
 
@@ -797,15 +800,9 @@ class ConsultorRepository {
       if (createPayload is! Map<String, dynamic>) {
         return ActionResult(success: false, message: 'Resposta invalida da API.');
       }
-      final pedidoId = createPayload['id'];
-      if (pedidoId == null) {
-        return ActionResult(success: false, message: 'A API nao devolveu o pedido criado.');
-      }
-
-      await _apiClient.post('/api/pedidos/$pedidoId/submeter', token: _token);
 
       await syncRealtimeData();
-      return ActionResult(success: true, message: 'Pedido submetido com sucesso.');
+      return ActionResult(success: true, message: 'Candidatura registada.');
     } on ApiException catch (error) {
       final message = _extractApiMessage(error.message);
       final normalizedMessage = _normalizeForMatch(message);
@@ -818,6 +815,40 @@ class ConsultorRepository {
         );
       }
       return ActionResult(success: false, message: message);
+    } catch (error) {
+      return ActionResult(
+        success: false,
+        message: 'Nao foi possivel contactar a API: $error',
+      );
+    }
+  }
+
+  // Submete um pedido ja existente (Estado: Open -> Submitted). A API exige
+  // evidencia para todos os requisitos do badge, devolvendo 400 caso contrario.
+  Future<ActionResult> submitPedido(int pedidoId) async {
+    if ((_token ?? '').isEmpty) {
+      return ActionResult(success: false, message: 'Sessao invalida.');
+    }
+
+    if (!_isOnline) {
+      await _pendingMutationDao.enqueue(
+        mutationKey: 'submit_pedido_$pedidoId',
+        endpoint: '/api/pedidos/$pedidoId/submeter',
+        method: 'POST',
+      );
+      return ActionResult(
+        success: true,
+        message: 'Submissao guardada offline. Sera enviada quando houver ligacao.',
+      );
+    }
+
+    try {
+      await _apiClient.post('/api/pedidos/$pedidoId/submeter', token: _token);
+
+      await syncRealtimeData();
+      return ActionResult(success: true, message: 'Pedido submetido com sucesso.');
+    } on ApiException catch (error) {
+      return ActionResult(success: false, message: _extractApiMessage(error.message));
     } catch (error) {
       return ActionResult(
         success: false,

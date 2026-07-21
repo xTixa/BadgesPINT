@@ -306,12 +306,26 @@
       "Bash(cp \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\\\\favicon-16.png\" \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\public\\\\favicon-16.png\")",
       "Bash(cp \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\\\\favicon-180.png\" \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\public\\\\apple-touch-icon.png\")",
       "Bash(cp \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\\\\ti-icon-512.png\" \"e:\\\\IPV\\\\E.I\\\\2Ano2Sem\\\\PINT2526\\\\BadgesPINT\\\\Web\\\\frontend\\\\public\\\\favicon-512.png\")",
-      "Bash(rm -rf \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\")"
+      "Bash(rm -rf \"C:\\\\Users\\\\patri\\\\AppData\\\\Local\\\\Temp\\\\imgtool\")",
+      "Bash(flutter build *)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\patri\\\\.claude\\\\plans\" 2>/dev/null; echo ok)",
+      "Bash(xxd)",
+      "Bash(python3 -c ' *)",
+      "Bash(awk 'NR==332' GestaoBadges.jsx)",
+      "Bash(awk 'NR==332{print \"MATCH\"} NR!=332{print}' GestaoBadges.jsx)",
+      "Bash(node --check src/controllers/AreaController.js)",
+      "Bash(npx --no-install babel --presets @babel/preset-react src/pages/Admin/BadgeFormAdmin.jsx -o /dev/null)",
+      "Bash(./node_modules/.bin/eslint src/pages/Admin/BadgeFormAdmin.jsx src/pages/Admin/GestaoBadges.jsx --no-ignore)",
+      "Bash(node --check scripts/seed-demo-apresentacao.js)",
+      "Bash(node scripts/seed-demo-apresentacao.js)",
+      "Bash(rm -f scripts/_tmp_check_users.mjs scripts/_tmp_check_areas.mjs scripts/_tmp_check_badge_areas.mjs scripts/_tmp_check_scope.mjs scripts/_tmp_check_sl7.mjs scripts/_tmp_verify_demo.mjs /tmp/check_users.mjs)",
+      "Bash(rmdir scripts/_tmp_check)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",
       "\\tmp",
-      "C:\\Users\\patri\\AppData\\Local\\Temp\\imgtool"
+      "C:\\Users\\patri\\AppData\\Local\\Temp\\imgtool",
+      "C:\\Users\\patri\\.claude\\plans"
     ]
   }
 }

@@ -115,6 +115,10 @@ export async function updateArea(req, res) {
       if (!parent) {
         return res.status(400).json({ error: "Área pai não encontrada" });
       }
+      const badgesCount = await Badge.count({ where: { area_id: id } });
+      if (badgesCount > 0) {
+        return res.status(409).json({ error: "Não é possível definir uma área pai: esta área já tem Badges associados." });
+      }
     }
 
     const oldValues = area.toJSON();
