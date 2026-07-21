@@ -319,7 +319,12 @@
       "Bash(node --check scripts/seed-demo-apresentacao.js)",
       "Bash(node scripts/seed-demo-apresentacao.js)",
       "Bash(rm -f scripts/_tmp_check_users.mjs scripts/_tmp_check_areas.mjs scripts/_tmp_check_badge_areas.mjs scripts/_tmp_check_scope.mjs scripts/_tmp_check_sl7.mjs scripts/_tmp_verify_demo.mjs /tmp/check_users.mjs)",
-      "Bash(rmdir scripts/_tmp_check)"
+      "Bash(rmdir scripts/_tmp_check)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/firebase/package.json'\\).version\\)\")",
+      "Bash(node --check src/firebase.js)",
+      "Bash(node --check src/pages/Auth/Login.jsx)",
+      "Bash(./node_modules/.bin/eslint src/firebase.js src/pages/Auth/Login.jsx src/layout/Navbar.jsx src/components/NotificationCenter.jsx --no-ignore)",
+      "Bash(./node_modules/.bin/eslint src/firebase.js --no-ignore)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

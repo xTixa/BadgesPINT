@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { onForegroundMessage } from "../firebase";
 
 export default function NotificationCenter() {
   const { t } = useTranslation();
@@ -18,6 +19,15 @@ export default function NotificationCenter() {
       const interval = setInterval(fetchNotificacoes, 30000); // Atualizar a cada 30 segundos
       return () => clearInterval(interval);
     }
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    let unsubscribe = () => {};
+    onForegroundMessage(() => fetchNotificacoes()).then((unsub) => {
+      unsubscribe = unsub;
+    });
+    return () => unsubscribe();
   }, [token]);
 
   const fetchNotificacoes = async () => {

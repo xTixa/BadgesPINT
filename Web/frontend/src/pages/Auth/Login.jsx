@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AuthShell from "./AuthShell";
 import { loadBrowserCredentials, storeBrowserCredentials } from "../../utils/browserCredentials";
+import { registerFcmToken } from "../../firebase";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -53,6 +54,7 @@ export default function Login() {
 
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
+      registerFcmToken();
       if (greetingType) {
         localStorage.setItem("greetingType", greetingType);
       } else {

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import NotificationCenter from "../components/NotificationCenter";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import api from "/src/api";
+import { unregisterFcmToken } from "../firebase";
 import logo from "/src/assets/logo.png";
 import avatarPlaceholder from "../assets/avatar-placeholder.svg";
 
@@ -76,6 +77,7 @@ export default function Navbar() {
   const confirmLogout = () => {
     // Tentar registar no backend, mas não bloquear UX
     api.post("/api/auth/logout").catch(() => {});
+    unregisterFcmToken();
 
     localStorage.removeItem("user");
     localStorage.removeItem("token");
