@@ -34,7 +34,8 @@ export async function registerFcmToken() {
     const permission = await Notification.requestPermission();
     if (permission !== "granted") return null;
 
-    const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    const registration = await navigator.serviceWorker.ready;
     const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
     if (!token) return null;
 
