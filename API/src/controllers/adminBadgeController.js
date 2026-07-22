@@ -149,9 +149,6 @@ async function assertLeafArea(areaId, res) {
 function handleBadgeCreationError(err, res) {
   console.error(err);
   if (err.name === "SequelizeUniqueConstraintError") {
-    if (err.fields?.area_id !== undefined && err.fields?.level !== undefined) {
-      return res.status(409).json({ error: "Já existe um badge com este nível nesta área. Escolhe outro nível ou edita o badge existente." });
-    }
     return res.status(409).json({ error: "Já existe um badge com esses dados." });
   }
   res.status(500).json({ error: "Erro ao criar badge" });
