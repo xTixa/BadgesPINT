@@ -54,12 +54,13 @@ export default function ServiceLineLayout({ title, subtitle, userName = "Service
           <>
             <AdminPageTitle title={title} subtitle={subtitle} eyebrow={t("serviceLine.layout.eyebrow")} />
             {heroStats.length ? (
-              <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
                 {heroStats.map((stat) => (
-                  <article key={stat.label} className="rounded-2xl border border-slate-200 bg-white p-5">
-                    <div className="text-3xl font-semibold text-slate-950">{stat.value}</div>
-                    <div className="mt-1 text-sm text-slate-500">{stat.label}</div>
-                  </article>
+                  <div key={stat.label} className="rounded-2xl border border-sky-300 bg-[#EAF8FC] p-6 text-left">
+                    {stat.icon ? <i className={`bi ${stat.icon} mb-3 block text-xl text-[#16558C]`}></i> : null}
+                    <h4 className="m-0 text-4xl font-semibold text-slate-950">{stat.value}</h4>
+                    <p className="m-0 mt-1 text-sm font-medium text-slate-500">{stat.label}</p>
+                  </div>
                 ))}
               </div>
             ) : null}

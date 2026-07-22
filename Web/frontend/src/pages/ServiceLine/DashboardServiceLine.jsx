@@ -232,10 +232,10 @@ export default function DashboardServiceLine() {
       subtitle={t("serviceLine.dashboard.subtitle")}
       userName={sl.name || "Service Line"}
       heroStats={[
-        { label: t("serviceLine.dashboard.stats.consultants"), value: dados.totalConsultores },
-        { label: t("serviceLine.dashboard.stats.awaitingSl"), value: dados.badgesPendentes },
-        { label: t("serviceLine.dashboard.stats.progress"), value: `${dados.progressoMedio}%` },
-        { label: t("serviceLine.dashboard.stats.badgesObtained"), value: summary.badgesObtidosTotal },
+        { label: t("serviceLine.dashboard.stats.consultants"), value: dados.totalConsultores, icon: "bi-people" },
+        { label: t("serviceLine.dashboard.stats.awaitingSl"), value: dados.badgesPendentes, icon: "bi-hourglass-split" },
+        { label: t("serviceLine.dashboard.stats.progress"), value: `${dados.progressoMedio}%`, icon: "bi-graph-up-arrow" },
+        { label: t("serviceLine.dashboard.stats.badgesObtained"), value: summary.badgesObtidosTotal, icon: "bi-award" },
       ]}
     >
       <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-5">

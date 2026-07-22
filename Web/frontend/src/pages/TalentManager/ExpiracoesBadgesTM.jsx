@@ -112,9 +112,9 @@ export default function ExpiracoesBadgesTM() {
       title={t("talentManager.expiracoes.title")}
       subtitle={t("talentManager.expiracoes.subtitle")}
       heroStats={[
-        { label: t("talentManager.expiracoes.stats.total90"), value: total90 },
-        { label: t("talentManager.expiracoes.stats.critical15"), value: criticos },
-        { label: t("talentManager.expiracoes.stats.urgent30"), value: urgentes },
+        { label: t("talentManager.expiracoes.stats.total90"), value: total90, icon: "bi-calendar2-week" },
+        { label: t("talentManager.expiracoes.stats.critical15"), value: criticos, icon: "bi-exclamation-triangle" },
+        { label: t("talentManager.expiracoes.stats.urgent30"), value: urgentes, icon: "bi-clock" },
       ]}
     >
       {loading ? (

@@ -117,9 +117,9 @@ export default function RelatoriosTalent() {
       title={t("talentManager.relatorios.title")}
       subtitle={t("talentManager.relatorios.subtitle")}
       heroStats={[
-        { label: t("talentManager.relatorios.stats.records"), value: totals.total },
-        { label: t("talentManager.relatorios.stats.approved"), value: totals.aprovados },
-        { label: t("talentManager.relatorios.stats.pending"), value: totals.pendentes },
+        { label: t("talentManager.relatorios.stats.records"), value: totals.total, icon: "bi-file-earmark-text" },
+        { label: t("talentManager.relatorios.stats.approved"), value: totals.aprovados, icon: "bi-check-circle" },
+        { label: t("talentManager.relatorios.stats.pending"), value: totals.pendentes, icon: "bi-hourglass-split" },
       ]}
     >
         <SectionCard className="mb-4" title={t("talentManager.relatorios.filters.title")} icon="bi-funnel-fill">

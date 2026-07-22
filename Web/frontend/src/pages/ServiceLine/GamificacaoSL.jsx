@@ -70,9 +70,9 @@ export default function GamificacaoSL() {
       title={t("serviceLine.gamificacao.title")}
       subtitle={t("serviceLine.gamificacao.subtitle")}
       heroStats={[
-        { label: t("serviceLine.gamificacao.stats.premiumBadges"), value: premiumBadges.length },
-        { label: t("serviceLine.gamificacao.stats.premiumObtained"), value: totalPremiumObtidos },
-        { label: t("serviceLine.gamificacao.stats.fastAchievers"), value: speedAchievers.length },
+        { label: t("serviceLine.gamificacao.stats.premiumBadges"), value: premiumBadges.length, icon: "bi-gem" },
+        { label: t("serviceLine.gamificacao.stats.premiumObtained"), value: totalPremiumObtidos, icon: "bi-award-fill" },
+        { label: t("serviceLine.gamificacao.stats.fastAchievers"), value: speedAchievers.length, icon: "bi-lightning-fill" },
       ]}
     >
       {loading ? (

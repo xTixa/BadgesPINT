@@ -264,10 +264,10 @@ export default function DashboardTalentManager() {
       subtitle={t("talentManager.dashboard.subtitle")}
       userName={tm?.name || t("talentManager.dashboard.defaultTitle")}
       heroStats={[
-        { label: t("talentManager.dashboard.stats.consultants"), value: stats.totalEquipa },
-        { label: t("talentManager.dashboard.stats.pending"), value: stats.evidenciasPendentes },
-        { label: t("talentManager.dashboard.stats.progress"), value: `${stats.progressoMedio}%` },
-        { label: t("talentManager.dashboard.cards.badgesEarned"), value: summary.badgesObtidosTotal },
+        { label: t("talentManager.dashboard.stats.consultants"), value: stats.totalEquipa, icon: "bi-people" },
+        { label: t("talentManager.dashboard.stats.pending"), value: stats.evidenciasPendentes, icon: "bi-hourglass-split" },
+        { label: t("talentManager.dashboard.stats.progress"), value: `${stats.progressoMedio}%`, icon: "bi-graph-up-arrow" },
+        { label: t("talentManager.dashboard.cards.badgesEarned"), value: summary.badgesObtidosTotal, icon: "bi-award" },
       ]}
     >
       {naoLidas > 0 && (

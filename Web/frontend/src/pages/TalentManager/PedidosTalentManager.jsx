@@ -128,9 +128,9 @@ export default function PedidosTalentManager() {
       title={t("talentManager.pedidos.title")}
       subtitle={t("talentManager.pedidos.subtitle")}
       heroStats={[
-        { label: t("talentManager.pedidos.stats.requests"), value: totals.total },
-        { label: t("talentManager.pedidos.stats.pending"), value: totals.pendentes },
-        { label: t("talentManager.pedidos.stats.approved"), value: totals.aprovados },
+        { label: t("talentManager.pedidos.stats.requests"), value: totals.total, icon: "bi-inbox" },
+        { label: t("talentManager.pedidos.stats.pending"), value: totals.pendentes, icon: "bi-hourglass-split" },
+        { label: t("talentManager.pedidos.stats.approved"), value: totals.aprovados, icon: "bi-check-circle" },
       ]}
     >
       <div className="mb-4 flex flex-wrap gap-2">

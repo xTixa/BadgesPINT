@@ -108,9 +108,9 @@ export default function RelatoriosServiceLine() {
       title={t("serviceLine.relatorios.title")}
       subtitle={t("serviceLine.relatorios.subtitle")}
       heroStats={[
-        { label: t("serviceLine.relatorios.stats.records"), value: totals.total },
-        { label: t("serviceLine.relatorios.stats.approved"), value: totals.aprovados },
-        { label: t("serviceLine.relatorios.stats.rejected"), value: totals.rejeitados },
+        { label: t("serviceLine.relatorios.stats.records"), value: totals.total, icon: "bi-file-earmark-text" },
+        { label: t("serviceLine.relatorios.stats.approved"), value: totals.aprovados, icon: "bi-check-circle" },
+        { label: t("serviceLine.relatorios.stats.rejected"), value: totals.rejeitados, icon: "bi-x-circle" },
       ]}
     >
       <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-6">

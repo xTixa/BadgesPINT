@@ -230,9 +230,9 @@ export default function PedidosServiceLine() {
       title={t("serviceLine.pedidos.title")}
       subtitle={t("serviceLine.pedidos.subtitle")}
       heroStats={[
-        { label: t("serviceLine.pedidos.stats.requests"), value: totals.total },
-        { label: t("serviceLine.pedidos.stats.inValidation"), value: totals.emValidacao },
-        { label: t("serviceLine.pedidos.stats.approved"), value: totals.aprovados },
+        { label: t("serviceLine.pedidos.stats.requests"), value: totals.total, icon: "bi-inbox" },
+        { label: t("serviceLine.pedidos.stats.inValidation"), value: totals.emValidacao, icon: "bi-hourglass-split" },
+        { label: t("serviceLine.pedidos.stats.approved"), value: totals.aprovados, icon: "bi-check-circle" },
       ]}
     >
       {selected && <ProcessoModal pedido={selected} onClose={() => setSelected(null)} />}

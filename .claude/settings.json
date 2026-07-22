@@ -353,7 +353,9 @@
       "Bash(node_modules/.bin/eslint src/pages/ServiceLine/ServiceLineLayout.jsx src/pages/ServiceLine/HistoricoSL.jsx src/pages/ServiceLine/ConsultoresServiceLine.jsx src/pages/ServiceLine/BadgesServiceLine.jsx src/pages/ServiceLine/GamificacaoSL.jsx)",
       "Bash(node_modules/.bin/eslint src/pages/ServiceLine/DashboardServiceLine.jsx)",
       "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 28904 -Force\")",
-      "Bash(node_modules/.bin/eslint src/pages/ServiceLine/*.jsx)"
+      "Bash(node_modules/.bin/eslint src/pages/ServiceLine/*.jsx)",
+      "Bash(node_modules/.bin/eslint src/pages/TalentManager/TalentManagerLayout.jsx src/pages/ServiceLine/ServiceLineLayout.jsx src/pages/TalentManager/DashboardTalentManager.jsx src/pages/ServiceLine/DashboardServiceLine.jsx)",
+      "Bash(node_modules/.bin/eslint src/pages/TalentManager/*.jsx src/pages/ServiceLine/*.jsx)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

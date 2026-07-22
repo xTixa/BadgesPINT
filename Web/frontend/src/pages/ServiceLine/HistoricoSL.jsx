@@ -207,9 +207,9 @@ export default function HistoricoSL() {
       title={t("serviceLine.historico.title")}
       subtitle={t("serviceLine.historico.subtitle")}
       heroStats={[
-        { label: t("serviceLine.historico.stats.obtained"), value: totals.obtidos },
-        { label: t("serviceLine.historico.stats.inProcess"), value: totals.emProcesso },
-        { label: t("serviceLine.historico.stats.rejected"), value: totals.rejeitados },
+        { label: t("serviceLine.historico.stats.obtained"), value: totals.obtidos, icon: "bi-patch-check-fill" },
+        { label: t("serviceLine.historico.stats.inProcess"), value: totals.emProcesso, icon: "bi-hourglass-split" },
+        { label: t("serviceLine.historico.stats.rejected"), value: totals.rejeitados, icon: "bi-x-circle-fill" },
       ]}
     >
       {selected && <ProcessoDetail pedido={selected} onClose={() => setSelected(null)} />}

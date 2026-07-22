@@ -62,10 +62,10 @@ export default function BadgesServiceLine() {
       title={t("serviceLine.badges.title")}
       subtitle={t("serviceLine.badges.subtitle")}
       heroStats={[
-        { label: t("serviceLine.badges.stats.badges"), value: badges.length },
-        { label: t("serviceLine.badges.stats.points"), value: totalPoints },
-        { label: t("serviceLine.badges.stats.premium"), value: premiumCount },
-        { label: t("serviceLine.badges.stats.levels"), value: levels.length },
+        { label: t("serviceLine.badges.stats.badges"), value: badges.length, icon: "bi-award-fill" },
+        { label: t("serviceLine.badges.stats.points"), value: totalPoints, icon: "bi-star-fill" },
+        { label: t("serviceLine.badges.stats.premium"), value: premiumCount, icon: "bi-gem" },
+        { label: t("serviceLine.badges.stats.levels"), value: levels.length, icon: "bi-layers-fill" },
       ]}
     >
       {loading ? <EmptyState message={t("serviceLine.badges.loading")} icon="bi-hourglass-split" /> : error ? (

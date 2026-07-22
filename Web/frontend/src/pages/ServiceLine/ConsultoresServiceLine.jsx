@@ -82,10 +82,10 @@ export default function ConsultoresServiceLine() {
       title={t("serviceLine.consultores.title")}
       subtitle={t("serviceLine.consultores.subtitle")}
       heroStats={[
-        { label: t("serviceLine.consultores.stats.consultants"), value: consultores.length },
-        { label: t("serviceLine.consultores.stats.avgPoints"), value: mediaPontos },
-        { label: t("serviceLine.consultores.stats.avgBadges"), value: mediaBadges },
-        { label: t("serviceLine.consultores.stats.topRanking"), value: consultores[0]?.name?.split(" ")[0] || "-" },
+        { label: t("serviceLine.consultores.stats.consultants"), value: consultores.length, icon: "bi-people-fill" },
+        { label: t("serviceLine.consultores.stats.avgPoints"), value: mediaPontos, icon: "bi-star-fill" },
+        { label: t("serviceLine.consultores.stats.avgBadges"), value: mediaBadges, icon: "bi-award-fill" },
+        { label: t("serviceLine.consultores.stats.topRanking"), value: consultores[0]?.name?.split(" ")[0] || "-", icon: "bi-trophy-fill" },
       ]}
     >
       {loading ? <EmptyState message={t("serviceLine.consultores.loading")} icon="bi-hourglass-split" /> : error ? (

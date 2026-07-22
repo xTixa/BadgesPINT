@@ -99,14 +99,17 @@ export default function HistoricoValidacoes() {
         {
           label: t("talentManager.historico.stats.total"),
           value: totals.todos,
+          icon: "bi-clock-history",
         },
         {
           label: t("talentManager.historico.stats.approved"),
           value: totals.aprovado,
+          icon: "bi-check-circle",
         },
         {
           label: t("talentManager.historico.stats.rejected"),
           value: totals.rejeitado,
+          icon: "bi-x-circle",
         },
       ]}
     >
