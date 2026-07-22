@@ -211,6 +211,8 @@ async function main() {
     const submittedB = daysAgo(10);
     const tmValidatedB = daysAgo(8);
     const slValidatedB = daysAgo(6);
+    const existingIntermedio = await ConsultorBadge.findOne({ where: { consultor_id: consultor.id, badge_id: bIntermedio.id } });
+    const wasObtainedIntermedio = existingIntermedio?.status === "obtido";
     await ensureConsultorBadge(consultor.id, bIntermedio.id, {
       status: "obtido",
       workflow_status: "fechado",
@@ -224,6 +226,9 @@ async function main() {
       data_atribuicao: slValidatedB,
       certificate_code: certCode(),
     });
+    if (!wasObtainedIntermedio && bIntermedio.points) {
+      await User.increment("points_total", { by: bIntermedio.points, where: { id: consultor.id } });
+    }
     console.log(`  (b) OBTIDO (aprovado TM+SLL)   → ${bIntermedio.description}`);
 
     // (c) Rejeitado pelo Service Line Leader — Kubernetes Operations

@@ -331,7 +331,12 @@
       "Bash(node --check src/controllers/emailSignatureController.js)",
       "Bash(node_modules/.bin/eslint src/components/EmailSignatureManager.jsx src/pages/TalentManager/EmailSignatureTM.jsx src/pages/ServiceLine/EmailSignatureSL.jsx)",
       "Bash(node_modules/.bin/eslint src/components/EmailSignatureManager.jsx)",
-      "Bash(node_modules/.bin/eslint src/pages/TalentManager/EmailSignatureTM.jsx src/pages/ServiceLine/EmailSignatureSL.jsx)"
+      "Bash(node_modules/.bin/eslint src/pages/TalentManager/EmailSignatureTM.jsx src/pages/ServiceLine/EmailSignatureSL.jsx)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3000/ -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"guilherme@yopmail.com\",\"password\":\"Softinsa2025!\"}')",
+      "Bash(curl -s --max-time 3 -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 2220 -Force\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",
