@@ -96,6 +96,13 @@ export default function PedidosTalentManager() {
     return "bg-amber-100 text-amber-700";
   };
 
+  const workflowMap = {
+    open: { label: t("talentManager.pedidos.workflow.open"), className: "bg-slate-100 text-slate-600" },
+    submitted: { label: t("talentManager.pedidos.workflow.submitted"), className: "bg-sky-100 text-sky-700" },
+    em_validacao: { label: t("talentManager.pedidos.workflow.em_validacao"), className: "bg-indigo-100 text-indigo-700" },
+    fechado: { label: t("talentManager.pedidos.workflow.fechado"), className: "bg-slate-100 text-slate-600" },
+  };
+
   const getPedidoHistory = (pedido) => [
     {
       label: t("talentManager.pedidos.history.created"),
@@ -180,6 +187,7 @@ export default function PedidosTalentManager() {
                 <tbody>
                 {pedidosPaginados.map((pedido) => {
                   const status = statusMap[pedido.status] || statusMap.pendente;
+                  const workflow = workflowMap[pedido.workflow_status] || workflowMap.open;
                   return (
                     <tr key={pedido.id}>
                       <td className="px-3 py-2">
@@ -191,7 +199,9 @@ export default function PedidosTalentManager() {
                       <td className="px-3 py-2">
                         <span className={`rounded-full px-2 py-1 text-xs font-semibold ${status.className}`}>{status.label}</span>
                       </td>
-                      <td className="px-3 py-2">{pedido.workflow_status || "open"}</td>
+                      <td className="px-3 py-2">
+                        <span className={`rounded-full px-2 py-1 text-xs font-semibold ${workflow.className}`}>{workflow.label}</span>
+                      </td>
                       <td className="px-3 py-2">{pedido.created_at ? new Date(pedido.created_at).toLocaleDateString("pt-PT") : "-"}</td>
                       <td className="px-3 py-2">
                         <button
@@ -205,7 +215,7 @@ export default function PedidosTalentManager() {
                         </button>
                       </td>
                       <td className="px-3 py-2 text-right">
-                        {pedido.workflow_status === "submitted" && (
+                        {pedido.workflow_status === "submitted" ? (
                           <>
                             <button className={`${tmPrimaryActionClass} mr-2 py-1`} onClick={() => validar(pedido.id)}>
                               {t("talentManager.pedidos.actions.validate")}
@@ -214,6 +224,8 @@ export default function PedidosTalentManager() {
                               {t("talentManager.pedidos.actions.return")}
                             </button>
                           </>
+                        ) : (
+                          <span className="mr-2 text-xs italic text-slate-400">{t("talentManager.pedidos.actions.noActionNeeded")}</span>
                         )}
                         <button className={`${tmActionClass} py-1`} onClick={() => setSelectedPedido(pedido)}>
                           {t("talentManager.pedidos.actions.history")}

@@ -1187,10 +1187,17 @@
         "actions": "Actions"
       },
       "unknownUser": "Unknown",
+      "workflow": {
+        "open": "Awaiting submission",
+        "submitted": "Awaiting your validation",
+        "em_validacao": "Awaiting Service Line",
+        "fechado": "Closed"
+      },
       "actions": {
         "validate": "Validate",
         "return": "Return",
-        "history": "History"
+        "history": "History",
+        "noActionNeeded": "No action needed"
       },
       "processHistoryTitle": "Process history",
       "consultantFallback": "Consultant",

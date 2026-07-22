@@ -1187,10 +1187,17 @@
         "actions": "Ações"
       },
       "unknownUser": "Desconhecido",
+      "workflow": {
+        "open": "Aguarda submissão",
+        "submitted": "Aguarda a tua validação",
+        "em_validacao": "Aguarda Service Line",
+        "fechado": "Fechado"
+      },
       "actions": {
         "validate": "Validar",
         "return": "Devolver",
-        "history": "Histórico"
+        "history": "Histórico",
+        "noActionNeeded": "Sem ação necessária"
       },
       "processHistoryTitle": "Histórico do processo",
       "consultantFallback": "Consultor",
