@@ -362,7 +362,9 @@
       "Bash(curl -s --max-time 15 -o /tmp/downloaded.png -w \"HTTP:%{http_code}\\\\n\" \"https://res.cloudinary.com/dhmbxqzv6/image/upload/v1784741913/evidencias/evidencia-teste-1784741912466.png\")",
       "Bash(curl -s --max-time 10 -X POST http://localhost:3000/api/consultor/requirements/264/evidencias -H 'Content-Type: application/json' -H 'Authorization: Bearer __TRACKED_VAR__' -d '{\"evidence_url\":\"__TRACKED_VAR__\",\"notes\":\"Teste real de upload de evidencia\"}')",
       "Bash(rm -rf \"e:/IPV/E.I/2Ano2Sem/PINT2526/BadgesPINT/scratch-test\" /tmp/token_gui.txt /tmp/downloaded.png /tmp/api-evtest.log 2>/dev/null *)",
-      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 23588 -Force\")"
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 23588 -Force\")",
+      "Bash(taskkill //F //IM msedge.exe)",
+      "Bash(powershell -Command \"Get-ChildItem -Path 'C:\\\\' -Filter 'dropdown.dart' -Recurse -ErrorAction SilentlyContinue -Force | Select-Object -First 5 FullName\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

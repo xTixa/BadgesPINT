@@ -375,6 +375,14 @@ export async function aprovarPedido(req, res) {
       }
       await pedido.save({ transaction });
 
+      await RequirementEvidence.update(
+        { status: "aprovado" },
+        {
+          where: { consultor_id: pedido.consultor_id, badge_id: pedido.badge_id, status: "pendente" },
+          transaction,
+        }
+      );
+
       const [user, badge] = await Promise.all([
         User.findByPk(pedido.consultor_id, { transaction }),
         Badge.findByPk(pedido.badge_id, { transaction }),
@@ -784,6 +792,17 @@ export async function slAprovarPedido(req, res) {
       pedido.sl_comment = comment || null;
       pedido.rejection_reason = null;
       await pedido.save({ transaction });
+
+      // Fecha o ciclo: a aprovação final do SL confirma implicitamente todas as
+      // evidências do pedido, evitando que o badge fique "obtido" enquanto os
+      // requisitos individuais continuam a mostrar "pendente"/"por submeter".
+      await RequirementEvidence.update(
+        { status: "aprovado" },
+        {
+          where: { consultor_id: pedido.consultor_id, badge_id: pedido.badge_id, status: "pendente" },
+          transaction,
+        }
+      );
 
       const [badge, user] = await Promise.all([
         Badge.findByPk(pedido.badge_id, { transaction }),

@@ -94,6 +94,7 @@ class UploadPage extends StatelessWidget {
         DropdownButtonFormField<int>(
           value: selectedBadgeId,
           isExpanded: true,
+          menuMaxHeight: 320,
           hint: const Text(
             'Seleciona um badge em progresso',
             maxLines: 1,
