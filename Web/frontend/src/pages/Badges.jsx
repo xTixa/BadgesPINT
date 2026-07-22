@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../api";
-import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
-import PublicJourneyStepper from "../components/PublicJourneyStepper";
 import BadgeCard from "../components/BadgeCard";
 
 const getBadgeName = (badge) => badge?.name || badge?.nome || badge?.title || "Badge";
@@ -252,17 +250,26 @@ export default function Badges() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6FAFF]">
+    <div className="-mx-4 -my-8 min-h-screen bg-[#F6FAFF] px-4 py-8">
       <section className="px-0 pb-4">
         <div className="mx-auto w-full max-w-[1600px]">
           <div className="overflow-hidden rounded-2xl border border-[#C7E3FF] bg-[#EAF6FF] p-6 text-slate-950 shadow-[0_18px_45px_rgba(15,98,254,0.10)] lg:p-7">
-            <Link
-              to={id ? "/areas" : "/"}
-              className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-[#0B5CAB] transition hover:text-[#0F62FE]"
-            >
-              <i className="bi bi-arrow-left"></i>
-              {id ? t("badges.backToAreas") : t("badges.backToHome")}
-            </Link>
+            <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-[#0B5CAB]">
+              <Link to="/" className="hover:text-[#0F62FE]">{t("badges.breadcrumbs.home")}</Link>
+              {id ? (
+                <>
+                  <span className="text-slate-300">/</span>
+                  <Link to="/areas" className="hover:text-[#0F62FE]">{t("badges.breadcrumbs.areas")}</Link>
+                  <span className="text-slate-300">/</span>
+                  <span className="text-slate-600">{areaName}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-slate-300">/</span>
+                  <span className="text-slate-600">{t("badges.breadcrumbs.badges")}</span>
+                </>
+              )}
+            </nav>
 
             <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
               <div>
@@ -296,19 +303,6 @@ export default function Badges() {
       </section>
 
       <main className="mx-auto w-full max-w-[1600px] px-0 py-4">
-        <PublicBreadcrumbs
-          items={
-            id
-              ? [
-                  { label: t("badges.breadcrumbs.home"), to: "/" },
-                  { label: t("badges.breadcrumbs.areas"), to: "/areas" },
-                  { label: t("badges.breadcrumbs.badges") },
-                ]
-              : [{ label: t("badges.breadcrumbs.home"), to: "/" }, { label: t("badges.breadcrumbs.badges") }]
-          }
-        />
-        <PublicJourneyStepper currentStep="badges" />
-
         {error && (
           <div role="alert" className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 p-4">
             <p className="text-sm font-semibold text-rose-700">{error}</p>

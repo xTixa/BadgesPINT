@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../api";
-import PublicBreadcrumbs from "../components/PublicBreadcrumbs";
-import PublicJourneyStepper from "../components/PublicJourneyStepper";
 
 export default function LearningPaths() {
   const { t } = useTranslation();
@@ -39,36 +37,34 @@ export default function LearningPaths() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2]">
+    <div className="-mx-4 -my-8 min-h-screen bg-[#F6FAFF] px-4 py-8">
       <section className="px-0 pb-4">
         <div className="mx-auto w-full max-w-[1600px]">
-          <div className="overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F62FE] via-[#16558C] to-[#00AEEF] p-6 text-white shadow-[0_12px_40px_rgba(15,98,254,0.18)] lg:p-7">
-            <Link
-              to="/"
-              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-white"
-            >
-              <i className="bi bi-arrow-left"></i>
-              {t("learningPaths.backToHome")}
-            </Link>
+          <div className="overflow-hidden rounded-2xl border border-[#C7E3FF] bg-[#EAF6FF] p-6 text-slate-950 shadow-[0_18px_45px_rgba(15,98,254,0.10)] lg:p-7">
+            <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-[#0B5CAB]">
+              <Link to="/" className="hover:text-[#0F62FE]">{t("learningPaths.breadcrumbs.home")}</Link>
+              <span className="text-slate-300">/</span>
+              <span className="text-slate-600">{t("learningPaths.breadcrumbs.paths")}</span>
+            </nav>
 
             <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
               <div>
-                <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#BFEFFF]">
+                <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-[#0F62FE]">
                   {t("learningPaths.eyebrow")}
                 </p>
-                <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                <h1 className="max-w-5xl text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
                   {t("learningPaths.title")}
                 </h1>
-                <p className="mt-3 max-w-3xl text-base text-white/85">
+                <p className="mt-3 max-w-3xl text-base leading-relaxed text-slate-700">
                   {t("learningPaths.subtitle")}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 gap-3 xs:grid-cols-3">
                 {stats.map(([label, value]) => (
-                  <div key={label} className="rounded-xl bg-white px-3 py-3 text-center">
-                    <p className="text-xs font-bold uppercase text-slate-500">{label}</p>
-                    <p className="mt-1 text-xl font-extrabold text-slate-950">{value}</p>
+                  <div key={label} className="rounded-xl border border-[#C7E3FF] bg-white/80 px-3 py-3 text-center shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-slate-500">{label}</p>
+                    <p className="mt-1 text-xl font-semibold text-[#0B5CAB]">{value}</p>
                   </div>
                 ))}
               </div>
@@ -78,25 +74,6 @@ export default function LearningPaths() {
       </section>
 
       <main className="mx-auto w-full max-w-[1600px] px-0 py-4">
-        <PublicBreadcrumbs
-          items={[{ label: t("learningPaths.breadcrumbs.home"), to: "/" }, { label: t("learningPaths.breadcrumbs.paths") }]}
-        />
-        <PublicJourneyStepper currentStep="paths" />
-
-        <div className="mb-5 rounded-2xl border border-[#0F62FE]/10 bg-white p-4 shadow-[0_8px_30px_rgba(15,98,254,0.08)]">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0F62FE]/10 text-[#0F62FE]">
-              <i className="bi bi-signpost-split"></i>
-            </span>
-            <div>
-              <p className="text-sm font-extrabold text-slate-950">{t("learningPaths.stepBanner.title")}</p>
-              <p className="text-sm text-slate-500">
-                {t("learningPaths.stepBanner.text")}
-              </p>
-            </div>
-          </div>
-        </div>
-
         {error && (
           <div
             role="alert"
@@ -110,7 +87,7 @@ export default function LearningPaths() {
           <div
             role="status"
             aria-live="polite"
-            className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm"
+            className="rounded-2xl border border-[#DCEEFF] bg-white px-6 py-16 text-center shadow-sm"
           >
             <div className="mx-auto mb-4 h-14 w-14 animate-spin rounded-full border-b-4 border-[#0F62FE]"></div>
             <p className="text-lg font-semibold text-slate-600">
@@ -122,18 +99,18 @@ export default function LearningPaths() {
             {paths.map((path, index) => (
               <article
                 key={path.id}
-                className="flex min-h-[220px] flex-col rounded-2xl border border-[#0F62FE]/10 bg-white p-5 shadow-[0_8px_30px_rgba(15,98,254,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_38px_rgba(15,98,254,0.12)]"
+                className="flex min-h-[220px] flex-col rounded-2xl border border-[#DCEEFF] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#8FCBFF] hover:shadow-[0_14px_35px_rgba(15,98,254,0.10)]"
               >
                 <div className="mb-4 flex items-start justify-between gap-4">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0F62FE]/10 text-lg text-[#0F62FE]">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF6FF] text-lg text-[#0F62FE]">
                     <i className="bi bi-diagram-3"></i>
                   </span>
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-500">
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-500">
                     #{index + 1}
                   </span>
                 </div>
 
-                <h2 className="text-lg font-extrabold text-slate-950">
+                <h2 className="text-lg font-semibold text-slate-950">
                   {path.name}
                 </h2>
                 <p className="mt-3 flex-1 text-sm leading-6 text-slate-500">
@@ -142,7 +119,7 @@ export default function LearningPaths() {
 
                 <Link
                   to={`/learning-paths/${path.id}/service-lines`}
-                  className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-5 text-sm font-bold text-white transition hover:bg-[#16558C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F62FE]/35"
+                  className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0F62FE] px-5 text-sm font-semibold text-white transition hover:bg-[#0B55DD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F62FE]/35"
                 >
                   {t("learningPaths.explore")}
                   <i className="bi bi-arrow-right"></i>
@@ -151,9 +128,9 @@ export default function LearningPaths() {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+          <div className="rounded-2xl border border-[#DCEEFF] bg-white px-6 py-16 text-center shadow-sm">
             <i className="bi bi-folder2-open mb-4 block text-6xl text-slate-300"></i>
-            <h2 className="text-xl font-extrabold text-slate-950">
+            <h2 className="text-xl font-semibold text-slate-950">
               {t("learningPaths.emptyTitle")}
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-slate-500">

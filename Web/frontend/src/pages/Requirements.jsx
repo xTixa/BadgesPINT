@@ -225,7 +225,7 @@ export default function Requirements() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6FAFF]">
+    <div className="-mx-4 -my-8 min-h-screen bg-[#F6FAFF] px-4 py-8">
       <section className="w-full border-b border-[#D7E9FF] bg-[#EAF6FF] px-6 py-5 text-slate-950 lg:px-10">
         <div className="mx-auto grid max-w-[1600px] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="max-w-5xl">
