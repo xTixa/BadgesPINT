@@ -53,7 +53,7 @@ class _PedidoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final progress = _progressForStatus(pedido.workflowStatus, pedido.status);
+    final progress = pedido.progressValue;
 
     return Card(
       child: Padding(
@@ -90,7 +90,7 @@ class _PedidoCard extends StatelessWidget {
             LinearProgressIndicator(value: progress),
             const SizedBox(height: 10),
             Text(
-              _labelForStatus(pedido.workflowStatus, pedido.status),
+              pedido.statusLabel,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
@@ -144,25 +144,6 @@ class _PedidoCard extends StatelessWidget {
     );
   }
 
-  double _progressForStatus(String workflowStatus, String status) {
-    final normalized = '${workflowStatus.toLowerCase()} ${status.toLowerCase()}';
-    if (normalized.contains('rejeit')) return 1;
-    if (normalized.contains('obtido') || normalized.contains('aprov')) return 1;
-    if (normalized.contains('validacao')) return 0.66;
-    if (normalized.contains('submet')) return 0.33;
-    return 0.2;
-  }
-
-  String _labelForStatus(String workflowStatus, String status) {
-    final normalized = '${workflowStatus.toLowerCase()} ${status.toLowerCase()}';
-    if (normalized.contains('rejeit')) return 'Pedido rejeitado';
-    if (normalized.contains('obtido') || normalized.contains('aprov')) {
-      return 'Badge aprovado';
-    }
-    if (normalized.contains('validacao')) return 'Em validacao';
-    if (normalized.contains('submet')) return 'Submetido';
-    return workflowStatus.isEmpty ? status : workflowStatus;
-  }
 }
 
 class _TimelineStep extends StatelessWidget {

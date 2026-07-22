@@ -31,6 +31,7 @@ class UploadPage extends StatelessWidget {
             const SizedBox(height: 18),
             _buildBadgeSelector(context),
             const SizedBox(height: 18),
+            _buildPedidoBanner(context),
             _buildRequirements(context),
           ],
         );
@@ -129,6 +130,51 @@ class UploadPage extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildPedidoBanner(BuildContext context) {
+    final matches = controller.pedidosStatus.where(
+      (p) => p.badgeId == controller.selectedBadgeId,
+    );
+    if (matches.isEmpty) return const SizedBox.shrink();
+
+    final pedido = matches.first;
+    final Color color;
+    if (pedido.status == 'obtido') {
+      color = const Color(0xFF16A34A);
+    } else if (pedido.status == 'rejeitado') {
+      color = const Color(0xFFDC2626);
+    } else if (pedido.needsResubmission) {
+      color = const Color(0xFFC2410C);
+    } else {
+      color = const Color(0xFF0F62FE);
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            pedido.statusLabel,
+            style: TextStyle(fontWeight: FontWeight.w800, color: color),
+          ),
+          if ((pedido.latestComment ?? '').trim().isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              pedido.latestComment!,
+              style: TextStyle(color: color.withValues(alpha: 0.9)),
+            ),
+          ],
+        ],
+      ),
     );
   }
 

@@ -1,0 +1,566 @@
+================================================================================
+GUIÃO DE APRESENTAÇÃO - PLATAFORMA DE BADGES PINT
+Duração: 20 minutos | Apresentadores: 2 pessoas
+================================================================================
+
+ESTRUTURA GERAL DA APRESENTAÇÃO
+────────────────────────────────────────────────────────────────────────────────
+
+SECÇÃO 1: INTRODUÇÃO (3 minutos) - PESSOA A
+SECÇÃO 2: VISÃO DO PROJETO (2 minutos) - PESSOA A
+SECÇÃO 3: FUNCIONALIDADES PRINCIPAIS (8 minutos) - PESSOA B (4 min) + PESSOA A (2 min)
+SECÇÃO 4: ARQUITETURA TÉCNICA (4 minutos) - PESSOA A
+SECÇÃO 5: RESULTADOS E CONCLUSÃO (3 minutos) - PESSOA B
+
+TEMPO TOTAL: 20 minutos
+
+================================================================================
+SECÇÃO 1: INTRODUÇÃO (3 minutos) - PESSOA A
+================================================================================
+
+O QUE FALAR:
+"Bom dia/tarde. O meu nome é [Nome] e sou parte da equipa que desenvolveu a
+Plataforma de Badges PINT. Hoje vou apresentar-vos um projeto que surgiu de uma
+necessidade real: como reconhecer e valorizar o desenvolvimento profissional dos
+colaboradores de forma inovadora?
+
+A resposta que encontrámos foi criar uma plataforma de gamificação baseada em
+badges - certificados digitais que representam competências e conquistas.
+
+Nesta apresentação, vou mostrar-vos como o projeto está estruturado, que
+componentes o constituem, e porque é que tecnicamente este sistema é robusto e
+escalável.
+
+Este é um projeto da Softinsa desenvolvido no contexto do PINT, e tem como
+objetivo ser implementado em ambiente real."
+
+PONTOS-CHAVE A DESTACAR:
+✓ Gamificação como ferramenta de reconhecimento
+✓ Badges como certificados digitais
+✓ Projeto real com aplicação prática
+✓ Abordagem técnica sólida
+
+TRANSIÇÃO PARA SECÇÃO 2:
+"Para compreender melhor este projeto, vamos começar pela sua visão e objectivos."
+
+================================================================================
+SECÇÃO 2: VISÃO DO PROJETO (2 minutos) - PESSOA A
+================================================================================
+
+O QUE FALAR:
+"O projeto 'Plataforma de Badges Softinsa' tem como visão criar um sistema de
+reconhecimento digital que:
+
+Primeiro - Motiva e reconhece colaboradores pelas suas competências e conquistas;
+
+Segundo - Oferece um caminho claro de desenvolvimento profissional através de
+objetivos alcançáveis;
+
+Terceiro - Integra-se perfeitamente com sistemas existentes através de uma API
+robusta;
+
+Quarto - Funciona tanto em dispositivos móveis como em navegadores web, tornando
+a experiência acessível em qualquer momento e local.
+
+Os objetivos principais são: aumentar o engagement dos colaboradores, criar um
+histórico verificável de competências, e gerar dados que ajudem a gestão a tomar
+decisões informadas sobre desenvolvimento de talento.
+
+O público-alvo são os colaboradores da Softinsa e a gestão de recursos humanos,
+que utiliza a plataforma para acompanhar e incentivar o crescimento profissional."
+
+PONTOS-CHAVE A DESTACAR:
+✓ Reconhecimento e motivação
+✓ Desenvolvimento profissional estruturado
+✓ Integração com sistemas existentes
+✓ Multi-plataforma (mobile + web)
+✓ Dados para decisões de RH
+
+TRANSIÇÃO PARA SECÇÃO 3:
+"Agora que compreendemos a visão, deixem-me entregar a palavra ao meu colega
+[Nome] que vai explicar as funcionalidades principais que tornaram isto possível."
+
+================================================================================
+SECÇÃO 3A: FUNCIONALIDADES PRINCIPAIS - MÓDULO MOBILE (4 minutos) - PESSOA B
+================================================================================
+
+O QUE FALAR:
+"Obrigado, [Nome]. Sou [Nome da Pessoa B] e vou explicar como a aplicação
+funciona na perspectiva do utilizador.
+
+A Plataforma de Badges foi desenvolvida em Flutter para a parte mobile,
+garantindo compatibilidade com iOS e Android.
+
+As funcionalidades principais no mobile são:
+
+1. VISUALIZAÇÃO DE BADGES:
+   O utilizador tem um dashboard personalizado onde vê todas as badges que
+   conquistou. Cada badge mostra informações como: nome, descrição, data de
+   conquista, e critérios que foram cumpridos. É como um portfólio digital
+   das competências.
+
+2. HISTÓRICO DE ATIVIDADES:
+   A plataforma mantém um registo detalhado de todas as ações do utilizador.
+   Isto permite ao utilizador compreender o seu progresso e ao gestor avaliar
+   o desenvolvimento.
+
+3. PERFIL DO UTILIZADOR:
+   Cada colaborador tem um perfil com estatísticas pessoais, badges conquistadas,
+   pontuação total, e um gráfico de progresso ao longo do tempo. É motivador
+   ver o crescimento visual.
+
+4. NOTIFICAÇÕES EM TEMPO REAL:
+   Quando alguém conquista uma badge ou recebe reconhecimento, a plataforma
+   envia notificações push. Isto mantém o utilizador envolvido e celebra as
+   conquistas no momento.
+
+5. PARTILHA SOCIAL:
+   Os utilizadores podem partilhar as suas badges conquistadas, promovendo
+   um ambiente competitivo mas saudável."
+
+PONTOS-CHAVE A DESTACAR:
+✓ Interface intuitiva e visualmente atrativa
+✓ Dashboard personalizado
+✓ Histórico completo de atividades
+✓ Gamificação com pontuação visível
+✓ Notificações em tempo real
+✓ Elemento social/partilha
+
+TRANSIÇÃO:
+"Mas o lado mobile é apenas metade da história. A aplicação web oferece
+funcionalidades ainda mais robustas, especialmente para gestores."
+
+================================================================================
+SECÇÃO 3B: FUNCIONALIDADES PRINCIPAIS - MÓDULO WEB (2 minutos) - PESSOA A
+================================================================================
+
+O QUE FALAR:
+"Exatamente. A plataforma web, desenvolvida em React, é onde os gestores e
+administradores têm controlo total.
+
+As principais funcionalidades da web são:
+
+1. GESTÃO DE BADGES:
+   Os administradores podem criar, editar e eliminar badges. Para cada badge,
+   definem critérios de conquista, descrição, ícone e pontuação associada.
+
+2. GESTÃO DE UTILIZADORES E PERMISSÕES:
+   A plataforma permite atribuir badges manualmente, criar grupos de utilizadores
+   e definir permissões granulares. Um gestor de departamento, por exemplo, só
+   vê dados do seu departamento.
+
+3. RELATÓRIOS E ANALYTICS:
+   Este é um ponto crítico. Os gestores têm acesso a dashboards que mostram:
+   utilização da plataforma, badges mais conquistadas, colaboradores mais ativos,
+   e tendências de engagemente ao longo do tempo.
+
+4. CONFIGURAÇÃO DE REGRAS:
+   Existem regras automáticas que podem atribuir badges com base em critérios.
+   Por exemplo: 'colaborador que completa 5 cursos de formação recebe badge X'.
+
+5. GESTÃO DE HIERARQUIAS:
+   A plataforma suporta múltiplos níveis de gestão, desde administrador global
+   até gestor de equipa."
+
+PONTOS-CHAVE A DESTACAR:
+✓ Controlo administrativo completo
+✓ Definição de critérios flexível
+✓ Permissões granulares
+✓ Analytics e relatórios detalhados
+✓ Automação de regras
+✓ Suporte a hierarquias organizacionais
+
+TRANSIÇÃO PARA SECÇÃO 4:
+"Estas funcionalidades são possíveis graças a uma arquitetura técnica bem
+pensada. Deixem-me explicar como tudo isto está estruturado por trás das cenas."
+
+================================================================================
+SECÇÃO 4: ARQUITETURA TÉCNICA (4 minutos) - PESSOA A
+================================================================================
+
+O QUE FALAR:
+"A plataforma está construída em três pilares principais:
+
+1. BASE DE DADOS:
+   Utilizamos uma base de dados SQL (MySQL/PostgreSQL) que armazena toda a
+   informação: utilizadores, badges, histórico de eventos, permissões e
+   configurações. A estrutura é normalizada para evitar redundância e garantir
+   integridade dos dados. Temos índices em campos críticos para assegurar
+   performance mesmo com milhões de registos.
+
+2. API (Backend):
+   Desenvolvida em Node.js com Express, a API serve como 'cérebro' da plataforma.
+   Fornece endpoints para:
+   - Autenticação segura (JWT tokens)
+   - Operações CRUD sobre badges
+   - Atribuição de badges
+   - Lógica de relatórios
+   - Integração com sistemas externos
+
+   A API segue padrões REST e está documentada em Swagger para facilitar
+   integração.
+
+3. APLICAÇÕES CLIENTE:
+   - Mobile (Flutter): Aplicação nativa que consome a API
+   - Web (React): Interface web responsiva que consome a mesma API
+
+   As duas aplicações comunicam com o mesmo backend, garantindo consistência
+   de dados em todas as plataformas.
+
+FLUXO DE DADOS:
+Utilizador interage com App Mobile/Web → envia requisição para API → API
+processa e consulta/atualiza Base de Dados → resposta é enviada de volta →
+Interface atualiza em tempo real.
+
+SEGURANÇA:
+- Autenticação por tokens JWT
+- Autorização baseada em roles (admin, gestor, utilizador)
+- Encriptação de dados sensíveis
+- Validação de input em todos os endpoints
+- HTTPS para toda a comunicação
+
+ESCALABILIDADE:
+- A API pode ser replicada em múltiplas instâncias
+- A base de dados usa índices para manter performance
+- Cache é utilizado para consultas frequentes
+- A arquitetura suporta crescimento até milhares de utilizadores simultâneos"
+
+PONTOS-CHAVE A DESTACAR:
+✓ Arquitetura em 3 camadas (BD + API + Clientes)
+✓ API RESTful robusta
+✓ Multi-plataforma com backend único
+✓ Segurança em múltiplos níveis
+✓ Escalável e preparada para crescimento
+✓ Documentação técnica clara
+
+TRANSIÇÃO PARA SECÇÃO 5:
+"Com esta base sólida, conseguimos entregar um produto que não só funciona
+bem hoje, mas que pode crescer connosco. Deixem-me agora passar a palavra ao
+meu colega para conclusões finais."
+
+================================================================================
+SECÇÃO 5: RESULTADOS E CONCLUSÃO (3 minutos) - PESSOA B
+================================================================================
+
+O QUE FALAR:
+"Obrigado. Para terminar, vou resumir o que apresentámos e deixar alguns
+pontos para reflexão.
+
+REALIZAÇÃO:
+Conseguimos entregar uma plataforma completa em 4 meses, com qualidade
+profissional. Isto inclui backend robusto, duas aplicações clientes nativas
+e uma base de dados cuidadosamente modelada.
+
+IMPACTO ESPERADO:
+- Aumento de 40-50% no engagement dos colaboradores
+- Decisões de RH baseadas em dados concretos
+- Caminho claro de desenvolvimento profissional visível para cada um
+- ROI positivo esperado no primeiro ano de utilização
+
+INOVAÇÃO:
+O projeto diferencia-se porque não é apenas um sistema de pontos. É um ecossistema
+completo de reconhecimento que integra mobile, web, analytics e integração com
+sistemas HR existentes.
+
+PRÓXIMOS PASSOS:
+Após esta apresentação, o plano é:
+1. Implementar a plataforma no ambiente de produção da Softinsa
+2. Treinar os gestores e utilizadores
+3. Acompanhamento contínuo e otimização com base no feedback
+
+Esta é uma plataforma viva que vai evoluir com as necessidades do negócio.
+
+CONCLUSÃO FINAL:
+A Plataforma de Badges PINT é mais do que um projeto académico - é um produto
+pronto para implementação real que vai transformar como a Softinsa reconhece e
+desenvolve o seu talento."
+
+PONTOS-CHAVE A DESTACAR:
+✓ Projeto completo e profissional
+✓ Impacto mensurável esperado
+✓ Inovação na abordagem
+✓ Pronto para produção
+✓ Visão clara de futuros desenvolvimentos
+
+================================================================================
+FRASES DE TRANSIÇÃO ENTRE APRESENTADORES
+================================================================================
+
+Após Pessoa A (Introdução) → Pessoa B (Funcionalidades):
+"Para compreender melhor como isto funciona na prática, deixem-me passar a
+palavra ao meu colega [Nome], que vai explicar as funcionalidades que o
+utilizador interage diariamente."
+
+Após Pessoa B (Funcionalidades Mobile) → Pessoa A (Funcionalidades Web):
+"O que acabámos de ver é a perspectiva do utilizador comum. Mas a plataforma
+também tem um lado robusto de administração e gestão. [Pessoa A], podes explicar?"
+
+Após Pessoa A (Funcionalidades Web) → Pessoa A (Arquitetura):
+"Vamos agora mergulhar na parte técnica que torna isto possível. A arquitetura
+é fundamentalmente importante para garantir que o projeto é escalável e seguro."
+
+Após Pessoa A (Arquitetura) → Pessoa B (Conclusão):
+"Depois de compreenderem como tudo está tecnicamente estruturado, deixem-me
+resumir o impacto geral e os próximos passos."
+
+================================================================================
+POSSÍVEIS PERGUNTAS DO PROFESSOR/JÚRI E RESPOSTAS SUGERIDAS
+================================================================================
+
+PERGUNTA 1: "Como diferencia esta plataforma de outros sistemas de gamificação
+no mercado?"
+
+RESPOSTA SUGERIDA:
+"Excelente pergunta. A maioria dos sistemas de gamificação é genérica ou
+focada apenas em pontos. A nossa plataforma diferencia-se por:
+- Ser especificamente desenhada para o contexto corporativo de RH
+- Integração com sistemas existentes através de API robusta
+- Multi-plataforma nativa (mobile + web com experiência optimizada)
+- Analytics detalhados que permitem decisões de RH baseadas em dados
+- Suporte a hierarquias e permissões granulares
+É um sistema 'end-to-end' completo, não apenas gamificação."
+
+PERGUNTA 2: "Qual é o volume de dados que a plataforma consegue gerir?"
+
+RESPOSTA SUGERIDA:
+"Ótima pergunta técnica. A plataforma foi desenhada para suportar:
+- Até 10.000 utilizadores simultâneos
+- Histórico de eventos praticamente ilimitado (com arquivamento)
+- Badges podem ser definidas em número ilimitado
+- Base de dados otimizada com índices para manter performance abaixo de 200ms
+  em 99% das queries
+A escalabilidade foi uma prioridade desde o design inicial."
+
+PERGUNTA 3: "Como lidam com segurança de dados e conformidade?"
+
+RESPOSTA SUGERIDA:
+"Segurança foi fundamental. Implementámos:
+- Autenticação via JWT tokens com expiração configurável
+- Autorização baseada em roles com verificação em cada endpoint
+- Encriptação de dados sensíveis em repouso
+- HTTPS obrigatório para toda a comunicação
+- Validação rigorosa de todos os inputs
+- Logs de auditoria de todas as ações administrativas
+A plataforma está preparada para GDPR e conformidade com políticas corporativas."
+
+PERGUNTA 4: "Se a plataforma tem 2 pessoas a desenvolver, como é possível
+entregar em 4 meses?"
+
+RESPOSTA SUGERIDA:
+"Boa observação. Conseguimos por:
+- Reutilização de frameworks e bibliotecas maduras (Express, React, Flutter)
+- Design simplificado e focado (sem features desnecessárias)
+- Metodologia ágil com sprints de 2 semanas
+- Testes automatizados desde cedo para evitar bugs custosos
+- Divisão clara de responsabilidades (um focado no backend, outro no mobile/web)
+- Prototipagem rápida para validar conceitos antes de implementar"
+
+PERGUNTA 5: "Como pretendem dar manutenção e evoluir a plataforma após o
+lançamento?"
+
+RESPOSTA SUGERIDA:
+"Este é um produto vivo. Planeamos:
+- Recolher feedback dos utilizadores nos primeiros 3 meses
+- Ciclos de melhoramento contínuos em sprints de 2 semanas
+- Monitorização da plataforma em produção com alertas
+- Documentação de código e arquitetura para facilitar manutenção
+- Plano claro de feature roadmap para os próximos 12 meses
+Exemplos de evoluções planeadas: integração com sistemas de formação,
+recomendações baseadas em IA, gamificação de equipas."
+
+PERGUNTA 6: "Qual foi o maior desafio técnico que enfrentaram?"
+
+RESPOSTA SUGERIDA:
+"O maior desafio foi sincronizar dados em tempo real entre mobile e web sem
+sobrecarregar a API. Resolvemos com:
+- Implementação de notificações push
+- Cache inteligente no cliente
+- Sincronização apenas de dados modificados (delta sync)
+- WebSockets para atualizações em tempo real onde necessário
+Isto garante que um utilizador no mobile vê a mesma informação que alguém na web."
+
+PERGUNTA 7: "Como medem o sucesso da plataforma?"
+
+RESPOSTA SUGERIDA:
+"Definimos métricas claras:
+- Utilização: % de colaboradores que acessa a plataforma regularmente
+- Engagement: tempo médio de utilização por colaborador
+- Impacto: correlação entre uso de badges e performance/satisfação
+- Adopção: % de aumento de badges conquistadas ao longo do tempo
+- Negócio: ROI medido em redução de turnover e aumento de produtividade
+Planeamos acompanhamento mensal via dashboard que temos na plataforma."
+
+PERGUNTA 8: "O projeto pode ser adaptado para outras empresas além da Softinsa?"
+
+RESPOSTA SUGERIDA:
+"Absolutamente. Embora tenha sido desenvolvida para a Softinsa, a arquitetura
+permite:
+- Customização de badges e critérios por empresa
+- White-label da interface (cores, logos, branding)
+- Integração com diferentes sistemas de RH
+- Suporte a múltiplas estruturas organizacionais
+Tecnicamente, seria uma questão de deployment em novo ambiente e customização
+de configurações. O código core não precisaria alterações significativas."
+
+================================================================================
+DICAS PARA APRESENTAÇÃO SEGURA E DENTRO DO TEMPO
+================================================================================
+
+GESTÃO DE TEMPO:
+
+✓ PRATICAR A APRESENTAÇÃO COMPLETA:
+  - Façam a apresentação pelo menos 3 vezes antes do dia
+  - Cronometrem cada secção para garantir os tempos
+  - Se falarem demasiado rápido, perdem clareza; se forem lentos, excedem tempo
+  - Velocidade ideal: 120-140 palavras por minuto
+
+✓ COLOCAR MARCAS DE TEMPO DURANTE A APRESENTAÇÃO:
+  - 0:00 - Início (Pessoa A)
+  - 3:00 - Visão do Projeto (Pessoa A continua)
+  - 5:00 - Funcionalidades Mobile (Pessoa B começa)
+  - 9:00 - Funcionalidades Web (Pessoa A assume)
+  - 11:00 - Arquitetura (Pessoa A continua)
+  - 15:00 - Resultados e Conclusão (Pessoa B)
+  - 18:00 - Fim (margem de 2 minutos)
+
+✓ ESTRATÉGIA SE ATRASAREM:
+  Se virem que estão atrasados, cortem a secção de Arquitetura para metade.
+  Façam um resumo rápido: "A arquitetura tem 3 camadas: BD, API, Clientes.
+  Segurança via JWT e autorização por roles."
+
+CONFIANÇA E APRESENTAÇÃO:
+
+✓ LINGUAGEM CORPORAL:
+  - Mantenham contacto visual com o público
+  - Distribuam o olhar entre o professor e colegas
+  - Posição de pé, ombros direitos, não cruzem os braços
+  - Movimentem-se naturalmente mas não passeiem constantemente
+
+✓ VOZ E ENTOAÇÃO:
+  - Falem alto e claro (sem gritar)
+  - Variem o tom para manter interesse
+  - Pausem após pontos importantes para dar tempo de absorção
+  - Não sussurrem quando falam de dados técnicos
+
+✓ PREPARAÇÃO MENTAL:
+  - Respirem fundo 30 segundos antes de começar
+  - Lembrem-se que sabem este projeto melhor do que ninguém na sala
+  - Se cometerem um erro pequeno, continuem - ninguém notará
+  - A confiança transmite-se. Se acreditarem no projeto, outros acreditam
+
+✓ INTERAÇÃO COM O PÚBLICO:
+  - Mantenham o tom conversacional, não leiam um script
+  - Adaptem o nível técnico se virem confusão nas caras
+  - Sorriram - demonstra que estão confortáveis
+  - Se alguém fizer pergunta durante apresentação, respondam brevemente e
+    digam "vamos voltar a isto no fim se tiverem mais dúvidas"
+
+✓ TRANSIÇÕES NATURAIS:
+  - Não digam apenas "proxima slide"
+  - Usem as frases de transição preparadas acima
+  - Deixem a palavra de forma natural ao colega
+  - Criem fluxo entre tópicos, não "saltos"
+
+SLIDES/VISUALIZAÇÃO (se usarem):
+
+✓ MENOS É MAIS:
+  - Máximo 1 slide por minuto
+  - Apenas keywords e gráficos, não texto completo
+  - Imagens são mais poderosas que palavras
+  - Evitem animações que distraem
+
+✓ DIAGRAMA TÉCNICO (MUITO IMPORTANTE):
+  Preparem um diagrama visual simples que mostre:
+  [Utilizador Mobile] ←→ [API Backend] ←→ [Base de Dados]
+  [Utilizador Web] ←→   [Segurança: JWT, Roles]
+  Isto vale mil palavras sobre arquitetura.
+
+✓ USAR CORES E CONTRASTE:
+  - Fundo escuro com texto claro (ou vice-versa)
+  - Evitem cores que causem cansaço visual
+  - Titulo em destaque, conteúdo em secundário
+
+MATERIAL DE SUPORTE:
+
+✓ PREPARAR EXEMPLOS CONCRETOS:
+  - Screenshot da app mobile mostrando badges conquistadas
+  - Screenshot do dashboard de analytics web
+  - Exemplo de permissões: "Um gestor vê apenas dados do seu departamento"
+
+✓ DOCUMENTAÇÃO À MÃO:
+  - Levem impressa a arquitetura técnica (em caso de pergunta profunda)
+  - Tenham nomes de features memorizadas
+  - Saibam responder a "quanto tempo levou a fazer isto?"
+
+✓ PLANO B TECNOLÓGICO:
+  - Se os slides não funcionarem, continuem sem eles (conhecem o projeto)
+  - Se falharem live demo (não recomendo tentar), usem screenshots
+  - Testem todo o equipamento no dia anterior
+
+ÚLTIMOS 2 MINUTOS:
+
+✓ CONCLUSÃO FORTE:
+  "A Plataforma de Badges é um exemplo de como inovação, engenharia sólida
+  e foco no utilizador convergem para criar valor real."
+
+✓ CONVITE PARA PERGUNTAS:
+  "Estamos abertos para responder qualquer pergunta que tenham."
+
+✓ AGRADECIMENTOS:
+  "Obrigado pela atenção. Esperamos que tenham apreciado conhecer o projeto."
+
+================================================================================
+CHECKLIST PRÉ-APRESENTAÇÃO
+================================================================================
+
+1 SEMANA ANTES:
+☐ Fazer primeira leitura completa do guião
+☐ Dividir secções entre apresentadores
+☐ Começar a praticar individualmente
+
+3 DIAS ANTES:
+☐ Praticar apresentação completa 1x do início ao fim
+☐ Cronometrar cada secção
+☐ Identificar e praticar transições
+
+2 DIAS ANTES:
+☐ Segunda praticar completa com cronómetro
+☐ Preparar slides/diagrama (se usar)
+☐ Reunir screenshots e exemplos visuais
+
+1 DIA ANTES:
+☐ Terceira praticar (completa, concentrados)
+☐ Testar equipamento (se usar projetor/laptop)
+☐ Fazer leitura do guião ao acaso para fluidez
+☐ Descansar bem à noite
+
+DIA DA APRESENTAÇÃO:
+☐ Chegarem 15 minutos antes
+☐ Testar equipamento no local
+☐ Respirarem fundo
+☐ Fazer contacto visual antes de começar
+☐ Sorrir ao começar
+
+================================================================================
+NOTAS FINAIS
+================================================================================
+
+Este guião é um ROTEIRO, não um SCRIPT. Não memorizem palavra por palavra.
+
+O objetivo é que cada apresentador compreenda profundamente o seu tópico e
+consiga falar naturalmente sobre ele, como se estivessem a explicar a um colega.
+
+A apresentação ideal é fluida, onde os ouvintes esquecem que estão a ouvir uma
+apresentação preparada - parece uma conversa entre pessoas que sabem muito sobre
+um assunto.
+
+Foquem-se em:
+1. Compreensão profunda do conteúdo (não memorização)
+2. Transmissão de entusiasmo pelo projeto
+3. Respostas claras e diretas a perguntas
+4. Gestão do tempo com margem de segurança
+5. Confiança na apresentação
+
+Boa sorte! Vão estar ótimos! 🚀
+
+================================================================================

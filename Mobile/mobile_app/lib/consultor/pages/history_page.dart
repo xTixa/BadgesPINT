@@ -92,10 +92,10 @@ class HistoryPage extends StatelessWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(pedido.workflowStatus),
+                    Text(pedido.statusLabel),
                     const SizedBox(height: 4),
                     LinearProgressIndicator(
-                      value: pedido.status == 'Aprovado' ? 1 : 0.5,
+                      value: pedido.progressValue,
                     ),
                   ],
                 ),

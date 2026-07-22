@@ -131,6 +131,7 @@ export default function PedidosServiceLine() {
     open: t("serviceLine.pedidos.workflow.open"),
     submitted: t("serviceLine.pedidos.workflow.submitted"),
     em_validacao: t("serviceLine.pedidos.workflow.emValidacao"),
+    devolvido: t("serviceLine.pedidos.workflow.devolvido"),
     fechado: t("serviceLine.pedidos.workflow.fechado"),
   };
   const [pedidos, setPedidos] = useState([]);
@@ -217,7 +218,7 @@ export default function PedidosServiceLine() {
     try {
       await api.post(`/api/pedidos/${id}/sl/devolver`, { comment });
       setPedidos((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, workflow_status: "open", status: "pendente", sl_comment: comment } : p))
+        prev.map((p) => (p.id === id ? { ...p, workflow_status: "devolvido", status: "pendente", sl_comment: comment } : p))
       );
     } catch (err) {
       console.error("Erro ao devolver pedido:", err);
