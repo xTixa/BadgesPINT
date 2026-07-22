@@ -4,9 +4,75 @@ import { useTranslation } from "react-i18next";
 import { consumeGreetingKey } from "/src/utils/greeting";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
-import TalentManagerLayout, { TalentStatCard, tmPanelClass } from "./TalentManagerLayout";
+import TalentManagerLayout, { tmPanelClass } from "./TalentManagerLayout";
+import { useWindowSize } from "/src/hooks/useWindowSize";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar, Doughnut } from "react-chartjs-2";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
 const POLL_INTERVAL_MS = 30_000;
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: "#0f172a",
+      padding: 12,
+      cornerRadius: 10,
+      titleFont: { size: 12, weight: 700 },
+      bodyFont: { size: 12 },
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: { color: "#64748b", precision: 0 },
+      grid: { color: "rgba(148, 163, 184, 0.14)" },
+    },
+    x: {
+      ticks: { color: "#64748b" },
+      grid: { display: false },
+    },
+  },
+};
+
+const doughnutOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true,
+      position: "bottom",
+      labels: {
+        color: "#475569",
+        usePointStyle: true,
+        pointStyle: "circle",
+        padding: 14,
+        font: { size: 11, weight: 600 },
+      },
+    },
+    tooltip: {
+      backgroundColor: "#0f172a",
+      padding: 12,
+      cornerRadius: 10,
+      titleFont: { size: 12, weight: 700 },
+      bodyFont: { size: 12 },
+    },
+  },
+};
+
+const LEVEL_COLORS = ["#BFDBFE", "#BAE6FD", "#C7D2FE", "#A7F3D0", "#FDE68A"];
 
 function requestBrowserNotificationPermission() {
   if ("Notification" in window && Notification.permission === "default") {
@@ -22,6 +88,7 @@ function showBrowserNotification(title, body) {
 
 export default function DashboardTalentManager() {
   const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
   const [tm, setTM] = useState(null);
   const [greetingKey] = useState(() => consumeGreetingKey());
   const [stats, setStats] = useState({
@@ -116,6 +183,81 @@ export default function DashboardTalentManager() {
 
   const summary = kpis?.summary || { totalBadges: 0, badgesObtidosTotal: 0 };
 
+  const monthlyData = (kpis.badgesByMonth || []).slice(-6);
+  const barChartData = monthlyData.length
+    ? {
+        labels: monthlyData.map((item) => item.month),
+        datasets: [
+          {
+            label: t("talentManager.dashboard.sections.badgesByMonth"),
+            data: monthlyData.map((item) => item.count),
+            backgroundColor: "#BFDBFE",
+            borderColor: "#93C5FD",
+            borderWidth: 1,
+          },
+        ],
+      }
+    : null;
+
+  const levelData = kpis.badgesByLevel || [];
+  const levelChartData = levelData.length
+    ? {
+        labels: levelData.map((item) => item.level || t("talentManager.dashboard.noLevel")),
+        datasets: [
+          {
+            data: levelData.map((item) => Number(item.count)),
+            backgroundColor: LEVEL_COLORS,
+            borderWidth: 0,
+          },
+        ],
+      }
+    : null;
+
+  const shortcuts = [
+    {
+      icon: "bi-inbox",
+      title: t("talentManager.dashboard.shortcuts.pedidos.title"),
+      subtitle: t("talentManager.dashboard.shortcuts.pedidos.subtitle"),
+      color: "bg-[#EAF2FF] text-[#0F62FE]",
+      route: "/tm/pedidos",
+    },
+    {
+      icon: "bi-card-checklist",
+      title: t("talentManager.dashboard.shortcuts.evidencias.title"),
+      subtitle: t("talentManager.dashboard.shortcuts.evidencias.subtitle"),
+      color: "bg-amber-100 text-amber-600",
+      route: "/tm/evidencias",
+    },
+    {
+      icon: "bi-people-fill",
+      title: t("talentManager.dashboard.shortcuts.equipa.title"),
+      subtitle: t("talentManager.dashboard.shortcuts.equipa.subtitle"),
+      color: "bg-indigo-100 text-indigo-600",
+      route: "/tm/equipa",
+    },
+    {
+      icon: "bi-award-fill",
+      title: t("talentManager.dashboard.shortcuts.catalogo.title"),
+      subtitle: t("talentManager.dashboard.shortcuts.catalogo.subtitle"),
+      color: "bg-sky-100 text-sky-600",
+      route: "/tm/catalogo",
+    },
+    {
+      icon: "bi-calendar2-week",
+      title: t("talentManager.dashboard.shortcuts.expiracoes.title"),
+      subtitle: t("talentManager.dashboard.shortcuts.expiracoes.subtitle"),
+      color: "bg-rose-100 text-rose-600",
+      route: "/tm/expiracoes",
+    },
+    {
+      icon: "bi-bar-chart-fill",
+      title: t("talentManager.dashboard.shortcuts.relatorios.title"),
+      subtitle: t("talentManager.dashboard.shortcuts.relatorios.subtitle"),
+      color: "bg-emerald-100 text-emerald-600",
+      route: "/tm/relatorios",
+    },
+  ];
+
   return (
     <TalentManagerLayout
       title={tm ? `${t(greetingKey)}, ${tm.name.split(" ")[0]}` : t("talentManager.dashboard.defaultTitle")}
@@ -125,8 +267,8 @@ export default function DashboardTalentManager() {
         { label: t("talentManager.dashboard.stats.consultants"), value: stats.totalEquipa },
         { label: t("talentManager.dashboard.stats.pending"), value: stats.evidenciasPendentes },
         { label: t("talentManager.dashboard.stats.progress"), value: `${stats.progressoMedio}%` },
+        { label: t("talentManager.dashboard.cards.badgesEarned"), value: summary.badgesObtidosTotal },
       ]}
-      showHero
     >
       {naoLidas > 0 && (
         <Link
@@ -148,16 +290,26 @@ export default function DashboardTalentManager() {
         </div>
       ) : (
         <>
-          <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {[
-              { label: t("talentManager.dashboard.cards.teamConsultants"), value: stats.totalEquipa, icon: "bi-people-fill" },
-              { label: t("talentManager.dashboard.cards.pendingEvidence"), value: stats.evidenciasPendentes, icon: "bi-hourglass-split" },
-              { label: t("talentManager.dashboard.cards.averageProgress"), value: `${stats.progressoMedio}%`, icon: "bi-graph-up-arrow" },
-              { label: t("talentManager.dashboard.cards.badgesEarned"), value: summary.badgesObtidosTotal, icon: "bi-award-fill" },
-            ].map((card) => (
-              <TalentStatCard key={card.label} label={card.label} value={card.value} icon={card.icon} />
-            ))}
-          </div>
+          <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-5">
+            <h2 className="m-0 mb-4 text-lg font-semibold text-slate-950">{t("talentManager.dashboard.quickShortcuts")}</h2>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              {shortcuts.map((shortcut) => (
+                <Link
+                  key={shortcut.route}
+                  to={shortcut.route}
+                  className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-[#CFE0FB] hover:bg-[#F8FBFF]"
+                >
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-base ${shortcut.color}`}>
+                    <i className={shortcut.icon}></i>
+                  </span>
+                  <span>
+                    <span className="block text-sm font-semibold text-slate-800">{shortcut.title}</span>
+                    <span className="block text-xs text-slate-500">{shortcut.subtitle}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
 
           <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
             <section className={`lg:col-span-8 ${tmPanelClass}`}>
@@ -190,11 +342,11 @@ export default function DashboardTalentManager() {
 
             <section className={`lg:col-span-4 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-award-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.kpiItems.badgesEarned")}
+                <i className="bi bi-award-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.badgesInArea")}
               </h5>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
-                <div className="text-3xl font-bold text-slate-900">{summary.badgesObtidosTotal}</div>
-                <div className="mt-1 text-xs text-slate-500">{t("talentManager.dashboard.kpiItems.totalBadgesInArea", { count: summary.totalBadges })}</div>
+                <div className="text-3xl font-bold text-slate-900">{summary.totalBadges}</div>
+                <div className="mt-1 text-xs text-slate-500">{t("talentManager.dashboard.kpiItems.badgesEarnedOfTotal", { count: summary.badgesObtidosTotal })}</div>
               </div>
             </section>
           </div>
@@ -204,30 +356,26 @@ export default function DashboardTalentManager() {
               <h5 className="mb-3 text-base font-bold text-slate-900">
                 <i className="bi bi-layers-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.badgesByLevel")}
               </h5>
-              <ul className="m-0 list-none divide-y divide-slate-100 p-0">
-                {(kpis.badgesByLevel || []).map((item) => (
-                  <li key={item.level} className="flex items-center justify-between py-2">
-                    <span className="text-sm text-slate-700">{item.level || t("talentManager.dashboard.noLevel")}</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">{item.count}</span>
-                  </li>
-                ))}
-                {!kpis.badgesByLevel?.length && <li className="py-2 text-sm text-slate-500">{t("talentManager.dashboard.noData")}</li>}
-              </ul>
+              {levelChartData ? (
+                <div style={{ height: isMobile ? "220px" : "260px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Doughnut data={levelChartData} options={doughnutOptions} />
+                </div>
+              ) : (
+                <p className="py-6 text-center text-sm text-slate-500">{t("talentManager.dashboard.noData")}</p>
+              )}
             </section>
 
             <section className={`lg:col-span-6 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
                 <i className="bi bi-calendar3 mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.badgesByMonth")}
               </h5>
-              <ul className="m-0 list-none divide-y divide-slate-100 p-0">
-                {(kpis.badgesByMonth || []).slice(-6).map((item) => (
-                  <li key={item.month} className="flex items-center justify-between py-2">
-                    <span className="text-sm text-slate-700">{item.month}</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">{item.count}</span>
-                  </li>
-                ))}
-                {!kpis.badgesByMonth?.length && <li className="py-2 text-sm text-slate-500">{t("talentManager.dashboard.noData")}</li>}
-              </ul>
+              {barChartData ? (
+                <div style={{ height: isMobile ? "220px" : "260px" }}>
+                  <Bar data={barChartData} options={chartOptions} />
+                </div>
+              ) : (
+                <p className="py-6 text-center text-sm text-slate-500">{t("talentManager.dashboard.noData")}</p>
+              )}
             </section>
           </div>
         </>

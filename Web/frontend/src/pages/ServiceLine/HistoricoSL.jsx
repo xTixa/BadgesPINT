@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
-import ServiceLineLayout, { ServiceLineStatCard, slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
+import ServiceLineLayout, { slActionClass, slPrimaryActionClass } from "./ServiceLineLayout";
 import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
 import { useClientPagination } from "../../hooks/useClientPagination";
@@ -213,12 +213,6 @@ export default function HistoricoSL() {
       ]}
     >
       {selected && <ProcessoDetail pedido={selected} onClose={() => setSelected(null)} />}
-
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <ServiceLineStatCard icon="bi-patch-check-fill" label={t("serviceLine.historico.stats.badgesObtained")} value={totals.obtidos} />
-        <ServiceLineStatCard icon="bi-hourglass-split" label={t("serviceLine.historico.stats.inProcess")} value={totals.emProcesso} />
-        <ServiceLineStatCard icon="bi-x-circle-fill" label={t("serviceLine.historico.stats.rejected")} value={totals.rejeitados} />
-      </div>
 
       <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-4">
         <div className="flex flex-wrap gap-2">

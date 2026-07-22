@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
-import ServiceLineLayout, { ServiceLineStatCard, slActionClass } from "./ServiceLineLayout";
+import ServiceLineLayout, { slActionClass } from "./ServiceLineLayout";
 import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
 import { useClientPagination } from "../../hooks/useClientPagination";
@@ -85,19 +85,13 @@ export default function ConsultoresServiceLine() {
         { label: t("serviceLine.consultores.stats.consultants"), value: consultores.length },
         { label: t("serviceLine.consultores.stats.avgPoints"), value: mediaPontos },
         { label: t("serviceLine.consultores.stats.avgBadges"), value: mediaBadges },
+        { label: t("serviceLine.consultores.stats.topRanking"), value: consultores[0]?.name?.split(" ")[0] || "-" },
       ]}
     >
       {loading ? <EmptyState message={t("serviceLine.consultores.loading")} icon="bi-hourglass-split" /> : error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : (
         <>
-          <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <ServiceLineStatCard icon="bi-people-fill" label={t("serviceLine.consultores.stats.totalConsultants")} value={consultores.length} />
-            <ServiceLineStatCard icon="bi-star-fill" label={t("serviceLine.consultores.stats.avgPointsLabel")} value={mediaPontos} />
-            <ServiceLineStatCard icon="bi-award-fill" label={t("serviceLine.consultores.stats.avgBadgesLabel")} value={mediaBadges} />
-            <ServiceLineStatCard icon="bi-trophy-fill" label={t("serviceLine.consultores.stats.topRanking")} value={consultores[0]?.name?.split(" ")[0] || "-"} />
-          </div>
-
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <section className="rounded-2xl border border-slate-200 bg-white p-6 lg:col-span-8">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
-import ServiceLineLayout, { ServiceLineStatCard, slPanelClass } from "./ServiceLineLayout";
+import ServiceLineLayout, { slPanelClass } from "./ServiceLineLayout";
 
 const TIER_STYLE = {
   Platina: { bg: "bg-sky-50 border-sky-300", badge: "bg-sky-100 text-sky-700", text: "text-sky-700" },

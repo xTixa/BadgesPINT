@@ -311,6 +311,29 @@
         "badgesByLevelTitle": "Badges por nivel",
         "noRecordsPeriod": "Sin registros para el período seleccionado.",
         "noRecordsLevels": "Sin registros de niveles para el período."
+      },
+      "noLevel": "Sin nivel",
+      "quickShortcuts": "Accesos Rápidos",
+      "shortcuts": {
+        "pedidos": { "title": "Pedidos de Badges", "subtitle": "Aprueba candidaturas validadas por el TM" },
+        "consultores": { "title": "Consultores", "subtitle": "Consulta los consultores de la Service Line" },
+        "badges": { "title": "Badges", "subtitle": "Explora los badges de la Service Line" },
+        "gamificacao": { "title": "Gamificación", "subtitle": "Badges premium y logros rápidos" },
+        "historico": { "title": "Historial", "subtitle": "Consulta pedidos ya procesados" },
+        "relatorios": { "title": "Informes", "subtitle": "Evolución y desempeño de la Service Line" }
+      },
+      "sections": {
+        "requestStatus": "Estado de los Pedidos",
+        "badgesInSl": "Badges en la Service Line"
+      },
+      "requestStatus": {
+        "awaitingMe": "Esperan tu validación",
+        "inProgress": "Pedidos en curso",
+        "overdue": "Atrasados (fuera del SLA)",
+        "viewPending": "Ver pedidos pendientes"
+      },
+      "kpiItems": {
+        "badgesEarnedOfTotal": "{{count}} obtenidos por el equipo"
       }
     },
     "badges": {
@@ -942,6 +965,7 @@
       },
       "sections": {
         "requestStatus": "Estado de los Pedidos",
+        "badgesInArea": "Badges en el Área",
         "badgesByLevel": "Badges por Nivel",
         "badgesByMonth": "Badges por Mes"
       },
@@ -951,9 +975,18 @@
         "overdue": "Atrasados (fuera del SLA)",
         "viewPending": "Ver pedidos pendientes"
       },
+      "quickShortcuts": "Accesos Rápidos",
+      "shortcuts": {
+        "pedidos": { "title": "Pedidos de Badges", "subtitle": "Valida candidaturas de tu equipo" },
+        "evidencias": { "title": "Validar Evidencias", "subtitle": "Revisa evidencias enviadas" },
+        "equipa": { "title": "Equipo", "subtitle": "Consulta los consultores de tu área" },
+        "catalogo": { "title": "Catálogo de Badges", "subtitle": "Explora los badges de tu área" },
+        "expiracoes": { "title": "Expiraciones de Badges", "subtitle": "Badges próximos a expirar" },
+        "relatorios": { "title": "Informes", "subtitle": "Evolución y desempeño del equipo" }
+      },
       "kpiItems": {
         "badgesEarned": "Badges Obtenidos",
-        "totalBadgesInArea": "de {{count}} badges en tu área"
+        "badgesEarnedOfTotal": "{{count}} obtenidos por el equipo"
       },
       "noData": "Sin datos disponibles.",
       "noLevel": "Sin nivel"

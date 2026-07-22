@@ -340,7 +340,20 @@
       "Bash(node_modules/.bin/eslint src/pages/TalentManager/DashboardTalentManager.jsx)",
       "Bash(curl -s --max-time 3 http://localhost:3000/ -o /dev/null -w \"%{http_code}\\\\n\")",
       "Bash(curl -s --max-time 5 -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"natalia.neves@yopmail.com\",\"password\":\"Softinsa2025!\"}')",
-      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 18220 -Force\")"
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 18220 -Force\")",
+      "Bash(which chromium-cli *)",
+      "Read(//usr/local/bin/**)",
+      "Bash(cd \"e:/IPV/E.I/2Ano2Sem/PINT2526/BadgesPINT/Web/frontend\" && ls node_modules/.bin/ 2>/dev/null | grep -i playwright; find / -maxdepth 4 -iname \"*playwright*\" 2>/dev/null | head -5)",
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 15364,11680 -Force\")",
+      "Bash(curl -s --max-time 3 -o /dev/null -w \"API:%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s --max-time 3 -o /dev/null -w \"Vite:%{http_code}\\\\n\" http://localhost:5174/)",
+      "Bash(curl -s --max-time 5 -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5174/tm/dashboard)",
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 28868,29324 -Force\")",
+      "Bash(node --check src/controllers/sLController.js)",
+      "Bash(node_modules/.bin/eslint src/pages/ServiceLine/ServiceLineLayout.jsx src/pages/ServiceLine/HistoricoSL.jsx src/pages/ServiceLine/ConsultoresServiceLine.jsx src/pages/ServiceLine/BadgesServiceLine.jsx src/pages/ServiceLine/GamificacaoSL.jsx)",
+      "Bash(node_modules/.bin/eslint src/pages/ServiceLine/DashboardServiceLine.jsx)",
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 28904 -Force\")",
+      "Bash(node_modules/.bin/eslint src/pages/ServiceLine/*.jsx)"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

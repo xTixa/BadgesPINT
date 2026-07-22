@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "/src/api";
 import EmptyState from "/src/components/ui/EmptyState";
-import ServiceLineLayout, { ServiceLineStatCard, slActionClass } from "./ServiceLineLayout";
+import ServiceLineLayout, { slActionClass } from "./ServiceLineLayout";
 import AdminPagination from "../../components/ui/AdminPagination";
 import SortableTh from "../../components/ui/SortableTh";
 import { useClientPagination } from "../../hooks/useClientPagination";
@@ -65,19 +65,13 @@ export default function BadgesServiceLine() {
         { label: t("serviceLine.badges.stats.badges"), value: badges.length },
         { label: t("serviceLine.badges.stats.points"), value: totalPoints },
         { label: t("serviceLine.badges.stats.premium"), value: premiumCount },
+        { label: t("serviceLine.badges.stats.levels"), value: levels.length },
       ]}
     >
       {loading ? <EmptyState message={t("serviceLine.badges.loading")} icon="bi-hourglass-split" /> : error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : (
         <>
-          <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <ServiceLineStatCard icon="bi-award-fill" label={t("serviceLine.badges.stats.badgesAvailable")} value={badges.length} />
-            <ServiceLineStatCard icon="bi-star-fill" label={t("serviceLine.badges.stats.totalPoints")} value={totalPoints} />
-            <ServiceLineStatCard icon="bi-gem" label={t("serviceLine.badges.stats.premiumBadges")} value={premiumCount} />
-            <ServiceLineStatCard icon="bi-layers-fill" label={t("serviceLine.badges.stats.levels")} value={levels.length} />
-          </div>
-
           <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-6">
             <div className="grid gap-3 md:grid-cols-[1fr_220px]">
               <input className="ui-input" placeholder={t("serviceLine.badges.searchPlaceholder")} value={search} onChange={(e) => setSearch(e.target.value)} />

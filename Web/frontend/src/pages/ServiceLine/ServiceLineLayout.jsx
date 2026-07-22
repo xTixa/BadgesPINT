@@ -51,7 +51,19 @@ export default function ServiceLineLayout({ title, subtitle, userName = "Service
             </div>
           </section>
         ) : (
-          <AdminPageTitle title={title} subtitle={subtitle} eyebrow={t("serviceLine.layout.eyebrow")} />
+          <>
+            <AdminPageTitle title={title} subtitle={subtitle} eyebrow={t("serviceLine.layout.eyebrow")} />
+            {heroStats.length ? (
+              <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {heroStats.map((stat) => (
+                  <article key={stat.label} className="rounded-2xl border border-slate-200 bg-white p-5">
+                    <div className="text-3xl font-semibold text-slate-950">{stat.value}</div>
+                    <div className="mt-1 text-sm text-slate-500">{stat.label}</div>
+                  </article>
+                ))}
+              </div>
+            ) : null}
+          </>
         )}
 
         {children}

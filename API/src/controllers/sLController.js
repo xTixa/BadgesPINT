@@ -3,10 +3,11 @@ import Badge from "../models/Badge.js";
 import ConsultorBadge from "../models/ConsultorBadge.js";
 import Area from "../models/Area.js";
 import Requirement from "../models/Requirement.js";
+import SLA from "../models/SLA.js";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
 import database from "../config/database.js";
-import { QueryTypes, fn, col, Op } from "sequelize";
+import { QueryTypes, Op } from "sequelize";
 
 const buildMonthlySeries = (rows, start, end) => {
   const result = [];
@@ -189,12 +190,24 @@ export async function getSLEstatisticas(req, res) {
     const totalBadges = counts[0]?.total || 0;
     const concluidos = counts[0]?.concluidos || 0;
 
+    const slSla = await SLA.findOne({ where: { team_id: req.userId, team_type: "service_line_leader" } });
+    const hoursLimit = Number(slSla?.hours_limit || 24);
+    const cutoff = new Date(Date.now() - hoursLimit * 60 * 60 * 1000);
+    const pedidosAtrasadosRaw = await database.query(
+      `SELECT COUNT(cb.id)::int AS count
+       FROM consultor_badges cb
+       JOIN "Users" u ON u.id = cb.consultor_id
+       WHERE u.area_id IN (:areaIds) AND cb.workflow_status = 'em_validacao' AND cb.tm_validated_at <= :cutoff`,
+      { replacements: { areaIds, cutoff }, type: QueryTypes.SELECT },
+    );
+
     res.json({
       totalConsultores,
       cursosAtivos,
       badgesPendentes: counts[0]?.aguardam_sl || 0,
       pedidosPendentesTotal: counts[0]?.pendentes || 0,
       progressoMedio: totalBadges ? Math.round((concluidos / totalBadges) * 100) : 0,
+      pedidosAtrasados: pedidosAtrasadosRaw[0]?.count || 0,
     });
   } catch (err) {
     console.error("Erro estatisticas SL:", err);
@@ -207,7 +220,6 @@ export async function getSLKpis(req, res) {
     const { user: sl, areaIds } = await getSLAreaIds(req.userId);
     if (!sl) return res.status(404).json({ message: "Utilizador nao encontrado" });
 
-    const totalUsers = await User.count({ where: { area_id: areaIds } });
     const badgesObtidosTotal = await database.query(
       `SELECT COUNT(*)::int AS count
        FROM consultor_badges cb
@@ -215,13 +227,6 @@ export async function getSLKpis(req, res) {
        WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)`,
       { replacements: { areaIds }, type: QueryTypes.SELECT },
     );
-
-    const usersByRole = await User.findAll({
-      attributes: ["role", [fn("COUNT", col("id")), "count"]],
-      where: { area_id: areaIds },
-      group: ["role"],
-      raw: true,
-    });
 
     const badgesByMonthRaw = await database.query(
       `SELECT to_char(date_trunc('month', cb.data_atribuicao), 'YYYY-MM') AS month, COUNT(*)::int AS count
@@ -257,8 +262,7 @@ export async function getSLKpis(req, res) {
     );
 
     res.json({
-      summary: { totalUsers, badgesObtidosTotal: badgesObtidosTotal[0]?.count || 0 },
-      usersByRole,
+      summary: { badgesObtidosTotal: badgesObtidosTotal[0]?.count || 0 },
       badgesByMonth: buildMonthlySeries(badgesByMonthRaw, start, end),
       badgesByRange: { startDate: start.toISOString(), endDate: end.toISOString(), count: badgesByRangeRaw[0]?.count || 0 },
       badgesByLevel,
