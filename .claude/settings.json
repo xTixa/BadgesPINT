@@ -336,7 +336,11 @@
       "Bash(curl -s http://localhost:3000/ -o /dev/null -w \"%{http_code}\\\\n\")",
       "Bash(curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"guilherme@yopmail.com\",\"password\":\"Softinsa2025!\"}')",
       "Bash(curl -s --max-time 3 -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
-      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 2220 -Force\")"
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 2220 -Force\")",
+      "Bash(node_modules/.bin/eslint src/pages/TalentManager/DashboardTalentManager.jsx)",
+      "Bash(curl -s --max-time 3 http://localhost:3000/ -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s --max-time 5 -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"natalia.neves@yopmail.com\",\"password\":\"Softinsa2025!\"}')",
+      "Bash(powershell.exe -NonInteractive -Command \"Stop-Process -Id 18220 -Force\")"
     ],
     "additionalDirectories": [
       "\\tmp\\admin_before",

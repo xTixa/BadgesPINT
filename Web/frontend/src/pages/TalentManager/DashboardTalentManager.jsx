@@ -24,10 +24,16 @@ export default function DashboardTalentManager() {
   const { t } = useTranslation();
   const [tm, setTM] = useState(null);
   const [greetingKey] = useState(() => consumeGreetingKey());
-  const [stats, setStats] = useState({ totalEquipa: 0, evidenciasPendentes: 0, progressoMedio: 0 });
+  const [stats, setStats] = useState({
+    totalEquipa: 0,
+    evidenciasPendentes: 0,
+    progressoMedio: 0,
+    aguardamValidacao: 0,
+    aguardamServiceLine: 0,
+    pedidosAtrasados: 0,
+  });
   const [kpis, setKpis] = useState({
-    summary: { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 },
-    usersByRole: [],
+    summary: { totalBadges: 0, badgesObtidosTotal: 0 },
     badgesByLevel: [],
     badgesByMonth: [],
   });
@@ -49,11 +55,19 @@ export default function DashboardTalentManager() {
         if (!mounted) return;
 
         setTM(meRes.data || null);
-        setStats(statsRes.data || { totalEquipa: 0, evidenciasPendentes: 0, progressoMedio: 0 });
+        setStats(
+          statsRes.data || {
+            totalEquipa: 0,
+            evidenciasPendentes: 0,
+            progressoMedio: 0,
+            aguardamValidacao: 0,
+            aguardamServiceLine: 0,
+            pedidosAtrasados: 0,
+          },
+        );
         setKpis(
           kpisRes.data || {
-            summary: { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 },
-            usersByRole: [],
+            summary: { totalBadges: 0, badgesObtidosTotal: 0 },
             badgesByLevel: [],
             badgesByMonth: [],
           },
@@ -100,7 +114,7 @@ export default function DashboardTalentManager() {
     return () => window.clearInterval(timer);
   }, [t]);
 
-  const summary = kpis?.summary || { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 };
+  const summary = kpis?.summary || { totalBadges: 0, badgesObtidosTotal: 0 };
 
   return (
     <TalentManagerLayout
@@ -146,37 +160,42 @@ export default function DashboardTalentManager() {
           </div>
 
           <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
-            <section className={`lg:col-span-7 ${tmPanelClass}`}>
+            <section className={`lg:col-span-8 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-bar-chart-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.kpiSummary")}
+                <i className="bi bi-signpost-split-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.requestStatus")}
               </h5>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {[
-                  { label: t("talentManager.dashboard.kpiItems.users"), value: summary.totalUsers },
-                  { label: t("talentManager.dashboard.kpiItems.totalBadges"), value: summary.totalBadges },
-                  { label: t("talentManager.dashboard.kpiItems.badgesEarned"), value: summary.badgesObtidosTotal },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
-                    <div className="text-xs text-slate-500">{item.label}</div>
-                    <div className="text-2xl font-bold text-slate-900">{item.value}</div>
-                  </div>
-                ))}
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+                  <div className="text-xs text-slate-500">{t("talentManager.dashboard.requestStatus.awaitingMe")}</div>
+                  <div className="text-2xl font-bold text-slate-900">{stats.aguardamValidacao}</div>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+                  <div className="text-xs text-slate-500">{t("talentManager.dashboard.requestStatus.awaitingServiceLine")}</div>
+                  <div className="text-2xl font-bold text-slate-900">{stats.aguardamServiceLine}</div>
+                </div>
+                <div className={`rounded-2xl border p-4 text-center ${stats.pedidosAtrasados > 0 ? "border-rose-200 bg-rose-50" : "border-slate-200 bg-slate-50"}`}>
+                  <div className={`text-xs ${stats.pedidosAtrasados > 0 ? "text-rose-600" : "text-slate-500"}`}>{t("talentManager.dashboard.requestStatus.overdue")}</div>
+                  <div className={`text-2xl font-bold ${stats.pedidosAtrasados > 0 ? "text-rose-700" : "text-slate-900"}`}>{stats.pedidosAtrasados}</div>
+                </div>
               </div>
+              {stats.aguardamValidacao > 0 && (
+                <Link
+                  to="/tm/pedidos"
+                  className="mt-4 flex items-center justify-center gap-1 rounded-xl border border-slate-200 py-2 text-xs font-semibold text-[#0F62FE] hover:bg-slate-50"
+                >
+                  {t("talentManager.dashboard.requestStatus.viewPending")} <i className="bi bi-arrow-right"></i>
+                </Link>
+              )}
             </section>
 
-            <section className={`lg:col-span-5 ${tmPanelClass}`}>
+            <section className={`lg:col-span-4 ${tmPanelClass}`}>
               <h5 className="mb-3 text-base font-bold text-slate-900">
-                <i className="bi bi-person-badge-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.sections.usersByRole")}
+                <i className="bi bi-award-fill mr-2 text-[#0F62FE]"></i>{t("talentManager.dashboard.kpiItems.badgesEarned")}
               </h5>
-              <ul className="m-0 list-none divide-y divide-slate-100 p-0">
-                {(kpis.usersByRole || []).map((item) => (
-                  <li key={item.role} className="flex items-center justify-between py-2">
-                    <span className="text-sm text-slate-700">{item.role}</span>
-                    <span className="rounded-full bg-cyan-100 px-2 py-1 text-xs font-semibold text-cyan-700">{item.count}</span>
-                  </li>
-                ))}
-                {!kpis.usersByRole?.length && <li className="py-2 text-sm text-slate-500">{t("talentManager.dashboard.noData")}</li>}
-              </ul>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
+                <div className="text-3xl font-bold text-slate-900">{summary.badgesObtidosTotal}</div>
+                <div className="mt-1 text-xs text-slate-500">{t("talentManager.dashboard.kpiItems.totalBadgesInArea", { count: summary.totalBadges })}</div>
+              </div>
             </section>
           </div>
 

@@ -941,15 +941,19 @@
         "progress": "Progreso"
       },
       "sections": {
-        "kpiSummary": "Resumen de KPIs",
-        "usersByRole": "Usuarios por Perfil",
+        "requestStatus": "Estado de los Pedidos",
         "badgesByLevel": "Badges por Nivel",
         "badgesByMonth": "Badges por Mes"
       },
+      "requestStatus": {
+        "awaitingMe": "Esperan tu validación",
+        "awaitingServiceLine": "Esperan Service Line",
+        "overdue": "Atrasados (fuera del SLA)",
+        "viewPending": "Ver pedidos pendientes"
+      },
       "kpiItems": {
-        "users": "Usuarios",
-        "totalBadges": "Total de Badges",
-        "badgesEarned": "Badges Obtenidos"
+        "badgesEarned": "Badges Obtenidos",
+        "totalBadgesInArea": "de {{count}} badges en tu área"
       },
       "noData": "Sin datos disponibles.",
       "noLevel": "Sin nivel"

@@ -4,10 +4,11 @@ import ConsultorBadge from "../models/ConsultorBadge.js";
 import Area from "../models/Area.js";
 import Requirement from "../models/Requirement.js";
 import RequirementEvidence from "../models/RequirementEvidence.js";
+import SLA from "../models/SLA.js";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
 import database from "../config/database.js";
-import { QueryTypes, Op, fn, col } from "sequelize";
+import { QueryTypes, Op } from "sequelize";
 
 const buildMonthlySeries = (rows, start, end) => {
   const result = [];
@@ -180,7 +181,16 @@ export async function getTMEstatisticas(req, res) {
     const tm = await User.findByPk(req.userId);
     if (!tm) return res.status(404).json({ message: "TM nao encontrado" });
     const areaIds = await getTMAreaIds(tm);
-    if (!areaIds.length) return res.json({ totalEquipa: 0, evidenciasPendentes: 0, progressoMedio: 0 });
+    if (!areaIds.length) {
+      return res.json({
+        totalEquipa: 0,
+        evidenciasPendentes: 0,
+        progressoMedio: 0,
+        aguardamValidacao: 0,
+        aguardamServiceLine: 0,
+        pedidosAtrasados: 0,
+      });
+    }
 
     const totalEquipa = await User.count({
       where: { area_id: areaIds, role: "consultant" }
@@ -215,10 +225,35 @@ export async function getTMEstatisticas(req, res) {
       ? Math.round((concluidos / totalBadges) * 100)
       : 0;
 
+    const workflowCountsRaw = await database.query(
+      `SELECT cb.workflow_status, COUNT(cb.id)::int AS count
+       FROM consultor_badges cb
+       JOIN "Users" u ON u.id = cb.consultor_id
+       WHERE u.area_id IN (:areaIds) AND cb.workflow_status IN ('submitted', 'em_validacao')
+       GROUP BY cb.workflow_status`,
+      { replacements: { areaIds }, type: QueryTypes.SELECT }
+    );
+    const aguardamValidacao = workflowCountsRaw.find((r) => r.workflow_status === "submitted")?.count || 0;
+    const aguardamServiceLine = workflowCountsRaw.find((r) => r.workflow_status === "em_validacao")?.count || 0;
+
+    const tmSla = await SLA.findOne({ where: { team_id: req.userId, team_type: "talent_manager" } });
+    const hoursLimit = Number(tmSla?.hours_limit || 24);
+    const cutoff = new Date(Date.now() - hoursLimit * 60 * 60 * 1000);
+    const pedidosAtrasadosRaw = await database.query(
+      `SELECT COUNT(cb.id)::int AS count
+       FROM consultor_badges cb
+       JOIN "Users" u ON u.id = cb.consultor_id
+       WHERE u.area_id IN (:areaIds) AND cb.workflow_status = 'submitted' AND cb.submitted_at <= :cutoff`,
+      { replacements: { areaIds, cutoff }, type: QueryTypes.SELECT }
+    );
+
     res.json({
       totalEquipa,
       evidenciasPendentes: evidenciasPendentes[0]?.count || 0,
-      progressoMedio
+      progressoMedio,
+      aguardamValidacao,
+      aguardamServiceLine,
+      pedidosAtrasados: pedidosAtrasadosRaw[0]?.count || 0,
     });
 
   } catch (err) {
@@ -235,16 +270,14 @@ export async function getTMKpis(req, res) {
     const { serviceLineId } = req.query;
     const areaIds = await getTMAreaIds(tm, serviceLineId);
     if (!areaIds.length) return res.json({
-      summary: { totalUsers: 0, totalBadges: 0, badgesObtidosTotal: 0 },
-      usersByRole: [],
+      summary: { totalBadges: 0, badgesObtidosTotal: 0 },
       badgesByMonth: [],
       badgesByRange: { startDate: new Date().toISOString(), endDate: new Date().toISOString(), count: 0 },
       badgesByLearningPath: [],
       badgesByLevel: [],
     });
 
-    const totalUsers = await User.count({ where: { area_id: areaIds } });
-    const totalBadges = await Badge.count();
+    const totalBadges = await Badge.count({ where: { area_id: areaIds } });
     const badgesObtidosTotal = await database.query(
       `SELECT COUNT(*)::int AS count
        FROM consultor_badges cb
@@ -252,13 +285,6 @@ export async function getTMKpis(req, res) {
        WHERE cb.status = 'obtido' AND u.area_id IN (:areaIds)`,
       { replacements: { areaIds }, type: QueryTypes.SELECT }
     );
-
-    const usersByRole = await User.findAll({
-      attributes: ["role", [fn("COUNT", col("id")), "count"]],
-      where: { area_id: areaIds },
-      group: ["role"],
-      raw: true,
-    });
 
     const badgesByMonthRaw = await database.query(
       `SELECT to_char(date_trunc('month', cb.data_atribuicao), 'YYYY-MM') AS month, COUNT(*)::int AS count
@@ -315,11 +341,9 @@ export async function getTMKpis(req, res) {
 
     res.json({
       summary: {
-        totalUsers,
         totalBadges,
         badgesObtidosTotal: badgesObtidosTotal[0]?.count || 0,
       },
-      usersByRole,
       badgesByMonth: monthly,
       badgesByRange: {
         startDate: start.toISOString(),
