@@ -2,7 +2,9 @@ import { QueryTypes } from "sequelize";
 import crypto from "crypto";
 import database from "../config/database.js";
 import User from "../models/User.js";
+import Area from "../models/Area.js";
 import { getEmailSignature } from "../services/mailService.js";
+import { getTMAreaIds } from "./talentManagerController.js";
 
 async function loadObtainedBadges(userId) {
   const rows = await database.query(
@@ -25,6 +27,34 @@ async function loadObtainedBadges(userId) {
   }
 
   return rows;
+}
+
+async function loadResponsibleBadges(user) {
+  let areaIds;
+  if (user.role === "service_line_leader") {
+    const area = user.area_id ? await Area.findByPk(user.area_id) : null;
+    areaIds = await getTMAreaIds(user, area?.service_line_id || null);
+  } else {
+    areaIds = await getTMAreaIds(user);
+  }
+
+  if (!areaIds.length) return [];
+
+  return database.query(
+    `SELECT b.id, COALESCE(b.description, 'Badge #' || b.id) AS name,
+            b.level, b.image_url, NULL::timestamp AS data_atribuicao, NULL AS certificate_code
+     FROM badges b
+     WHERE b.area_id IN (:areaIds)
+     ORDER BY b.id DESC`,
+    { replacements: { areaIds }, type: QueryTypes.SELECT },
+  );
+}
+
+async function loadAvailableBadges(user) {
+  if (user.role === "talent_manager" || user.role === "service_line_leader") {
+    return loadResponsibleBadges(user);
+  }
+  return loadObtainedBadges(user.id);
 }
 
 function selectedBadges(user, available, explicitIds) {
@@ -61,7 +91,7 @@ export async function getMyEmailSignature(req, res) {
   try {
     const user = await User.findByPk(req.userId);
     if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
-    res.json(responseFor(user, await loadObtainedBadges(user.id)));
+    res.json(responseFor(user, await loadAvailableBadges(user)));
   } catch (error) {
     console.error("Erro ao carregar assinatura de email:", error);
     res.status(500).json({ message: "Erro ao carregar assinatura de email" });
@@ -72,7 +102,7 @@ export async function updateMyEmailSignature(req, res) {
   try {
     const user = await User.findByPk(req.userId);
     if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
-    const available = await loadObtainedBadges(user.id);
+    const available = await loadAvailableBadges(user);
     const requestedIds = validBadgeIds(req.body?.badge_ids, available);
     if (requestedIds.length > 6) return res.status(400).json({ message: "Seleciona no máximo 6 badges" });
     user.email_signature_enabled = req.body?.enabled === true;
@@ -89,7 +119,7 @@ export async function previewMyEmailSignature(req, res) {
   try {
     const user = await User.findByPk(req.userId);
     if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
-    const available = await loadObtainedBadges(user.id);
+    const available = await loadAvailableBadges(user);
     const requestedIds = validBadgeIds(req.body?.badge_ids, available);
     if (requestedIds.length > 6) return res.status(400).json({ message: "Seleciona no máximo 6 badges" });
     res.json(responseFor(user, available, requestedIds));

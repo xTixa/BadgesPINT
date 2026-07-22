@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../consultor/consultor_models.dart';
+import '../shared/app_theme.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({
@@ -25,13 +26,15 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
 
   int? _selectedAreaId;
   bool _acceptedRgpd = false;
   bool _submitting = false;
-  String? _message;
+  bool _success = false;
+  String? _error;
 
   @override
   void initState() {
@@ -48,31 +51,25 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _submit() async {
-    if (_nameController.text.trim().isEmpty ||
-        _emailController.text.trim().isEmpty) {
-      setState(() {
-        _message = 'Preenche nome e email.';
-      });
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     if (_selectedAreaId == null) {
       setState(() {
-        _message = 'Escolhe a tua area principal.';
+        _error = 'Escolhe a tua area principal.';
       });
       return;
     }
 
     if (!_acceptedRgpd) {
       setState(() {
-        _message = 'Tens de aceitar os termos RGPD.';
+        _error = 'Tens de aceitar os termos RGPD.';
       });
       return;
     }
 
     setState(() {
       _submitting = true;
-      _message = null;
+      _error = null;
     });
 
     final result = await widget.onRegister(
@@ -86,143 +83,214 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() {
       _submitting = false;
-      _message =
-          result ?? 'Conta criada com sucesso. Confirma o email e faz login.';
+      _success = result == null;
+      _error = result;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Criar Conta'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: widget.onBackToLogin,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[Color(0xFFF6FAFF), Color(0xFFEAF2FB)],
+          ),
         ),
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: <Color>[Color(0xFF0A5D8F), Color(0xFF0B3B73)],
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 460),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.header),
                   ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      'Registo de Consultor',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.4,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Cria o teu acesso para submeter evidencias e acompanhar badges.',
-                      style: TextStyle(color: Color(0xFFE2E8F0)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(
-                    color: scheme.primary.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: <Widget>[
-                      TextField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nome',
-                          prefixIcon: Icon(Icons.person_outline),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.mail_outline),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<int>(
-                        value: _selectedAreaId,
-                        decoration: const InputDecoration(
-                          labelText: 'Area principal',
-                          prefixIcon: Icon(Icons.category_outlined),
-                        ),
-                        items:
-                            widget.areas
-                                .map(
-                                  (AreaItem area) => DropdownMenuItem<int>(
-                                    value: area.id,
-                                    child: Text(area.name),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged: (int? value) {
-                          setState(() => _selectedAreaId = value);
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      CheckboxListTile(
-                        value: _acceptedRgpd,
-                        onChanged: (bool? value) {
-                          setState(() => _acceptedRgpd = value ?? false);
-                        },
-                        title: const Text(
-                          'Aceito os termos RGPD para partilha/publicacao de badges.',
-                        ),
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: _submitting ? null : _submit,
-                          child: Text(_submitting ? 'A criar...' : 'Registar'),
-                        ),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: _success ? _buildSuccess() : _buildForm(),
                   ),
                 ),
               ),
-              if (_message != null) ...<Widget>[
-                const SizedBox(height: 12),
-                Text(
-                  _message!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ],
-            ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const Icon(
+            Icons.person_add_alt_1_outlined,
+            size: 48,
+            color: AppColors.primary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Criar Conta',
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Cria o teu acesso para submeter evidencias e acompanhar badges.',
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF5B6B7F)),
+          ),
+          const SizedBox(height: 24),
+          TextFormField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: 'Nome',
+              prefixIcon: Icon(Icons.person_outline),
+            ),
+            validator: (String? value) {
+              if ((value ?? '').trim().isEmpty) return 'Indica o teu nome';
+              return null;
+            },
+          ),
+          const SizedBox(height: 14),
+          TextFormField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              hintText: 'exemplo@softinsa.pt',
+              prefixIcon: Icon(Icons.mail_outline_rounded),
+            ),
+            validator: (String? value) {
+              final String text = (value ?? '').trim();
+              if (text.isEmpty) return 'Indica o teu email';
+              if (!text.contains('@')) return 'Email invalido';
+              return null;
+            },
+          ),
+          const SizedBox(height: 14),
+          DropdownButtonFormField<int>(
+            value: _selectedAreaId,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'Area principal',
+              prefixIcon: Icon(Icons.category_outlined),
+            ),
+            items:
+                widget.areas
+                    .map(
+                      (AreaItem area) => DropdownMenuItem<int>(
+                        value: area.id,
+                        child: Text(
+                          area.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    )
+                    .toList(),
+            onChanged: (int? value) {
+              setState(() => _selectedAreaId = value);
+            },
+          ),
+          const SizedBox(height: 8),
+          InkWell(
+            borderRadius: BorderRadius.circular(AppRadius.control),
+            onTap: () {
+              setState(() => _acceptedRgpd = !_acceptedRgpd);
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Checkbox(
+                  value: _acceptedRgpd,
+                  onChanged: (bool? value) {
+                    setState(() => _acceptedRgpd = value ?? false);
+                  },
+                ),
+                const Expanded(
+                  child: Text(
+                    'Aceito os termos RGPD para partilha/publicacao de badges.',
+                    style: TextStyle(fontSize: 13.5, color: AppColors.textDark),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_error != null) ...<Widget>[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF1F2),
+                borderRadius: BorderRadius.circular(AppRadius.control),
+                border: Border.all(color: const Color(0xFFFECACA)),
+              ),
+              child: Text(
+                _error!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFFB91C1C),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
+          FilledButton(
+            onPressed: _submitting ? null : _submit,
+            child: Text(_submitting ? 'A criar...' : 'Registar'),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: widget.onBackToLogin,
+            child: const Text('Voltar ao login'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuccess() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        const Icon(
+          Icons.mark_email_read_outlined,
+          size: 56,
+          color: Color(0xFF065F46),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Conta criada!',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF065F46),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Confirma o email e faz login para acederes ao portal.',
+          textAlign: TextAlign.center,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF5B6B7F)),
+        ),
+        const SizedBox(height: 24),
+        FilledButton(
+          onPressed: widget.onBackToLogin,
+          child: const Text('Voltar ao login'),
+        ),
+      ],
     );
   }
 }

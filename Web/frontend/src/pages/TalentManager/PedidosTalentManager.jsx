@@ -238,61 +238,69 @@ export default function PedidosTalentManager() {
       </section>
 
       {selectedPedido && (
-        <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-6">
-          <div className="mb-4 flex items-start justify-between gap-3">
-            <div>
-              <h5 className="mb-1 text-base font-bold text-slate-900">
-                <i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>
-                {t("talentManager.pedidos.processHistoryTitle")}
-              </h5>
-              <p className="m-0 text-sm text-slate-500">
-                {selectedPedido.user?.name || t("talentManager.pedidos.consultantFallback")} - {selectedPedido.badge?.name || selectedPedido.badge?.description || t("talentManager.pedidos.badgeFallback")}
-              </p>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4 backdrop-blur-sm"
+          onClick={() => setSelectedPedido(null)}
+        >
+          <section
+            className="my-8 w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h5 className="mb-1 text-base font-bold text-slate-900">
+                  <i className="bi bi-clock-history mr-2 text-[#0F62FE]"></i>
+                  {t("talentManager.pedidos.processHistoryTitle")}
+                </h5>
+                <p className="m-0 text-sm text-slate-500">
+                  {selectedPedido.user?.name || t("talentManager.pedidos.consultantFallback")} - {selectedPedido.badge?.name || selectedPedido.badge?.description || t("talentManager.pedidos.badgeFallback")}
+                </p>
+              </div>
+              <button className={tmActionClass} onClick={() => setSelectedPedido(null)}>
+                {t("talentManager.pedidos.close")}
+              </button>
             </div>
-            <button className={tmActionClass} onClick={() => setSelectedPedido(null)}>
-              {t("talentManager.pedidos.close")}
-            </button>
-          </div>
 
-          <div className="grid gap-3 md:grid-cols-4">
-            {getPedidoHistory(selectedPedido).map((step) => (
-              <div key={step.label} className={`rounded-2xl border p-4 ${step.done ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-slate-50"}`}>
-                <div className="mb-2 flex items-center gap-2">
-                  <i className={`bi ${step.done ? "bi-check-circle-fill text-emerald-600" : "bi-circle text-slate-400"}`}></i>
-                  <span className="text-sm font-bold text-slate-900">{step.label}</span>
-                </div>
-                <p className="m-0 text-xs text-slate-500">{formatDateTime(step.date, t)}</p>
-                <p className="m-0 mt-2 text-sm text-slate-700">{step.detail}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-5">
-            <h6 className="mb-3 text-sm font-bold text-slate-900">
-              <i className="bi bi-paperclip mr-2 text-[#0F62FE]"></i>
-              {t("talentManager.pedidos.evidence.sectionTitle")}
-            </h6>
-            {selectedPedido.evidences?.length ? (
-              <div className="grid gap-3 md:grid-cols-2">
-                {selectedPedido.evidences.map((ev) => (
-                  <div key={ev.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <div className="mb-2 flex items-start justify-between gap-2">
-                      <span className="text-sm font-bold text-slate-900">{ev.requirement?.title || ev.requirement?.code || t("talentManager.pedidos.badgeFallback")}</span>
-                      <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-semibold ${evidenceStatusClass(ev.status)}`}>{ev.status}</span>
-                    </div>
-                    <p className="m-0 text-xs text-slate-500">{formatDateTime(ev.created_at, t)}</p>
-                    <p className="m-0 mt-2 text-sm text-slate-700">{ev.notes || t("talentManager.pedidos.evidence.noNotes")}</p>
-                    <a href={ev.evidence_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 font-semibold text-sky-700 underline">
-                      <i className="bi bi-box-arrow-up-right"></i>{t("talentManager.pedidos.evidence.view")}
-                    </a>
+            <div className="grid gap-3 md:grid-cols-4">
+              {getPedidoHistory(selectedPedido).map((step) => (
+                <div key={step.label} className={`rounded-2xl border p-4 ${step.done ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-slate-50"}`}>
+                  <div className="mb-2 flex items-center gap-2">
+                    <i className={`bi ${step.done ? "bi-check-circle-fill text-emerald-600" : "bi-circle text-slate-400"}`}></i>
+                    <span className="text-sm font-bold text-slate-900">{step.label}</span>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="m-0 text-sm text-slate-500">{t("talentManager.pedidos.evidence.empty")}</p>
-            )}
-          </div>
-        </section>
+                  <p className="m-0 text-xs text-slate-500">{formatDateTime(step.date, t)}</p>
+                  <p className="m-0 mt-2 text-sm text-slate-700">{step.detail}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5">
+              <h6 className="mb-3 text-sm font-bold text-slate-900">
+                <i className="bi bi-paperclip mr-2 text-[#0F62FE]"></i>
+                {t("talentManager.pedidos.evidence.sectionTitle")}
+              </h6>
+              {selectedPedido.evidences?.length ? (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {selectedPedido.evidences.map((ev) => (
+                    <div key={ev.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <div className="mb-2 flex items-start justify-between gap-2">
+                        <span className="text-sm font-bold text-slate-900">{ev.requirement?.title || ev.requirement?.code || t("talentManager.pedidos.badgeFallback")}</span>
+                        <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-semibold ${evidenceStatusClass(ev.status)}`}>{ev.status}</span>
+                      </div>
+                      <p className="m-0 text-xs text-slate-500">{formatDateTime(ev.created_at, t)}</p>
+                      <p className="m-0 mt-2 text-sm text-slate-700">{ev.notes || t("talentManager.pedidos.evidence.noNotes")}</p>
+                      <a href={ev.evidence_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 font-semibold text-sky-700 underline">
+                        <i className="bi bi-box-arrow-up-right"></i>{t("talentManager.pedidos.evidence.view")}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="m-0 text-sm text-slate-500">{t("talentManager.pedidos.evidence.empty")}</p>
+              )}
+            </div>
+          </section>
+        </div>
       )}
     </TalentManagerLayout>
   );
