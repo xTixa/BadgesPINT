@@ -584,6 +584,7 @@ class PedidoBadgeStatus {
     this.slValidatedAt,
     this.slComment,
     this.awardedAt,
+    this.rejectionReason,
   });
 
   final int id;
@@ -598,6 +599,7 @@ class PedidoBadgeStatus {
   final String? slValidatedAt;
   final String? slComment;
   final String? awardedAt;
+  final String? rejectionReason;
 
   factory PedidoBadgeStatus.fromJson(Map<String, dynamic> json) {
     final badge = json['badge'];
@@ -621,8 +623,33 @@ class PedidoBadgeStatus {
       slValidatedAt: json['sl_validated_at']?.toString(),
       slComment: json['sl_comment']?.toString(),
       awardedAt: json['data_atribuicao']?.toString(),
+      rejectionReason: json['rejection_reason']?.toString(),
     );
   }
+
+  /// Estado do lado do consultor. "obtido"/"rejeitado" só depois da decisão
+  /// final do Service Line Leader — a validação do Talent Manager nunca
+  /// marca o pedido como aprovado, só o faz avançar internamente.
+  String get statusLabel {
+    if (status == 'rejeitado') return 'Pedido rejeitado';
+    if (status == 'obtido') return 'Badge aprovado';
+    if (workflowStatus == 'devolvido') return 'Devolvido - repete a submissão';
+    if (workflowStatus == 'em_validacao') return 'Em validação (Service Line)';
+    if (workflowStatus == 'submitted') return 'Submetido - aguarda Talent Manager';
+    return 'Por submeter';
+  }
+
+  double get progressValue {
+    if (status == 'rejeitado' || status == 'obtido') return 1;
+    if (workflowStatus == 'devolvido') return 0.4;
+    if (workflowStatus == 'em_validacao') return 0.66;
+    if (workflowStatus == 'submitted') return 0.33;
+    return 0.15;
+  }
+
+  bool get needsResubmission => workflowStatus == 'devolvido';
+
+  String? get latestComment => rejectionReason ?? slComment ?? tmComment;
 }
 
 class UserNotificationItem {

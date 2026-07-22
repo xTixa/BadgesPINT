@@ -14,6 +14,43 @@ function readFileAsDataUrl(file) {
   });
 }
 
+function pedidoBannerConfig(pedido, t) {
+  if (!pedido) return null;
+
+  if (pedido.status === "obtido") {
+    return { tone: "success", title: t("consultor.uploadEvidencias.statusBanner.obtained") };
+  }
+  if (pedido.status === "rejeitado") {
+    return {
+      tone: "danger",
+      title: t("consultor.uploadEvidencias.statusBanner.rejected"),
+      detail: pedido.rejection_reason || pedido.sl_comment,
+    };
+  }
+  if (pedido.workflow_status === "devolvido") {
+    return {
+      tone: "warning",
+      title: t("consultor.uploadEvidencias.statusBanner.returned"),
+      detail: pedido.rejection_reason || pedido.sl_comment || pedido.tm_comment,
+    };
+  }
+  if (pedido.workflow_status === "em_validacao") {
+    return { tone: "info", title: t("consultor.uploadEvidencias.statusBanner.inValidation") };
+  }
+  if (pedido.workflow_status === "submitted") {
+    return { tone: "info", title: t("consultor.uploadEvidencias.statusBanner.submitted") };
+  }
+  return { tone: "neutral", title: t("consultor.uploadEvidencias.statusBanner.open") };
+}
+
+const BANNER_TONE_CLASSES = {
+  success: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  danger: "border-rose-200 bg-rose-50 text-rose-700",
+  warning: "border-amber-200 bg-amber-50 text-amber-700",
+  info: "border-sky-200 bg-sky-50 text-sky-700",
+  neutral: "border-slate-200 bg-slate-50 text-slate-600",
+};
+
 export default function UploadEvidencias() {
   const { t } = useTranslation();
   const [badges, setBadges] = useState([]);
@@ -23,6 +60,7 @@ export default function UploadEvidencias() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pedidoStatus, setPedidoStatus] = useState("");
+  const [pedido, setPedido] = useState(null);
 
   const evidenceByRequirement = useMemo(() => {
     const map = new Map();
@@ -83,6 +121,28 @@ export default function UploadEvidencias() {
     loadRequirements();
   }, [selectedBadgeId, t]);
 
+  const loadPedido = async (badgeId) => {
+    const token = localStorage.getItem("token");
+    if (!token || !badgeId) {
+      setPedido(null);
+      return;
+    }
+
+    try {
+      const { data } = await api.get("/api/pedidos", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const found = (data || []).find((p) => Number(p.badge_id) === Number(badgeId));
+      setPedido(found || null);
+    } catch (err) {
+      console.error("Erro ao carregar estado da candidatura:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadPedido(selectedBadgeId);
+  }, [selectedBadgeId]);
+
   const handleSubmitEvidence = async (requirementId, file, notes) => {
     const token = localStorage.getItem("token");
     if (!token) return alert(t("consultor.uploadEvidencias.noTokenLoginAgain"));
@@ -122,24 +182,28 @@ export default function UploadEvidencias() {
       // catálogo de badges). Reutiliza-lo em vez de tentar criar outro, que
       // falharia com 400 "Já existe um pedido ativo" e nunca chegaria a submeter.
       const { data: pedidosExistentes } = await api.get("/api/pedidos", { headers });
-      let pedido = (pedidosExistentes || []).find(
+      let pedidoAtual = (pedidosExistentes || []).find(
         (p) => Number(p.badge_id) === Number(selectedBadgeId),
       );
 
-      if (!pedido) {
+      if (!pedidoAtual) {
         const { data: criado } = await api.post(
           "/api/admin/pedidos",
           { badge_id: Number(selectedBadgeId) },
           { headers },
         );
-        pedido = criado;
+        pedidoAtual = criado;
       }
 
-      if (pedido.workflow_status === "open") {
-        await api.post(`/api/admin/pedidos/${pedido.id}/submeter`, {}, { headers });
+      // "devolvido" (SL/TM enviaram de volta) também precisa de ser resubmetido,
+      // tal como "open" (candidatura nova) — só "submitted"/"em_validacao"/"fechado"
+      // já foram submetidos e não devem repetir esta chamada.
+      if (["open", "devolvido"].includes(pedidoAtual.workflow_status)) {
+        await api.post(`/api/admin/pedidos/${pedidoAtual.id}/submeter`, {}, { headers });
       }
 
       setPedidoStatus(t("consultor.uploadEvidencias.requestSubmitted"));
+      await loadPedido(selectedBadgeId);
     } catch (err) {
       console.error("Erro ao submeter pedido:", err);
       setPedidoStatus(
@@ -218,6 +282,17 @@ export default function UploadEvidencias() {
               ))}
             </select>
           </div>
+
+          {selectedBadgeId && pedido && (() => {
+            const banner = pedidoBannerConfig(pedido, t);
+            if (!banner) return null;
+            return (
+              <div className={`mb-3 rounded-xl border px-4 py-3 text-sm ${BANNER_TONE_CLASSES[banner.tone]}`}>
+                <p className="font-semibold">{banner.title}</p>
+                {banner.detail && <p className="mt-1">{banner.detail}</p>}
+              </div>
+            );
+          })()}
 
           {selectedBadgeId && !loading && requirements.length > 0 && !allRequirementsCovered && (
             <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">

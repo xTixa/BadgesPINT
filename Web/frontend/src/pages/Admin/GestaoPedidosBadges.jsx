@@ -81,6 +81,11 @@ function workflowMeta(status, t) {
         label: t("admin.gestaoPedidosBadges.workflow.inValidation"),
         className: "bg-sky-50 text-sky-700 ring-sky-200",
       };
+    case "devolvido":
+      return {
+        label: t("admin.gestaoPedidosBadges.workflow.returned"),
+        className: "bg-orange-50 text-orange-700 ring-orange-200",
+      };
     case "fechado":
       return {
         label: t("admin.gestaoPedidosBadges.workflow.closed"),
@@ -289,7 +294,7 @@ export default function GestaoPedidosBadges() {
       );
       setPedidos((prev) =>
         prev.map((p) =>
-          p.id === id ? { ...p, workflowStatus: "open", tmComment: comment } : p,
+          p.id === id ? { ...p, workflowStatus: "devolvido", tmComment: comment } : p,
         ),
       );
     } catch (err) {
@@ -364,7 +369,7 @@ export default function GestaoPedidosBadges() {
           p.id === id
             ? {
                 ...p,
-                workflowStatus: "open",
+                workflowStatus: "devolvido",
                 status: "pending",
                 slComment: comment,
               }

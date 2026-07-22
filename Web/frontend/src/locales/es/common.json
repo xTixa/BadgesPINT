@@ -463,6 +463,7 @@
         "open": "Abierto",
         "submitted": "Enviado",
         "emValidacao": "En Validación (SL)",
+        "devolvido": "Devuelto - repetir envío",
         "fechado": "Cerrado"
       },
       "stats": {
@@ -519,6 +520,7 @@
         "open": "Abierto",
         "submitted": "Enviado",
         "emValidacao": "En Validación (SL)",
+        "devolvido": "Devuelto - repetir envío",
         "fechado": "Cerrado"
       },
       "stats": {
@@ -774,6 +776,7 @@
         "obtained": "Obtenido",
         "rejected": "Rechazado",
         "validating": "En Validación",
+        "returned": "Repetir envío de evidencias",
         "inProgress": "En Curso"
       },
       "certificateError": "No se pudo generar el certificado.",
@@ -896,7 +899,15 @@
       "acceptedFormats": "Formatos aceptados: JPG, PNG, WEBP, PDF. Máximo 3MB.",
       "notesOptional": "Notas (opcional)",
       "sending": "Enviando...",
-      "submitEvidence": "Enviar evidencia"
+      "submitEvidence": "Enviar evidencia",
+      "statusBanner": {
+        "obtained": "¡Badge aprobado! La candidatura fue validada por la Service Line.",
+        "rejected": "Candidatura rechazada por la Service Line.",
+        "returned": "La candidatura fue devuelta — revisa las evidencias indicadas y envíala de nuevo.",
+        "inValidation": "Candidatura validada por el Talent Manager, a la espera de la decisión final de la Service Line.",
+        "submitted": "Candidatura enviada, a la espera de la validación del Talent Manager.",
+        "open": "Todavía no has enviado esta candidatura para validación."
+      }
     }
   },
   "talentManager": {
@@ -2527,7 +2538,8 @@
         "closed": "Cerrado",
         "inValidation": "En validación",
         "open": "Abierto",
-        "submitted": "Enviado"
+        "submitted": "Enviado",
+        "returned": "Devuelto - repetir envío"
       }
     },
     "gestaoSLA": {

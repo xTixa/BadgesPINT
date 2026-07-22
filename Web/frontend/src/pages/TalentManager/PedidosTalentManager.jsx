@@ -83,7 +83,7 @@ export default function PedidosTalentManager() {
     if (!comment) return;
     try {
       await api.post(`/api/admin/pedidos/${id}/tm/devolver`, { comment });
-      setPedidos((prev) => prev.map((p) => (p.id === id ? { ...p, workflow_status: "open", tm_comment: comment } : p)));
+      setPedidos((prev) => prev.map((p) => (p.id === id ? { ...p, workflow_status: "devolvido", tm_comment: comment } : p)));
     } catch (err) {
       console.error("Erro ao devolver pedido:", err);
       alert(t("talentManager.pedidos.errors.returnFailed"));

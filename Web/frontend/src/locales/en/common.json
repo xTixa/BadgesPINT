@@ -463,6 +463,7 @@
         "open": "Open",
         "submitted": "Submitted",
         "emValidacao": "In Validation (SL)",
+        "devolvido": "Returned - resubmit evidence",
         "fechado": "Closed"
       },
       "stats": {
@@ -519,6 +520,7 @@
         "open": "Open",
         "submitted": "Submitted",
         "emValidacao": "In Validation (SL)",
+        "devolvido": "Returned - resubmit evidence",
         "fechado": "Closed"
       },
       "stats": {
@@ -774,6 +776,7 @@
         "obtained": "Obtained",
         "rejected": "Rejected",
         "validating": "In Validation",
+        "returned": "Resubmit evidence",
         "inProgress": "In Progress"
       },
       "certificateError": "Could not generate the certificate.",
@@ -896,7 +899,15 @@
       "acceptedFormats": "Accepted formats: JPG, PNG, WEBP, PDF. Maximum 3MB.",
       "notesOptional": "Notes (optional)",
       "sending": "Sending...",
-      "submitEvidence": "Submit evidence"
+      "submitEvidence": "Submit evidence",
+      "statusBanner": {
+        "obtained": "Badge approved! The application was validated by the Service Line.",
+        "rejected": "Application rejected by the Service Line.",
+        "returned": "The application was sent back — review the evidence noted and resubmit.",
+        "inValidation": "Application validated by the Talent Manager, awaiting the Service Line's final decision.",
+        "submitted": "Application submitted, awaiting Talent Manager validation.",
+        "open": "You haven't submitted this application for validation yet."
+      }
     }
   },
   "talentManager": {
@@ -2527,7 +2538,8 @@
         "closed": "Closed",
         "inValidation": "In validation",
         "open": "Open",
-        "submitted": "Submitted"
+        "submitted": "Submitted",
+        "returned": "Returned - resubmit evidence"
       }
     },
     "gestaoSLA": {

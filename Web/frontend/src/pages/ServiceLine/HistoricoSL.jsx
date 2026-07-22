@@ -125,6 +125,7 @@ export default function HistoricoSL() {
     open: t("serviceLine.historico.workflow.open"),
     submitted: t("serviceLine.historico.workflow.submitted"),
     em_validacao: t("serviceLine.historico.workflow.emValidacao"),
+    devolvido: t("serviceLine.historico.workflow.devolvido"),
     fechado: t("serviceLine.historico.workflow.fechado"),
   };
   const [pedidos, setPedidos] = useState([]);

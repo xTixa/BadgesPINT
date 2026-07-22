@@ -561,7 +561,7 @@ export async function cancelarPedido(req, res) {
       return res.status(403).json({ message: "Acesso negado" });
     }
 
-    if (pedido.status !== "pendente" || pedido.workflow_status !== "open") {
+    if (pedido.status !== "pendente" || !["open", "devolvido"].includes(pedido.workflow_status)) {
       return res.status(400).json({ message: "Apenas pedidos pendentes podem ser cancelados" });
     }
 
@@ -590,7 +590,7 @@ export async function submeterPedido(req, res) {
       return res.status(403).json({ message: "Acesso negado" });
     }
 
-    if (pedido.workflow_status !== "open") {
+    if (!["open", "devolvido"].includes(pedido.workflow_status)) {
       return res.status(400).json({ message: "Pedido já submetido" });
     }
 
@@ -699,12 +699,19 @@ export async function tmDevolverPedido(req, res) {
       return res.status(400).json({ message: "Apenas pedidos submetidos podem ser devolvidos pelo Talent Manager" });
     }
 
-    pedido.workflow_status = "open";
+    pedido.workflow_status = "devolvido";
     pedido.tm_validator_id = req.userId;
     pedido.tm_validated_at = new Date();
     pedido.tm_comment = comment || null;
     pedido.rejection_reason = comment || null;
     await pedido.save();
+
+    // Repõe as evidências a "pendente" para forçar nova revisão do TM em vez de
+    // deixar chips "aprovado" antigos a sugerir, incorretamente, que já está tudo certo.
+    await RequirementEvidence.update(
+      { status: "pendente" },
+      { where: { consultor_id: pedido.consultor_id, badge_id: pedido.badge_id } }
+    );
 
     await notifyConsultorPedido({
       pedido,
@@ -927,13 +934,20 @@ export async function slDevolverPedido(req, res) {
         throw error;
       }
 
-      pedido.workflow_status = "open";
+      pedido.workflow_status = "devolvido";
       pedido.status = "pendente";
       pedido.sl_validator_id = req.userId;
       pedido.sl_validated_at = new Date();
       pedido.sl_comment = comment || null;
       pedido.rejection_reason = comment || null;
       await pedido.save({ transaction });
+
+      // Repõe as evidências a "pendente" para forçar nova revisão do TM em vez de
+      // deixar chips "aprovado" antigos a sugerir, incorretamente, que já está tudo certo.
+      await RequirementEvidence.update(
+        { status: "pendente" },
+        { where: { consultor_id: pedido.consultor_id, badge_id: pedido.badge_id }, transaction }
+      );
     });
 
     await notifyConsultorPedido({

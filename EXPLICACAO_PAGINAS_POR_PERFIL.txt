@@ -1,0 +1,924 @@
+================================================================================
+GUIA DE FUNCIONALIDADES POR PERFIL DE UTILIZADOR
+Plataforma de Badges PINT - Softinsa
+================================================================================
+
+SUMÁRIO:
+- CONSULTORES
+- SERVICE LINE LEADERS
+- TEAM MANAGERS
+- ADMINS
+
+================================================================================
+1. CONSULTORES (Utilizadores Finais / Colaboradores)
+================================================================================
+
+DESCRIÇÃO DO PERFIL:
+Consultores são colaboradores operacionais que utilizam a plataforma para
+visualizar as suas badges conquistadas, acompanhar o seu progresso e ganhar
+reconhecimento pelas suas competências.
+
+PERMISSÕES:
+✓ Ver as suas próprias badges
+✓ Ver o seu histórico de atividades
+✓ Ver o seu perfil e estatísticas pessoais
+✓ Receber notificações de novas badges
+✓ Partilhar badges conquistadas
+✗ Não podem ver dados de outros consultores
+✗ Não podem atribuir badges
+✗ Não podem aceder a relatórios
+
+────────────────────────────────────────────────────────────────────────────────
+PÁGINAS DISPONÍVEIS PARA CONSULTORES:
+────────────────────────────────────────────────────────────────────────────────
+
+1. DASHBOARD / HOME
+   O QUE VÊ:
+   - Resumo visual das suas badges conquistadas (cards com ícones)
+   - Contador de badges conquistadas vs total disponível
+   - Pontuação total acumulada
+   - Gráfico de progresso ao longo do tempo (últimos 3 meses)
+   - Notificações recentes ("Conquistaste a badge X", "Faltam 2 atividades...")
+
+   O QUE PODE FAZER:
+   - Clicar em cada badge para ver detalhes
+   - Ver quantos pontos tem
+   - Visualizar progresso em diferentes categorias
+   - Descarregar resumo em PDF das suas badges
+
+   EXEMPLO DE CENÁRIO:
+   "João abre a app pela manhã, vê que conquistou 2 novas badges no fim de semana
+   (uma de 'Mentor de Juniors', outra de 'Projeto Concluído com Excelência') e
+   vê que a sua pontuação subiu 150 pontos. Fica motivado e continua o dia."
+
+
+2. MAS BADGES
+   O QUE VÊ:
+   - Lista de todas as badges disponíveis na plataforma
+   - Para cada badge: ícone, nome, descrição, pontuação, critério de conquista
+   - Indicação visual de quais já conquistou vs. quais ainda faltam
+   - Barra de progresso mostrando quantas atividades faltam para conquistar
+
+   O QUE PODE FAZER:
+   - Filtrar badges por categoria (Técnica, Liderança, Inovação, etc.)
+   - Ordenar por pontuação, dificuldade ou data de criação
+   - Ver critérios específicos para conquistar cada badge
+   - Ver quem mais conquistou cada badge (lista de top 5)
+
+   EXEMPLO DE CENÁRIO:
+   "Maria quer conquistar a badge 'Especialista em Cloud'. Clica na badge,
+   vê que precisa completar 5 cursos de AWS. Já completou 2, faltam 3. Sabe
+   exactamente o que fazer para alcançar o seu objetivo."
+
+
+3. MEU HISTÓRICO / ATIVIDADES
+   O QUE VÊ:
+   - Timeline completa de todas as actividades do utilizador
+   - Datas exatas de conquista de cada badge
+   - Descrição do que originou cada badge
+   - Pontos ganhos em cada evento
+   - Histórico de tentativas (badges quase conquistadas)
+
+   O QUE PODE FAZER:
+   - Filtrar por tipo de atividade (badges, reconhecimento, cursos)
+   - Filtrar por data (últimas semanas, mês, trimestre)
+   - Ver detalhes expandidos de cada evento
+   - Exportar histórico completo
+
+   EXEMPLO DE CENÁRIO:
+   "Pedro consultou o seu histórico para mostrar ao gestor todas as atividades
+   que fez no último mês. Viu claramente: 5 badges conquistadas, 12 cursos
+   concluídos, 2 projetos finalizados com sucesso. Excelente para discussão
+   de promoção."
+
+
+4. MEU PERFIL
+   O QUE VÊ:
+   - Foto de perfil
+   - Nome completo
+   - Departamento / Equipa
+   - Gestor direto
+   - Data de entrada na empresa
+   - Badges conquistadas (resumo)
+   - Estatísticas: total de pontos, badges conquistadas, atividades realizadas
+   - Gráfico radar mostrando competências desenvolvidas (por categoria de badge)
+   - Comparação não-competitiva com média do departamento
+
+   O QUE PODE FAZER:
+   - Atualizar foto de perfil
+   - Ver dados de contacto do gestor
+   - Imprimir/descarregar resumo de competências (útil para CV)
+   - Ver recomendações de badges que podia conquistar a seguir
+
+   EXEMPLO DE CENÁRIO:
+   "Sofia fez login para atualizar a sua foto de perfil. Viu que a sua
+   competência em 'Gestão de Projetos' estava muito desenvolvida (5 badges)
+   e a plataforma recomendou tentar as badges de 'Liderança'. Sentiu-se
+   motivada a explorar novas áreas."
+
+
+5. NOTIFICAÇÕES / CENTRO DE NOTIFICAÇÕES
+   O QUE VÊ:
+   - Bell icon com contador de notificações não lidas
+   - Lista de notificações ordenadas por data (mais recentes primeiro)
+   - Tipos de notificações:
+     * "Parabéns! Conquistaste a badge..."
+     * "[Gestor] reconheceu o teu trabalho em..."
+     * "Faltam X actividades para conquistar badge Y"
+     * "Alguém partilhou a mesma badge que tu"
+
+   O QUE PODE FAZER:
+   - Marcar como lida
+   - Eliminar notificações
+   - Clicar para ir direto à badge/actividade mencionada
+   - Configurar preferências de notificações (push, email, sms)
+
+   EXEMPLO DE CENÁRIO:
+   "Carlos recebe notificação push: 'Parabéns! Conquistaste a badge
+   Comunicação Excelente!' Clica na notificação e é levado directamente
+   à página da badge com opção de partilhar no LinkedIn."
+
+
+6. PARTILHA / SOCIAL
+   O QUE VÊ:
+   - Opção de partilhar badges conquistadas
+   - Histórico de partilhas que fez
+   - Feed social com partilhas de colegas (opcional)
+
+   O QUE PODE FAZER:
+   - Partilhar badge para LinkedIn, Twitter, email
+   - Gerar link compartilhável
+   - Ver quantas pessoas partilharam a mesma badge
+   - Comentar ou dar "parabéns" em partilhas de colegas
+
+   EXEMPLO DE CENÁRIO:
+   "Rita conquistou a badge 'Inovação Reconhecida'. Clica no botão partilhar,
+   seleciona LinkedIn, e a plataforma gera um post elegante com a badge,
+   descrição e ícone. Meia hora depois recebe 5 comentários de contactos
+   antigos que viram a partilha."
+
+────────────────────────────────────────────────────────────────────────────────
+EXEMPLO DE DIA DE CONSULTOR:
+────────────────────────────────────────────────────────────────────────────────
+
+09:00 - Abre app, vê Dashboard: conquistou 2 badges novas (notificação push)
+09:05 - Clica em "Mais Badges" para ver quais faltam conquistar
+09:15 - Identifica que precisa fazer 1 curso para conseguir "Especialista"
+10:00 - Clica na badge que falta, vê que foi adicionada ontem
+14:00 - Completa o curso e a badge é automaticamente conquistada
+14:01 - Recebe notificação de sucesso e partilha no LinkedIn
+17:00 - Gestor vê a partilha, reconhece o esforço, a plataforma regista isto
+
+================================================================================
+2. SERVICE LINE LEADERS (Líderes de Linhas de Serviço)
+================================================================================
+
+DESCRIÇÃO DO PERFIL:
+Service Line Leaders (SLL) são líderes de unidades de negócio que gerem múltiplas
+equipas e precisam de visibilidade sobre o desenvolvimento e performance dos
+seus colaboradores através da lente de badges e competências.
+
+PERMISSÕES:
+✓ Ver dados de todos os consultores na sua Service Line
+✓ Atribuir badges manualmente aos seus colaboradores
+✓ Crear badges específicas da sua linha de serviço
+✓ Ver relatórios e analytics da sua Service Line
+✓ Visualizar comparações entre equipas
+✓ Receber alertas sobre engagement baixo
+✗ Não podem ver dados de outras Service Lines
+✗ Não podem alterar configurações globais
+✗ Não podem eliminar badges (apenas archive)
+
+────────────────────────────────────────────────────────────────────────────────
+PÁGINAS DISPONÍVEIS PARA SERVICE LINE LEADERS:
+────────────────────────────────────────────────────────────────────────────────
+
+1. DASHBOARD / HOME (VERSION LEADER)
+   O QUE VÊ:
+   - Resumo da sua Service Line: total de colaboradores, badges distribuídas,
+     pontuação média
+   - Gráfico de engagemente: % de colaboradores que conquistou badges
+   - Top 5 colaboradores mais ativos
+   - Top 5 badges mais conquistadas
+   - Métricas de saúde: retention, satisfação estimada, produtividade
+   - Alertas: equipas com baixo engagement, badges não usadas
+
+   O QUE PODE FAZER:
+   - Clicar para ir a relatórios detalhados
+   - Filtrar por equipa
+   - Descarregar resumo executivo
+   - Configurar alertas personalizados
+
+   EXEMPLO DE CENÁRIO:
+   "Manuel (SLL de Consulting) abre Dashboard e vê que 75% dos seus consultores
+   conquistou badges este mês (+5% em relação ao mês anterior). A equipa de
+   Recursos Humanos tem engagement mais baixo. Clica no alerta para investigar."
+
+
+2. COLABORADORES / GESTÃO DE RECURSOS
+   O QUE VÊ:
+   - Tabela com lista de todos os consultores da Service Line
+   - Colunas: nome, equipa, manager, badges conquistadas, pontuação, última
+     atividade
+   - Capacidade de ordenar/filtrar por qualquer coluna
+   - Indicador visual de desempenho (cores: verde, amarelo, vermelho)
+   - Comparação com média da SL
+
+   O QUE PODE FAZER:
+   - Clicar em cada consultor para ver perfil detalhado
+   - Atribuir badges manualmente (reconhecimento de liderança)
+   - Ver histórico completo de cada colaborador
+   - Enviar mensagem de congratulações quando há conquista importante
+   - Criar grupos personalizados (ex: "Top Performers")
+
+   EXEMPLO DE CENÁRIO:
+   "Carla (SLL) vê que Sofia tem apenas 3 badges enquanto colegas têm 10+.
+   Investigou e descobriu que Sofia era nova e não sabia que a plataforma
+   existia. Atribuiu manualmente 2 badges que Sofia já tinha conquistado
+   anteriormente. Sofia recebeu notificação e ficou motivada."
+
+
+3. BADGES DA MINHA SERVICE LINE
+   O QUE VÊ:
+   - Badges criadas especificamente para a Service Line (vs globais)
+   - Badges global que são relevantes para a SL
+   - Estatísticas de distribuição: quantas vezes conquistada, por quem, quando
+   - Taxa de conquista vs meta esperada
+   - Trending: badges em alta vs badges que não são conquistadas
+
+   O QUE PODE FAZER:
+   - Criar novas badges específicas da SL (ex: "Especialista em Cliente X")
+   - Editar critérios de badges existentes
+   - Desativar badges que não fazem sentido
+   - Aprovar regras automáticas para a sua SL
+   - Ver recomendações de novas badges baseadas em dados
+
+   EXEMPLO DE CENÁRIO:
+   "Paulo (SLL) criou uma badge 'Certificação AWS Cloud Architect' específica
+   para a sua SL porque é crítico. Definiu que a conquista automática ocorre
+   quando o colaborador tem certificação. Em 1 semana, 4 consultores já
+   conquistaram porque tinham certificação."
+
+
+4. RELATÓRIOS E ANALYTICS
+   O QUE VÊ:
+   - Dashboard customizável com gráficos
+   - Engagemente ao longo do tempo (line chart)
+   - Distribuição de badges por categoria (pie chart)
+   - Comparação SL vs empresa (benchmark)
+   - Análise de correlação: badges vs turnover, badges vs performance reviews
+   - Relatório de ROI: estimativa de impacto das badges
+   - Heatmap: calendário mostrando dias/semanas com mais atividades
+
+   O QUE PODE FAZER:
+   - Customizar período (últimas 4 semanas, trimestre, ano)
+   - Filtrar por equipa
+   - Descarregar relatórios em PDF/Excel
+   - Agendar envio automático de relatórios (semanal, mensal)
+   - Comparar com SL histórico (trimestre anterior, ano anterior)
+
+   EXEMPLO DE CENÁRIO:
+   "Joana (SLL) gerou relatório trimestral. Viu que a sua SL tinha crescimento
+   de 30% em engagement vs trimestre anterior, melhor que a média da empresa
+   (20%). Compartilhou este relatório com CEO numa reunião de gestão."
+
+
+5. ATRIBUIÇÃO MANUAL DE BADGES
+   O QUE VÊ:
+   - Interface simples: selecionar consultor + selecionar badge + justificação
+   - Histórico de todas as atribuições manuais que fez
+   - Lista de consultores e badges disponíveis
+
+   O QUE PODE FAZER:
+   - Atribuir uma badge a um consultor
+   - Adicionar nota/justificação (visível ao consultor)
+   - Enviar mensagem personalizada ao consultor
+   - Atribuir em bulk (múltiplos consultores, mesma badge)
+   - Desatribuir se foi erro (audit trail fica)
+
+   EXEMPLO DE CENÁRIO:
+   "Ricardo (SLL) atribuiu manualmente a badge 'Mentor Excepcional' ao Pedro
+   por ter treinado 5 juniors com sucesso. Adicionou nota: 'Grande trabalho
+   na transferência de conhecimento. Continuem assim!' Pedro recebeu notificação
+   e sentiu-se valorizado."
+
+
+6. GESTÃO DE EQUIPAS
+   O QUE VÊ:
+   - Estrutura organizacional da SL com todas as equipas
+   - Cada equipa com: team manager, número de membros, badges conquistadas,
+     pontuação média, engagement %
+   - Comparação entre equipas
+
+   O QUE PODE FAZER:
+   - Ver detalhes de cada equipa
+   - Comparar performance entre equipas
+   - Receber alertas se uma equipa tem engagement muito baixo
+   - Enviar recomendações para team managers
+   - Ver qual o team manager que está a fazer melhor trabalho
+
+   EXEMPLO DE CENÁRIO:
+   "Cristina (SLL) viu que a Equipa A tinha 85% engagement enquanto Equipa B
+   tinha apenas 45%. Contactou o manager da Equipa B para entender o problema.
+   Descobriu que a equipa era nova e não tinha contextualização. Iniciou
+   ações corretivas."
+
+
+7. CONFIGURAÇÕES DA SERVICE LINE
+   O QUE VÊ:
+   - Configurações específicas da SL
+   - Meta de engagement (ex: 80% dos colaboradores com ≥1 badge por mês)
+   - Badges que devem ser destacadas
+   - Regras automáticas específicas da SL
+   - Integrações com sistemas externos (ex: learning management, HR)
+
+   O QUE PODE FAZER:
+   - Alterar metas
+   - Ativar/desativar badges
+   - Criar regras de atribuição automática
+   - Configurar notificações e alertas
+   - Gerir permissões de team managers subordinados
+
+   EXEMPLO DE CENÁRIO:
+   "Miguel (SLL) configurou uma regra: 'Todo o colaborador que completa
+   onboarding automáticamente ganha a badge Bem-vindo à SL'. Na semana
+   seguinte, 3 novos hires receberam a badge automaticamente."
+
+────────────────────────────────────────────────────────────────────────────────
+EXEMPLO DE SEMANA DE SERVICE LINE LEADER:
+────────────────────────────────────────────────────────────────────────────────
+
+Segunda - Abre Dashboard, vê engagement +5%, satisfação geral. Tudo bem!
+Terça - Recebe alerta: Equipa X tem engagement baixo (30%). Contacta o manager.
+Quarta - Cria 2 novas badges específicas: "Projeto BigClient" e "Certificação".
+Quinta - Atribui manualmente 3 badges a consultores que merecia reconhecimento.
+Sexta - Gera relatório trimestral, vê crescimento de 30%, partilha com CEO.
+
+================================================================================
+3. TEAM MANAGERS (Gestores de Equipa)
+================================================================================
+
+DESCRIÇÃO DO PERFIL:
+Team Managers são gestores diretos de equipas pequenas/médias que usam a
+plataforma para acompanhar desenvolvimento dos seus colaboradores, atribuir
+reconhecimento e gerir performance de forma contínua.
+
+PERMISSÕES:
+✓ Ver dados de todos os colaboradores da sua equipa
+✓ Atribuir badges aos seus colaboradores
+✓ Criar badges específicas da equipa
+✓ Ver relatórios da equipa
+✓ Fazer check-ins com dados de badges (1:1s)
+✓ Recomendações personalizadas para desenvolvimento
+✗ Não podem ver dados de outras equipas
+✗ Não podem alterar badges de outras equipas
+✗ Não podem ver dados consolidados entre equipas
+
+────────────────────────────────────────────────────────────────────────────────
+PÁGINAS DISPONÍVEIS PARA TEAM MANAGERS:
+────────────────────────────────────────────────────────────────────────────────
+
+1. DASHBOARD / HOME (VERSION MANAGER)
+   O QUE VÊ:
+   - Sumário da equipa: total membros, badges conquistadas mês, pontuação média
+   - Gráfico de engagemente: who has badges, who doesn't
+   - Cada membro da equipa como card: foto, nome, badges este mês, status
+   - Trending: badges conquistadas semana (ascending/descending)
+   - Alerts: membros com baixo engagement, members due for a 1:1
+
+   O QUE PODE FAZER:
+   - Clicar em cada membro para ver detalhes
+   - Ver histórico individual
+   - Planejar 1:1 baseado em dados
+   - Enviar parabenizações automáticas (com template)
+
+   EXEMPLO DE CENÁRIO:
+   "Filipe (Team Manager) abre Dashboard e vê que João conquistou 3 novas
+   badges esta semana. Lembra-se de fazer o check-in com ele e celebrar
+   conquistas. João sente-se apreciado."
+
+
+2. MINHA EQUIPA / TEAM VIEW
+   O QUE VÊ:
+   - Tabela com todos os membros da equipa
+   - Colunas: nome, badges conquistadas, pontuação, última atividade, status
+   - Perfil de cada membro com histórico
+   - Gráfico comparativo dentro da equipa (não-competitivo, apenas visual)
+   - Indicadores de wellness: burnout risk, growth trajectory
+
+   O QUE PODE FAZER:
+   - Ver detalhes de cada membro
+   - Agrupar por objetivo/projeto
+   - Filtrar por performance level
+   - Enviar recomendações personalizadas
+   - Marcar membros para promoção/progressão
+
+   EXEMPLO DE CENÁRIO:
+   "Anabela (Team Manager) viu que um dos seus membros tinha badges estagnadas
+   há 2 meses. Percebeu que ele podia estar desmotivado. Marcou 1:1 especial
+   para discutir desenvolvimento profissional."
+
+
+3. ATRIBUIÇÃO E RECONHECIMENTO
+   O QUE VÊ:
+   - Histórico de todas as badges que atribuiu
+   - Templates de reconhecimento (shortcuts para rápido reconhecimento)
+   - Badges mais apropriadas para diferentes situações
+   - Suggestões da plataforma (ex: "Este membro precisa desta badge")
+
+   O QUE PODE FAZER:
+   - Atribuir badge a membro (com mensagem personalizada)
+   - Usar templates rápidos (ex: "Great delivery!" + badge)
+   - Reconhecimento em bulk (ex: toda a equipa por sucesso de projeto)
+   - Deixar mensagem de voz/vídeo se quiser (opcional)
+   - Agendar reconhecimento para data futura (ex: aniversário)
+
+   EXEMPLO DE CENÁRIO:
+   "Nuno (Team Manager) terminou uma reunião bem-sucedida com cliente. Abriu
+   a app e atribuiu a badge 'Excelência em Atendimento ao Cliente' aos 4
+   membros que participaram. Personalizou com mensagem: 'Vocês foram incríveis
+   nesta apresentação!' Todos receberam notificação imediata."
+
+
+4. DESENVOLVIMENTO E CRESCIMENTO
+   O QUE VÊ:
+   - Competências de cada membro (radar chart)
+   - Gaps de desenvolvimento (áreas fracas)
+   - Recomendações personalizadas (badges que podiam conquistar)
+   - Plano de desenvolvimento (roadmap com objetivos)
+   - Comparação com perfil de role esperado (ex: Senior Developer vs Junior)
+
+   O QUE PODE FAZER:
+   - Ver recomendações de badges para cada membro
+   - Criar plano de desenvolvimento (1-3 anos)
+   - Agendar courses/training
+   - Monitorizar progresso vs plano
+   - Identificar high-potentials
+
+   EXEMPLO DE CENÁRIO:
+   "Mário (Team Manager) viu que tinha um membro com potencial de liderança
+   (conquistou badges de mentorar, comunicação, projet management). Criou
+   um plano de 6 meses para preparar este membro para posição de team lead."
+
+
+5. 1:1s E CHECK-INs
+   O QUE VÊ:
+   - Histórico de 1:1s
+   - Dados relevantes para discussão (badges recentes, goals, feedback)
+   - Template de agenda para 1:1
+   - Notas da última conversa
+   - Action items pendentes
+
+   O QUE PODE FAZER:
+   - Agendar 1:1
+   - Preparar agenda baseada em badges/development
+   - Tomar notas durante reunião
+   - Registar action items
+   - Seguir up em ações acordadas
+
+   EXEMPLO DE CENÁRIO:
+   "Sofia (Team Manager) vai fazer 1:1 com membro. Consulta a plataforma e vê:
+   'Conquistou 2 badges, última atividade há 3 dias, faltam 2 cursos para
+   próxima badge, conversámos sobre liderança no último mês'. Prepara conversa
+   baseada em dados, não apenas intuição."
+
+
+6. RELATÓRIOS DA EQUIPA
+   O QUE VÊ:
+   - Engagemente ao longo do tempo
+   - Distribuição de badges por membro
+   - Performance vs meta
+   - Trends: equipas em crescimento ou estagnadas
+   - Comparação vs média do departamento
+   - ROI estimado: badges vs retention, satisfaction
+
+   O QUE PODE FAZER:
+   - Ver relatórios prontos (pré-configurados)
+   - Customizar período
+   - Descarregar em PDF/Excel
+   - Compartilhar com SLL
+   - Usar dados em feedback do performance review anual
+
+   EXEMPLO DE CENÁRIO:
+   "Gustavo (Team Manager) gerou relatório anual da sua equipa. Viu que tinha
+   crescimento de 45% em engagement (melhor que média), e correlação clara
+   entre badges e retention. Apresentou isto no performance management cycle
+   para justificar bonificações."
+
+
+7. BADGES DA MINHA EQUIPA
+   O QUE VÊ:
+   - Badges global disponíveis para equipa
+   - Badges criadas especificamente para equipa
+   - Taxa de conquista de cada badge
+   - Sugestões de novas badges baseadas em objetivos
+
+   O QUE PODE FAZER:
+   - Criar badges específicas da equipa
+   - Propor novas badges ao SLL
+   - Ver quem conquistou cada badge
+   - Desativar badges não-relevantes
+   - Sugerir critérios de atribuição automática
+
+   EXEMPLO DE CENÁRIO:
+   "Dmitri (Team Manager) criou uma badge 'Projeto XYZ - Milestone 1 Completo'
+   específica para os 6 membros do projeto. Estabeleceu critério automático:
+   quem assinar checklist completo recebe. 2 dias depois, 3 membros receberam
+   automaticamente. Motivação mantida alta."
+
+
+8. FEEDBACK E DESENVOLVIMENTO CONTÍNUO
+   O QUE VÊ:
+   - Ferramenta simples de feedback
+   - Histórico de feedbacks dados
+   - Ligação com badges conquistadas (contexto)
+   - Templates de feedback
+   - Follow-up de feedbacks antigos
+
+   O QUE PODE FAZER:
+   - Dar feedback em tempo real (não esperar avaliações anuais)
+   - Ligar feedback com badges (ex: "Feedback positivo sobre liderança"
+     + badge de liderança)
+   - Arquivar feedback para referência futura
+   - Identificar padrões de comportamento
+
+   EXEMPLO DE CENÁRIO:
+   "Helena (Team Manager) observou que um membro teve atitude excelente numa
+   reunião difícil. Abriu a app e registou feedback positivo com contexto.
+   Sugeriu a badge 'Gestão de Conflitos' para o membro. Depois de completar
+   o critério, o membro conquistou a badge e viu referência ao feedback antigo."
+
+────────────────────────────────────────────────────────────────────────────────
+EXEMPLO DE MÊS DE TEAM MANAGER:
+────────────────────────────────────────────────────────────────────────────────
+
+Semana 1:
+- Segunda: Abre Dashboard, 3 membros conquistaram badges nova semana. Parabéns!
+- Terça: Atribui manualmente 2 badges de reconhecimento por bom trabalho.
+- Quarta: Cria badge específica "Cliente Premium - Q3 Completo".
+
+Semana 2:
+- 1:1 com membro novo. Consulta plataforma: vê badges conquistadas, recomenda
+  próximas 3 para desenvolvimento.
+
+Semana 3:
+- Projeto importante completo. Atribui bulk recognition (5 badges para 8 membros).
+
+Semana 4:
+- Gera relatório mensal: 60% engagement, acima da meta (50%). Partilha com SLL.
+
+================================================================================
+4. ADMINS (Administradores do Sistema)
+================================================================================
+
+DESCRIÇÃO DO PERFIL:
+Admins têm controlo total da plataforma. São normalmente da equipa de TI,
+Recursos Humanos ou Operações. Gerem toda a configuração, segurança e dados
+da plataforma.
+
+PERMISSÕES:
+✓ Acesso total a todos os dados
+✓ Criar/editar/eliminar badges
+✓ Gerir utilizadores e permissões
+✓ Configurar integrações
+✓ Ver todos os relatórios
+✓ Configurar segurança e backup
+✓ Aceder a audit logs
+✓ Executar operações administrativas em bulk
+
+────────────────────────────────────────────────────────────────────────────────
+PÁGINAS DISPONÍVEIS PARA ADMINS:
+────────────────────────────────────────────────────────────────────────────────
+
+1. DASHBOARD ADMINISTRATIVO
+   O QUE VÊ:
+   - Estatísticas globais da plataforma: utilizadores ativos, badges criadas,
+     atividades diárias
+   - Saúde do sistema: uptime, performance, erros
+   - Utilização de recursos: storage, API calls
+   - Alertas críticos: falhas, anomalias, security issues
+   - Últimas atividades: novos utilizadores, badges criadas, etc.
+
+   O QUE PODE FAZER:
+   - Ver overview completa do sistema
+   - Configurar alertas críticos
+   - Monitorizar performance
+   - Acessar logs em tempo real
+   - Descarregar backup manual
+
+   EXEMPLO DE CENÁRIO:
+   "João (Admin) abre Dashboard e vê alert amarelo: 'API response time acima
+   do esperado'. Verifica logs e vê que há spike de requisições. Inicia
+   investigação."
+
+
+2. GESTÃO DE UTILIZADORES
+   O QUE VÊ:
+   - Lista de todos os utilizadores (consultores, managers, SLL, admins)
+   - Colunas: nome, email, role, departamento, status (ativo/inativo)
+   - Filtros avançados (por role, departamento, data de entrada)
+   - Histórico de ações de cada utilizador
+   - Último login
+
+   O QUE PODE FAZER:
+   - Adicionar novo utilizador (individual ou bulk import via CSV)
+   - Editar perfil de utilizador
+   - Alterar role/permissões
+   - Desativar/ativar utilizador
+   - Resetar password
+   - Eliminar utilizador (com arquivo de dados)
+   - Exportar lista de utilizadores
+
+   EXEMPLO DE CENÁRIO:
+   "Maria (Admin) importa via CSV 50 novos colaboradores do onboarding.
+   Automaticamente, todos recebem email de boas-vindas com link para app.
+   Todos têm role de 'Consultor'. Alguns são promovidos a 'Team Manager'
+   na semana seguinte via UI admin."
+
+
+3. GESTÃO DE BADGES
+   O QUE VÊ:
+   - Biblioteca completa de badges (global + por Service Line)
+   - Cada badge: nome, descrição, ícone, pontos, critérios, criador, data
+   - Estatísticas: quantas vezes conquistada, por quem, trending
+   - Badges archived (histórico de badges removidas)
+   - Templates de badges (para copiar e reutilizar)
+
+   O QUE PODE FAZER:
+   - Criar nova badge
+   - Editar badge existente
+   - Duplicar badge (para criar similar)
+   - Archive badge (não remove, apenas desativa)
+   - Eliminar badge (apenas se nunca foi conquistada)
+   - Importar badges de template externo
+   - Definir regras de atribuição automática
+   - Alterar ícone/descrição
+   - Ver quem conquistou cada badge
+
+   EXEMPLO DE CENÁRIO:
+   "Carlos (Admin) criou 10 badges para novo programa de certificação técnica.
+   Cada badge tem critério específico (ex: 'AWS Solutions Architect Certified').
+   Configurou regra automática: quando utilizador registar certificação no
+   sistema, recebe badge automaticamente."
+
+
+4. GESTÃO DE PERMISSÕES E ROLES
+   O QUE VÊ:
+   - Hierarquia de permissões (Admin > SLL > TM > Consultor)
+   - Definição de cada role: o que podem ver, fazer, aceder
+   - Permissões granulares (ex: "SLL pode atribuir badges" vs "TM pode atribuir")
+   - Histórico de alterações de permissões
+
+   O QUE PODE FAZER:
+   - Criar novo role personalizado
+   - Editar permissões de role existente
+   - Atribuir role a utilizador
+   - Definir data de expiração de permissões (ex: "Manager temporário")
+   - Revogar permissões específicas
+   - Ver audit trail de mudanças de permissões
+
+   EXEMPLO DE CENÁRIO:
+   "Tomás (Admin) criou novo role 'Talent Manager' que pode ver dados de
+   performance de múltiplas SLs mas não pode atribuir badges. Atribuiu este
+   role ao novo hire de RH."
+
+
+5. INTEGRAÇÕES E APIS
+   O QUE VÊ:
+   - Integrações configuradas (ex: Slack, Teams, LDAP, Salesforce)
+   - Status de cada integração (conectada, erro, última sincronização)
+   - Chaves de API geradas
+   - Webhooks configuradas
+   - Logs de sincronização
+
+   O QUE PODE FAZER:
+   - Configurar nova integração
+   - Testar integração
+   - Revisar/regenerar chaves de API
+   - Configurar sincronização automática de dados
+   - Ver logs de erros de integração
+   - Ativar/desativar integração temporariamente
+
+   EXEMPLO DE CENÁRIO:
+   "Nélson (Admin) configurou integração com Slack. Agora, quando um membro
+   da equipa conquista badge, recebe notificação também no Slack. Configurou
+   webhook para registar eventos em sistema de analytics externo."
+
+
+6. RELATÓRIOS E ANALYTICS AVANÇADOS
+   O QUE VÊ:
+   - Acesso a todos os relatórios da plataforma
+   - Relatórios customizáveis (qualquer métrica, qualquer período)
+   - Data warehouse access (para análises profundas)
+   - Comparações entre períodos
+   - Previsões baseadas em tendências
+   - Relatórios de compliance e auditoria
+
+   O QUE PODE FAZER:
+   - Criar relatório custom com qualquer combinação de dados
+   - Agendar envio automático de relatórios (diário/semanal/mensal)
+   - Exportar dados brutos para análise externa (Excel, BI tools)
+   - Ver correlações (ex: badges vs retention, badges vs salary growth)
+   - Gerar gráficos avançados
+
+   EXEMPLO DE CENÁRIO:
+   "Fernanda (Admin) gerou relatório avançado: 'Badges conquistadas vs
+   retenção de colaboradores'. Descobriu correlação forte (r=0.85) - quem
+   conquistou mais badges tem menor taxa de turnover. Apresentou isto
+   ao CEO."
+
+
+7. SEGURANÇA E AUDITORIA
+   O QUE VÊ:
+   - Logs de auditoria: quem fez o quê, quando
+   - Tentativas de login falhadas
+   - Alterações críticas (deletion, permission change)
+   - Acesso a dados sensíveis
+   - IP addresses, dispositivos
+   - Alerts de atividades suspeitas
+
+   O QUE PODE FAZER:
+   - Ver audit trail completa
+   - Filtrar por utilizador, ação, data
+   - Exportar logs para análise
+   - Investigar atividades suspeitas
+   - Revogar tokens de autenticação
+   - Listar sessões ativas e terminar se necessário
+   - Configurar políticas de segurança (2FA, password expiry)
+
+   EXEMPLO DE CENÁRIO:
+   "Pedro (Admin) viu alerta: 'Utilizador admin tentar aceder a dados de
+   outro utilizador'. Investigou logs e viu que foi erro acidental. Deixou
+   nota de follow-up com utilizador para treinamento de segurança."
+
+
+8. BACKUP E RECUPERAÇÃO
+   O QUE VÊ:
+   - Lista de backups realizados
+   - Tamanho, data, status de cada backup
+   - Backups automáticos vs manuais
+   - Histórico de restaurações
+
+   O QUE PODE FAZER:
+   - Criar backup manual
+   - Agendar backups automáticos
+   - Restaurar de um backup anterior
+   - Testar integridade de backup
+   - Exportar dados para transferência
+   - Configurar retenção de backups
+
+   EXEMPLO DE CENÁRIO:
+   "Rui (Admin) testou disaster recovery plan. Restaurou backup de uma semana
+   atrás num environment de teste. Verificou que todos os dados foram
+   restaurados corretamente. Plano validado."
+
+
+9. CONFIGURAÇÕES GERAIS DO SISTEMA
+   O QUE VÊ:
+   - Configurações globais da plataforma
+   - Branding (logo, cores, nome)
+   - Emails de template (boas-vindas, notificações)
+   - Políticas (password requirements, session timeout)
+   - Limites de sistema (máximo badges, utilizadores, etc.)
+
+   O QUE PODE FAZER:
+   - Alterar logo/branding
+   - Customizar emails enviados
+   - Configurar políticas de segurança
+   - Alterar tema da aplicação
+   - Configurar idioma padrão
+   - Definir time zone
+
+   EXEMPLO DE CENÁRIO:
+   "Vera (Admin) atualizou o logo da empresa no sistema após rebranding.
+   Customizou email de boas-vindo com novo look & feel. Todos os novos
+   utilizadores recebem email atualizado."
+
+
+10. IMPORTAÇÃO E EXPORTAÇÃO EM BULK
+    O QUE VÊ:
+    - Histórico de importações/exportações
+    - Templates para importação
+    - Status de processamento (pending, completo, erro)
+
+    O QUE PODE FAZER:
+    - Importar utilizadores via CSV
+    - Importar badges via CSV
+    - Importar atribuições de badges (bulk assignment)
+    - Exportar todos os dados
+    - Agendar exportações regulares para auditoria
+    - Rollback de operação falhada
+
+    EXEMPLO DE CENÁRIO:
+    "Sónia (Admin) exporta dados de todos os utilizadores e badges para o
+    sistema de BI da empresa. Cria cronjob para exportar diariamente, mantendo
+    data warehouse sincronizado."
+
+────────────────────────────────────────────────────────────────────────────────
+EXEMPLO DE SEMANA DE ADMIN:
+────────────────────────────────────────────────────────────────────────────────
+
+Segunda:
+- Abre Dashboard admin, tudo OK
+- Recebe ticket: novo department precisa 15 novos utilizadores
+- Importa CSV com 15 novos users (5 minutos)
+
+Terça:
+- Configura integração com Slack conforme solicitado
+- Testa webhook, tudo funciona
+- Alerta: 1 utilizador tentou aceder dados sem permissão. Investiga logs.
+  Foi erro acidental. Reforça treinamento de segurança.
+
+Quarta:
+- Cria 5 novas badges para novo programa de certificação
+- Configura regras automáticas
+- Recebe relatório mensal gerado automaticamente, tudo em ordem
+
+Quinta:
+- Recebe pedido de relatório: "Badges vs Retention". Cria relatório custom.
+- Descobre correlação forte. Partilha com CEO.
+
+Sexta:
+- Faz backup manual antes do fim de semana
+- Atualiza política de password (agora 16 chars em vez de 12)
+- Documenta procedimentos para colega (cross-training)
+
+================================================================================
+RESUMO VISUAL DA HIERARQUIA DE ACESSOS
+================================================================================
+
+CONSULTOR:
+├─ Dashboard pessoal
+├─ Minhas badges
+├─ Meu histórico
+├─ Meu perfil
+└─ Partilha
+
+SERVICE LINE LEADER:
+├─ Dashboard SL (analytics)
+├─ Colaboradores da SL
+├─ Badges da SL (criar, editar)
+├─ Relatórios SL
+├─ Atribuição manual
+├─ Gestão de equipas
+└─ Configurações SL
+
+TEAM MANAGER:
+├─ Dashboard equipa
+├─ Minha equipa
+├─ Atribuição e reconhecimento
+├─ Desenvolvimento
+├─ 1:1s e check-ins
+├─ Relatórios equipa
+├─ Badges equipa
+└─ Feedback contínuo
+
+ADMIN:
+├─ Dashboard administrativo
+├─ Gestão de utilizadores
+├─ Gestão de badges (global)
+├─ Permissões e roles
+├─ Integrações
+├─ Relatórios avançados
+├─ Auditoria e segurança
+├─ Backup e recuperação
+├─ Configurações gerais
+└─ Importação/Exportação
+
+================================================================================
+FLUXO DE TRABALHO TIPICO POR DIA
+================================================================================
+
+CONSULTOR - Manhã:
+→ Abre app, vê Dashboard (check: novas badges, pontos)
+→ Clica em "Mais Badges" (que falta conquistar?)
+→ Começa dia focado em 1-2 badges próximas
+
+TEAM MANAGER - Manhã:
+→ Abre Dashboard equipa (check: engagement, alerts)
+→ Revê 1:1 agendado para esta semana (prepara com dados da app)
+→ Identifica 2 membros para reconhecimento (atribui badge)
+
+SERVICE LINE LEADER - Manhã:
+→ Abre Dashboard SL (check: trends, alerts)
+→ Se alert: investigar qual equipa, contactar manager
+
+ADMIN - Manhã:
+→ Abre Dashboard admin (check: saúde do sistema, alerts)
+→ Revê tickets de suporte/pedidos
+→ Se integração falhada: investigar logs
+
+================================================================================
+CONCLUSÃO
+================================================================================
+
+Cada perfil tem um propósito específico na plataforma:
+- CONSULTORES: ganhar reconhecimento e desenvolver competências
+- TEAM MANAGERS: motivar, reconhecer e desenvolver sua equipa
+- SERVICE LINE LEADERS: visualizar trends, garantir engagement, gerir performance
+- ADMINS: manter sistema funcionando, garantir segurança, oferecer suporte
+
+A chave é que cada um tem apenas acesso ao que precisa, tornando a navegação
+simples e o foco claro.
+
+================================================================================

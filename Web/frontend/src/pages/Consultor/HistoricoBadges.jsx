@@ -7,12 +7,14 @@ const STATUS_CONFIG = {
   obtido:    { labelKey: "consultor.historicoBadges.status.obtained",   bg: "bg-emerald-50", text: "text-emerald-700", icon: "bg-emerald-100", iconColor: "text-emerald-600", bi: "bi-patch-check-fill" },
   rejeitado: { labelKey: "consultor.historicoBadges.status.rejected",   bg: "bg-rose-50",    text: "text-rose-700",    icon: "bg-rose-100",    iconColor: "text-rose-600",    bi: "bi-x-circle-fill" },
   pendente:  { labelKey: "consultor.historicoBadges.status.validating", bg: "bg-blue-50",    text: "text-blue-700",    icon: "bg-blue-100",    iconColor: "text-blue-600",    bi: "bi-clock-fill" },
+  devolvido: { labelKey: "consultor.historicoBadges.status.returned",   bg: "bg-amber-50",   text: "text-amber-700",   icon: "bg-amber-100",   iconColor: "text-amber-600",   bi: "bi-arrow-counterclockwise" },
   default:   { labelKey: "consultor.historicoBadges.status.inProgress", bg: "bg-amber-50",   text: "text-amber-700",   icon: "bg-amber-100",   iconColor: "text-amber-600",   bi: "bi-lightning-charge-fill" },
 };
 
 function resolveStatus(badge) {
   if (badge.status === "obtido") return STATUS_CONFIG.obtido;
   if (badge.status === "rejeitado") return STATUS_CONFIG.rejeitado;
+  if (badge.workflow_status === "devolvido") return STATUS_CONFIG.devolvido;
   if (badge.status === "pendente" && ["submitted", "em_validacao"].includes(badge.workflow_status))
     return STATUS_CONFIG.pendente;
   return STATUS_CONFIG.default;

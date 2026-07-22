@@ -46,6 +46,17 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     return pedido.first.workflowStatus;
   }
 
+  /// Texto amigável para os chips (a `_estadoBadge()` continua a devolver o
+  /// valor técnico "open"/"devolvido"/etc., usado para decidir que ação mostrar).
+  String _estadoLabel() {
+    final pedido = widget.controller.pedidosStatus.where(
+      (p) => p.badgeId == widget.badge.id,
+    );
+
+    if (pedido.isEmpty) return 'Não candidatado';
+    return pedido.first.statusLabel;
+  }
+
   int? _pedidoId() {
     final pedido = widget.controller.pedidosStatus.where(
       (p) => p.badgeId == widget.badge.id,
@@ -109,7 +120,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            _courseHeader(context, badge, estado),
+            _courseHeader(context, badge),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
               child: Column(
@@ -165,7 +176,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                         Icons.category_outlined,
                         badge.areaName ?? 'Geral',
                       ),
-                      _softChip(Icons.flag_outlined, estado),
+                      _softChip(Icons.flag_outlined, _estadoLabel()),
                       InkWell(
                         onTap: () => _copyPublicLink(context),
                         borderRadius: BorderRadius.circular(999),
@@ -274,7 +285,6 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
   Widget _courseHeader(
     BuildContext context,
     CatalogBadgeItem badge,
-    String estado,
   ) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
@@ -337,7 +347,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
                       Icons.workspace_premium_rounded,
                       badge.levelLabel,
                     ),
-                    _darkChip(Icons.flag_outlined, estado),
+                    _darkChip(Icons.flag_outlined, _estadoLabel()),
                   ],
                 ),
               ],
@@ -405,7 +415,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
       );
     }
 
-    if (estado == 'open') {
+    if (estado == 'open' || estado == 'devolvido') {
       final pedidoId = _pedidoId();
       final canSubmit = pedidoId != null && _allRequirementsCovered(controller);
       return ElevatedButton.icon(
