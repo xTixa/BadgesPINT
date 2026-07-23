@@ -73,6 +73,8 @@ export default function UploadEvidencias() {
   const allRequirementsCovered =
     requirements.length > 0 && requirements.every((r) => evidenceByRequirement.has(r.id));
 
+  const isBadgeApproved = pedido?.status === "obtido";
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -300,15 +302,17 @@ export default function UploadEvidencias() {
             </div>
           )}
 
-          <div className="mb-3 flex justify-end">
-            <button
-              className="rounded-2xl bg-[#0F62FE] px-5 py-3 font-semibold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
-              onClick={handleSubmitPedido}
-              disabled={!selectedBadgeId || !allRequirementsCovered}
-            >
-              {t("consultor.uploadEvidencias.submitApplication")}
-            </button>
-          </div>
+          {!isBadgeApproved && (
+            <div className="mb-3 flex justify-end">
+              <button
+                className="rounded-2xl bg-[#0F62FE] px-5 py-3 font-semibold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={handleSubmitPedido}
+                disabled={!selectedBadgeId || !allRequirementsCovered}
+              >
+                {t("consultor.uploadEvidencias.submitApplication")}
+              </button>
+            </div>
+          )}
 
           {pedidoStatus && (
             <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
@@ -336,6 +340,7 @@ export default function UploadEvidencias() {
                     requirement={req}
                     latestEvidence={evidence}
                     onSubmit={handleSubmitEvidence}
+                    isBadgeApproved={isBadgeApproved}
                   />
                 );
               })}
@@ -353,7 +358,7 @@ export default function UploadEvidencias() {
   );
 }
 
-function RequirementCard({ requirement, latestEvidence, onSubmit }) {
+function RequirementCard({ requirement, latestEvidence, onSubmit, isBadgeApproved }) {
   const { t } = useTranslation();
   const [file, setFile] = useState(null);
   const [notes, setNotes] = useState("");
@@ -435,37 +440,41 @@ function RequirementCard({ requirement, latestEvidence, onSubmit }) {
           </div>
         )}
 
-        <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-12">
-          <div className="md:col-span-7">
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
-              onChange={handleFileChange}
-            />
-            <p className="mt-1 text-xs text-slate-500">{t("consultor.uploadEvidencias.acceptedFormats")}</p>
-            {fileError && <p className="mt-1 text-xs text-rose-600">{fileError}</p>}
-          </div>
-          <div className="md:col-span-5">
-            <input
-              type="text"
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
-              placeholder={t("consultor.uploadEvidencias.notesOptional")}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
-        </div>
+        {!isBadgeApproved && (
+          <>
+            <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-12">
+              <div className="md:col-span-7">
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+                  onChange={handleFileChange}
+                />
+                <p className="mt-1 text-xs text-slate-500">{t("consultor.uploadEvidencias.acceptedFormats")}</p>
+                {fileError && <p className="mt-1 text-xs text-rose-600">{fileError}</p>}
+              </div>
+              <div className="md:col-span-5">
+                <input
+                  type="text"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
+                  placeholder={t("consultor.uploadEvidencias.notesOptional")}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
+            </div>
 
-        <div className="mt-2 flex justify-end">
-          <button
-            className="rounded-xl border border-sky-700 bg-sky-700 px-3 py-1 text-xs font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
-            onClick={handleSend}
-            disabled={submitting}
-          >
-            {submitting ? t("consultor.uploadEvidencias.sending") : t("consultor.uploadEvidencias.submitEvidence")}
-          </button>
-        </div>
+            <div className="mt-2 flex justify-end">
+              <button
+                className="rounded-xl border border-sky-700 bg-sky-700 px-3 py-1 text-xs font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={handleSend}
+                disabled={submitting}
+              >
+                {submitting ? t("consultor.uploadEvidencias.sending") : t("consultor.uploadEvidencias.submitEvidence")}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

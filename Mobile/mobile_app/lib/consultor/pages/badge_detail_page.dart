@@ -57,6 +57,13 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     return pedido.first.statusLabel;
   }
 
+  bool _badgeObtido() {
+    final pedido = widget.controller.pedidosStatus.where(
+      (p) => p.badgeId == widget.badge.id,
+    );
+    return pedido.isNotEmpty && pedido.first.status == 'obtido';
+  }
+
   int? _pedidoId() {
     final pedido = widget.controller.pedidosStatus.where(
       (p) => p.badgeId == widget.badge.id,
@@ -108,6 +115,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     final requisitos = controller.requirements;
     final estado = _estadoBadge();
     final candidaturaAtiva = estado != 'Nao Candidatado';
+    final badgeObtido = _badgeObtido();
 
     if (loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -275,7 +283,13 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
               ),
             ),
             const SizedBox(height: 8),
-            _bottomActions(context, controller, estado, candidaturaAtiva),
+            _bottomActions(
+              context,
+              controller,
+              estado,
+              candidaturaAtiva,
+              badgeObtido,
+            ),
           ],
         ),
       ),
@@ -402,6 +416,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     BuildContext context,
     ConsultorController controller,
     String estado,
+    bool badgeObtido,
   ) {
     if (estado == 'Nao Candidatado') {
       return ElevatedButton.icon(
@@ -440,8 +455,10 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
         textStyle: const TextStyle(fontSize: 16),
       ),
       onPressed: null,
-      icon: const Icon(Icons.workspace_premium),
-      label: const Text('Em Progresso'),
+      icon: Icon(
+        badgeObtido ? Icons.verified_rounded : Icons.workspace_premium,
+      ),
+      label: Text(badgeObtido ? 'Badge Obtido' : 'Em Progresso'),
     );
   }
 
@@ -450,6 +467,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
     ConsultorController controller,
     String estado,
     bool candidaturaAtiva,
+    bool badgeObtido,
   ) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -458,7 +476,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
         children: [
           SizedBox(
             width: double.infinity,
-            child: _primaryActionButton(context, controller, estado),
+            child: _primaryActionButton(context, controller, estado, badgeObtido),
           ),
           const SizedBox(height: 12),
           Row(
@@ -489,7 +507,7 @@ class _BadgeDetailPageState extends State<BadgeDetailPage> {
               label: const Text('Partilhar no LinkedIn'),
             ),
           ),
-          if (candidaturaAtiva) ...[
+          if (candidaturaAtiva && !badgeObtido) ...[
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,

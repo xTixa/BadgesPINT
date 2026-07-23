@@ -204,12 +204,19 @@ class UploadPage extends StatelessWidget {
       );
     }
 
+    final pedidoMatches = controller.pedidosStatus.where(
+      (p) => p.badgeId == controller.selectedBadgeId,
+    );
+    final badgeObtido =
+        pedidoMatches.isNotEmpty && pedidoMatches.first.status == 'obtido';
+
     return Column(
       children: controller.requirements.map((req) {
         return RequirementTile(
           isOnline: controller.isOnline,
           requirement: req,
           latestEvidence: controller.latestEvidenceForRequirement(req.id),
+          badgeObtido: badgeObtido,
           onSubmit: (fileName, bytes, notes) async {
             final url = await controller.uploadEvidenceFile(
               fileName: fileName,
@@ -267,12 +274,14 @@ class RequirementTile extends StatefulWidget {
     required this.latestEvidence,
     required this.onSubmit,
     required this.isOnline,
+    this.badgeObtido = false,
     super.key,
   });
 
   final RequirementItem requirement;
   final EvidenceItem? latestEvidence;
   final bool isOnline;
+  final bool badgeObtido;
   final Future<bool> Function(String fileName, Uint8List bytes, String notes)
       onSubmit;
 
@@ -333,7 +342,8 @@ class _RequirementTileState extends State<RequirementTile> {
     final hasEvidence = evidence != null;
     final approved = status == 'aprovado' || status == 'approved';
     final rejected = status == 'rejeitado' || status == 'rejected';
-    final canSubmit = widget.isOnline && !loading && !approved;
+    final canSubmit =
+        widget.isOnline && !loading && !approved && !widget.badgeObtido;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -416,7 +426,7 @@ class _RequirementTileState extends State<RequirementTile> {
                     const SizedBox(height: 12),
                     _submittedEvidenceBox(evidence),
                   ],
-                  if (!approved) ...[
+                  if (!approved && !widget.badgeObtido) ...[
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: canSubmit ? pickFile : null,
